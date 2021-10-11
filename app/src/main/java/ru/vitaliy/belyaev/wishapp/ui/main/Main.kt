@@ -7,30 +7,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedScreen
+import ru.vitaliy.belyaev.wishapp.ui.topappbar.TopAppBar
 
 @Composable
 fun Main(navController: NavController? = null) =
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "Main") }
-            )
-        }) {
+    TopAppBar(title = "Main") { topBarAppData ->
         val scrollState = rememberScrollState()
+
         Column(
             modifier = Modifier
-                .padding(it)
+                .padding(topBarAppData.paddingValues)
                 .verticalScroll(scrollState)
-
         ) {
             Text(
                 modifier = Modifier
@@ -48,7 +42,6 @@ fun Main(navController: NavController? = null) =
                     .padding(16.dp),
                 text = "Wish item 1"
             )
-
         }
 
     }

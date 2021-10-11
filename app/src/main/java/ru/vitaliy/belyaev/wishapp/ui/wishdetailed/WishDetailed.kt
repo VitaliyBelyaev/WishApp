@@ -8,11 +8,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ru.vitaliy.belyaev.wishapp.ui.TopAppBarScreen
+import ru.vitaliy.belyaev.wishapp.ui.topappbar.TopAppBar
 
 @Composable
 fun WishDetailed(navController: NavController? = null, wishId: String = "") =
-    TopAppBarScreen(navController = navController, "WishDetailed") {
+    TopAppBar(
+        navController,
+        "WishDetailed",
+        withBackIcon = true
+    ) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
