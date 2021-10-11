@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp
+package ru.vitaliy.belyaev.wishapp.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,31 +10,26 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
 
-class MainActivity : ComponentActivity() {
+class AppActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            WishAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    Greeting("Android")
-                }
-            }
+            App { Navigation() }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
+fun App(content: @Composable () -> Unit) {
     WishAppTheme {
-        Greeting("Android")
+        Surface(color = MaterialTheme.colors.background) {
+            content()
+        }
     }
 }
