@@ -15,8 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ru.vitaliy.belyaev.wishapp.navigation.Navigation
-import ru.vitaliy.belyaev.wishapp.ui.App
+import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedScreen
 
 @Composable
 fun Main(navController: NavController? = null) =
@@ -26,13 +25,32 @@ fun Main(navController: NavController? = null) =
                 title = { Text(text = "Main") }
             )
         }) {
-
-        Text(
+        val scrollState = rememberScrollState()
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            text = "Это главная"
-        )
+                .padding(it)
+                .verticalScroll(scrollState)
+
+        ) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                text = "Это главная"
+            )
+
+            Divider()
+
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { navController?.navigate(WishDetailedScreen.route("1")) }
+                    .padding(16.dp),
+                text = "Wish item 1"
+            )
+
+        }
+
     }
 
 @Preview

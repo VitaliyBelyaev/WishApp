@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WishApp">
         <activity
-            android:name=".AppActivity"
+            android:name=".ui.AppActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishApp">

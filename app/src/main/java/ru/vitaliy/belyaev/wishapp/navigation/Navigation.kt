@@ -18,6 +18,5 @@ fun Navigation() {
                 navBackStackEntry.arguments?.getString(WishDetailedScreen.ARG_WISH_ID) ?: ""
             )
         }
-
     }
 }
