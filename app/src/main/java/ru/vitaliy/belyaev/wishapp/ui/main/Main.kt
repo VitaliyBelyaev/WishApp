@@ -12,12 +12,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedScreen
+import ru.vitaliy.belyaev.wishapp.entity.Wish
 import ru.vitaliy.belyaev.wishapp.ui.topappbar.TopAppBar
 
 @Composable
-fun Main(navController: NavController? = null) =
+fun Main(
+    onWishClicked: (Wish) -> Unit,
+    items: List<Wish>
+) =
     TopAppBar(title = "Main") { topBarAppData ->
         val scrollState = rememberScrollState()
 
@@ -26,22 +28,20 @@ fun Main(navController: NavController? = null) =
                 .padding(topBarAppData.paddingValues)
                 .verticalScroll(scrollState)
         ) {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                text = "Это главная"
-            )
 
-            Divider()
+            items.forEachIndexed { index, wish ->
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onWishClicked.invoke(wish) }
+                        .padding(16.dp),
+                    text = wish.value
+                )
 
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { navController?.navigate(WishDetailedScreen.route("1")) }
-                    .padding(16.dp),
-                text = "Wish item 1"
-            )
+                if (index != items.lastIndex) {
+                    Divider()
+                }
+            }
         }
 
     }
@@ -49,5 +49,8 @@ fun Main(navController: NavController? = null) =
 @Preview
 @Composable
 fun MainPreview() {
-    Main()
+    Main(
+        {},
+        emptyList()
+    )
 }

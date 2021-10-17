@@ -7,13 +7,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import ru.vitaliy.belyaev.wishapp.ui.topappbar.TopAppBar
 
 @Composable
-fun WishDetailed(navController: NavController? = null, wishId: String = "") =
+fun WishDetailed(
+    onBackPressed: () -> Unit,
+    wishId: String = ""
+) =
     TopAppBar(
-        navController,
+        onBackPressed = onBackPressed,
         "WishDetailed",
         withBackIcon = true
     ) {
@@ -28,5 +30,7 @@ fun WishDetailed(navController: NavController? = null, wishId: String = "") =
 @Preview
 @Composable
 fun WishDetailedPreview() {
-    WishDetailed()
+    WishDetailed(
+        {}
+    )
 }

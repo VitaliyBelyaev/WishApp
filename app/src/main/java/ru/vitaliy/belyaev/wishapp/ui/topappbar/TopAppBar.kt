@@ -12,11 +12,10 @@ import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.navigation.NavController
 
 @Composable
 fun TopAppBar(
-    navController: NavController? = null,
+    onBackPressed: (() -> Unit)? = null,
     title: String = "",
     withBackIcon: Boolean = false,
     content: @Composable (TopAppBarData) -> Unit
@@ -28,7 +27,7 @@ fun TopAppBar(
             val navIcon: @Composable (() -> Unit)? =
                 if (withBackIcon) {
                     {
-                        IconButton(onClick = { navController?.popBackStack() }) {
+                        IconButton(onClick = { onBackPressed?.invoke() }) {
                             Icon(Filled.ArrowBack, contentDescription = "Back")
                         }
                     }

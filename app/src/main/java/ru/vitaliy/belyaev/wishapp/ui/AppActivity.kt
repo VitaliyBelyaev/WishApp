@@ -3,17 +3,22 @@ package ru.vitaliy.belyaev.wishapp.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
+import ru.vitaliy.belyaev.wishapp.ui.main.MainViewModel
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
 
 class AppActivity : ComponentActivity() {
+
+    val mainViewModel by viewModels<MainViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            App { Navigation() }
+            App { Navigation(mainViewModel) }
         }
     }
 }
