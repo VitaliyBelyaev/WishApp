@@ -1,6 +1,9 @@
 plugins {
     id "com.android.application"
     id "org.jetbrains.kotlin.android"
+    id "kotlin-parcelize"
+    id "kotlin-kapt"
+    id "dagger.hilt.android.plugin"
     id "com.squareup.sqldelight"
 }
 
@@ -72,9 +75,13 @@ dependencies {
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1"
 
+    // Hilt
+    implementation "com.google.dagger:hilt-android:$hiltVersion"
+    kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"
+
     // Database
-    implementation "com.squareup.sqldelight:android-driver:1.5.0"
-    implementation "com.squareup.sqldelight:coroutines-extensions-jvm:1.5.0"
+    implementation "com.squareup.sqldelight:android-driver:$sqlDelightVersion"
+    implementation "com.squareup.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion"
 
     testImplementation "junit:junit:4.13.2"
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

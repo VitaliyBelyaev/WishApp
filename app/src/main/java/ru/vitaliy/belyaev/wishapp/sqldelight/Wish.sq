@@ -1,0 +1,28 @@
+import kotlin.collections.List;
+
+
+CREATE TABLE Wish (
+  id TEXT PRIMARY KEY NOT NULL,
+  title TEXT NOT NULL,
+  link TEXT NOT NULL,
+  comment TEXT,
+  isCompleted INTEGER AS Boolean DEFAULT 0,
+  createdTimestamp INTEGER,
+  updatedTimestamp INTEGER,
+  tags TEXT AS List<String> NOT NULL DEFAULT ""
+);
+
+insert:
+INSERT INTO Wish(id, title,link,comment,isCompleted, createdTimestamp,updatedTimestamp,tags)
+VALUES (?,?,?,?,?,?,?,?);
+
+getAll:
+SELECT *
+FROM Wish;
+
+deleteByIds:
+DELETE FROM Wish
+WHERE id IN ?;
+
+clear:
+DELETE FROM Wish;
