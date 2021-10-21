@@ -1,37 +1,58 @@
 package ru.vitaliy.belyaev.wishapp.ui.main
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import ru.vitaliy.belyaev.wishapp.entity.Wish
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import ru.vitaliy.belyaev.model.database.Wish
+import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
+import java.util.UUID
+import javax.inject.Inject
 
-class MainViewModel : ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val databaseRepository: DatabaseRepository
+) : ViewModel() {
 
-    var wishItems = mutableStateListOf<Wish>()
-        private set
 
+    private val _uiState = MutableStateFlow(emptyList<Wish>())
+    val uiState: StateFlow<List<Wish>> = _uiState
 
     init {
-        val items = listOf(
-            Wish("1", "Value 1"),
-            Wish("2", "Value 1"),
-            Wish("3", "Value 1"),
-            Wish("4", "Value 1"),
-            Wish("5", "Value 1"),
-            Wish("6", "Value 1"),
-            Wish("7", "Value 1"),
-            Wish("8", "Value 1"),
-            Wish("9", "Value 1"),
-            Wish("10", "Value 1"),
+        viewModelScope.launch {
+            databaseRepository
+                .getAll()
+                .collect { wishItems -> _uiState.value = wishItems }
+        }
+    }
+
+
+    fun onAddWishClicked() {
+        val id = UUID.randomUUID().toString()
+        val item = Wish(
+            id,
+            "Title of $id",
+            "link",
+            "comm",
+            isCompleted = false,
+            createdTimestamp = 0,
+            updatedTimestamp = 0,
+            tags = emptyList()
         )
-        wishItems.addAll(items)
+        viewModelScope.launch {
+            databaseRepository.insert(item)
+        }
     }
 
     fun addItem(item: Wish) {
-        wishItems.add(item)
+        databaseRepository.insert(item)
     }
 
     fun removeItem(item: Wish) {
-        wishItems.remove(item)
+        databaseRepository.deleteByIds(listOf(item.id))
     }
 
     fun onItemClicked(item: Wish) {

@@ -7,13 +7,15 @@ import androidx.activity.viewModels
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import dagger.hilt.android.AndroidEntryPoint
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.ui.main.MainViewModel
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
 
+@AndroidEntryPoint
 class AppActivity : ComponentActivity() {
 
-    val mainViewModel by viewModels<MainViewModel>()
+    private val mainViewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
