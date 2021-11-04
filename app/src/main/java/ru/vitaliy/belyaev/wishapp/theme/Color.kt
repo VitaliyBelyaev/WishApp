@@ -2,9 +2,9 @@ package ru.vitaliy.belyaev.wishapp.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Primary = Color(0xfffff3e0)
-val PrimaryLight = Color(0xffffffff)
-val PrimaryDark = Color(0xFFccc0ae)
-val Secondary = Color(0xFFffe0b2)
-val SecondaryLight = Color(0xFFffffe4)
-val SecondaryDark = Color(0xFFcbae82)
+val Primary = Color(0xffb0bec5)
+val PrimaryLight = Color(0xffe2f1f8)
+val PrimaryDark = Color(0xFF808e95)
+val Secondary = Color(0xFF90a4ae)
+val SecondaryLight = Color(0xFFc1d5e0)
+val SecondaryDark = Color(0xFF62757f)

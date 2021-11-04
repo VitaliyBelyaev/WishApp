@@ -19,7 +19,7 @@ private val LightColorPalette = lightColors(
     primaryVariant = Color.White,
     secondary = Secondary,
     secondaryVariant = SecondaryDark,
-    onPrimary = Color.DarkGray
+    onPrimary = Color.Black
 )
 
 @Composable
