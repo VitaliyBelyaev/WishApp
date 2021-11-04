@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.bottombar
+package ru.vitaliy.belyaev.wishapp.ui.core.bottombar
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.BottomAppBar

@@ -1,16 +1,16 @@
-package ru.vitaliy.belyaev.wishapp.ui.main
+package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.UUID
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
-import java.util.UUID
-import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(

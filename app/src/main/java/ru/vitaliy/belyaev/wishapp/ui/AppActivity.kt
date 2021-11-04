@@ -9,8 +9,8 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import dagger.hilt.android.AndroidEntryPoint
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
-import ru.vitaliy.belyaev.wishapp.ui.main.MainViewModel
-import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
+import ru.vitaliy.belyaev.wishapp.theme.WishAppTheme
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainViewModel
 
 @AndroidEntryPoint
 class AppActivity : ComponentActivity() {

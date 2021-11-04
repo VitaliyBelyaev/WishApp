@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.topappbar
+package ru.vitaliy.belyaev.wishapp.ui.core.topappbar
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.Icon
@@ -8,6 +8,8 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.colorResource
+import ru.vitaliy.belyaev.wishapp.R
 
 @Composable
 fun WishAppTopBar(
@@ -30,6 +32,7 @@ fun WishAppTopBar(
     TopAppBar(
         title = { Text(text = title) },
         navigationIcon = navIcon,
-        actions = actions
+        actions = actions,
+        backgroundColor = colorResource(R.color.toolbarColor)
     )
 }

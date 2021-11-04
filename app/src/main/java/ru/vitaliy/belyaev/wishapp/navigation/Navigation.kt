@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import ru.vitaliy.belyaev.wishapp.ui.main.Main
-import ru.vitaliy.belyaev.wishapp.ui.main.MainViewModel
-import ru.vitaliy.belyaev.wishapp.ui.wishdetailed.WishDetailed
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.Main
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainViewModel
+import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.WishDetailed
 
 @Composable
 fun Navigation(mainViewModel: MainViewModel) {

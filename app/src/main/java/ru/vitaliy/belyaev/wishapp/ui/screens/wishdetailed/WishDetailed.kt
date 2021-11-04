@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.wishdetailed
+package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,7 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.vitaliy.belyaev.wishapp.ui.topappbar.WishAppTopBar
+import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 
 @Composable
 fun WishDetailed(

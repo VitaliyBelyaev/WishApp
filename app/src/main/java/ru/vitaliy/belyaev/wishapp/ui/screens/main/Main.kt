@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.main
+package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -34,8 +34,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.ui.bottombar.WishAppBottomBar
-import ru.vitaliy.belyaev.wishapp.ui.topappbar.WishAppTopBar
+import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
+import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 
 @Composable
 fun Main(
@@ -53,7 +53,10 @@ fun Main(
                 title = stringResource(R.string.app_name),
                 actions = {
                     IconButton(onClick = { onSettingIconClicked() }) {
-                        Icon(Filled.Settings, contentDescription = "Settings")
+                        Icon(
+                            Filled.Settings,
+                            contentDescription = "Settings"
+                        )
                     }
                 }
             )
