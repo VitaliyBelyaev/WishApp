@@ -16,6 +16,7 @@ fun Navigation(mainViewModel: MainViewModel) {
             Main(
                 { navController.navigate(WishDetailedScreen.route(it.id)) },
                 { mainViewModel.onAddWishClicked() },
+                {},
                 mainViewModel.uiState
             )
         }

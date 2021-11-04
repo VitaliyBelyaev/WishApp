@@ -13,24 +13,27 @@ import androidx.compose.material.Divider
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Wish
+import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.topappbar.WishAppTopBar
 
@@ -38,13 +41,23 @@ import ru.vitaliy.belyaev.wishapp.ui.topappbar.WishAppTopBar
 fun Main(
     onWishClicked: (Wish) -> Unit,
     onAddWishClicked: () -> Unit,
+    onSettingIconClicked: () -> Unit,
     uiState: StateFlow<List<Wish>>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val fabShape = RoundedCornerShape(50)
 
     Scaffold(
-        topBar = { WishAppTopBar("WishApp") },
+        topBar = {
+            WishAppTopBar(
+                title = stringResource(R.string.app_name),
+                actions = {
+                    IconButton(onClick = { onSettingIconClicked() }) {
+                        Icon(Filled.Settings, contentDescription = "Settings")
+                    }
+                }
+            )
+        },
         bottomBar = { WishAppBottomBar(fabShape) },
         floatingActionButton = {
             FloatingActionButton(
@@ -60,7 +73,7 @@ fun Main(
     ) {
         val scrollState = rememberScrollState()
         val items: List<Wish> by uiState.collectAsState()
-        val scope = rememberCoroutineScope()
+        val coroutineScope = rememberCoroutineScope()
 
         Column(
             modifier = Modifier
@@ -82,10 +95,6 @@ fun Main(
                 }
             }
             Spacer(modifier = Modifier.height(32.dp))
-
-            scope.launch {
-                scrollState.animateScrollTo(scrollState.maxValue)
-            }
         }
     }
 }
@@ -94,6 +103,7 @@ fun Main(
 @Composable
 fun MainPreview() {
     Main(
+        {},
         {},
         {},
         MutableStateFlow(emptyList())
