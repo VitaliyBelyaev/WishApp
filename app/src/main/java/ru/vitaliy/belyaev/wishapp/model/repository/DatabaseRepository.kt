@@ -7,6 +7,8 @@ interface DatabaseRepository {
 
     fun insert(wish: Wish)
 
+    fun getById(id: String): Flow<Wish>
+
     fun getAll(): Flow<List<Wish>>
 
     fun deleteByIds(ids: List<String>)

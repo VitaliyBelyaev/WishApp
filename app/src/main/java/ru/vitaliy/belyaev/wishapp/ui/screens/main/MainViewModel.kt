@@ -29,7 +29,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-
     fun onAddWishClicked() {
         val id = UUID.randomUUID().toString()
         val item = Wish(

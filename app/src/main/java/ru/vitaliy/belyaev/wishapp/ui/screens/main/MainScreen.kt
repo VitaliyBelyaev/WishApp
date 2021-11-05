@@ -30,19 +30,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import androidx.hilt.navigation.compose.hiltViewModel
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 
 @Composable
-fun Main(
+fun MainScreen(
     onWishClicked: (Wish) -> Unit,
     onAddWishClicked: () -> Unit,
     onSettingIconClicked: () -> Unit,
-    uiState: StateFlow<List<Wish>>
+    viewModel: MainViewModel = hiltViewModel()
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val fabShape = RoundedCornerShape(50)
@@ -75,7 +74,7 @@ fun Main(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {
         val scrollState = rememberScrollState()
-        val items: List<Wish> by uiState.collectAsState()
+        val items: List<Wish> by viewModel.uiState.collectAsState()
         val coroutineScope = rememberCoroutineScope()
 
         Column(
@@ -104,11 +103,10 @@ fun Main(
 
 @Preview
 @Composable
-fun MainPreview() {
-    Main(
+fun MainScreenPreview() {
+    MainScreen(
         {},
         {},
         {},
-        MutableStateFlow(emptyList())
     )
 }

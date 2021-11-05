@@ -16,6 +16,11 @@ insert:
 INSERT INTO Wish(id, title,link,comment,isCompleted, createdTimestamp,updatedTimestamp,tags)
 VALUES (?,?,?,?,?,?,?,?);
 
+getById:
+SELECT *
+FROM Wish
+WHERE id = ?;
+
 getAll:
 SELECT *
 FROM Wish;
