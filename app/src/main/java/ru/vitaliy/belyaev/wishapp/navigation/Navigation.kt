@@ -5,7 +5,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainScreen
-import ru.vitaliy.belyaev.wishapp.ui.screens.modifywish.ModifyWishScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.WishDetailedScreen
 
@@ -15,30 +14,23 @@ fun Navigation() {
     NavHost(navController = navController, startDestination = MainRoute.VALUE) {
         composable(MainRoute.VALUE) {
             MainScreen(
-                onWishClicked = { navController.navigate(ModifyWishRouteWithArgs.build(it.id)) },
-                onAddWishClicked = { navController.navigate(ModifyWishRoute.VALUE) },
+                onWishClicked = { navController.navigate(WishDetailedRouteWithArgs.build(it.id)) },
+                onAddWishClicked = { navController.navigate(WishDetailedRoute.VALUE) },
                 onSettingIconClicked = { navController.navigate(SettingsRoute.VALUE) }
+            )
+        }
+        composable(WishDetailedRoute.VALUE) {
+            WishDetailedScreen(
+                onBackPressed = { navController.popBackStack() }
+            )
+        }
+        composable(WishDetailedRouteWithArgs.VALUE) {
+            WishDetailedScreen(
+                onBackPressed = { navController.popBackStack() }
             )
         }
         composable(SettingsRoute.VALUE) {
             SettingsScreen(
-                onBackPressed = { navController.popBackStack() }
-            )
-        }
-        composable(WishDetailedRoute.VALUE) { navBackStackEntry ->
-            WishDetailedScreen(
-                onBackPressed = { navController.popBackStack() },
-                wishId = navBackStackEntry.arguments?.getString(WishDetailedRoute.ARG_WISH_ID) ?: ""
-            )
-        }
-        composable(ModifyWishRoute.VALUE) {
-            ModifyWishScreen(
-                onBackPressed = { navController.popBackStack() }
-            )
-        }
-
-        composable(ModifyWishRouteWithArgs.VALUE) {
-            ModifyWishScreen(
                 onBackPressed = { navController.popBackStack() }
             )
         }

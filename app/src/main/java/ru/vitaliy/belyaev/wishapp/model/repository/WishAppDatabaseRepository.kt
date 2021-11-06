@@ -6,38 +6,58 @@ import com.squareup.sqldelight.runtime.coroutines.mapToOne
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import ru.vitaliy.belyaev.model.database.Wish
+import ru.vitaliy.belyaev.model.database.WishQueries
 import ru.vitaliy.belyaev.wishapp.model.database.WishAppDb
 
 class WishAppDatabaseRepository @Inject constructor(
-    private val database: WishAppDb
+    database: WishAppDb
 ) : DatabaseRepository {
+
+    private val queries: WishQueries = database.wishQueries
 
     override fun insert(wish: Wish) {
         with(wish) {
-            database.wishQueries.insert(id, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, tags)
+            queries.insert(id, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, tags)
         }
     }
 
-    override fun getById(id: String): Flow<Wish> {
-        return database
-            .wishQueries
+    override fun updateTitle(newValue: String, wishId: String) {
+        queries.updateTitle(title = newValue, updatedTimestamp = System.currentTimeMillis(), id = wishId)
+    }
+
+    override fun updateLink(newValue: String, wishId: String) {
+        queries.updateLink(link = newValue, updatedTimestamp = System.currentTimeMillis(), id = wishId)
+    }
+
+    override fun updateComment(newValue: String, wishId: String) {
+        queries.updateComment(comment = newValue, updatedTimestamp = System.currentTimeMillis(), id = wishId)
+    }
+
+    override fun updateIsCompleted(newValue: Boolean, wishId: String) {
+        queries.updateIsCompleted(isCompleted = newValue, updatedTimestamp = System.currentTimeMillis(), id = wishId)
+    }
+
+    override fun updateTags(newValue: List<String>, wishId: String) {
+        queries.updateTags(tags = newValue, updatedTimestamp = System.currentTimeMillis(), id = wishId)
+    }
+
+    override fun getById(id: String): Flow<Wish> =
+        queries
             .getById(id)
             .asFlow()
             .mapToOne()
-    }
 
-    override fun getAll(): Flow<List<Wish>> {
-        return database.wishQueries
+    override fun getAll(): Flow<List<Wish>> =
+        queries
             .getAll()
             .asFlow()
             .mapToList()
-    }
 
     override fun deleteByIds(ids: List<String>) {
-        database.wishQueries.deleteByIds(ids)
+        queries.deleteByIds(ids)
     }
 
     override fun clearAll() {
-        database.wishQueries.clear()
+        queries.clear()
     }
 }

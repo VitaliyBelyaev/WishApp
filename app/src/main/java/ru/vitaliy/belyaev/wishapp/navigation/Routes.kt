@@ -5,24 +5,16 @@ object MainRoute {
 }
 
 object WishDetailedRoute {
-    private const val ROUTE_BASE = "wish_detailed"
+    const val VALUE = "wish_detailed"
+}
+
+object WishDetailedRouteWithArgs {
     const val ARG_WISH_ID = "wishId"
-    const val VALUE = "$ROUTE_BASE/{$ARG_WISH_ID}"
+    const val VALUE = "${WishDetailedRoute.VALUE}/{$ARG_WISH_ID}"
 
     fun build(wishId: String): String {
-        return "$ROUTE_BASE/$wishId"
+        return "${WishDetailedRoute.VALUE}/$wishId"
     }
-}
-
-object ModifyWishRoute {
-    const val VALUE = "modify_wish"
-}
-
-object ModifyWishRouteWithArgs {
-    const val ARG_WISH_ID = "wishId"
-    const val VALUE = "${ModifyWishRoute.VALUE}/{$ARG_WISH_ID}"
-
-    fun build(wishId: String): String = "${ModifyWishRoute.VALUE}/$wishId"
 }
 
 object SettingsRoute {

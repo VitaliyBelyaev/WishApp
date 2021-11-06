@@ -16,6 +16,41 @@ insert:
 INSERT INTO Wish(id, title,link,comment,isCompleted, createdTimestamp,updatedTimestamp,tags)
 VALUES (?,?,?,?,?,?,?,?);
 
+updateTitle:
+UPDATE Wish
+SET title = ?,
+    updatedTimestamp = ?
+    WHERE  id = ?;
+VALUES (?,?,?);
+
+updateLink:
+UPDATE Wish
+SET link = ?,
+    updatedTimestamp = ?
+    WHERE  id = ?;
+VALUES (?,?,?);
+
+updateComment:
+UPDATE Wish
+SET comment = ?,
+    updatedTimestamp = ?
+    WHERE  id = ?;
+VALUES (?,?,?);
+
+updateIsCompleted:
+UPDATE Wish
+SET isCompleted = ?,
+    updatedTimestamp = ?
+    WHERE  id = ?;
+VALUES (?,?,?);
+
+updateTags:
+UPDATE Wish
+SET tags = ?,
+    updatedTimestamp = ?
+    WHERE  id = ?;
+VALUES (?,?,?);
+
 getById:
 SELECT *
 FROM Wish
