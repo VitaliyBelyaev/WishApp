@@ -88,7 +88,7 @@ fun ModifyWishScreen(
             )
             TextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = wish.valueOrEmptyString { it.comment ?: "" },
+                value = wish.valueOrEmptyString { it.comment },
                 onValueChange = { value -> comment = value },
                 placeholder = { Text(text = stringResource(R.string.enter_comment)) },
                 colors = TextFieldDefaults.textFieldColors(

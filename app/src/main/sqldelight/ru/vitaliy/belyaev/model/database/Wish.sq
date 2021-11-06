@@ -5,11 +5,11 @@ CREATE TABLE Wish (
   id TEXT PRIMARY KEY NOT NULL,
   title TEXT NOT NULL,
   link TEXT NOT NULL,
-  comment TEXT,
-  isCompleted INTEGER AS Boolean DEFAULT 0,
-  createdTimestamp INTEGER,
-  updatedTimestamp INTEGER,
-  tags TEXT AS List<String> NOT NULL DEFAULT ""
+  comment TEXT NOT NULL,
+  isCompleted INTEGER AS Boolean DEFAULT 0 NOT NULL,
+  createdTimestamp INTEGER NOT NULL,
+  updatedTimestamp INTEGER NOT NULL,
+  tags TEXT AS List<String> DEFAULT "" NOT NULL
 );
 
 insert:
