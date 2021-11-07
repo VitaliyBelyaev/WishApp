@@ -1,6 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -9,7 +10,9 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.WishDetailedScreen
 
 @Composable
-fun Navigation() {
+fun Navigation(
+    appActivityViewModelStoreOwner: ViewModelStoreOwner
+) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = MainRoute.VALUE) {
         composable(MainRoute.VALUE) {

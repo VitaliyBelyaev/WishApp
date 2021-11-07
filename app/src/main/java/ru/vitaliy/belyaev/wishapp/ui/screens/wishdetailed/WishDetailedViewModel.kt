@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.Optional
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
@@ -25,7 +26,7 @@ class WishDetailedViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val inputWishId: String = savedStateHandle[ARG_WISH_ID] ?: ""
-    private lateinit var wishId: String
+    lateinit var wishId: String
 
     private val _uiState: MutableStateFlow<Optional<Wish>> = MutableStateFlow(Optional.empty())
     val uiState: StateFlow<Optional<Wish>> = _uiState
@@ -46,6 +47,10 @@ class WishDetailedViewModel @Inject constructor(
                 .flowOn(Dispatchers.IO)
                 .collect { wish -> _uiState.value = Optional.of(wish) }
         }
+    }
+
+    fun onBackPressed() {
+        viewModelScope.cancel()
     }
 
     fun onWishTitleChanged(newValue: String) {

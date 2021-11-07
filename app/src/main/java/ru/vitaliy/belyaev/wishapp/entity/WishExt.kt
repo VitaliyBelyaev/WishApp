@@ -16,3 +16,5 @@ fun createEmptyWish(): Wish {
         tags = emptyList()
     )
 }
+
+fun Wish.isEmpty(): Boolean = title.isBlank() && link.isBlank() && comment.isBlank()

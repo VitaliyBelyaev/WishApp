@@ -1,5 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,22 +27,32 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import java.util.Optional
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.AppActivity
+import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 
 @Composable
 fun WishDetailedScreen(
     onBackPressed: () -> Unit,
+    appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
     viewModel: WishDetailedViewModel = hiltViewModel()
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val wish: Optional<Wish> by viewModel.uiState.collectAsState()
+    val handleBackPressed: () -> Unit = {
+        viewModel.onBackPressed()
+        onBackPressed()
+        appViewModel.onWishScreenExit(viewModel.wishId)
+    }
+
+    BackHandler { handleBackPressed() }
 
     Scaffold(
         topBar = {
             WishAppTopBar(
                 "",
                 withBackIcon = true,
-                onBackPressed = onBackPressed
+                onBackPressed = handleBackPressed
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -110,6 +122,6 @@ private fun <T> Optional<T>.valueOrEmptyString(extractor: (T) -> String): String
 @Composable
 fun EditWishScreenPreview() {
     WishDetailedScreen(
-        {}
+        { }
     )
 }
