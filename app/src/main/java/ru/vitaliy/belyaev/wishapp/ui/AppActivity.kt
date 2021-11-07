@@ -17,7 +17,7 @@ class AppActivity : ComponentActivity() {
         setContent {
             WishAppTheme {
                 Surface(color = MaterialTheme.colors.background) {
-                    Navigation(this)
+                    Navigation()
                 }
             }
         }

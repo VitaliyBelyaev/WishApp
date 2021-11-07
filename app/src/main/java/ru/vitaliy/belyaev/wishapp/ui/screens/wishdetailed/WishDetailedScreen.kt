@@ -1,12 +1,15 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
@@ -20,8 +23,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import java.util.Optional
@@ -62,23 +67,26 @@ fun WishDetailedScreen(
         val link: String = wish.valueOrEmptyString { it.link }
         val comment: String = wish.valueOrEmptyString { it.comment }
 
+        Log.d("RTRT", "padding start:${paddingValues.calculateStartPadding(LayoutDirection.Ltr)}")
+
         Column(
             modifier = Modifier
-                .padding(
-                    PaddingValues(
-                        start = 16.dp,
-                        top = paddingValues.calculateTopPadding(),
-                        end = 16.dp,
-                        bottom = paddingValues.calculateBottomPadding()
-                    )
-                )
+                .padding(paddingValues)
                 .verticalScroll(scrollState)
         ) {
             TextField(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .fillMaxWidth(),
                 value = title,
+                textStyle = MaterialTheme.typography.h6,
                 onValueChange = { newValue -> viewModel.onWishTitleChanged(newValue) },
-                placeholder = { Text(text = stringResource(R.string.enter_title)) },
+                placeholder = {
+                    Text(
+                        text = stringResource(R.string.enter_title),
+                        style = MaterialTheme.typography.h6,
+                    )
+                },
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.White,
                     focusedIndicatorColor = Color.White,
@@ -89,6 +97,13 @@ fun WishDetailedScreen(
                 modifier = Modifier.fillMaxWidth(),
                 value = link,
                 onValueChange = { newValue -> viewModel.onWishLinkChanged(newValue) },
+                leadingIcon = {
+                    Icon(
+                        painterResource(R.drawable.ic_link),
+                        contentDescription = "Link",
+                        tint = Color.DarkGray
+                    )
+                },
                 placeholder = { Text(text = stringResource(R.string.enter_link)) },
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.White,
@@ -100,6 +115,13 @@ fun WishDetailedScreen(
                 modifier = Modifier.fillMaxWidth(),
                 value = comment,
                 onValueChange = { newValue -> viewModel.onWishCommentChanged(newValue) },
+                leadingIcon = {
+                    Icon(
+                        painterResource(R.drawable.ic_notes),
+                        contentDescription = "Comment",
+                        tint = Color.DarkGray
+                    )
+                },
                 placeholder = { Text(text = stringResource(R.string.enter_comment)) },
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.White,
