@@ -8,10 +8,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.model.database.Config
 import ru.vitaliy.belyaev.wishapp.model.database.WishAppDb
-import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
