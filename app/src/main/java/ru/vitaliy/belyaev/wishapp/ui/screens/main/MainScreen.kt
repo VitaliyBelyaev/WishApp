@@ -1,9 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -17,7 +15,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
@@ -84,14 +81,7 @@ fun MainScreen(
         ) {
 
             items.forEachIndexed { index, wish ->
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onWishClicked.invoke(wish) }
-                        .padding(16.dp),
-                    text = wish.title
-                )
-
+                WishItem(wish, onWishClicked)
                 if (index != items.lastIndex) {
                     Divider()
                 }
