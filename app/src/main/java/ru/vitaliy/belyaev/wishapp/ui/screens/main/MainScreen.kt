@@ -48,6 +48,12 @@ fun MainScreen(
             WishAppTopBar(
                 title = stringResource(R.string.app_name),
                 actions = {
+                    IconButton(onClick = { viewModel.onAddTestWishClicked() }) {
+                        Icon(
+                            Filled.Add,
+                            contentDescription = "Add test wish"
+                        )
+                    }
                     IconButton(onClick = { onSettingIconClicked() }) {
                         Icon(
                             Filled.Settings,

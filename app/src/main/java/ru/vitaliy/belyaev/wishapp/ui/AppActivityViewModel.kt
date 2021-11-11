@@ -22,4 +22,10 @@ class AppActivityViewModel @Inject constructor(
             }
         }
     }
+
+    fun onDeleteWishClicked(wishId: String) {
+        viewModelScope.launch {
+            databaseRepository.deleteByIds(listOf(wishId))
+        }
+    }
 }

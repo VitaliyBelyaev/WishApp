@@ -1,59 +1,88 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import ru.vitaliy.belyaev.model.database.Wish
+import ru.vitaliy.belyaev.wishapp.R
 
 @Composable
 fun WishItem(
     wish: Wish,
     onWishClicked: (Wish) -> Unit
 ) {
-    ConstraintLayout(
-        modifier = Modifier.clickable { onWishClicked(wish) }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onWishClicked(wish) }
+            .padding(16.dp)
     ) {
-        val (title, link, comment) = createRefs()
-        val baseMargin = 16.dp
 
+        val (title, titleColor) = if (wish.title.isNotBlank()) {
+            wish.title to Color.Unspecified
+        } else {
+            stringResource(R.string.without_title) to Color.Gray
+        }
         Text(
-            text = wish.title,
-            modifier = Modifier
-                .constrainAs(title) {
-                    top.linkTo(parent.top, margin = baseMargin)
-                    start.linkTo(parent.start, margin = baseMargin)
-                    end.linkTo(parent.end, margin = baseMargin)
-                }
+            text = title,
+            color = titleColor,
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.fillMaxWidth()
         )
+        if (wish.comment.isNotBlank()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) {
+//                Icon(
+//                    painterResource(R.drawable.ic_notes),
+//                    contentDescription = "Comment",
+//                    tint = Color.DarkGray
+//                )
+                Text(
+                    text = wish.comment,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+//                        .padding(start = 8.dp),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
 
-        Text(
-            text = wish.link,
-            modifier = Modifier
-                .constrainAs(link) {
-                    width = Dimension.fillToConstraints
-                    top.linkTo(title.bottom, margin = 8.dp)
-                    start.linkTo(parent.start, margin = baseMargin)
-                    end.linkTo(parent.end, margin = baseMargin)
-                }
-        )
+        if (wish.link.isNotBlank()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) {
+                Icon(
+                    painterResource(R.drawable.ic_link),
+                    contentDescription = "Link",
+                    tint = Color.DarkGray
+                )
+                Text(
+                    text = wish.link,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 8.dp)
+                )
+            }
+        }
 
-        Text(
-            text = wish.comment,
-            modifier = Modifier
-                .fillMaxWidth()
-                .constrainAs(comment) {
-                    width = Dimension.fillToConstraints
-                    top.linkTo(link.bottom, margin = 8.dp)
-                    start.linkTo(parent.start, margin = baseMargin)
-                    end.linkTo(parent.end, margin = baseMargin)
-                    bottom.linkTo(parent.bottom, margin = baseMargin)
-                }
-        )
     }
 }
 

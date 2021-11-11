@@ -4,4 +4,5 @@
     <string name="enter_title">Название</string>
     <string name="enter_link">Ссылка</string>
     <string name="enter_comment">Комментарий</string>
+    <string name="without_title">Без названия</string>
 </resources>

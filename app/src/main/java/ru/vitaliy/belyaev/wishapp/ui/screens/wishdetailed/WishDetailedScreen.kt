@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
@@ -14,6 +15,8 @@ import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -54,7 +57,19 @@ fun WishDetailedScreen(
             WishAppTopBar(
                 "",
                 withBackIcon = true,
-                onBackPressed = handleBackPressed
+                onBackPressed = handleBackPressed,
+                actions = {
+                    IconButton(onClick = {
+                        viewModel.onDeleteWishClicked()
+                        onBackPressed()
+                        appViewModel.onDeleteWishClicked(viewModel.wishId)
+                    }) {
+                        Icon(
+                            Icons.Filled.Delete,
+                            contentDescription = "Delete wish"
+                        )
+                    }
+                }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }

@@ -70,4 +70,8 @@ class WishDetailedViewModel @Inject constructor(
             databaseRepository.updateComment(newValue, wishId)
         }
     }
+
+    fun onDeleteWishClicked() {
+        viewModelScope.cancel()
+    }
 }
