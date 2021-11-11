@@ -6,28 +6,44 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.random.Random
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.toWishItem
 
+@ExperimentalCoroutinesApi
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val databaseRepository: DatabaseRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(emptyList<Wish>())
-    val uiState: StateFlow<List<Wish>> = _uiState
+    private val _uiState = MutableStateFlow(emptyList<WishItem>())
+    val uiState: StateFlow<List<WishItem>> = _uiState
 
     private val testWishes = createTestWishes()
 
     init {
         viewModelScope.launch {
-            databaseRepository
-                .getAll()
-                .collect { wishItems -> _uiState.value = wishItems }
+            withContext(Dispatchers.IO) {
+                databaseRepository
+                    .getAll()
+                    .map {
+                        val wishItems = mutableListOf<WishItem>()
+                        for (wish in it) {
+                            wishItems.add(wish.toWishItem())
+                        }
+                        wishItems
+                    }
+                    .collect { wishItems -> _uiState.value = wishItems }
+            }
         }
     }
 
@@ -41,7 +57,6 @@ class MainViewModel @Inject constructor(
                 updatedTimestamp = currentMillis
             )
             databaseRepository.insert(wish)
-
         }
     }
 

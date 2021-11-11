@@ -30,12 +30,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import java.util.Optional
-import ru.vitaliy.belyaev.model.database.Wish
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
+import ru.vitaliy.belyaev.wishapp.ui.core.LinkPreview
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 
+@ExperimentalCoroutinesApi
 @Composable
 fun WishDetailedScreen(
     onBackPressed: () -> Unit,
@@ -43,7 +47,7 @@ fun WishDetailedScreen(
     viewModel: WishDetailedViewModel = hiltViewModel()
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    val wish: Optional<Wish> by viewModel.uiState.collectAsState()
+    val wishItem: Optional<WishItem> by viewModel.uiState.collectAsState()
     val handleBackPressed: () -> Unit = {
         viewModel.onBackPressed()
         onBackPressed()
@@ -75,9 +79,9 @@ fun WishDetailedScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         val scrollState = rememberScrollState()
-        val title: String = wish.valueOrEmptyString { it.title }
-        val link: String = wish.valueOrEmptyString { it.link }
-        val comment: String = wish.valueOrEmptyString { it.comment }
+        val title: String = wishItem.valueOrEmptyString { it.wish.title }
+        val link: String = wishItem.valueOrEmptyString { it.wish.link }
+        val comment: String = wishItem.valueOrEmptyString { it.wish.comment }
 
         Column(
             modifier = Modifier
@@ -105,24 +109,6 @@ fun WishDetailedScreen(
             )
             TextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = link,
-                onValueChange = { newValue -> viewModel.onWishLinkChanged(newValue) },
-                leadingIcon = {
-                    Icon(
-                        painterResource(R.drawable.ic_link),
-                        contentDescription = "Link",
-                        tint = Color.DarkGray
-                    )
-                },
-                placeholder = { Text(text = stringResource(R.string.enter_link)) },
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.White,
-                    focusedIndicatorColor = Color.White,
-                    unfocusedIndicatorColor = Color.White
-                )
-            )
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
                 value = comment,
                 onValueChange = { newValue -> viewModel.onWishCommentChanged(newValue) },
                 leadingIcon = {
@@ -139,6 +125,30 @@ fun WishDetailedScreen(
                     unfocusedIndicatorColor = Color.White
                 )
             )
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = link,
+                onValueChange = { newValue -> viewModel.onWishLinkChanged(newValue) },
+                leadingIcon = {
+                    Icon(
+                        painterResource(R.drawable.ic_link),
+                        contentDescription = "Link",
+                        tint = Color.DarkGray
+                    )
+                },
+                placeholder = { Text(text = stringResource(R.string.enter_link)) },
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.White,
+                    focusedIndicatorColor = Color.White,
+                    unfocusedIndicatorColor = Color.White
+                )
+            )
+
+            val wishItemValue = wishItem.toValueOfNull()
+            val linkInfo = wishItemValue?.linkInfo
+            if (link.isNotBlank() && linkInfo != null) {
+                LinkPreview(linkInfo)
+            }
         }
     }
 }
@@ -150,6 +160,7 @@ private fun <T> Optional<T>.valueOrEmptyString(extractor: (T) -> String): String
         ""
     }
 
+@ExperimentalCoroutinesApi
 @Preview
 @Composable
 fun EditWishScreenPreview() {

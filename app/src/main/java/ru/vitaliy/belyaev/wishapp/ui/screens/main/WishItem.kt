@@ -2,34 +2,34 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.core.LinkPreview
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 
 @Composable
-fun WishItem(
-    wish: Wish,
+fun WishItemBlock(
+    wishItem: WishItem,
     onWishClicked: (Wish) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onWishClicked(wish) }
+            .clickable { onWishClicked(wishItem.wish) }
             .padding(16.dp)
     ) {
 
+        val wish = wishItem.wish
         val (title, titleColor) = if (wish.title.isNotBlank()) {
             wish.title to Color.Unspecified
         } else {
@@ -42,47 +42,19 @@ fun WishItem(
             modifier = Modifier.fillMaxWidth()
         )
         if (wish.comment.isNotBlank()) {
-            Row(
+            Text(
+                text = wish.comment,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp)
-            ) {
-//                Icon(
-//                    painterResource(R.drawable.ic_notes),
-//                    contentDescription = "Comment",
-//                    tint = Color.DarkGray
-//                )
-                Text(
-                    text = wish.comment,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-//                        .padding(start = 8.dp),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+                    .padding(top = 8.dp),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
         }
 
-        if (wish.link.isNotBlank()) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-            ) {
-                Icon(
-                    painterResource(R.drawable.ic_link),
-                    contentDescription = "Link",
-                    tint = Color.DarkGray
-                )
-                Text(
-                    text = wish.link,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 8.dp)
-                )
-            }
+        if (wish.link.isNotBlank() && wishItem.linkInfo != null) {
+            LinkPreview(wishItem.linkInfo)
         }
-
     }
 }
 

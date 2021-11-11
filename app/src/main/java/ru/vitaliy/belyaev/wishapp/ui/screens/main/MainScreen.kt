@@ -22,17 +22,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 
+@ExperimentalCoroutinesApi
 @Composable
 fun MainScreen(
     onWishClicked: (Wish) -> Unit,
@@ -77,8 +79,7 @@ fun MainScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {
         val scrollState = rememberScrollState()
-        val items: List<Wish> by viewModel.uiState.collectAsState()
-        val coroutineScope = rememberCoroutineScope()
+        val items: List<WishItem> by viewModel.uiState.collectAsState()
 
         Column(
             modifier = Modifier
@@ -86,8 +87,8 @@ fun MainScreen(
                 .verticalScroll(scrollState)
         ) {
 
-            items.forEachIndexed { index, wish ->
-                WishItem(wish, onWishClicked)
+            items.forEachIndexed { index, wishItem ->
+                WishItemBlock(wishItem, onWishClicked)
                 if (index != items.lastIndex) {
                     Divider()
                 }
@@ -97,6 +98,7 @@ fun MainScreen(
     }
 }
 
+@ExperimentalCoroutinesApi
 @Preview
 @Composable
 fun MainScreenPreview() {

@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ru.vitaliy.belyaev.wishapp">
+        package="ru.vitaliy.belyaev.wishapp">
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".WishApplication"
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.WishApp">
+            android:name=".WishApplication"
+            android:allowBackup="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:supportsRtl="true"
+            android:theme="@style/Theme.WishApp">
         <activity
-            android:name=".ui.AppActivity"
+                android:name=".ui.AppActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishApp">

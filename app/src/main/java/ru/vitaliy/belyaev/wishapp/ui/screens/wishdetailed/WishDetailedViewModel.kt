@@ -7,18 +7,22 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.Optional
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.entity.createEmptyWish
 import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
 import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedRouteWithArgs.ARG_WISH_ID
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.toWishItem
 
+@ExperimentalCoroutinesApi
 @HiltViewModel
 class WishDetailedViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -28,8 +32,8 @@ class WishDetailedViewModel @Inject constructor(
     private val inputWishId: String = savedStateHandle[ARG_WISH_ID] ?: ""
     lateinit var wishId: String
 
-    private val _uiState: MutableStateFlow<Optional<Wish>> = MutableStateFlow(Optional.empty())
-    val uiState: StateFlow<Optional<Wish>> = _uiState
+    private val _uiState: MutableStateFlow<Optional<WishItem>> = MutableStateFlow(Optional.empty())
+    val uiState: StateFlow<Optional<WishItem>> = _uiState
 
     init {
         viewModelScope.launch {
@@ -44,8 +48,9 @@ class WishDetailedViewModel @Inject constructor(
             }
             databaseRepository
                 .getById(wishId)
+                .map { it.toWishItem() }
                 .flowOn(Dispatchers.IO)
-                .collect { wish -> _uiState.value = Optional.of(wish) }
+                .collect { wishItem -> _uiState.value = Optional.of(wishItem) }
         }
     }
 
