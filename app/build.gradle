@@ -86,6 +86,11 @@ dependencies {
     implementation "com.squareup.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion"
     implementation "com.squareup.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion"
 
+    // Okhttp
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.9.1"))
+    implementation("com.squareup.okhttp3:okhttp")
+    implementation("com.squareup.okhttp3:logging-interceptor")
+
     // Jsoup
     implementation "org.jsoup:jsoup:1.14.3"
 
@@ -94,6 +99,9 @@ dependencies {
 
     // Timber
     implementation "com.jakewharton.timber:timber:5.0.1"
+
+    // Shimmer animation for loading
+    implementation "com.valentinilk.shimmer:compose-shimmer:1.0.1"
 
     testImplementation "junit:junit:4.13.2"
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

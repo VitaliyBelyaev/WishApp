@@ -37,7 +37,11 @@ import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.LinkPreview
+import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreviewLoading
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Data
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 
 @ExperimentalCoroutinesApi
@@ -146,10 +150,18 @@ fun WishDetailedScreen(
             )
 
             val wishItemValue = wishItem.toValueOfNull()
-            val linkInfo = wishItemValue?.linkInfo
-            if (link.isNotBlank() && linkInfo != null) {
-                val pd = PaddingValues(start = 12.dp, top = 8.dp, end = 12.dp)
-                LinkPreview(pd, linkInfo)
+            when (val linkPreviewState = wishItemValue?.linkPreviewState) {
+                is Data -> {
+                    val pd = PaddingValues(start = 12.dp, top = 8.dp, end = 12.dp)
+                    LinkPreview(pd, linkPreviewState.linkInfo)
+                }
+                is Loading -> {
+                    val pd = PaddingValues(start = 12.dp, top = 8.dp, end = 12.dp)
+                    LinkPreviewLoading(pd)
+                }
+                is None -> {
+                    //nothing
+                }
             }
         }
     }

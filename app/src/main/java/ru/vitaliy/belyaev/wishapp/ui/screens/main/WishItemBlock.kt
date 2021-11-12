@@ -16,6 +16,10 @@ import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.LinkPreview
+import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreviewLoading
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Data
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 
 @Composable
@@ -53,9 +57,18 @@ fun WishItemBlock(
             )
         }
 
-        if (wish.link.isNotBlank() && wishItem.linkInfo != null) {
-            val paddingValues = PaddingValues(top = 8.dp)
-            LinkPreview(paddingValues, wishItem.linkInfo)
+        when (val linkPreviewState = wishItem.linkPreviewState) {
+            is Data -> {
+                val paddingValues = PaddingValues(top = 8.dp)
+                LinkPreview(paddingValues, linkPreviewState.linkInfo)
+            }
+            is Loading -> {
+                val paddingValues = PaddingValues(top = 8.dp)
+                LinkPreviewLoading(paddingValues)
+            }
+            is None -> {
+                //nothing
+            }
         }
     }
 }

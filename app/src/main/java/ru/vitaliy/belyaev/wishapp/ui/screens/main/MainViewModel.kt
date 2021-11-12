@@ -6,23 +6,22 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.random.Random
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.model.database.Wish
+import ru.vitaliy.belyaev.wishapp.domain.WishInteractor
 import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.toWishItem
+import timber.log.Timber
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val databaseRepository: DatabaseRepository
+    private val databaseRepository: DatabaseRepository,
+    private val wishInteractor: WishInteractor
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(emptyList<WishItem>())
@@ -32,18 +31,12 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                databaseRepository
-                    .getAll()
-                    .map {
-                        val wishItems = mutableListOf<WishItem>()
-                        for (wish in it) {
-                            wishItems.add(wish.toWishItem())
-                        }
-                        wishItems
-                    }
-                    .collect { wishItems -> _uiState.value = wishItems }
-            }
+            wishInteractor
+                .getWishItems()
+                .collect { wishItems ->
+                    Timber.tag("RTRT").d("wishItem:${wishItems.map { it.linkPreviewState }}")
+                    _uiState.value = wishItems
+                }
         }
     }
 

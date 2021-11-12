@@ -12,21 +12,20 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import ru.vitaliy.belyaev.wishapp.domain.WishInteractor
 import ru.vitaliy.belyaev.wishapp.entity.createEmptyWish
 import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
 import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedRouteWithArgs.ARG_WISH_ID
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.toWishItem
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
 class WishDetailedViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val databaseRepository: DatabaseRepository
+    private val databaseRepository: DatabaseRepository,
+    private val wishInteractor: WishInteractor
 ) : ViewModel() {
 
     private val inputWishId: String = savedStateHandle[ARG_WISH_ID] ?: ""
@@ -46,10 +45,8 @@ class WishDetailedViewModel @Inject constructor(
                 }
                 wish.id
             }
-            databaseRepository
-                .getById(wishId)
-                .map { it.toWishItem() }
-                .flowOn(Dispatchers.IO)
+            wishInteractor
+                .getWishItem(wishId)
                 .collect { wishItem -> _uiState.value = Optional.of(wishItem) }
         }
     }
