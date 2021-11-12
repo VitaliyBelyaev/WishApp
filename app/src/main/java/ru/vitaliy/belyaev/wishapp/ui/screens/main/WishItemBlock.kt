@@ -2,6 +2,7 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
@@ -53,7 +54,8 @@ fun WishItemBlock(
         }
 
         if (wish.link.isNotBlank() && wishItem.linkInfo != null) {
-            LinkPreview(wishItem.linkInfo)
+            val paddingValues = PaddingValues(top = 8.dp)
+            LinkPreview(paddingValues, wishItem.linkInfo)
         }
     }
 }

@@ -2,6 +2,7 @@ package ru.vitaliy.belyaev.wishapp.ui.core
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
@@ -18,11 +20,12 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkInfo
 
 @Composable
-fun LinkPreview(linkInfo: LinkInfo) =
+fun LinkPreview(paddingValues: PaddingValues, linkInfo: LinkInfo) =
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp)
+            .padding(paddingValues),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
             painter = rememberImagePainter(
@@ -33,7 +36,9 @@ fun LinkPreview(linkInfo: LinkInfo) =
                 }
             ),
             contentDescription = null,
-            modifier = Modifier.size(58.dp)
+            modifier = Modifier
+                .size(58.dp)
+                .padding(4.dp)
         )
         Column(
             modifier = Modifier
@@ -43,19 +48,20 @@ fun LinkPreview(linkInfo: LinkInfo) =
             Text(
                 text = linkInfo.title,
                 style = MaterialTheme.typography.body1,
-                color = Color.Gray,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth(),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
             )
 
             Text(
                 text = linkInfo.description,
                 style = MaterialTheme.typography.body2,
                 color = Color.Gray,
-                modifier = Modifier.fillMaxWidth(),
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp)
             )
         }
     }

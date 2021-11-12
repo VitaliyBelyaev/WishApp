@@ -2,6 +2,7 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -147,7 +148,8 @@ fun WishDetailedScreen(
             val wishItemValue = wishItem.toValueOfNull()
             val linkInfo = wishItemValue?.linkInfo
             if (link.isNotBlank() && linkInfo != null) {
-                LinkPreview(linkInfo)
+                val pd = PaddingValues(start = 12.dp, top = 8.dp, end = 12.dp)
+                LinkPreview(pd, linkInfo)
             }
         }
     }
