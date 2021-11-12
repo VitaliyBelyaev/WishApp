@@ -10,8 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.domain.WishInteractor
@@ -31,8 +29,7 @@ class WishDetailedViewModel @Inject constructor(
     private val inputWishId: String = savedStateHandle[ARG_WISH_ID] ?: ""
     lateinit var wishId: String
 
-    private val _uiState: MutableStateFlow<Optional<WishItem>> = MutableStateFlow(Optional.empty())
-    val uiState: StateFlow<Optional<WishItem>> = _uiState
+    val uiState: MutableStateFlow<Optional<WishItem>> = MutableStateFlow(Optional.empty())
 
     init {
         viewModelScope.launch {
@@ -45,9 +42,12 @@ class WishDetailedViewModel @Inject constructor(
                 }
                 wish.id
             }
-            wishInteractor
-                .getWishItem(wishId)
-                .collect { wishItem -> _uiState.value = Optional.of(wishItem) }
+            val wishItem = wishInteractor.getById(wishId)
+            uiState.value = Optional.of(wishItem)
+
+            val wishItemWithLinkPreview = wishInteractor.getLinkPreview(wishItem.wish)
+            uiState.value = Optional.of(wishItemWithLinkPreview)
+
         }
     }
 

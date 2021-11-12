@@ -13,7 +13,9 @@ interface DatabaseRepository {
     fun updateIsCompleted(newValue: Boolean, wishId: String)
     fun updateTags(newValue: List<String>, wishId: String)
 
-    fun getById(id: String): Flow<Wish>
+    fun flowById(id: String): Flow<Wish>
+
+    suspend fun getById(id: String): Wish
 
     fun getAll(): Flow<List<Wish>>
 

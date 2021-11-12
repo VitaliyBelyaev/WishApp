@@ -4,7 +4,9 @@ import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.squareup.sqldelight.runtime.coroutines.mapToOne
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.model.database.WishQueries
 import ru.vitaliy.belyaev.wishapp.model.database.WishAppDb
@@ -41,11 +43,19 @@ class WishAppDatabaseRepository @Inject constructor(
         queries.updateTags(tags = newValue, updatedTimestamp = System.currentTimeMillis(), id = wishId)
     }
 
-    override fun getById(id: String): Flow<Wish> =
+    override fun flowById(id: String): Flow<Wish> =
         queries
             .getById(id)
             .asFlow()
             .mapToOne()
+
+    override suspend fun getById(id: String): Wish {
+        return withContext(Dispatchers.IO) {
+            queries
+                .getById(id)
+                .executeAsOne()
+        }
+    }
 
     override fun getAll(): Flow<List<Wish>> =
         queries

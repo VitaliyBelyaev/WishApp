@@ -16,6 +16,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Data
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkInfo
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.toDefaultWishItem
 import ru.vitaliy.belyaev.wishapp.utils.getLinkDescription
 import ru.vitaliy.belyaev.wishapp.utils.getLinkImage
 import ru.vitaliy.belyaev.wishapp.utils.getLinkTitle
@@ -26,24 +27,32 @@ class WishInteractor @Inject constructor(
     private val okHttpClient: OkHttpClient
 ) {
 
-    suspend fun getWishItems(): Flow<List<WishItem>> {
+    fun getWishItems(): Flow<List<WishItem>> {
         return databaseRepository
             .getAll()
             .map {
                 val wishItems = mutableListOf<WishItem>()
                 for (wish in it) {
-                    wishItems.add(wish.toWishItem())
+                    wishItems.add(WishItem(wish, None))
                 }
                 wishItems
             }
             .flowOn(Dispatchers.IO)
     }
 
-    suspend fun getWishItem(id: String): Flow<WishItem> {
+    fun flowWishItem(id: String): Flow<WishItem> {
         return databaseRepository
-            .getById(id)
-            .map { it.toWishItem() }
+            .flowById(id)
+            .map { it.toDefaultWishItem() }
             .flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getById(id: String): WishItem {
+        return databaseRepository.getById(id).toDefaultWishItem()
+    }
+
+    suspend fun getLinkPreview(wish: Wish): WishItem {
+        return wish.toWishItem()
     }
 
     @ExperimentalCoroutinesApi

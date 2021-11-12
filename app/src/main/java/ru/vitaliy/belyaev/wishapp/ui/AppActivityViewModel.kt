@@ -16,7 +16,7 @@ class AppActivityViewModel @Inject constructor(
 
     fun onWishScreenExit(wishId: String) {
         viewModelScope.launch {
-            val wish = databaseRepository.getById(wishId).firstOrNull() ?: return@launch
+            val wish = databaseRepository.flowById(wishId).firstOrNull() ?: return@launch
             if (wish.isEmpty()) {
                 databaseRepository.deleteByIds(listOf(wishId))
             }

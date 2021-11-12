@@ -21,7 +21,9 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -84,9 +86,12 @@ fun WishDetailedScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         val scrollState = rememberScrollState()
-        val title: String = wishItem.valueOrEmptyString { it.wish.title }
-        val link: String = wishItem.valueOrEmptyString { it.wish.link }
-        val comment: String = wishItem.valueOrEmptyString { it.wish.comment }
+        if (!wishItem.isPresent) {
+            return@Scaffold
+        }
+        var title: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.title }) }
+        var link: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.link }) }
+        var comment: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.comment }) }
 
         Column(
             modifier = Modifier
@@ -99,7 +104,10 @@ fun WishDetailedScreen(
                     .fillMaxWidth(),
                 value = title,
                 textStyle = MaterialTheme.typography.h6,
-                onValueChange = { newValue -> viewModel.onWishTitleChanged(newValue) },
+                onValueChange = { newValue ->
+                    title = newValue
+                    viewModel.onWishTitleChanged(newValue)
+                },
                 placeholder = {
                     Text(
                         text = stringResource(R.string.enter_title),
@@ -115,7 +123,10 @@ fun WishDetailedScreen(
             TextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = comment,
-                onValueChange = { newValue -> viewModel.onWishCommentChanged(newValue) },
+                onValueChange = { newValue ->
+                    comment = newValue
+                    viewModel.onWishCommentChanged(newValue)
+                },
                 leadingIcon = {
                     Icon(
                         painterResource(R.drawable.ic_notes),
@@ -133,7 +144,10 @@ fun WishDetailedScreen(
             TextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = link,
-                onValueChange = { newValue -> viewModel.onWishLinkChanged(newValue) },
+                onValueChange = { newValue ->
+                    link = newValue
+                    viewModel.onWishLinkChanged(newValue)
+                },
                 leadingIcon = {
                     Icon(
                         painterResource(R.drawable.ic_link),
