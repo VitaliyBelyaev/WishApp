@@ -38,7 +38,7 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
-import ru.vitaliy.belyaev.wishapp.ui.core.LinkPreview
+import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreview
 import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreviewLoading
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Data
@@ -164,15 +164,10 @@ fun WishDetailedScreen(
             )
 
             val wishItemValue = wishItem.toValueOfNull()
+            val pd = PaddingValues(start = 12.dp, top = 8.dp, end = 12.dp)
             when (val linkPreviewState = wishItemValue?.linkPreviewState) {
-                is Data -> {
-                    val pd = PaddingValues(start = 12.dp, top = 8.dp, end = 12.dp)
-                    LinkPreview(pd, linkPreviewState.linkInfo)
-                }
-                is Loading -> {
-                    val pd = PaddingValues(start = 12.dp, top = 8.dp, end = 12.dp)
-                    LinkPreviewLoading(pd)
-                }
+                is Data -> LinkPreview(pd, linkPreviewState.linkInfo)
+                is Loading -> LinkPreviewLoading(pd)
                 is None -> {
                     //nothing
                 }
@@ -191,7 +186,7 @@ private fun <T> Optional<T>.valueOrEmptyString(extractor: (T) -> String): String
 @ExperimentalCoroutinesApi
 @Preview
 @Composable
-fun EditWishScreenPreview() {
+fun WishDetailedScreenPreview() {
     WishDetailedScreen(
         { }
     )

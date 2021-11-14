@@ -8,6 +8,7 @@
     <color name="secondaryDarkColor">#62757f</color>
     <color name="black">#FF000000</color>
     <color name="surface">#FF121212</color>
+    <color name="shimmerColor">#e0e0e0</color>
 
     <color name="statusBarColor">@android:color/white</color>
     <color name="toolbarColor">@android:color/white</color>

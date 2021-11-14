@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.core
+package ru.vitaliy.belyaev.wishapp.ui.core.linkpreview
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -37,7 +37,7 @@ fun LinkPreview(paddingValues: PaddingValues, linkInfo: LinkInfo) =
             ),
             contentDescription = null,
             modifier = Modifier
-                .size(58.dp)
+                .size(LINK_IMAGE_SIZE)
                 .padding(4.dp)
         )
         Column(
@@ -65,3 +65,5 @@ fun LinkPreview(paddingValues: PaddingValues, linkInfo: LinkInfo) =
             )
         }
     }
+
+val LINK_IMAGE_SIZE = 58.dp

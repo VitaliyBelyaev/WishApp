@@ -15,7 +15,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.ui.core.LinkPreview
+import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreview
 import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreviewLoading
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Data
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
