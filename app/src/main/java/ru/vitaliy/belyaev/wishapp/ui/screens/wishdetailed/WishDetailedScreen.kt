@@ -92,6 +92,7 @@ fun WishDetailedScreen(
         var title: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.title }) }
         var link: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.link }) }
         var comment: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.comment }) }
+        val iconsColor: Color = Color.Gray
 
         Column(
             modifier = Modifier
@@ -131,7 +132,7 @@ fun WishDetailedScreen(
                     Icon(
                         painterResource(R.drawable.ic_notes),
                         contentDescription = "Comment",
-                        tint = Color.DarkGray
+                        tint = iconsColor
                     )
                 },
                 placeholder = { Text(text = stringResource(R.string.enter_comment)) },
@@ -152,7 +153,7 @@ fun WishDetailedScreen(
                     Icon(
                         painterResource(R.drawable.ic_link),
                         contentDescription = "Link",
-                        tint = Color.DarkGray
+                        tint = iconsColor
                     )
                 },
                 placeholder = { Text(text = stringResource(R.string.enter_link)) },

@@ -61,7 +61,7 @@ fun WishItemBlock(
                 Icon(
                     painterResource(R.drawable.ic_link),
                     contentDescription = "Link",
-                    tint = Color.DarkGray,
+                    tint = Color.Gray,
                     modifier = Modifier
                         .size(20.dp)
                         .constrainAs(linkIconRef) {
