@@ -12,12 +12,13 @@ import androidx.compose.ui.graphics.Shape
 
 @Composable
 fun WishAppBottomBar(
-    cutoutShape: Shape? = null
+    cutoutShape: Shape? = null,
+    onShareClick: () -> Unit
 ) {
 
     BottomAppBar(cutoutShape = cutoutShape) {
         Spacer(Modifier.weight(1f, true))
-        IconButton(onClick = { /* doSomething() */ }) {
+        IconButton(onClick = { onShareClick() }) {
             Icon(Filled.Share, contentDescription = "Share")
         }
     }

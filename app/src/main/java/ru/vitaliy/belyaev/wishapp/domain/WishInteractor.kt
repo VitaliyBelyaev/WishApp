@@ -29,7 +29,7 @@ class WishInteractor @Inject constructor(
 
     fun getWishItems(): Flow<List<WishItem>> {
         return databaseRepository
-            .getAll()
+            .getAllFlow()
             .map {
                 val wishItems = mutableListOf<WishItem>()
                 for (wish in it) {
@@ -42,7 +42,7 @@ class WishInteractor @Inject constructor(
 
     fun flowWishItem(id: String): Flow<WishItem> {
         return databaseRepository
-            .flowById(id)
+            .getByIdFlow(id)
             .map { it.toDefaultWishItem() }
             .flowOn(Dispatchers.IO)
     }

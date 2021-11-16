@@ -5,4 +5,5 @@
     <string name="enter_link">Ссылка</string>
     <string name="enter_comment">Комментарий</string>
     <string name="without_title">Без названия</string>
+    <string name="wish_list_title">Вот мой список хотелок:</string>
 </resources>

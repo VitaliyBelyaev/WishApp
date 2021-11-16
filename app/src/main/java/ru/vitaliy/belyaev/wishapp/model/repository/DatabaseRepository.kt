@@ -13,11 +13,13 @@ interface DatabaseRepository {
     fun updateIsCompleted(newValue: Boolean, wishId: String)
     fun updateTags(newValue: List<String>, wishId: String)
 
-    fun flowById(id: String): Flow<Wish>
+    fun getByIdFlow(id: String): Flow<Wish>
 
     suspend fun getById(id: String): Wish
 
-    fun getAll(): Flow<List<Wish>>
+    fun getAllFlow(): Flow<List<Wish>>
+
+    suspend fun getAll(): List<Wish>
 
     fun deleteByIds(ids: List<String>)
 

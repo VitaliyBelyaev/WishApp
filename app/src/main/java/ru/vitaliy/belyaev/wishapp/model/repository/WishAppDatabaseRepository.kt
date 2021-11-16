@@ -43,7 +43,7 @@ class WishAppDatabaseRepository @Inject constructor(
         queries.updateTags(tags = newValue, updatedTimestamp = System.currentTimeMillis(), id = wishId)
     }
 
-    override fun flowById(id: String): Flow<Wish> =
+    override fun getByIdFlow(id: String): Flow<Wish> =
         queries
             .getById(id)
             .asFlow()
@@ -57,11 +57,19 @@ class WishAppDatabaseRepository @Inject constructor(
         }
     }
 
-    override fun getAll(): Flow<List<Wish>> =
+    override fun getAllFlow(): Flow<List<Wish>> =
         queries
             .getAll()
             .asFlow()
             .mapToList()
+
+    override suspend fun getAll(): List<Wish> {
+        return withContext(Dispatchers.IO) {
+            queries
+                .getAll()
+                .executeAsList()
+        }
+    }
 
     override fun deleteByIds(ids: List<String>) {
         queries.deleteByIds(ids)

@@ -40,6 +40,7 @@ fun MainScreen(
     onWishClicked: (Wish) -> Unit,
     onAddWishClicked: () -> Unit,
     onSettingIconClicked: () -> Unit,
+    onShareClick: () -> Unit,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -65,7 +66,7 @@ fun MainScreen(
                 }
             )
         },
-        bottomBar = { WishAppBottomBar(fabShape) },
+        bottomBar = { WishAppBottomBar(fabShape, onShareClick) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onAddWishClicked() },
@@ -106,5 +107,6 @@ fun MainScreenPreview() {
         {},
         {},
         {},
+        {}
     )
 }

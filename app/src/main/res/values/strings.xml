@@ -4,4 +4,5 @@
     <string name="enter_link">Link</string>
     <string name="enter_comment">Comment</string>
     <string name="without_title">Untitled</string>
+    <string name="wish_list_title">This is my wish list:</string>
 </resources>

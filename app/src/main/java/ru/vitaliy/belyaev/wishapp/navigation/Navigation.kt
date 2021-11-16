@@ -9,14 +9,15 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.WishDetailedScreen
 
 @Composable
-fun Navigation() {
+fun Navigation(onShareClick: () -> Unit) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = MainRoute.VALUE) {
         composable(MainRoute.VALUE) {
             MainScreen(
                 onWishClicked = { navController.navigate(WishDetailedRouteWithArgs.build(it.id)) },
                 onAddWishClicked = { navController.navigate(WishDetailedRoute.VALUE) },
-                onSettingIconClicked = { navController.navigate(SettingsRoute.VALUE) }
+                onSettingIconClicked = { navController.navigate(SettingsRoute.VALUE) },
+                onShareClick = onShareClick
             )
         }
         composable(WishDetailedRoute.VALUE) {
