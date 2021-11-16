@@ -15,7 +15,6 @@ import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.domain.WishInteractor
 import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
-import timber.log.Timber
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
@@ -33,10 +32,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             wishInteractor
                 .getWishItems()
-                .collect { wishItems ->
-                    Timber.tag("RTRT").d("wishItem:${wishItems.map { it.linkPreviewState }}")
-                    _uiState.value = wishItems
-                }
+                .collect { wishItems -> _uiState.value = wishItems }
         }
     }
 

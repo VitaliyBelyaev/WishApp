@@ -2,24 +2,23 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreview
-import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreviewLoading
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Data
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 
 @Composable
@@ -40,12 +39,40 @@ fun WishItemBlock(
         } else {
             stringResource(R.string.without_title) to Color.Gray
         }
-        Text(
-            text = title,
-            color = titleColor,
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.fillMaxWidth()
-        )
+        ConstraintLayout {
+            val (titleRef, linkIconRef) = createRefs()
+            Text(
+                text = title,
+                color = titleColor,
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier.constrainAs(titleRef) {
+                    width = Dimension.preferredWrapContent
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    val marginEnd = if (wish.link.isNotBlank()) {
+                        36.dp
+                    } else {
+                        0.dp
+                    }
+                    end.linkTo(parent.end, margin = marginEnd)
+                }
+            )
+            if (wish.link.isNotBlank()) {
+                Icon(
+                    painterResource(R.drawable.ic_link),
+                    contentDescription = "Link",
+                    tint = Color.DarkGray,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .constrainAs(linkIconRef) {
+                            start.linkTo(titleRef.end, margin = 8.dp)
+                            end.linkTo(parent.end)
+                            top.linkTo(titleRef.top)
+                            bottom.linkTo(titleRef.bottom)
+                        }
+                )
+            }
+        }
         if (wish.comment.isNotBlank()) {
             Text(
                 text = wish.comment,
@@ -55,20 +82,6 @@ fun WishItemBlock(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-        }
-
-        when (val linkPreviewState = wishItem.linkPreviewState) {
-            is Data -> {
-                val paddingValues = PaddingValues(top = 8.dp)
-                LinkPreview(paddingValues, linkPreviewState.linkInfo)
-            }
-            is Loading -> {
-                val paddingValues = PaddingValues(top = 8.dp)
-                LinkPreviewLoading(paddingValues)
-            }
-            is None -> {
-                //nothing
-            }
         }
     }
 }
