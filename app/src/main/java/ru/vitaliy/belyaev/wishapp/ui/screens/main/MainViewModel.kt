@@ -14,7 +14,9 @@ import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.domain.WishInteractor
 import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Edit
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.View
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
@@ -23,8 +25,9 @@ class MainViewModel @Inject constructor(
     private val wishInteractor: WishInteractor
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(emptyList<WishItem>())
-    val uiState: StateFlow<List<WishItem>> = _uiState
+    private val _uiState: MutableStateFlow<MainScreenState> = MutableStateFlow(MainScreenState())
+
+    val uiState: StateFlow<MainScreenState> = _uiState
 
     private val testWishes = createTestWishes()
 
@@ -32,7 +35,10 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             wishInteractor
                 .getWishItems()
-                .collect { wishItems -> _uiState.value = wishItems }
+                .collect { wishItems ->
+                    val oldState = _uiState.value
+                    _uiState.value = oldState.copy(wishes = wishItems)
+                }
         }
     }
 
@@ -46,6 +52,32 @@ class MainViewModel @Inject constructor(
                 updatedTimestamp = currentMillis
             )
             databaseRepository.insert(wish)
+        }
+    }
+
+    fun onWishLongPress(wish: Wish) {
+        val oldState = _uiState.value
+        val wishId = wish.id
+        when (oldState.mode) {
+            is View -> {
+                val selectedIds = listOf(wishId)
+                _uiState.value = oldState.copy(mode = Edit(selectedIds))
+            }
+            is Edit -> {
+                val oldSelectedIds = oldState.mode.selectedIds.toMutableList()
+                val alreadySelected = oldSelectedIds.contains(wishId)
+                val selectedIds = if (alreadySelected) {
+                    oldSelectedIds - wishId
+                } else {
+                    oldSelectedIds + wishId
+                }
+                val newState = if (selectedIds.isNotEmpty()) {
+                    oldState.copy(mode = Edit(selectedIds))
+                } else {
+                    oldState.copy(mode = View)
+                }
+                _uiState.value = newState
+            }
         }
     }
 

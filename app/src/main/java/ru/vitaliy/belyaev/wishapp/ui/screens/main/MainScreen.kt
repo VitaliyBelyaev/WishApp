@@ -32,7 +32,10 @@ import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Edit
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.View
+import timber.log.Timber
 
 @ExperimentalCoroutinesApi
 @Composable
@@ -80,7 +83,9 @@ fun MainScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {
         val scrollState = rememberScrollState()
-        val items: List<WishItem> by viewModel.uiState.collectAsState()
+        val state: MainScreenState by viewModel.uiState.collectAsState()
+        val items = state.wishes
+        val mode = state.mode
 
         Column(
             modifier = Modifier
@@ -88,8 +93,33 @@ fun MainScreen(
                 .verticalScroll(scrollState)
         ) {
 
+            val count = if (mode is Edit) {
+                mode.selectedIds.size
+            } else {
+                0
+            }
+            Timber.tag("RTRT").d("mode:${mode}, selectedCount${count}")
+
+            val onClick: (Wish) -> Unit = when (mode) {
+                is View -> {
+                    onWishClicked
+                }
+                is Edit -> {
+                    { wish -> viewModel.onWishLongPress(wish) }
+                }
+            }
             items.forEachIndexed { index, wishItem ->
-                WishItemBlock(wishItem, onWishClicked)
+                val isSelected: Boolean = when (mode) {
+                    is View -> false
+                    is Edit -> mode.selectedIds.contains(wishItem.wish.id)
+                }
+
+                WishItemBlock(
+                    wishItem = wishItem,
+                    isSelected = isSelected,
+                    onWishClicked = onClick,
+                    onWishLongPress = { wish -> viewModel.onWishLongPress(wish) }
+                )
                 if (index != items.lastIndex) {
                     Divider()
                 }

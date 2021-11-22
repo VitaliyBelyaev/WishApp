@@ -12,4 +12,5 @@
 
     <color name="statusBarColor">@android:color/white</color>
     <color name="toolbarColor">@android:color/white</color>
+    <color name="wishSelectedColor">#6664dd17</color>
 </resources>

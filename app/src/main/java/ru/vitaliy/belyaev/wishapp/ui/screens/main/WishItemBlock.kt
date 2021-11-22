@@ -1,6 +1,10 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -8,9 +12,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -20,16 +28,56 @@ import androidx.constraintlayout.compose.Dimension
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
+import timber.log.Timber
 
 @Composable
 fun WishItemBlock(
     wishItem: WishItem,
-    onWishClicked: (Wish) -> Unit
+    isSelected: Boolean,
+    onWishClicked: (Wish) -> Unit,
+    onWishLongPress: (Wish) -> Unit,
 ) {
+
+    val interactionSource = remember { MutableInteractionSource() }
+
+    val backgroundColor: Color = if (isSelected) {
+        colorResource(R.color.wishSelectedColor)
+    } else {
+        Color.Transparent
+    }
+
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onWishClicked(wishItem.wish) }
+            .background(backgroundColor)
+            .indication(interactionSource, rememberRipple())
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = { offset ->
+
+                        val press = PressInteraction.Press(offset)
+                        interactionSource.emit(press)
+
+                        tryAwaitRelease()
+
+                        interactionSource.emit(PressInteraction.Release(press))
+                    },
+                    onTap = {
+                        Timber
+                            .tag("RTRT")
+                            .d("onTap")
+                        onWishClicked(wishItem.wish)
+                    },
+                    onLongPress = {
+                        Timber
+                            .tag("RTRT")
+                            .d("onLongPress")
+                        onWishLongPress(wishItem.wish)
+
+                    }
+                )
+            }
             .padding(16.dp)
     ) {
 
