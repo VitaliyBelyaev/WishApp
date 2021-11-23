@@ -33,6 +33,7 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
+import timber.log.Timber
 
 @ExperimentalCoroutinesApi
 @Composable
@@ -45,9 +46,10 @@ fun MainScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val fabShape = RoundedCornerShape(50)
+    val state: MainScreenState by viewModel.uiState.collectAsState()
 
-    Scaffold(
-        topBar = {
+    val topBar: @Composable () -> Unit = if (state.selectedIds.isEmpty()) {
+        {
             WishAppTopBar(
                 title = stringResource(R.string.app_name),
                 actions = {
@@ -65,7 +67,20 @@ fun MainScreen(
                     }
                 }
             )
-        },
+        }
+    } else {
+        {
+            EditModeTopBar(
+                selectedCount = state.selectedIds.size,
+                onCloseEditModeClicked = { viewModel.onCloseEditModeClicked() },
+                onDeleteSelectedClicked = { viewModel.onDeleteSelectedClicked() },
+                onSelectAllClicked = { viewModel.onSelectAllClicked() },
+            )
+        }
+    }
+
+    Scaffold(
+        topBar = topBar,
         bottomBar = { WishAppBottomBar(fabShape, onShareClick) },
         floatingActionButton = {
             FloatingActionButton(
@@ -80,7 +95,6 @@ fun MainScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {
         val scrollState = rememberScrollState()
-        val state: MainScreenState by viewModel.uiState.collectAsState()
 
         val onWishClick: (Wish) -> Unit = { wish ->
             if (state.selectedIds.isEmpty()) {
@@ -98,6 +112,9 @@ fun MainScreen(
 
             state.wishes.forEachIndexed { index, wishItem ->
                 val isSelected: Boolean = state.selectedIds.contains(wishItem.wish.id)
+                Timber.tag("RTRT")
+                    .d("item:${wishItem.wish.title},${wishItem.wish.id}, isSelected:$isSelected, selectedIds:${state.selectedIds}")
+
 
                 WishItemBlock(
                     wishItem = wishItem,

@@ -55,6 +55,10 @@ class WishInteractor @Inject constructor(
         return wish.toWishItem()
     }
 
+    suspend fun deleteByIds(ids: List<String>) {
+        databaseRepository.deleteByIds(ids)
+    }
+
     @ExperimentalCoroutinesApi
     private suspend fun Wish.toWishItem(): WishItem {
         if (link.isBlank()) {

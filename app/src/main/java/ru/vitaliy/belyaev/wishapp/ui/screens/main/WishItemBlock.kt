@@ -28,6 +28,7 @@ import androidx.constraintlayout.compose.Dimension
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
+import timber.log.Timber
 
 @Composable
 fun WishItemBlock(
@@ -58,16 +59,25 @@ fun WishItemBlock(
                         tryAwaitRelease()
                         interactionSource.emit(PressInteraction.Release(press))
                     },
-                    onTap = { onWishClicked(wishItem.wish) },
-                    onLongPress = { onWishLongPress(wishItem.wish) }
+                    onTap = {
+                        Timber
+                            .tag("RTRT")
+                            .d("onTap, wish:${wishItem.wish.id}")
+                        onWishClicked(wishItem.wish)
+                    },
+                    onLongPress = {
+                        Timber
+                            .tag("RTRT")
+                            .d("onWishLongPress, wish:${wishItem.wish.id}")
+                        onWishLongPress(wishItem.wish)
+                    }
                 )
             }
             .padding(16.dp)
     ) {
 
-        val wish = wishItem.wish
-        val (title, titleColor) = if (wish.title.isNotBlank()) {
-            wish.title to Color.Unspecified
+        val (title, titleColor) = if (wishItem.wish.title.isNotBlank()) {
+            wishItem.wish.title to Color.Unspecified
         } else {
             stringResource(R.string.without_title) to Color.Gray
         }
@@ -81,7 +91,7 @@ fun WishItemBlock(
                     width = Dimension.preferredWrapContent
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
-                    val marginEnd = if (wish.link.isNotBlank()) {
+                    val marginEnd = if (wishItem.wish.link.isNotBlank()) {
                         36.dp
                     } else {
                         0.dp
@@ -89,7 +99,7 @@ fun WishItemBlock(
                     end.linkTo(parent.end, margin = marginEnd)
                 }
             )
-            if (wish.link.isNotBlank()) {
+            if (wishItem.wish.link.isNotBlank()) {
                 Icon(
                     painterResource(R.drawable.ic_link),
                     contentDescription = "Link",
@@ -105,9 +115,9 @@ fun WishItemBlock(
                 )
             }
         }
-        if (wish.comment.isNotBlank()) {
+        if (wishItem.wish.comment.isNotBlank()) {
             Text(
-                text = wish.comment,
+                text = wishItem.wish.comment,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),

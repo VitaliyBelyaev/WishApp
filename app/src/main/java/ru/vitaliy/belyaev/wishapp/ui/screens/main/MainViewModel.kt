@@ -15,7 +15,6 @@ import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.domain.WishInteractor
 import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
-import timber.log.Timber
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
@@ -35,8 +34,7 @@ class MainViewModel @Inject constructor(
             wishInteractor
                 .getWishItems()
                 .collect { wishItems ->
-                    val oldState = _uiState.value
-                    _uiState.value = oldState.copy(wishes = wishItems)
+                    _uiState.value = MainScreenState(wishes = wishItems)
                 }
         }
     }
@@ -52,6 +50,22 @@ class MainViewModel @Inject constructor(
             )
             databaseRepository.insert(wish)
         }
+    }
+
+    fun onCloseEditModeClicked() {
+        _uiState.value = _uiState.value.copy(selectedIds = emptyList())
+    }
+
+    fun onDeleteSelectedClicked() {
+        viewModelScope.launch {
+            val selectedIds = uiState.value.selectedIds
+            wishInteractor.deleteByIds(selectedIds)
+        }
+    }
+
+    fun onSelectAllClicked() {
+        val selectedIds = uiState.value.wishes.map { it.wish.id }
+        _uiState.value = uiState.value.copy(selectedIds = selectedIds)
     }
 
     fun onWishLongPress(wish: Wish) {
@@ -71,7 +85,6 @@ class MainViewModel @Inject constructor(
             }
             oldState.copy(selectedIds = selectedIds)
         }
-        Timber.tag("RTRT").d("onWishLongPress:${wish.id}, newStateSelectedCount:${newState.selectedIds.size}")
         _uiState.value = newState
     }
 

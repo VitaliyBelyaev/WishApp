@@ -21,7 +21,7 @@ interface DatabaseRepository {
 
     suspend fun getAll(): List<Wish>
 
-    fun deleteByIds(ids: List<String>)
+    suspend fun deleteByIds(ids: List<String>)
 
     fun clearAll()
 }

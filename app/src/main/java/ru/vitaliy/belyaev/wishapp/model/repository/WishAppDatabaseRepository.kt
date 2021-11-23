@@ -71,8 +71,10 @@ class WishAppDatabaseRepository @Inject constructor(
         }
     }
 
-    override fun deleteByIds(ids: List<String>) {
-        queries.deleteByIds(ids)
+    override suspend fun deleteByIds(ids: List<String>) {
+        withContext(Dispatchers.IO) {
+            queries.deleteByIds(ids)
+        }
     }
 
     override fun clearAll() {
