@@ -28,7 +28,6 @@ import androidx.constraintlayout.compose.Dimension
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
-import timber.log.Timber
 
 @Composable
 fun WishItemBlock(
@@ -46,7 +45,6 @@ fun WishItemBlock(
         Color.Transparent
     }
 
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -55,27 +53,13 @@ fun WishItemBlock(
             .pointerInput(Unit) {
                 detectTapGestures(
                     onPress = { offset ->
-
                         val press = PressInteraction.Press(offset)
                         interactionSource.emit(press)
-
                         tryAwaitRelease()
-
                         interactionSource.emit(PressInteraction.Release(press))
                     },
-                    onTap = {
-                        Timber
-                            .tag("RTRT")
-                            .d("onTap")
-                        onWishClicked(wishItem.wish)
-                    },
-                    onLongPress = {
-                        Timber
-                            .tag("RTRT")
-                            .d("onLongPress")
-                        onWishLongPress(wishItem.wish)
-
-                    }
+                    onTap = { onWishClicked(wishItem.wish) },
+                    onLongPress = { onWishLongPress(wishItem.wish) }
                 )
             }
             .padding(16.dp)

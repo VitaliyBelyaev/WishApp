@@ -14,9 +14,8 @@ import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.domain.WishInteractor
 import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Edit
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.View
+import timber.log.Timber
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
@@ -58,27 +57,22 @@ class MainViewModel @Inject constructor(
     fun onWishLongPress(wish: Wish) {
         val oldState = _uiState.value
         val wishId = wish.id
-        when (oldState.mode) {
-            is View -> {
-                val selectedIds = listOf(wishId)
-                _uiState.value = oldState.copy(mode = Edit(selectedIds))
+        val newState = if (oldState.selectedIds.isEmpty()) {
+            val selectedIds = listOf(wishId)
+            oldState.copy(selectedIds = selectedIds)
+        } else {
+
+            val oldSelectedIds = oldState.selectedIds.toMutableList()
+            val alreadySelected = oldSelectedIds.contains(wishId)
+            val selectedIds = if (alreadySelected) {
+                oldSelectedIds - wishId
+            } else {
+                oldSelectedIds + wishId
             }
-            is Edit -> {
-                val oldSelectedIds = oldState.mode.selectedIds.toMutableList()
-                val alreadySelected = oldSelectedIds.contains(wishId)
-                val selectedIds = if (alreadySelected) {
-                    oldSelectedIds - wishId
-                } else {
-                    oldSelectedIds + wishId
-                }
-                val newState = if (selectedIds.isNotEmpty()) {
-                    oldState.copy(mode = Edit(selectedIds))
-                } else {
-                    oldState.copy(mode = View)
-                }
-                _uiState.value = newState
-            }
+            oldState.copy(selectedIds = selectedIds)
         }
+        Timber.tag("RTRT").d("onWishLongPress:${wish.id}, newStateSelectedCount:${newState.selectedIds.size}")
+        _uiState.value = newState
     }
 
     private fun createTestWishes(): List<Wish> {
