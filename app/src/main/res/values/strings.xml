@@ -13,4 +13,6 @@
     <string name="backup">Backup and restore</string>
     <string name="privacy_policy">Privacy policy</string>
     <string name="about_app">About App</string>
+    <string name="main_settings">Main</string>
+    <string name="other">Other</string>
 </resources>
