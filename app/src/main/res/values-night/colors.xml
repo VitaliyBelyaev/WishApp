@@ -5,4 +5,5 @@
     <color name="statusBarColor">@color/surface</color>
     <color name="toolbarColor">@color/surface</color>
     <color name="wishSelectedColor">@color/primaryColor</color>
+    <color name="inputCursorColor">#fff8e1</color>
 </resources>

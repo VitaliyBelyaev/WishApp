@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -123,9 +122,6 @@ fun MainScreen(
                     onWishClicked = onWishClicked,
                     onWishLongPress = { wish -> viewModel.onWishLongPress(wish) }
                 )
-                if (index != state.wishes.lastIndex) {
-                    Divider()
-                }
             }
             Spacer(modifier = Modifier.height(32.dp))
         }

@@ -11,4 +11,5 @@
     <color name="statusBarColor">@android:color/white</color>
     <color name="toolbarColor">@android:color/white</color>
     <color name="wishSelectedColor">@color/primaryColor</color>
+    <color name="inputCursorColor">@color/primaryDarkColor</color>
 </resources>
