@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ThemeSheetContent(
 ) {
-    Column {
+    Column(modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)) {
         Text(
             text = "Темная",
             modifier = Modifier
@@ -22,11 +22,17 @@ fun ThemeSheetContent(
         )
         Text(
             text = "Светлая",
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { }
+                .padding(16.dp)
         )
         Text(
             text = "Как в системе",
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { }
+                .padding(16.dp)
         )
     }
 }
