@@ -41,7 +41,7 @@ fun WishItemBlock(
     val interactionSource = remember { MutableInteractionSource() }
 
     val backgroundColor: Color = if (isSelected) {
-        colorResource(R.color.wishSelectedColor)
+        colorResource(R.color.wishSelectedColor).copy(alpha = 0.5f)
     } else {
         Color.Transparent
     }

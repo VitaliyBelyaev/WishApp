@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="primaryColor">#707064</color>
+    <color name="secondaryColor">#707064</color>
     <color name="statusBarColor">@color/surface</color>
     <color name="toolbarColor">@color/surface</color>
+    <color name="wishSelectedColor">@color/primaryColor</color>
 </resources>

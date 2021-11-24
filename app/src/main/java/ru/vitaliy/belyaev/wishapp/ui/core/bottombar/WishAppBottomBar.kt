@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
@@ -19,7 +20,7 @@ fun WishAppBottomBar(
     BottomAppBar(cutoutShape = cutoutShape) {
         Spacer(Modifier.weight(1f, true))
         IconButton(onClick = { onShareClick() }) {
-            Icon(Filled.Share, contentDescription = "Share")
+            Icon(Filled.Share, contentDescription = "Share", tint = MaterialTheme.colors.onSurface)
         }
     }
 }

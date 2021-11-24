@@ -12,6 +12,7 @@ import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
@@ -87,7 +88,7 @@ fun MainScreen(
                 onClick = { onAddWishClicked() },
                 shape = fabShape
             ) {
-                Icon(Filled.Add, "Add")
+                Icon(Filled.Add, "Add", tint = MaterialTheme.colors.onSurface)
             }
         },
         isFloatingActionButtonDocked = true,
