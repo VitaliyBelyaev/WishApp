@@ -5,4 +5,10 @@
         <item name="android:statusBarColor">@color/statusBarColor</item>
         <item name="android:windowLightStatusBar">@bool/is_day_theme</item>
     </style>
+
+    <style name="LicensesTheme" parent="Theme.MaterialComponents.DayNight">
+        <item name="android:statusBarColor">@color/statusBarColor</item>
+        <item name="android:windowLightStatusBar">@bool/is_day_theme</item>
+        <item name="colorPrimary">@android:color/white</item>
+    </style>
 </resources>

@@ -7,4 +7,11 @@
     <string name="without_title">Без названия</string>
     <string name="wish_list_title">Вот мой список хотелок:</string>
     <string name="select_all">Выбрать все</string>
+    <string name="settings">Настройки</string>
+    <string name="theme">Тема</string>
+    <string name="feedback">Обратная связь</string>
+    <string name="licenses">Лицензии открытого ПО</string>
+    <string name="backup">Сохранение данных</string>
+    <string name="privacy_policy">Политика конфиденциальности</string>
+    <string name="about_app">О приложении</string>
 </resources>
