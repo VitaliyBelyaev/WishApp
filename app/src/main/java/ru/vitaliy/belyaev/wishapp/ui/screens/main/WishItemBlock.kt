@@ -51,7 +51,7 @@ fun WishItemBlock(
             .fillMaxWidth()
             .background(backgroundColor)
             .indication(interactionSource, rememberRipple())
-            .pointerInput(Unit) {
+            .pointerInput(wishItem) {
                 detectTapGestures(
                     onPress = { offset ->
                         val press = PressInteraction.Press(offset)
@@ -75,6 +75,9 @@ fun WishItemBlock(
             }
             .padding(16.dp)
     ) {
+
+        Timber.tag("RTRT")
+            .d("WishItemBlock:${wishItem.wish.title},${wishItem.wish.id}, isSelected:$isSelected")
 
         val (title, titleColor) = if (wishItem.wish.title.isNotBlank()) {
             wishItem.wish.title to Color.Unspecified

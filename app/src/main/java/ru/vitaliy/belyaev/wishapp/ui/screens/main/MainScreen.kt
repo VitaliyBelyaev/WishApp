@@ -38,7 +38,7 @@ import timber.log.Timber
 @ExperimentalCoroutinesApi
 @Composable
 fun MainScreen(
-    onWishClicked: (Wish) -> Unit,
+    openWishDetailed: (Wish) -> Unit,
     onAddWishClicked: () -> Unit,
     onSettingIconClicked: () -> Unit,
     onShareClick: () -> Unit,
@@ -96,9 +96,9 @@ fun MainScreen(
     ) {
         val scrollState = rememberScrollState()
 
-        val onWishClick: (Wish) -> Unit = { wish ->
+        val onWishClicked: (Wish) -> Unit = { wish ->
             if (state.selectedIds.isEmpty()) {
-                onWishClicked(wish)
+                openWishDetailed(wish)
             } else {
                 viewModel.onWishLongPress(wish)
             }
@@ -113,13 +113,13 @@ fun MainScreen(
             state.wishes.forEachIndexed { index, wishItem ->
                 val isSelected: Boolean = state.selectedIds.contains(wishItem.wish.id)
                 Timber.tag("RTRT")
-                    .d("item:${wishItem.wish.title},${wishItem.wish.id}, isSelected:$isSelected, selectedIds:${state.selectedIds}")
+                    .d("LOOP item:${wishItem.wish.title},${wishItem.wish.id}, isSelected:$isSelected, selectedIds:${state.selectedIds}")
 
 
                 WishItemBlock(
                     wishItem = wishItem,
                     isSelected = isSelected,
-                    onWishClicked = onWishClick,
+                    onWishClicked = onWishClicked,
                     onWishLongPress = { wish -> viewModel.onWishLongPress(wish) }
                 )
                 if (index != state.wishes.lastIndex) {

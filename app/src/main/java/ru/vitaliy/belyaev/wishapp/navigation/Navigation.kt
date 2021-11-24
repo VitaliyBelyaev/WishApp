@@ -14,7 +14,7 @@ fun Navigation(onShareClick: () -> Unit) {
     NavHost(navController = navController, startDestination = MainRoute.VALUE) {
         composable(MainRoute.VALUE) {
             MainScreen(
-                onWishClicked = { navController.navigate(WishDetailedRouteWithArgs.build(it.id)) },
+                openWishDetailed = { navController.navigate(WishDetailedRouteWithArgs.build(it.id)) },
                 onAddWishClicked = { navController.navigate(WishDetailedRoute.VALUE) },
                 onSettingIconClicked = { navController.navigate(SettingsRoute.VALUE) },
                 onShareClick = onShareClick
