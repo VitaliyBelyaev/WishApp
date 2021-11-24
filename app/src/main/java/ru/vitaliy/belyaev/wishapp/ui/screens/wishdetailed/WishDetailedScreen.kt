@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -47,6 +48,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 
+@ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
 @Composable
 fun WishDetailedScreen(
@@ -188,6 +190,7 @@ private fun <T> Optional<T>.valueOrEmptyString(extractor: (T) -> String): String
         ""
     }
 
+@ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
 @Preview
 @Composable

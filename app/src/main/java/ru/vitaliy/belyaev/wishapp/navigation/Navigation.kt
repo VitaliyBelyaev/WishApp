@@ -1,5 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.navigation
 
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -8,6 +9,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.WishDetailedScreen
 
+@ExperimentalMaterialApi
 @Composable
 fun Navigation(onShareClick: () -> Unit) {
     val navController = rememberNavController()

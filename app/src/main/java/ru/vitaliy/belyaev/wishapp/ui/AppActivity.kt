@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import dagger.hilt.android.AndroidEntryPoint
@@ -13,6 +14,7 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.theme.WishAppTheme
 
+@ExperimentalMaterialApi
 @AndroidEntryPoint
 class AppActivity : ComponentActivity() {
 
