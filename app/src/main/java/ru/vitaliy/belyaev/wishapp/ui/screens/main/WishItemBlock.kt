@@ -28,7 +28,6 @@ import androidx.constraintlayout.compose.Dimension
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
-import timber.log.Timber
 
 @Composable
 fun WishItemBlock(
@@ -37,9 +36,7 @@ fun WishItemBlock(
     onWishClicked: (Wish) -> Unit,
     onWishLongPress: (Wish) -> Unit,
 ) {
-
     val interactionSource = remember { MutableInteractionSource() }
-
     val backgroundColor: Color = if (isSelected) {
         colorResource(R.color.wishSelectedColor).copy(alpha = 0.5f)
     } else {
@@ -59,26 +56,12 @@ fun WishItemBlock(
                         tryAwaitRelease()
                         interactionSource.emit(PressInteraction.Release(press))
                     },
-                    onTap = {
-                        Timber
-                            .tag("RTRT")
-                            .d("onTap, wish:${wishItem.wish.id}")
-                        onWishClicked(wishItem.wish)
-                    },
-                    onLongPress = {
-                        Timber
-                            .tag("RTRT")
-                            .d("onWishLongPress, wish:${wishItem.wish.id}")
-                        onWishLongPress(wishItem.wish)
-                    }
+                    onTap = { onWishClicked(wishItem.wish) },
+                    onLongPress = { onWishLongPress(wishItem.wish) }
                 )
             }
             .padding(16.dp)
     ) {
-
-        Timber.tag("RTRT")
-            .d("WishItemBlock:${wishItem.wish.title},${wishItem.wish.id}, isSelected:$isSelected")
-
         val (title, titleColor) = if (wishItem.wish.title.isNotBlank()) {
             wishItem.wish.title to Color.Unspecified
         } else {
@@ -130,21 +113,3 @@ fun WishItemBlock(
         }
     }
 }
-
-//@Preview
-//@Composable
-//fun WishItemPreview() {
-//    WishItem(
-//        Wish(
-//            "1",
-//            "Шуруповерт",
-//            "https://www.citilink.ru/product/drel-shurupovert-makita-df333dwye-1-5ach-s-dvumya-akkumulyatorami-1149175/?region_id=123062&gclid=Cj0KCQiAsqOMBhDFARIsAFBTN3fKH6UIMpyxbwdFyK2JV0Z0TQUUZSysOfLWsfDVYYfRxFSCFTupH9saArdgEALw_wcB",
-//            "Не китай и чтобы в наборе были головки",
-//            false,
-//            0,
-//            0,
-//            emptyList()
-//        ),
-//        {}
-//    )
-//}

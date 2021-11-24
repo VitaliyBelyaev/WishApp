@@ -1,12 +1,11 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -33,7 +32,6 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
-import timber.log.Timber
 
 @ExperimentalCoroutinesApi
 @Composable
@@ -94,8 +92,6 @@ fun MainScreen(
         floatingActionButtonPosition = FabPosition.Center,
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {
-        val scrollState = rememberScrollState()
-
         val onWishClicked: (Wish) -> Unit = { wish ->
             if (state.selectedIds.isEmpty()) {
                 openWishDetailed(wish)
@@ -104,18 +100,11 @@ fun MainScreen(
             }
         }
 
-        Column(
-            modifier = Modifier
-                .padding(it)
-                .verticalScroll(scrollState)
+        LazyColumn(
+            modifier = Modifier.padding(it)
         ) {
-
-            state.wishes.forEachIndexed { index, wishItem ->
+            items(state.wishes) { wishItem ->
                 val isSelected: Boolean = state.selectedIds.contains(wishItem.wish.id)
-                Timber.tag("RTRT")
-                    .d("LOOP item:${wishItem.wish.title},${wishItem.wish.id}, isSelected:$isSelected, selectedIds:${state.selectedIds}")
-
-
                 WishItemBlock(
                     wishItem = wishItem,
                     isSelected = isSelected,
@@ -123,7 +112,10 @@ fun MainScreen(
                     onWishLongPress = { wish -> viewModel.onWishLongPress(wish) }
                 )
             }
-            Spacer(modifier = Modifier.height(32.dp))
+            item {
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+
         }
     }
 }

@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import ru.vitaliy.belyaev.wishapp.R
 
 @Composable
@@ -69,4 +70,10 @@ fun EditModeTopBar(
         },
         backgroundColor = colorResource(R.color.toolbarColor)
     )
+}
+
+@Composable
+@Preview
+fun EditModeTopBarPreview() {
+    EditModeTopBar(3, { }, { }, { })
 }
