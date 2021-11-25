@@ -16,4 +16,6 @@
     <string name="about_app">О приложении</string>
     <string name="main_settings">Основные</string>
     <string name="other">Другое</string>
+    <string name="app_description"><![CDATA[Это open-source приложение, код можно посмотреть <a href=https://github.com/VitaliyBelyaev/WishApp">здесь</a>]]></string>
+    <string name="app_version_pattern">Версия %s</string>
 </resources>

@@ -20,3 +20,7 @@ object WishDetailedRouteWithArgs {
 object SettingsRoute {
     const val VALUE = "settings"
 }
+
+object AboutAppRoute {
+    const val VALUE = "about_app"
+}

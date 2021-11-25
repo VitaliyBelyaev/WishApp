@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.AboutAppScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.WishDetailedScreen
@@ -34,6 +35,12 @@ fun Navigation(onShareClick: () -> Unit) {
         }
         composable(SettingsRoute.VALUE) {
             SettingsScreen(
+                onBackPressed = { navController.popBackStack() },
+                onAboutAppClicked = { navController.navigate(AboutAppRoute.VALUE) }
+            )
+        }
+        composable(AboutAppRoute.VALUE) {
+            AboutAppScreen(
                 onBackPressed = { navController.popBackStack() }
             )
         }
