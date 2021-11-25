@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.screens.settings
+package ru.vitaliy.belyaev.wishapp.ui.screens.settings.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text

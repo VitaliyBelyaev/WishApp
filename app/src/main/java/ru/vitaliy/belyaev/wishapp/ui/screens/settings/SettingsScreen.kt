@@ -29,10 +29,11 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
+import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.BackupSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
+import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.ThemeSettingBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.entity.Backup
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.entity.SettingItem
-import ru.vitaliy.belyaev.wishapp.ui.screens.settings.entity.Theme
 
 @ExperimentalMaterialApi
 @OptIn(ExperimentalUnitApi::class)
@@ -45,14 +46,13 @@ fun SettingsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
-    val settingItem: MutableState<SettingItem> = remember { mutableStateOf(Theme) }
+    val settingItem: MutableState<SettingItem> = remember { mutableStateOf(Backup) }
 
     ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
         sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
         sheetContent = {
             when (settingItem.value) {
-                is Theme -> ThemeSheetContent()
                 is Backup -> BackupSheetContent()
                 else -> {
                 }
@@ -80,15 +80,7 @@ fun SettingsScreen(
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
                     )
-                    SettingBlock(
-                        title = stringResource(R.string.theme),
-                        onClick = {
-                            settingItem.value = Theme
-                            scope.launch {
-                                modalBottomSheetState.show()
-                            }
-                        }
-                    )
+                    ThemeSettingBlock()
                     SettingBlock(
                         title = stringResource(R.string.backup),
                         onClick = {
