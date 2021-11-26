@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,6 +16,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -27,17 +27,18 @@ import ru.vitaliy.belyaev.wishapp.R
 fun ThemeSettingBlock() {
     Row(
         modifier = Modifier
-            .height(82.dp)
             .padding(start = 16.dp, end = 16.dp)
     ) {
 
         val basePadding = 12.dp
+        val cardShape = RoundedCornerShape(12.dp)
         Column(
             verticalArrangement = Arrangement.Top,
             modifier = Modifier
-                .background(color = Color.Cyan, shape = RoundedCornerShape(12.dp))
-                .fillMaxSize()
+                .background(color = Color.Cyan, shape = cardShape)
+                .clip(cardShape)
                 .clickable { }
+                .fillMaxSize()
                 .weight(1.5f)
         ) {
             Text(
@@ -60,8 +61,9 @@ fun ThemeSettingBlock() {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .background(color = Color.Cyan, shape = RoundedCornerShape(12.dp))
+                .background(color = Color.Cyan, shape = cardShape)
                 .fillMaxSize()
+                .clip(cardShape)
                 .clickable { }
                 .weight(1f)
         ) {
@@ -82,8 +84,9 @@ fun ThemeSettingBlock() {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .background(color = Color.Cyan, shape = RoundedCornerShape(12.dp))
+                .background(color = Color.Cyan, shape = cardShape)
                 .fillMaxSize()
+                .clip(cardShape)
                 .clickable { }
                 .weight(1f)
         ) {
