@@ -16,4 +16,5 @@
     <color name="theme_card_bg_selected">#FFFFFF</color>
     <color name="theme_card_bg_unselected">#f5f5f5</color>
     <color name="theme_card_border">#ffecb3</color>
+    <color name="bottomSheetBgColor">@android:color/white</color>
 </resources>

@@ -8,4 +8,5 @@
     <color name="inputCursorColor">#fff8e1</color>
     <color name="theme_card_bg_selected">@android:color/transparent</color>
     <color name="theme_card_bg_unselected">#424242</color>
+    <color name="bottomSheetBgColor">#343841</color>
 </resources>

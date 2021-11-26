@@ -21,13 +21,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.ExperimentalUnitApi
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
@@ -40,7 +40,6 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.settings.entity.Backup
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.entity.SettingItem
 
 @ExperimentalMaterialApi
-@OptIn(ExperimentalUnitApi::class)
 @Composable
 fun SettingsScreen(
     onBackPressed: () -> Unit,
@@ -57,6 +56,8 @@ fun SettingsScreen(
     ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
         sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
+        sheetBackgroundColor = colorResource(R.color.bottomSheetBgColor),
+        scrimColor = Color.Black.copy(alpha = 0.32f),
         sheetContent = {
             when (settingItem.value) {
                 is Backup -> BackupSheetContent()
@@ -81,14 +82,20 @@ fun SettingsScreen(
             ) {
                 Column {
                     Text(
-                        text = stringResource(R.string.main_settings),
-                        fontSize = TextUnit(14f, TextUnitType.Sp),
+                        text = stringResource(R.string.theme_title),
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
                     )
                     ThemeSettingBlock(
                         selectedTheme = selectedTheme,
                         onThemeClicked = { viewModel.updateSelectedTheme(it) }
+                    )
+                    Text(
+                        text = stringResource(R.string.other),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
                     )
                     SettingBlock(
                         title = stringResource(R.string.backup),
