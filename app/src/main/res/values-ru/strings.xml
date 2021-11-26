@@ -22,4 +22,5 @@
     <string name="theme_system_description">Такая же как на устройстве</string>
     <string name="theme_dark">Темная</string>
     <string name="theme_light">Светлая</string>
+    <string name="backup_description">Ваши данные автоматически сохраняются в вашем Google аккаунте.\n\nПосле переустановки приложения они автоматически восстановятся.</string>
 </resources>
