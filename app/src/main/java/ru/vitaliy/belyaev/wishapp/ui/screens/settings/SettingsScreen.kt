@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.BackupSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
@@ -80,7 +81,7 @@ fun SettingsScreen(
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
                     )
-                    ThemeSettingBlock()
+                    ThemeSettingBlock(Theme.DARK, {})
                     SettingBlock(
                         title = stringResource(R.string.backup),
                         onClick = {

@@ -18,4 +18,8 @@
     <string name="other">Другое</string>
     <string name="app_description"><![CDATA[Это open-source приложение, код можно посмотреть <a href=https://github.com/VitaliyBelyaev/WishApp">здесь</a>]]></string>
     <string name="app_version_pattern">Версия %s</string>
+    <string name="theme_system_title">Cистемная</string>
+    <string name="theme_system_description">Такая же как на устройстве</string>
+    <string name="theme_dark">Темная</string>
+    <string name="theme_light">Светлая</string>
 </resources>

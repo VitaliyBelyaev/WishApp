@@ -6,4 +6,6 @@
     <color name="toolbarColor">@color/surface</color>
     <color name="wishSelectedColor">@color/primaryColor</color>
     <color name="inputCursorColor">#fff8e1</color>
+    <color name="theme_card_bg_selected">@android:color/transparent</color>
+    <color name="theme_card_bg_unselected">#424242</color>
 </resources>

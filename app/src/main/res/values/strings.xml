@@ -17,4 +17,8 @@
     <string name="other">Other</string>
     <string name="app_description"><![CDATA[This is an open-source app, you can check code <a href=\https://github.com/VitaliyBelyaev/WishApp\">here</a>]]></string>
     <string name="app_version_pattern">Version %s</string>
+    <string name="theme_system_title">System default</string>
+    <string name="theme_system_description">The same as on the device</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_light">Light</string>
 </resources>
