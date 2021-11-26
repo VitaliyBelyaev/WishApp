@@ -15,6 +15,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.Theme
@@ -41,13 +44,15 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.settings.entity.SettingItem
 @Composable
 fun SettingsScreen(
     onBackPressed: () -> Unit,
-    onAboutAppClicked: () -> Unit
+    onAboutAppClicked: () -> Unit,
+    viewModel: SettingsViewModel = hiltViewModel()
 ) {
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val settingItem: MutableState<SettingItem> = remember { mutableStateOf(Backup) }
+    val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
 
     ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
@@ -81,7 +86,10 @@ fun SettingsScreen(
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
                     )
-                    ThemeSettingBlock(Theme.DARK, {})
+                    ThemeSettingBlock(
+                        selectedTheme = selectedTheme,
+                        onThemeClicked = { viewModel.updateSelectedTheme(it) }
+                    )
                     SettingBlock(
                         title = stringResource(R.string.backup),
                         onClick = {

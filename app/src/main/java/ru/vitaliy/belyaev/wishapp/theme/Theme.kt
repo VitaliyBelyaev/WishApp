@@ -6,6 +6,7 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import ru.vitaliy.belyaev.wishapp.entity.Theme
 
 private val DarkColorPalette = darkColors(
     primary = PrimaryNight,
@@ -24,8 +25,13 @@ private val LightColorPalette = lightColors(
 )
 
 @Composable
-fun WishAppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val colors = if (darkTheme) {
+fun WishAppTheme(selectedTheme: Theme, content: @Composable () -> Unit) {
+    val isDark = when (selectedTheme) {
+        Theme.SYSTEM -> isSystemInDarkTheme()
+        Theme.DARK -> true
+        Theme.LIGHT -> false
+    }
+    val colors = if (isDark) {
         DarkColorPalette
     } else {
         LightColorPalette

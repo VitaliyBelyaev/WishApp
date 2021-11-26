@@ -49,7 +49,7 @@ fun ThemeSettingBlock(
                 .background(color = colorResource(systemBgColorRes), shape = baseShape)
                 .border(borderWidth, colorResource(systemBorderColorRes), baseShape)
                 .clip(baseShape)
-                .clickable { }
+                .clickable { onThemeClicked(Theme.SYSTEM) }
                 .constrainAs(systemRef) {
                     width = Dimension.percent(0.4f)
                     start.linkTo(parent.start)
@@ -87,7 +87,7 @@ fun ThemeSettingBlock(
                 .background(color = colorResource(darkBgColorRes), shape = baseShape)
                 .border(borderWidth, colorResource(darkBorderColorRes), baseShape)
                 .clip(baseShape)
-                .clickable { }
+                .clickable { onThemeClicked(Theme.DARK) }
                 .constrainAs(darkRef) {
                     height = Dimension.fillToConstraints
                     width = Dimension.percent(0.275f)
@@ -125,7 +125,7 @@ fun ThemeSettingBlock(
                 .background(color = colorResource(lightBgColorRes), shape = baseShape)
                 .border(borderWidth, colorResource(lightBorderColorRes), baseShape)
                 .clip(baseShape)
-                .clickable { }
+                .clickable { onThemeClicked(Theme.LIGHT) }
                 .constrainAs(lightRef) {
                     height = Dimension.fillToConstraints
                     width = Dimension.percent(0.275f)
