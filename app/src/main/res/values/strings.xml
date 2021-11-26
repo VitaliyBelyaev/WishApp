@@ -21,5 +21,5 @@
     <string name="theme_system_description">The same as on the device</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_light">Light</string>
-    <string name="backup_description">Your data is automatically saved in your Google account.\n\nAfter reinstalling the application, it will be automatically restored.</string>
+    <string name="backup_description">Your data is automatically saved in your Google account.\n\nAfter reinstalling the application, your data will be automatically restored.\n\nIn order for the automatic backup of your data to work, you need to enable Backup in the phone settings.</string>
 </resources>
