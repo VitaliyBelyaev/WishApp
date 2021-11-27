@@ -27,16 +27,24 @@ class AppActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.wishListLiveData.observe(this) {
+        viewModel.wishListToShareLiveData.observe(this) {
             val wishListAsFormattedText = generateFormattedWishList(it)
-            val sendIntent: Intent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TEXT, wishListAsFormattedText)
+            val sendIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, wishListAsFormattedText)
             }
 
             val shareIntent = Intent.createChooser(sendIntent, null)
             startActivity(shareIntent)
+        }
+        viewModel.sendFeedbackLiveData.observe(this) {
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(it.feedbackEmail))
+                putExtra(Intent.EXTRA_SUBJECT, it.subject)
+                putExtra(Intent.EXTRA_TEXT, it.feedbackMessage)
+            }
+            startActivity(intent)
         }
 
         setContent {
@@ -50,7 +58,7 @@ class AppActivity : AppCompatActivity() {
             AppCompatDelegate.setDefaultNightMode(modeInt)
             WishAppTheme(selectedTheme = selectedTheme) {
                 Surface(color = MaterialTheme.colors.background) {
-                    Navigation { viewModel.requestWishListAsText() }
+                    Navigation { viewModel.onShareWishListClicked() }
                 }
             }
         }

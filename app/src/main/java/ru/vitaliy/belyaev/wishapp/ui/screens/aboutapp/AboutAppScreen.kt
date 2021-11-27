@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
@@ -22,15 +23,22 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.AppActivity
+import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
 import ru.vitaliy.belyaev.wishapp.utils.annotatedStringResource
 
+@ExperimentalMaterialApi
 @Composable
-fun AboutAppScreen(onBackPressed: () -> Unit) {
+fun AboutAppScreen(
+    onBackPressed: () -> Unit,
+    appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
+) {
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -82,7 +90,7 @@ fun AboutAppScreen(onBackPressed: () -> Unit) {
                 Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp))
                 SettingBlock(
                     title = stringResource(R.string.feedback),
-                    onClick = { }
+                    onClick = { appViewModel.onSendFeedbackClicked() }
                 )
                 SettingBlock(
                     title = licensesTitle,
