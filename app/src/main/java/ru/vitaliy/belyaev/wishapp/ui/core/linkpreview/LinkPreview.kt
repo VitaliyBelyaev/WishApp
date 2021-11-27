@@ -1,8 +1,8 @@
 package ru.vitaliy.belyaev.wishapp.ui.core.linkpreview
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
@@ -20,11 +21,14 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkInfo
 
 @Composable
-fun LinkPreview(paddingValues: PaddingValues, linkInfo: LinkInfo) =
+fun LinkPreview(linkInfo: LinkInfo, url: String) {
+
+    val uriHandler = LocalUriHandler.current
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(paddingValues),
+            .clickable { uriHandler.openUri(url) },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
@@ -38,12 +42,12 @@ fun LinkPreview(paddingValues: PaddingValues, linkInfo: LinkInfo) =
             contentDescription = null,
             modifier = Modifier
                 .size(LINK_IMAGE_SIZE)
-                .padding(4.dp)
+                .padding(start = 16.dp, top = 4.dp, bottom = 4.dp)
         )
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 8.dp)
+                .padding(start = 16.dp, top = 8.dp, bottom = 8.dp, end = 16.dp)
         ) {
             Text(
                 text = linkInfo.title,
@@ -65,5 +69,6 @@ fun LinkPreview(paddingValues: PaddingValues, linkInfo: LinkInfo) =
             )
         }
     }
+}
 
 val LINK_IMAGE_SIZE = 58.dp

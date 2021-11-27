@@ -172,7 +172,7 @@ fun WishDetailedScreen(
             val wishItemValue = wishItem.toValueOfNull()
             val pd = PaddingValues(start = 12.dp, top = 8.dp, end = 12.dp)
             when (val linkPreviewState = wishItemValue?.linkPreviewState) {
-                is Data -> LinkPreview(pd, linkPreviewState.linkInfo)
+                is Data -> LinkPreview(linkPreviewState.linkInfo, wishItemValue.wish.link)
                 is Loading -> LinkPreviewLoading(pd)
                 is None -> {
                     //nothing
