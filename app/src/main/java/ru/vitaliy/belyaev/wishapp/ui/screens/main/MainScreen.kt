@@ -28,9 +28,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.model.database.Wish
+import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.EditModeTopBar
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.WishItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 
 @ExperimentalCoroutinesApi
@@ -51,11 +54,13 @@ fun MainScreen(
             WishAppTopBar(
                 title = stringResource(R.string.app_name),
                 actions = {
-                    IconButton(onClick = { viewModel.onAddTestWishClicked() }) {
-                        Icon(
-                            Filled.Add,
-                            contentDescription = "Add test wish"
-                        )
+                    if (BuildConfig.DEBUG) {
+                        IconButton(onClick = { viewModel.onAddTestWishClicked() }) {
+                            Icon(
+                                Filled.Add,
+                                contentDescription = "Add test wish"
+                            )
+                        }
                     }
                     IconButton(onClick = { onSettingIconClicked() }) {
                         Icon(
