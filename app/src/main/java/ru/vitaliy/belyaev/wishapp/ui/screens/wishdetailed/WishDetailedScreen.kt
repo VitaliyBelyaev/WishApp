@@ -20,12 +20,15 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -33,7 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import java.util.Optional
+import java.util.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
@@ -95,6 +98,7 @@ fun WishDetailedScreen(
         var link: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.link }) }
         var comment: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.comment }) }
         val iconsColor: Color = Color.Gray
+        val focusRequester = remember { FocusRequester() }
 
         Column(
             modifier = Modifier
@@ -104,7 +108,8 @@ fun WishDetailedScreen(
             TextField(
                 modifier = Modifier
                     .padding(top = 8.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
                 value = title,
                 textStyle = MaterialTheme.typography.h6,
                 onValueChange = { newValue ->
@@ -124,6 +129,12 @@ fun WishDetailedScreen(
                     cursorColor = colorResource(R.color.inputCursorColor)
                 )
             )
+            DisposableEffect(Unit) {
+                if (title.isBlank()) {
+                    focusRequester.requestFocus()
+                }
+                onDispose { }
+            }
             TextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = comment,
