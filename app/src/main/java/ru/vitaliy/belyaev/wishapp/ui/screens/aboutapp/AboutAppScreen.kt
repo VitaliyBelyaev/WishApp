@@ -14,6 +14,7 @@ import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -23,25 +24,38 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.ui.AppActivity
-import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
+import ru.vitaliy.belyaev.wishapp.entity.createAppFeedback
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
 import ru.vitaliy.belyaev.wishapp.utils.annotatedStringResource
+import ru.vitaliy.belyaev.wishapp.utils.createSendEmailIntent
 
 @ExperimentalMaterialApi
 @Composable
 fun AboutAppScreen(
     onBackPressed: () -> Unit,
-    onPrivacyPolicyClicked: () -> Unit,
-    appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
+    onPrivacyPolicyClicked: () -> Unit
 ) {
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    val onSendFeedbackClicked: () -> Unit = {
+        val feedback = createAppFeedback(context.resources)
+        val intent = createSendEmailIntent(feedback.email, feedback.subject, feedback.message)
+        try {
+            context.startActivity(intent)
+        } catch (t: Throwable) {
+            scope.launch {
+                snackbarHostState.showSnackbar(context.getString(R.string.no_email_app_error))
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -53,7 +67,6 @@ fun AboutAppScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {
-        val context = LocalContext.current
         val licensesTitle = stringResource(R.string.licenses)
         val onLicensesClick: () -> Unit = {
             OssLicensesMenuActivity.setActivityTitle(licensesTitle)
@@ -91,7 +104,7 @@ fun AboutAppScreen(
                 Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp))
                 SettingBlock(
                     title = stringResource(R.string.feedback),
-                    onClick = { appViewModel.onSendFeedbackClicked() }
+                    onClick = { onSendFeedbackClicked() }
                 )
                 SettingBlock(
                     title = licensesTitle,

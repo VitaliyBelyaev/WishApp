@@ -23,4 +23,6 @@
     <string name="theme_dark">Темная</string>
     <string name="theme_light">Светлая</string>
     <string name="backup_description">Ваши данные автоматически сохраняются в вашем Google аккаунте.\n\nПосле переустановки приложения ваши данные автоматически восстановятся.\n\nДля того, чтобы автоматическое сохранение данных работало, необходимо чтобы Резервное копирование в настройках телефона было включено.</string>
+    <string name="no_email_app_error">У вас на устройстве нет email приложения</string>
+    <string name="feedback_subject_pattern">Обратная связь. Приложение %s</string>
 </resources>

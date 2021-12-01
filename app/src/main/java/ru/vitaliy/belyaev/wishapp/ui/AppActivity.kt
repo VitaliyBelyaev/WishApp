@@ -37,15 +37,6 @@ class AppActivity : AppCompatActivity() {
             val shareIntent = Intent.createChooser(sendIntent, null)
             startActivity(shareIntent)
         }
-        viewModel.sendFeedbackLiveData.observe(this) {
-            val intent = Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_EMAIL, arrayOf(it.feedbackEmail))
-                putExtra(Intent.EXTRA_SUBJECT, it.subject)
-                putExtra(Intent.EXTRA_TEXT, it.feedbackMessage)
-            }
-            startActivity(intent)
-        }
 
         setContent {
             val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()

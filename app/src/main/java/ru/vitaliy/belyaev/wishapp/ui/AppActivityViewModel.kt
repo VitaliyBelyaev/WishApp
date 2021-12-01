@@ -1,6 +1,5 @@
 package ru.vitaliy.belyaev.wishapp.ui
 
-import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,8 +10,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Wish
-import ru.vitaliy.belyaev.wishapp.BuildConfig
-import ru.vitaliy.belyaev.wishapp.entity.AppFeedback
 import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.entity.isEmpty
 import ru.vitaliy.belyaev.wishapp.model.repository.DataStoreRepository
@@ -26,7 +23,6 @@ class AppActivityViewModel @Inject constructor(
 ) : ViewModel() {
 
     val wishListToShareLiveData: SingleLiveEvent<List<Wish>> = SingleLiveEvent()
-    val sendFeedbackLiveData: SingleLiveEvent<AppFeedback> = SingleLiveEvent()
     private val _selectedTheme: MutableStateFlow<Theme> = MutableStateFlow(Theme.SYSTEM)
     val selectedTheme: StateFlow<Theme> = _selectedTheme
 
@@ -60,14 +56,5 @@ class AppActivityViewModel @Inject constructor(
             val list = databaseRepository.getAll()
             wishListToShareLiveData.postValue(list)
         }
-    }
-
-    fun onSendFeedbackClicked() {
-        val message = StringBuilder().apply {
-            append("App version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n")
-            append("Device: ${Build.MANUFACTURER} ${Build.MODEL}, Android ${Build.VERSION.RELEASE}\n")
-        }
-        val appFeedback = AppFeedback(feedbackMessage = message.toString())
-        sendFeedbackLiveData.postValue(appFeedback)
     }
 }

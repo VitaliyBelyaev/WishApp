@@ -22,4 +22,6 @@
     <string name="theme_dark">Dark</string>
     <string name="theme_light">Light</string>
     <string name="backup_description">Your data is automatically saved in your Google account.\n\nAfter reinstalling the application, your data will be automatically restored.\n\nIn order for the automatic backup of your data to work, you need to enable Backup in the phone settings.</string>
+    <string name="no_email_app_error">You do not have an email application on your device</string>
+    <string name="feedback_subject_pattern">Feedback. Application %s</string>
 </resources>
