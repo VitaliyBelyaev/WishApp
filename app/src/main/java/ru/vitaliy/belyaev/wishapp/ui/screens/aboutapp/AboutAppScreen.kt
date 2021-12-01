@@ -37,6 +37,7 @@ import ru.vitaliy.belyaev.wishapp.utils.annotatedStringResource
 @Composable
 fun AboutAppScreen(
     onBackPressed: () -> Unit,
+    onPrivacyPolicyClicked: () -> Unit,
     appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
 ) {
 
@@ -98,7 +99,7 @@ fun AboutAppScreen(
                 )
                 SettingBlock(
                     title = stringResource(R.string.privacy_policy),
-                    onClick = { }
+                    onClick = { onPrivacyPolicyClicked() }
                 )
             }
         }

@@ -24,3 +24,7 @@ object SettingsRoute {
 object AboutAppRoute {
     const val VALUE = "about_app"
 }
+
+object PrivacyPolicyRoute {
+    const val VALUE = "privacy_policy"
+}

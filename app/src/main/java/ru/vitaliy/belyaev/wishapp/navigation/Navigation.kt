@@ -5,11 +5,14 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.AboutAppScreen
+import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.privacypolicy.PrivacyPolicyScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.WishDetailedScreen
 
+@ExperimentalCoroutinesApi
 @ExperimentalMaterialApi
 @Composable
 fun Navigation(onShareClick: () -> Unit) {
@@ -41,6 +44,12 @@ fun Navigation(onShareClick: () -> Unit) {
         }
         composable(AboutAppRoute.VALUE) {
             AboutAppScreen(
+                onBackPressed = { navController.popBackStack() },
+                onPrivacyPolicyClicked = { navController.navigate(PrivacyPolicyRoute.VALUE) }
+            )
+        }
+        composable(PrivacyPolicyRoute.VALUE) {
+            PrivacyPolicyScreen(
                 onBackPressed = { navController.popBackStack() }
             )
         }
