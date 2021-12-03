@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.model.repository
+package ru.vitaliy.belyaev.wishapp.model.repository.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.entity.toInt
 import ru.vitaliy.belyaev.wishapp.entity.toTheme
-import ru.vitaliy.belyaev.wishapp.model.repository.DataStoreRepository.PreferencesKeys.KEY_THEME
+import ru.vitaliy.belyaev.wishapp.model.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_THEME
 
 @Singleton
 class DataStoreRepository @Inject constructor(

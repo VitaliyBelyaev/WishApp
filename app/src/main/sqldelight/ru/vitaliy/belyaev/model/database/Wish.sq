@@ -54,6 +54,10 @@ getAll:
 SELECT *
 FROM Wish;
 
+getAllTags:
+SELECT Wish.tags
+FROM Wish;
+
 deleteByIds:
 DELETE FROM Wish
 WHERE id IN ?;

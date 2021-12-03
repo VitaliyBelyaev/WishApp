@@ -12,13 +12,13 @@ import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.entity.isEmpty
-import ru.vitaliy.belyaev.wishapp.model.repository.DataStoreRepository
-import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
+import ru.vitaliy.belyaev.wishapp.model.repository.datastore.DataStoreRepository
+import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.utils.SingleLiveEvent
 
 @HiltViewModel
 class AppActivityViewModel @Inject constructor(
-    private val databaseRepository: DatabaseRepository,
+    private val wishesRepository: WishesRepository,
     private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
 
@@ -38,22 +38,22 @@ class AppActivityViewModel @Inject constructor(
 
     fun onWishScreenExit(wishId: String) {
         viewModelScope.launch {
-            val wish = databaseRepository.getByIdFlow(wishId).firstOrNull() ?: return@launch
+            val wish = wishesRepository.getByIdFlow(wishId).firstOrNull() ?: return@launch
             if (wish.isEmpty()) {
-                databaseRepository.deleteByIds(listOf(wishId))
+                wishesRepository.deleteByIds(listOf(wishId))
             }
         }
     }
 
     fun onDeleteWishClicked(wishId: String) {
         viewModelScope.launch {
-            databaseRepository.deleteByIds(listOf(wishId))
+            wishesRepository.deleteByIds(listOf(wishId))
         }
     }
 
     fun onShareWishListClicked() {
         viewModelScope.launch {
-            val list = databaseRepository.getAll()
+            val list = wishesRepository.getAll()
             wishListToShareLiveData.postValue(list)
         }
     }

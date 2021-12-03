@@ -1,0 +1,14 @@
+
+
+CREATE TABLE WishTagRelation (
+ wishId TEXT NOT NULL,
+ tagId INTEGER NOT NULL,
+ FOREIGN KEY (wishId) REFERENCES Wish(id),
+ FOREIGN KEY (tagId) REFERENCES Tag(id)
+);
+
+getAllWishesByTag:
+SELECT *
+FROM WishTagRelation relation
+INNER JOIN Wish wish ON wish.id = relation.wishId
+WHERE relation.tagId = ?;

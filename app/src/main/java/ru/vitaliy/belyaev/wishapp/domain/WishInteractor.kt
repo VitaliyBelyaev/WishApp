@@ -11,7 +11,7 @@ import okhttp3.Request
 import org.jsoup.Jsoup
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.model.network.await
-import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
+import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Data
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkInfo
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
@@ -23,12 +23,12 @@ import ru.vitaliy.belyaev.wishapp.utils.getLinkTitle
 import timber.log.Timber
 
 class WishInteractor @Inject constructor(
-    private val databaseRepository: DatabaseRepository,
+    private val wishesRepository: WishesRepository,
     private val okHttpClient: OkHttpClient
 ) {
 
     fun getWishItems(): Flow<List<WishItem>> {
-        return databaseRepository
+        return wishesRepository
             .getAllFlow()
             .map {
                 val wishItems = mutableListOf<WishItem>()
@@ -41,14 +41,14 @@ class WishInteractor @Inject constructor(
     }
 
     fun flowWishItem(id: String): Flow<WishItem> {
-        return databaseRepository
+        return wishesRepository
             .getByIdFlow(id)
             .map { it.toDefaultWishItem() }
             .flowOn(Dispatchers.IO)
     }
 
     suspend fun getById(id: String): WishItem {
-        return databaseRepository.getById(id).toDefaultWishItem()
+        return wishesRepository.getById(id).toDefaultWishItem()
     }
 
     suspend fun getLinkPreview(wish: Wish): WishItem {
@@ -56,7 +56,23 @@ class WishInteractor @Inject constructor(
     }
 
     suspend fun deleteByIds(ids: List<String>) {
-        databaseRepository.deleteByIds(ids)
+        wishesRepository.deleteByIds(ids)
+    }
+
+    fun flowAllTags(): Flow<List<String>> {
+        return wishesRepository
+            .getAllTags()
+            .map { listOfLists ->
+                val tagSet = mutableSetOf<String>()
+                for (list in listOfLists) {
+                    for (tag in list) {
+                        tagSet.add(tag)
+                    }
+                }
+                tagSet
+                    .toList()
+                    .sorted()
+            }
     }
 
     @ExperimentalCoroutinesApi

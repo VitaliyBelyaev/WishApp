@@ -1,9 +1,10 @@
-package ru.vitaliy.belyaev.wishapp.model.repository
+package ru.vitaliy.belyaev.wishapp.model.repository.wishes
 
 import kotlinx.coroutines.flow.Flow
+import ru.vitaliy.belyaev.model.database.GetAllWishesByTag
 import ru.vitaliy.belyaev.model.database.Wish
 
-interface DatabaseRepository {
+interface WishesRepository {
 
     fun insert(wish: Wish)
 
@@ -16,6 +17,10 @@ interface DatabaseRepository {
     fun getByIdFlow(id: String): Flow<Wish>
 
     suspend fun getById(id: String): Wish
+
+    fun getByAllWishesByTag(tagId: Long): Flow<List<GetAllWishesByTag>>
+
+    fun getAllTags(): Flow<List<List<String>>>
 
     fun getAllFlow(): Flow<List<Wish>>
 

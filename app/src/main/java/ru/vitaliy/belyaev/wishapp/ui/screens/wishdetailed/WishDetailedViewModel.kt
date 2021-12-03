@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.Optional
+import java.util.*
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.domain.WishInteractor
 import ru.vitaliy.belyaev.wishapp.entity.createEmptyWish
-import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
+import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedRouteWithArgs.ARG_WISH_ID
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 
@@ -22,7 +22,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 @HiltViewModel
 class WishDetailedViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val databaseRepository: DatabaseRepository,
+    private val wishesRepository: WishesRepository,
     private val wishInteractor: WishInteractor
 ) : ViewModel() {
 
@@ -38,7 +38,7 @@ class WishDetailedViewModel @Inject constructor(
             } else {
                 val wish = createEmptyWish()
                 withContext(Dispatchers.IO) {
-                    databaseRepository.insert(wish)
+                    wishesRepository.insert(wish)
                 }
                 wish.id
             }
@@ -57,19 +57,19 @@ class WishDetailedViewModel @Inject constructor(
 
     fun onWishTitleChanged(newValue: String) {
         viewModelScope.launch {
-            databaseRepository.updateTitle(newValue, wishId)
+            wishesRepository.updateTitle(newValue, wishId)
         }
     }
 
     fun onWishLinkChanged(newValue: String) {
         viewModelScope.launch {
-            databaseRepository.updateLink(newValue, wishId)
+            wishesRepository.updateLink(newValue, wishId)
         }
     }
 
     fun onWishCommentChanged(newValue: String) {
         viewModelScope.launch {
-            databaseRepository.updateComment(newValue, wishId)
+            wishesRepository.updateComment(newValue, wishId)
         }
     }
 

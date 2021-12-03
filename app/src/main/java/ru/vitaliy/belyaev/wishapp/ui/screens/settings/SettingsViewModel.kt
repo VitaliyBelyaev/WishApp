@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.entity.Theme
-import ru.vitaliy.belyaev.wishapp.model.repository.DataStoreRepository
+import ru.vitaliy.belyaev.wishapp.model.repository.datastore.DataStoreRepository
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(

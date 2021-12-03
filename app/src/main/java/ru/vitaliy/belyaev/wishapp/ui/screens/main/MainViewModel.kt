@@ -3,7 +3,7 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.UUID
+import java.util.*
 import javax.inject.Inject
 import kotlin.random.Random
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,13 +13,13 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.domain.WishInteractor
-import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
+import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val databaseRepository: DatabaseRepository,
+    private val wishesRepository: WishesRepository,
     private val wishInteractor: WishInteractor
 ) : ViewModel() {
 
@@ -48,7 +48,7 @@ class MainViewModel @Inject constructor(
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis
             )
-            databaseRepository.insert(wish)
+            wishesRepository.insert(wish)
         }
     }
 
