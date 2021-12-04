@@ -1,32 +1,25 @@
 package ru.vitaliy.belyaev.wishapp.model.repository.wishes
 
 import kotlinx.coroutines.flow.Flow
-import ru.vitaliy.belyaev.model.database.GetAllWishesByTag
-import ru.vitaliy.belyaev.model.database.Wish
+import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 
 interface WishesRepository {
 
-    fun insert(wish: Wish)
+    fun insertWish(wishWithTags: WishWithTags)
 
     fun updateTitle(newValue: String, wishId: String)
     fun updateLink(newValue: String, wishId: String)
     fun updateComment(newValue: String, wishId: String)
     fun updateIsCompleted(newValue: Boolean, wishId: String)
-    fun updateTags(newValue: List<String>, wishId: String)
 
-    fun getByIdFlow(id: String): Flow<Wish>
+    fun observeWishById(id: String): Flow<WishWithTags>
+    suspend fun getWishById(id: String): WishWithTags
 
-    suspend fun getById(id: String): Wish
+    fun observeAllWishes(): Flow<List<WishWithTags>>
+    suspend fun getAllWishes(): List<WishWithTags>
 
-    fun getByAllWishesByTag(tagId: Long): Flow<List<GetAllWishesByTag>>
+    fun observeWishesByTag(tagId: Long): Flow<List<WishWithTags>>
 
-    fun getAllTags(): Flow<List<List<String>>>
-
-    fun getAllFlow(): Flow<List<Wish>>
-
-    suspend fun getAll(): List<Wish>
-
-    suspend fun deleteByIds(ids: List<String>)
-
-    fun clearAll()
+    suspend fun deleteWishesByIds(ids: List<String>)
+    fun clearAllWishes()
 }

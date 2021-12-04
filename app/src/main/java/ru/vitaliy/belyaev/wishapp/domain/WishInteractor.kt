@@ -16,7 +16,6 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Data
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkInfo
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.toDefaultWishItem
 import ru.vitaliy.belyaev.wishapp.utils.getLinkDescription
 import ru.vitaliy.belyaev.wishapp.utils.getLinkImage
 import ru.vitaliy.belyaev.wishapp.utils.getLinkTitle
@@ -29,7 +28,7 @@ class WishInteractor @Inject constructor(
 
     fun getWishItems(): Flow<List<WishItem>> {
         return wishesRepository
-            .getAllFlow()
+            .observeAllWishes()
             .map {
                 val wishItems = mutableListOf<WishItem>()
                 for (wish in it) {
@@ -42,13 +41,13 @@ class WishInteractor @Inject constructor(
 
     fun flowWishItem(id: String): Flow<WishItem> {
         return wishesRepository
-            .getByIdFlow(id)
+            .observeWishById(id)
             .map { it.toDefaultWishItem() }
             .flowOn(Dispatchers.IO)
     }
 
     suspend fun getById(id: String): WishItem {
-        return wishesRepository.getById(id).toDefaultWishItem()
+        return wishesRepository.getWishById(id).toDefaultWishItem()
     }
 
     suspend fun getLinkPreview(wish: Wish): WishItem {
@@ -56,23 +55,7 @@ class WishInteractor @Inject constructor(
     }
 
     suspend fun deleteByIds(ids: List<String>) {
-        wishesRepository.deleteByIds(ids)
-    }
-
-    fun flowAllTags(): Flow<List<String>> {
-        return wishesRepository
-            .getAllTags()
-            .map { listOfLists ->
-                val tagSet = mutableSetOf<String>()
-                for (list in listOfLists) {
-                    for (tag in list) {
-                        tagSet.add(tag)
-                    }
-                }
-                tagSet
-                    .toList()
-                    .sorted()
-            }
+        wishesRepository.deleteWishesByIds(ids)
     }
 
     @ExperimentalCoroutinesApi

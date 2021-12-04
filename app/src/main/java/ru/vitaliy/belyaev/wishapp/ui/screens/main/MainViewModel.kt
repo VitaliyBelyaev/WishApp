@@ -48,7 +48,7 @@ class MainViewModel @Inject constructor(
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis
             )
-            wishesRepository.insert(wish)
+            wishesRepository.insertWish()
         }
     }
 

@@ -7,13 +7,12 @@ CREATE TABLE Wish (
   comment TEXT NOT NULL,
   isCompleted INTEGER AS Boolean DEFAULT 0 NOT NULL,
   createdTimestamp INTEGER NOT NULL,
-  updatedTimestamp INTEGER NOT NULL,
-  tags TEXT AS List<String> DEFAULT "" NOT NULL
+  updatedTimestamp INTEGER NOT NULL
 );
 
 insert:
-INSERT INTO Wish(id, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, tags)
-VALUES (?,?,?,?,?,?,?,?);
+INSERT INTO Wish(id, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp)
+VALUES (?,?,?,?,?,?,?);
 
 updateTitle:
 UPDATE Wish
@@ -36,12 +35,6 @@ SET comment = ?,
 updateIsCompleted:
 UPDATE Wish
 SET isCompleted = ?,
-    updatedTimestamp = ?
-    WHERE  id = ?;
-
-updateTags:
-UPDATE Wish
-SET tags = ?,
     updatedTimestamp = ?
     WHERE  id = ?;
 

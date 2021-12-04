@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.domain.WishInteractor
-import ru.vitaliy.belyaev.wishapp.entity.createEmptyWish
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
+import ru.vitaliy.belyaev.wishapp.model.repository.wishes.createEmptyWish
 import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedRouteWithArgs.ARG_WISH_ID
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 
@@ -38,7 +38,7 @@ class WishDetailedViewModel @Inject constructor(
             } else {
                 val wish = createEmptyWish()
                 withContext(Dispatchers.IO) {
-                    wishesRepository.insert(wish)
+                    wishesRepository.insertWish()
                 }
                 wish.id
             }
