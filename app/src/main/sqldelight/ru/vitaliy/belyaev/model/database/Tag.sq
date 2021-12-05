@@ -1,6 +1,9 @@
 
-
 CREATE TABLE Tag (
  id INTEGER PRIMARY KEY NOT NULL,
  title TEXT NOT NULL
 );
+
+insert:
+INSERT INTO Tag(id, title)
+VALUES (?,?);

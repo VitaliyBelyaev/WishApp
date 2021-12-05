@@ -38,7 +38,7 @@ class WishDetailedViewModel @Inject constructor(
             } else {
                 val wish = createEmptyWish()
                 withContext(Dispatchers.IO) {
-                    wishesRepository.insertWish()
+                    wishesRepository.insertWish(wish)
                 }
                 wish.id
             }
@@ -57,19 +57,19 @@ class WishDetailedViewModel @Inject constructor(
 
     fun onWishTitleChanged(newValue: String) {
         viewModelScope.launch {
-            wishesRepository.updateTitle(newValue, wishId)
+            wishesRepository.updateWishTitle(newValue, wishId)
         }
     }
 
     fun onWishLinkChanged(newValue: String) {
         viewModelScope.launch {
-            wishesRepository.updateLink(newValue, wishId)
+            wishesRepository.updateWishLink(newValue, wishId)
         }
     }
 
     fun onWishCommentChanged(newValue: String) {
         viewModelScope.launch {
-            wishesRepository.updateComment(newValue, wishId)
+            wishesRepository.updateWishComment(newValue, wishId)
         }
     }
 

@@ -20,16 +20,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 
 @Composable
 fun WishItemBlock(
     wishItem: WishItem,
     isSelected: Boolean,
-    onWishClicked: (Wish) -> Unit,
-    onWishLongPress: (Wish) -> Unit,
+    onWishClicked: (WishWithTags) -> Unit,
+    onWishLongPress: (WishWithTags) -> Unit,
 ) {
     val backgroundColor: Color = if (isSelected) {
         colorResource(R.color.wishSelectedColor).copy(alpha = 0.5f)

@@ -7,10 +7,10 @@ interface WishesRepository {
 
     fun insertWish(wishWithTags: WishWithTags)
 
-    fun updateTitle(newValue: String, wishId: String)
-    fun updateLink(newValue: String, wishId: String)
-    fun updateComment(newValue: String, wishId: String)
-    fun updateIsCompleted(newValue: Boolean, wishId: String)
+    fun updateWishTitle(newValue: String, wishId: String)
+    fun updateWishLink(newValue: String, wishId: String)
+    fun updateWishComment(newValue: String, wishId: String)
+    fun updateWishIsCompleted(newValue: Boolean, wishId: String)
 
     fun observeWishById(id: String): Flow<WishWithTags>
     suspend fun getWishById(id: String): WishWithTags

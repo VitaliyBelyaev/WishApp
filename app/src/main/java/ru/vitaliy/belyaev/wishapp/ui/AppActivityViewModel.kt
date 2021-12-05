@@ -7,12 +7,12 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.entity.Theme
+import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.model.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
+import ru.vitaliy.belyaev.wishapp.model.repository.wishes.isEmpty
 import ru.vitaliy.belyaev.wishapp.utils.SingleLiveEvent
 
 @HiltViewModel
@@ -21,7 +21,7 @@ class AppActivityViewModel @Inject constructor(
     private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
 
-    val wishListToShareLiveData: SingleLiveEvent<List<Wish>> = SingleLiveEvent()
+    val wishListToShareLiveData: SingleLiveEvent<List<WishWithTags>> = SingleLiveEvent()
     private val _selectedTheme: MutableStateFlow<Theme> = MutableStateFlow(Theme.SYSTEM)
     val selectedTheme: StateFlow<Theme> = _selectedTheme
 
@@ -37,7 +37,7 @@ class AppActivityViewModel @Inject constructor(
 
     fun onWishScreenExit(wishId: String) {
         viewModelScope.launch {
-            val wish = wishesRepository.observeWishById(wishId).firstOrNull() ?: return@launch
+            val wish: WishWithTags = wishesRepository.getWishById(wishId)
             if (wish.isEmpty()) {
                 wishesRepository.deleteWishesByIds(listOf(wishId))
             }

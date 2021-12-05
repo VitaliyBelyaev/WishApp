@@ -90,7 +90,7 @@ dependencies {
     implementation "com.google.firebase:firebase-perf-ktx"
 
     // Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
 
     // Hilt
     implementation "com.google.dagger:hilt-android:$hiltVersion"
@@ -118,9 +118,24 @@ dependencies {
     // Shimmer animation for loading
     implementation "com.valentinilk.shimmer:compose-shimmer:1.0.1"
 
+    // JUnit
     testImplementation "junit:junit:4.13.2"
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    testImplementation "org.hamcrest:hamcrest-junit:2.0.0.0"
+
+    // Mockito
+    testImplementation "org.mockito:mockito-core:3.11.2"
+    testImplementation "org.mockito:mockito-inline:3.11.2"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion"
+    testImplementation "com.squareup.sqldelight:sqlite-driver:$sqlDelightVersion"
+    testImplementation('org.xerial:sqlite-jdbc:3.8.10.2') {
+        // Override the version of sqlite used by sqlite-driver to match Android API 23
+        force = true
+    }
+
+    // Instrumentation
+    androidTestImplementation "androidx.test:runner:1.4.0"
+    androidTestImplementation "androidx.test.ext:junit:1.1.3"
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
     debugImplementation "androidx.compose.ui:ui-tooling:$composeVersion"
 }

@@ -12,9 +12,9 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import dagger.hilt.android.AndroidEntryPoint
-import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.Theme
+import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.theme.WishAppTheme
 
@@ -55,7 +55,7 @@ class AppActivity : AppCompatActivity() {
         }
     }
 
-    private fun generateFormattedWishList(wishes: List<Wish>): String {
+    private fun generateFormattedWishList(wishes: List<WishWithTags>): String {
         val builder = StringBuilder().apply {
             append(getString(R.string.wish_list_title))
             append("\n\n")

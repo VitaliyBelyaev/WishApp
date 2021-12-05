@@ -4,7 +4,7 @@ import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.squareup.sqldelight.runtime.coroutines.mapToOne
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
+import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -17,9 +17,12 @@ import ru.vitaliy.belyaev.model.database.WishTagRelation
 import ru.vitaliy.belyaev.model.database.WishTagRelationQueries
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.model.database.WishAppDb
+import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
 
+@Singleton
 class DatabaseRepository @Inject constructor(
-    database: WishAppDb
+    database: WishAppDb,
+    private val dispatcherProvider: DispatcherProvider
 ) : WishesRepository {
 
     private val wishQueries: WishQueries = database.wishQueries
@@ -31,19 +34,19 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
-    override fun updateTitle(newValue: String, wishId: String) {
+    override fun updateWishTitle(newValue: String, wishId: String) {
         wishQueries.updateTitle(title = newValue, updatedTimestamp = System.currentTimeMillis(), id = wishId)
     }
 
-    override fun updateLink(newValue: String, wishId: String) {
+    override fun updateWishLink(newValue: String, wishId: String) {
         wishQueries.updateLink(link = newValue, updatedTimestamp = System.currentTimeMillis(), id = wishId)
     }
 
-    override fun updateComment(newValue: String, wishId: String) {
+    override fun updateWishComment(newValue: String, wishId: String) {
         wishQueries.updateComment(comment = newValue, updatedTimestamp = System.currentTimeMillis(), id = wishId)
     }
 
-    override fun updateIsCompleted(newValue: Boolean, wishId: String) {
+    override fun updateWishIsCompleted(newValue: Boolean, wishId: String) {
         wishQueries.updateIsCompleted(
             isCompleted = newValue,
             updatedTimestamp = System.currentTimeMillis(),
@@ -55,11 +58,11 @@ class DatabaseRepository @Inject constructor(
         val wishDtoFlow: Flow<Wish> = wishQueries
             .getById(id)
             .asFlow()
-            .mapToOne()
+            .mapToOne(dispatcherProvider.io())
         val tagsFlow: Flow<List<Tag>> = wishTagRelationQueries
             .getWishTags(id)
             .asFlow()
-            .mapToList()
+            .mapToList(dispatcherProvider.io())
             .map { tagDtos -> tagDtos.map { Tag(it.id, it.title) } }
         return wishDtoFlow.combine(tagsFlow) { wishDto, tags ->
             wishDto.toWishWithTags(tags)
@@ -67,7 +70,7 @@ class DatabaseRepository @Inject constructor(
     }
 
     override suspend fun getWishById(id: String): WishWithTags {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcherProvider.io()) {
             val wishDto: Wish = wishQueries
                 .getById(id)
                 .executeAsOne()
@@ -80,14 +83,28 @@ class DatabaseRepository @Inject constructor(
     }
 
     override fun observeAllWishes(): Flow<List<WishWithTags>> {
+        // Вот это работает в тестах, а когда делаю combine, то This job has not completed yet
+//        return wishQueries
+//            .getAll()
+//            .asFlow()
+//            .mapToList(dispatcherProvider.io())
+//            .map { wishesDto ->
+//                val wishesWithTags = mutableListOf<WishWithTags>()
+//                for (wishDto in wishesDto) {
+//                    wishesWithTags.add(wishDto.toWishWithTags(emptyList()))
+//                }
+//                wishesWithTags.toList()
+//            }
+
         val wishesDtoFlow: Flow<List<Wish>> = wishQueries
             .getAll()
             .asFlow()
-            .mapToList()
+            .mapToList(dispatcherProvider.io())
+        // We need this for reactive changes of tags
         val wishTagRelationsFlow: Flow<List<WishTagRelation>> = wishTagRelationQueries
             .getAllRelations()
             .asFlow()
-            .mapToList()
+            .mapToList(dispatcherProvider.io())
 
         return wishesDtoFlow.combine(wishTagRelationsFlow) { wishesDto, _ ->
             val wishesWithTags = mutableListOf<WishWithTags>()
@@ -103,7 +120,7 @@ class DatabaseRepository @Inject constructor(
     }
 
     override suspend fun getAllWishes(): List<WishWithTags> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcherProvider.io()) {
             wishQueries
                 .getAll()
                 .executeAsList()
@@ -121,12 +138,12 @@ class DatabaseRepository @Inject constructor(
         val wishesDtoFlow: Flow<List<GetAllWishesByTag>> = wishTagRelationQueries
             .getAllWishesByTag(tagId)
             .asFlow()
-            .mapToList()
+            .mapToList(dispatcherProvider.io())
 
         val wishTagRelationsFlow: Flow<List<WishTagRelation>> = wishTagRelationQueries
             .getAllRelations()
             .asFlow()
-            .mapToList()
+            .mapToList(dispatcherProvider.io())
 
         return wishesDtoFlow.combine(wishTagRelationsFlow) { wishesDto, _ ->
             val wishesWithTags = mutableListOf<WishWithTags>()
@@ -139,27 +156,10 @@ class DatabaseRepository @Inject constructor(
             }
             wishesWithTags.toList()
         }
-
-
-        return wishTagRelationQueries
-            .getAllWishesByTag(tagId)
-            .asFlow()
-            .mapToList()
-            .map { list ->
-                val wishesWithTags = mutableListOf<WishWithTags>()
-                for (wishDto in list) {
-                    val tags: List<Tag> = wishTagRelationQueries
-                        .getWishTags(wishDto.id)
-                        .executeAsList()
-                        .map { Tag(it.id, it.title) }
-                    wishesWithTags.add(wishDto.toWishWithTags(tags))
-                }
-                wishesWithTags.toList()
-            }
     }
 
     override suspend fun deleteWishesByIds(ids: List<String>) {
-        withContext(Dispatchers.IO) {
+        withContext(dispatcherProvider.io()) {
             wishQueries.deleteByIds(ids)
         }
     }

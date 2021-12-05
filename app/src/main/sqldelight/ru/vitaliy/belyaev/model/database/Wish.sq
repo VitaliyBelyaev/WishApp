@@ -1,4 +1,3 @@
-import kotlin.collections.List;
 
 CREATE TABLE Wish (
   id TEXT PRIMARY KEY NOT NULL,
@@ -45,10 +44,6 @@ WHERE id = ?;
 
 getAll:
 SELECT *
-FROM Wish;
-
-getAllTags:
-SELECT Wish.tags
 FROM Wish;
 
 deleteByIds:

@@ -27,9 +27,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.EditModeTopBar
@@ -39,7 +39,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 @ExperimentalCoroutinesApi
 @Composable
 fun MainScreen(
-    openWishDetailed: (Wish) -> Unit,
+    openWishDetailed: (WishWithTags) -> Unit,
     onAddWishClicked: () -> Unit,
     onSettingIconClicked: () -> Unit,
     onShareClick: () -> Unit,
@@ -97,7 +97,7 @@ fun MainScreen(
         floatingActionButtonPosition = FabPosition.Center,
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {
-        val onWishClicked: (Wish) -> Unit = { wish ->
+        val onWishClicked: (WishWithTags) -> Unit = { wish ->
             if (state.selectedIds.isEmpty()) {
                 openWishDetailed(wish)
             } else {

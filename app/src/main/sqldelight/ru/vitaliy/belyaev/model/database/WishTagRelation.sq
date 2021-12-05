@@ -8,6 +8,10 @@ CREATE TABLE WishTagRelation (
  UNIQUE(wishId, tagId)
 );
 
+insert:
+INSERT INTO WishTagRelation(wishId, tagId)
+VALUES (?,?);
+
 getAllRelations:
 SELECT *
 FROM WishTagRelation;

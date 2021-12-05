@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.wishapp.domain.WishInteractor
+import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 
@@ -48,7 +48,7 @@ class MainViewModel @Inject constructor(
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis
             )
-            wishesRepository.insertWish()
+            wishInteractor.insertWish(wish)
         }
     }
 
@@ -68,7 +68,7 @@ class MainViewModel @Inject constructor(
         _uiState.value = uiState.value.copy(selectedIds = selectedIds)
     }
 
-    fun onWishLongPress(wish: Wish) {
+    fun onWishLongPress(wish: WishWithTags) {
         val oldState = _uiState.value
         val wishId = wish.id
         val newState = if (oldState.selectedIds.isEmpty()) {
@@ -88,10 +88,10 @@ class MainViewModel @Inject constructor(
         _uiState.value = newState
     }
 
-    private fun createTestWishes(): List<Wish> {
+    private fun createTestWishes(): List<WishWithTags> {
         val currentMillis = System.currentTimeMillis()
         return listOf(
-            Wish(
+            WishWithTags(
                 id = "1",
                 title = "Шуруповерт",
                 link = "https://www.citilink.ru/product/drel-shurupovert-bosch-universaldrill-18v-akkum-patron-bystrozazhimnoi-1492081/?region_id=123062&gclid=CjwKCAiAm7OMBhAQEiwArvGi3Aom3wUbhHlBUu-9OPINzsyF9rM0Q2rBUgp1jFV68iT7IUaAoTA-1xoCzPcQAvD_BwE",
@@ -101,7 +101,7 @@ class MainViewModel @Inject constructor(
                 updatedTimestamp = currentMillis,
                 tags = emptyList()
             ),
-            Wish(
+            WishWithTags(
                 id = "2",
                 title = "Айфон 13",
                 link = "https://www.apple.com/ru/shop/buy-iphone/iphone-13/%D0%B4%D0%B8%D1%81%D0%BF%D0%BB%D0%B5%D0%B9-6,1-%D0%B4%D1%8E%D0%B9%D0%BC%D0%B0-128%D0%B3%D0%B1-%D1%81%D0%B8%D0%BD%D0%B8%D0%B9?afid=p238%7CsIxKMMS92-dc_mtid_187079nc38483_pcrid_546456592051_pgrid_129042575244_&cid=aos-ru-kwgo-pla-iphone--slid---product-MLP13-RU",
@@ -111,7 +111,7 @@ class MainViewModel @Inject constructor(
                 updatedTimestamp = currentMillis,
                 tags = emptyList()
             ),
-            Wish(
+            WishWithTags(
                 id = "3",
                 title = "Робот пылесос",
                 link = "https://www.citilink.ru/product/pylesos-robot-xiaomi-mi-mop-p-chernyi-1393766/?region_id=123062&gclid=CjwKCAiAm7OMBhAQEiwArvGi3DS-H1fiWV65XGxNEcrSzE1PpsULu34hK2eZ1C235ZV3OHton6qXMBoCzrQQAvD_BwE",
@@ -121,7 +121,7 @@ class MainViewModel @Inject constructor(
                 updatedTimestamp = currentMillis,
                 tags = emptyList()
             ),
-            Wish(
+            WishWithTags(
                 id = "4",
                 title = "Халат теплый и нежный",
                 link = "",

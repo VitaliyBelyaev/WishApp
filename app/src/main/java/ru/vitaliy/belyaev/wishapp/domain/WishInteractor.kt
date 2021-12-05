@@ -9,13 +9,14 @@ import kotlinx.coroutines.flow.map
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
-import ru.vitaliy.belyaev.model.database.Wish
+import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.model.network.await
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Data
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkInfo
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.toDefaultWishItem
 import ru.vitaliy.belyaev.wishapp.utils.getLinkDescription
 import ru.vitaliy.belyaev.wishapp.utils.getLinkImage
 import ru.vitaliy.belyaev.wishapp.utils.getLinkTitle
@@ -25,6 +26,10 @@ class WishInteractor @Inject constructor(
     private val wishesRepository: WishesRepository,
     private val okHttpClient: OkHttpClient
 ) {
+
+    fun insertWish(wishWithTags: WishWithTags) {
+        wishesRepository.insertWish(wishWithTags)
+    }
 
     fun getWishItems(): Flow<List<WishItem>> {
         return wishesRepository
@@ -50,7 +55,7 @@ class WishInteractor @Inject constructor(
         return wishesRepository.getWishById(id).toDefaultWishItem()
     }
 
-    suspend fun getLinkPreview(wish: Wish): WishItem {
+    suspend fun getLinkPreview(wish: WishWithTags): WishItem {
         return wish.toWishItem()
     }
 
@@ -59,7 +64,7 @@ class WishInteractor @Inject constructor(
     }
 
     @ExperimentalCoroutinesApi
-    private suspend fun Wish.toWishItem(): WishItem {
+    private suspend fun WishWithTags.toWishItem(): WishItem {
         if (link.isBlank()) {
             return WishItem(this, None)
         }
