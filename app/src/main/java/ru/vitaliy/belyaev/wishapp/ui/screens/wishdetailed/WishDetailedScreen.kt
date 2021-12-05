@@ -76,6 +76,13 @@ fun WishDetailedScreen(
                 onBackPressed = handleBackPressed,
                 actions = {
                     IconButton(onClick = {
+                    }) {
+                        Icon(
+                            painterResource(R.drawable.ic_label),
+                            contentDescription = "Open tags"
+                        )
+                    }
+                    IconButton(onClick = {
                         viewModel.onDeleteWishClicked()
                         onBackPressed()
                         appViewModel.onDeleteWishClicked(viewModel.wishId)

@@ -1,6 +1,6 @@
 
 CREATE TABLE Wish (
-  id TEXT PRIMARY KEY NOT NULL,
+  wishId TEXT PRIMARY KEY NOT NULL,
   title TEXT NOT NULL,
   link TEXT NOT NULL,
   comment TEXT NOT NULL,
@@ -10,37 +10,37 @@ CREATE TABLE Wish (
 );
 
 insert:
-INSERT INTO Wish(id, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp)
+INSERT INTO Wish(wishId, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp)
 VALUES (?,?,?,?,?,?,?);
 
 updateTitle:
 UPDATE Wish
 SET title = ?,
     updatedTimestamp = ?
-    WHERE  id = ?;
+    WHERE  wishId = ?;
 
 updateLink:
 UPDATE Wish
 SET link = ?,
     updatedTimestamp = ?
-    WHERE  id = ?;
+    WHERE  wishId = ?;
 
 updateComment:
 UPDATE Wish
 SET comment = ?,
     updatedTimestamp = ?
-    WHERE  id = ?;
+    WHERE  wishId = ?;
 
 updateIsCompleted:
 UPDATE Wish
 SET isCompleted = ?,
     updatedTimestamp = ?
-    WHERE  id = ?;
+    WHERE  wishId = ?;
 
 getById:
 SELECT *
 FROM Wish
-WHERE id = ?;
+WHERE wishId = ?;
 
 getAll:
 SELECT *
@@ -48,7 +48,7 @@ FROM Wish;
 
 deleteByIds:
 DELETE FROM Wish
-WHERE id IN ?;
+WHERE wishId IN ?;
 
 clear:
 DELETE FROM Wish;

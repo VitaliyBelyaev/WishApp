@@ -18,7 +18,7 @@ import org.junit.runner.RunWith
 import ru.vitaliy.belyaev.model.database.Tag
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.model.database.WishAppDb
-import ru.vitaliy.belyaev.wishapp.model.repository.wishes.DatabaseRepository
+import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)

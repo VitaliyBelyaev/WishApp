@@ -1,9 +1,25 @@
 
 CREATE TABLE Tag (
- id INTEGER PRIMARY KEY NOT NULL,
+ tagId INTEGER PRIMARY KEY,
  title TEXT NOT NULL
 );
 
 insert:
-INSERT INTO Tag(id, title)
-VALUES (?,?);
+INSERT INTO Tag(title)
+VALUES (?);
+
+updateTitle:
+UPDATE Tag
+SET title = ?
+    WHERE  tagId = ?;
+
+getAll:
+SELECT *
+FROM Tag;
+
+deleteByIds:
+DELETE FROM Tag
+WHERE tagId IN ?;
+
+clear:
+DELETE FROM Tag;

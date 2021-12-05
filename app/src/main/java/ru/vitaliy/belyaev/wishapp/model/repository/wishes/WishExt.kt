@@ -25,11 +25,11 @@ fun WishWithTags.toWishDto(): Wish {
 }
 
 fun Wish.toWishWithTags(tags: List<Tag>): WishWithTags {
-    return WishWithTags(id, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, tags)
+    return WishWithTags(wishId, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, tags)
 }
 
 fun GetAllWishesByTag.toWishWithTags(tags: List<Tag>): WishWithTags {
-    return WishWithTags(id, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, tags)
+    return WishWithTags(wishId, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, tags)
 }
 
 fun WishWithTags.isEmpty(): Boolean = title.isBlank() && link.isBlank() && comment.isBlank()

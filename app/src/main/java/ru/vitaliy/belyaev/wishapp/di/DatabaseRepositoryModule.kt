@@ -1,22 +1,28 @@
 package ru.vitaliy.belyaev.wishapp.di
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import ru.vitaliy.belyaev.wishapp.model.database.WishAppDb
-import ru.vitaliy.belyaev.wishapp.model.repository.wishes.DatabaseRepository
+import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
+import ru.vitaliy.belyaev.wishapp.model.repository.tags.TagsRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
-import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
+import ru.vitaliy.belyaev.wishapp.model.repository.wishtagrelation.WishTagRelationRepository
 
 @InstallIn(SingletonComponent::class)
 @Module
-object DatabaseRepositoryModule {
+interface DatabaseRepositoryModule {
 
     @Singleton
-    @Provides
-    fun bindDatabaseRepository(db: WishAppDb, dispatcherProvider: DispatcherProvider): WishesRepository {
-        return DatabaseRepository(db, dispatcherProvider)
-    }
+    @Binds
+    fun bindWishesRepositoryRepository(impl: DatabaseRepository): WishesRepository
+
+    @Singleton
+    @Binds
+    fun bindWishTagRelationRepositoryRepository(impl: DatabaseRepository): WishTagRelationRepository
+
+    @Singleton
+    @Binds
+    fun bindTagsRepositoryRepository(impl: DatabaseRepository): TagsRepository
 }

@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.model.repository.wishes
+package ru.vitaliy.belyaev.wishapp.model.repository
 
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
@@ -11,23 +11,30 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.model.database.GetAllWishesByTag
 import ru.vitaliy.belyaev.model.database.Tag
+import ru.vitaliy.belyaev.model.database.TagQueries
 import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.model.database.WishQueries
 import ru.vitaliy.belyaev.model.database.WishTagRelation
 import ru.vitaliy.belyaev.model.database.WishTagRelationQueries
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.model.database.WishAppDb
+import ru.vitaliy.belyaev.wishapp.model.repository.tags.TagsRepository
+import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
+import ru.vitaliy.belyaev.wishapp.model.repository.wishes.toWishWithTags
+import ru.vitaliy.belyaev.wishapp.model.repository.wishtagrelation.WishTagRelationRepository
 import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
 
 @Singleton
 class DatabaseRepository @Inject constructor(
     database: WishAppDb,
     private val dispatcherProvider: DispatcherProvider
-) : WishesRepository {
+) : WishesRepository, WishTagRelationRepository, TagsRepository {
 
     private val wishQueries: WishQueries = database.wishQueries
     private val wishTagRelationQueries: WishTagRelationQueries = database.wishTagRelationQueries
+    private val tagQueries: TagQueries = database.tagQueries
 
+    // region WishesRepository
     override fun insertWish(wishWithTags: WishWithTags) {
         with(wishWithTags) {
             wishQueries.insert(id, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp)
@@ -35,22 +42,22 @@ class DatabaseRepository @Inject constructor(
     }
 
     override fun updateWishTitle(newValue: String, wishId: String) {
-        wishQueries.updateTitle(title = newValue, updatedTimestamp = System.currentTimeMillis(), id = wishId)
+        wishQueries.updateTitle(title = newValue, updatedTimestamp = System.currentTimeMillis(), wishId = wishId)
     }
 
     override fun updateWishLink(newValue: String, wishId: String) {
-        wishQueries.updateLink(link = newValue, updatedTimestamp = System.currentTimeMillis(), id = wishId)
+        wishQueries.updateLink(link = newValue, updatedTimestamp = System.currentTimeMillis(), wishId = wishId)
     }
 
     override fun updateWishComment(newValue: String, wishId: String) {
-        wishQueries.updateComment(comment = newValue, updatedTimestamp = System.currentTimeMillis(), id = wishId)
+        wishQueries.updateComment(comment = newValue, updatedTimestamp = System.currentTimeMillis(), wishId = wishId)
     }
 
     override fun updateWishIsCompleted(newValue: Boolean, wishId: String) {
         wishQueries.updateIsCompleted(
             isCompleted = newValue,
             updatedTimestamp = System.currentTimeMillis(),
-            id = wishId
+            wishId = wishId
         )
     }
 
@@ -63,7 +70,7 @@ class DatabaseRepository @Inject constructor(
             .getWishTags(id)
             .asFlow()
             .mapToList(dispatcherProvider.io())
-            .map { tagDtos -> tagDtos.map { Tag(it.id, it.title) } }
+            .map { tagDtos -> tagDtos.map { Tag(it.tagId, it.title) } }
         return wishDtoFlow.combine(tagsFlow) { wishDto, tags ->
             wishDto.toWishWithTags(tags)
         }
@@ -77,7 +84,7 @@ class DatabaseRepository @Inject constructor(
             val tags: List<Tag> = wishTagRelationQueries
                 .getWishTags(id)
                 .executeAsList()
-                .map { Tag(it.id, it.title) }
+                .map { Tag(it.tagId, it.title) }
             wishDto.toWishWithTags(tags)
         }
     }
@@ -110,9 +117,9 @@ class DatabaseRepository @Inject constructor(
             val wishesWithTags = mutableListOf<WishWithTags>()
             for (wishDto in wishesDto) {
                 val tags: List<Tag> = wishTagRelationQueries
-                    .getWishTags(wishDto.id)
+                    .getWishTags(wishDto.wishId)
                     .executeAsList()
-                    .map { Tag(it.id, it.title) }
+                    .map { Tag(it.tagId, it.title) }
                 wishesWithTags.add(wishDto.toWishWithTags(tags))
             }
             wishesWithTags.toList()
@@ -126,9 +133,9 @@ class DatabaseRepository @Inject constructor(
                 .executeAsList()
                 .map { wishDto ->
                     val tags: List<Tag> = wishTagRelationQueries
-                        .getWishTags(wishDto.id)
+                        .getWishTags(wishDto.wishId)
                         .executeAsList()
-                        .map { Tag(it.id, it.title) }
+                        .map { Tag(it.tagId, it.title) }
                     wishDto.toWishWithTags(tags)
                 }
         }
@@ -149,9 +156,9 @@ class DatabaseRepository @Inject constructor(
             val wishesWithTags = mutableListOf<WishWithTags>()
             for (wishDto in wishesDto) {
                 val tags: List<Tag> = wishTagRelationQueries
-                    .getWishTags(wishDto.id)
+                    .getWishTags(wishDto.wishId_)
                     .executeAsList()
-                    .map { Tag(it.id, it.title) }
+                    .map { Tag(it.tagId, it.title) }
                 wishesWithTags.add(wishDto.toWishWithTags(tags))
             }
             wishesWithTags.toList()
@@ -167,4 +174,50 @@ class DatabaseRepository @Inject constructor(
     override fun clearAllWishes() {
         wishQueries.clear()
     }
+    // end region WishesRepository
+
+    // region WishTagRelationRepository
+    override fun insertWishTagRelation(wishId: String, tagId: Long) {
+        wishTagRelationQueries.insert(wishId, tagId)
+    }
+
+    override fun deleteWishTagRelation(wishId: String, tagId: Long) {
+        wishTagRelationQueries.delete(wishId, tagId)
+    }
+
+    // end region WishTagRelationRepository
+
+    // region TagsRepository
+    override fun insertTag(title: String) {
+        tagQueries.insert(title)
+    }
+
+    override fun updateTagTitle(title: String, tagId: Long) {
+        tagQueries.updateTitle(title, tagId)
+    }
+
+    override suspend fun getAllTags(): List<Tag> {
+        return withContext(dispatcherProvider.io()) {
+            tagQueries
+                .getAll()
+                .executeAsList()
+        }
+    }
+
+    override fun observeAllTags(): Flow<List<Tag>> {
+        return tagQueries
+            .getAll()
+            .asFlow()
+            .mapToList(dispatcherProvider.io())
+    }
+
+    override fun deleteTagsByIds(ids: List<Long>) {
+        tagQueries.deleteByIds(ids)
+    }
+
+    override fun clearAllTags() {
+        tagQueries.clear()
+    }
+
+    // end region TagsRepository
 }

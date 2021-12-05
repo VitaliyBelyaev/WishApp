@@ -3,8 +3,8 @@
 CREATE TABLE WishTagRelation (
  wishId TEXT NOT NULL,
  tagId INTEGER NOT NULL,
- FOREIGN KEY (wishId) REFERENCES Wish(id),
- FOREIGN KEY (tagId) REFERENCES Tag(id),
+ FOREIGN KEY (wishId) REFERENCES Wish(wishId),
+ FOREIGN KEY (tagId) REFERENCES Tag(tagId),
  UNIQUE(wishId, tagId)
 );
 
@@ -19,12 +19,17 @@ FROM WishTagRelation;
 getAllWishesByTag:
 SELECT *
 FROM WishTagRelation relation
-INNER JOIN Wish wish ON wish.id = relation.wishId
-INNER JOIN Tag tag ON tag.id = relation.tagId
+INNER JOIN Wish wish ON wish.wishId = relation.wishId
+INNER JOIN Tag tag ON tag.tagId = relation.tagId
 WHERE relation.tagId = ?;
 
 getWishTags:
 SELECT *
 FROM WishTagRelation relation
-INNER JOIN Tag tag ON tag.id = relation.tagId
+INNER JOIN Tag tag ON tag.tagId = relation.tagId
 WHERE relation.wishId = ?;
+
+delete:
+DELETE FROM WishTagRelation
+WHERE wishId = ?
+AND tagId = ?;
