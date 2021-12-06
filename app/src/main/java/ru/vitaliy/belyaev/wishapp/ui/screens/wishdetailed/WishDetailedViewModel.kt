@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.domain.WishInteractor
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.createEmptyWish
-import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedRouteWithArgs.ARG_WISH_ID
+import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 
 @ExperimentalCoroutinesApi

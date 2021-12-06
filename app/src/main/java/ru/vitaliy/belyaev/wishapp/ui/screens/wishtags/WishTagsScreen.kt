@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.screens
+package ru.vitaliy.belyaev.wishapp.ui.screens.wishtags
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,7 +28,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.WishTagsViewModel
 
 @Composable
 fun WishTagsScreen(

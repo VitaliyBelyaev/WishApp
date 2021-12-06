@@ -55,6 +55,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 @Composable
 fun WishDetailedScreen(
     onBackPressed: () -> Unit,
+    onWishTagsClicked: (String) -> Unit,
     appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
     viewModel: WishDetailedViewModel = hiltViewModel()
 ) {
@@ -76,6 +77,8 @@ fun WishDetailedScreen(
                 onBackPressed = handleBackPressed,
                 actions = {
                     IconButton(onClick = {
+                        val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@IconButton
+                        onWishTagsClicked(wishId)
                     }) {
                         Icon(
                             painterResource(R.drawable.ic_label),

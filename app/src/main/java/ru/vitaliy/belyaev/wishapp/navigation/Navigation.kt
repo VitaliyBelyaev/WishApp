@@ -11,6 +11,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.privacypolicy.PrivacyPolic
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.WishDetailedScreen
+import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.WishTagsScreen
 
 @ExperimentalCoroutinesApi
 @ExperimentalMaterialApi
@@ -28,12 +29,14 @@ fun Navigation(onShareClick: () -> Unit) {
         }
         composable(WishDetailedRoute.VALUE) {
             WishDetailedScreen(
-                onBackPressed = { navController.popBackStack() }
+                onBackPressed = { navController.popBackStack() },
+                onWishTagsClicked = { navController.navigate(WishTagsRoute.build(it)) }
             )
         }
         composable(WishDetailedRouteWithArgs.VALUE) {
             WishDetailedScreen(
-                onBackPressed = { navController.popBackStack() }
+                onBackPressed = { navController.popBackStack() },
+                onWishTagsClicked = { navController.navigate(WishTagsRoute.build(it)) }
             )
         }
         composable(SettingsRoute.VALUE) {
@@ -50,6 +53,11 @@ fun Navigation(onShareClick: () -> Unit) {
         }
         composable(PrivacyPolicyRoute.VALUE) {
             PrivacyPolicyScreen(
+                onBackPressed = { navController.popBackStack() }
+            )
+        }
+        composable(WishTagsRoute.VALUE) {
+            WishTagsScreen(
                 onBackPressed = { navController.popBackStack() }
             )
         }
