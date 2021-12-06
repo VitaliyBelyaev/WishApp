@@ -25,4 +25,5 @@
     <string name="no_email_app_error">You do not have an email application on your device</string>
     <string name="feedback_subject_pattern">Feedback. Application %s</string>
     <string name="enter_label_name">Enter label name</string>
+    <string name="create_new_pattern">Create \"%s\"</string>
 </resources>

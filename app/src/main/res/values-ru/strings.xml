@@ -26,4 +26,5 @@
     <string name="no_email_app_error">У вас на устройстве нет email приложения</string>
     <string name="feedback_subject_pattern">Обратная связь. Приложение %s</string>
     <string name="enter_label_name">Введите название ярлыка</string>
+    <string name="create_new_pattern">Создать \"%s\"</string>
 </resources>
