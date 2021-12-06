@@ -1,12 +1,12 @@
 
 CREATE TABLE Tag (
- tagId INTEGER PRIMARY KEY,
+ tagId TEXT PRIMARY KEY NOT NULL,
  title TEXT NOT NULL
 );
 
 insert:
-INSERT INTO Tag(title)
-VALUES (?);
+INSERT INTO Tag(tagId, title)
+VALUES (?,?);
 
 updateTitle:
 UPDATE Tag

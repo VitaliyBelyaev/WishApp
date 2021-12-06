@@ -18,7 +18,7 @@ interface WishesRepository {
     fun observeAllWishes(): Flow<List<WishWithTags>>
     suspend fun getAllWishes(): List<WishWithTags>
 
-    fun observeWishesByTag(tagId: Long): Flow<List<WishWithTags>>
+    fun observeWishesByTag(tagId: String): Flow<List<WishWithTags>>
 
     suspend fun deleteWishesByIds(ids: List<String>)
     fun clearAllWishes()

@@ -141,7 +141,7 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
-    override fun observeWishesByTag(tagId: Long): Flow<List<WishWithTags>> {
+    override fun observeWishesByTag(tagId: String): Flow<List<WishWithTags>> {
         val wishesDtoFlow: Flow<List<GetAllWishesByTag>> = wishTagRelationQueries
             .getAllWishesByTag(tagId)
             .asFlow()
@@ -177,22 +177,22 @@ class DatabaseRepository @Inject constructor(
     // end region WishesRepository
 
     // region WishTagRelationRepository
-    override fun insertWishTagRelation(wishId: String, tagId: Long) {
+    override fun insertWishTagRelation(wishId: String, tagId: String) {
         wishTagRelationQueries.insert(wishId, tagId)
     }
 
-    override fun deleteWishTagRelation(wishId: String, tagId: Long) {
+    override fun deleteWishTagRelation(wishId: String, tagId: String) {
         wishTagRelationQueries.delete(wishId, tagId)
     }
 
     // end region WishTagRelationRepository
 
     // region TagsRepository
-    override fun insertTag(title: String) {
-        tagQueries.insert(title)
+    override fun insertTag(tag: Tag) {
+        tagQueries.insert(tag.tagId, tag.title)
     }
 
-    override fun updateTagTitle(title: String, tagId: Long) {
+    override fun updateTagTitle(title: String, tagId: String) {
         tagQueries.updateTitle(title, tagId)
     }
 
@@ -211,7 +211,15 @@ class DatabaseRepository @Inject constructor(
             .mapToList(dispatcherProvider.io())
     }
 
-    override fun deleteTagsByIds(ids: List<Long>) {
+    override fun observeTagsByWishId(wishId: String): Flow<List<Tag>> {
+        return wishTagRelationQueries
+            .getWishTags(wishId)
+            .asFlow()
+            .mapToList(dispatcherProvider.io())
+            .map { list -> list.map { Tag(it.tagId_, it.title) } }
+    }
+
+    override fun deleteTagsByIds(ids: List<String>) {
         tagQueries.deleteByIds(ids)
     }
 

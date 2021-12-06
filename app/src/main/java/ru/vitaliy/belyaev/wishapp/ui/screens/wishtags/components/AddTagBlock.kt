@@ -20,12 +20,12 @@ import ru.vitaliy.belyaev.wishapp.R
 @Composable
 fun AddTagBlock(
     tagName: String,
-    onClick: () -> Unit
+    onClick: (String) -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable { onClick(tagName) }
             .padding(16.dp)
     ) {
         Icon(

@@ -3,6 +3,7 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wishtags
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -18,12 +19,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -32,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.AddTagBlock
+import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
 
 @Composable
 fun WishTagsScreen(
@@ -40,14 +45,17 @@ fun WishTagsScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     var query: String by remember { mutableStateOf("") }
+    val state: List<TagItem> by viewModel.uiState.collectAsState()
+    val focusRequester = remember { FocusRequester() }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-
                     TextField(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester),
                         value = query,
                         textStyle = MaterialTheme.typography.body1,
                         onValueChange = { newValue ->
@@ -96,19 +104,17 @@ fun WishTagsScreen(
                 item {
                     AddTagBlock(
                         tagName = query,
-                        onClick = {}
+                        onClick = {
+                            query = ""
+                            viewModel.onQueryChanged("")
+                            viewModel.onAddTagClicked(it)
+                        }
                     )
                 }
             }
-//            items(state.wishes) { wishItem ->
-//                val isSelected: Boolean = state.selectedIds.contains(wishItem.wish.id)
-//                WishItemBlock(
-//                    wishItem = wishItem,
-//                    isSelected = isSelected,
-//                    onWishClicked = onWishClicked,
-//                    onWishLongPress = { wish -> viewModel.onWishLongPress(wish) }
-//                )
-//            }
+            items(state) { tagItem ->
+                Text(text = tagItem.tag.title)
+            }
         }
     }
 }

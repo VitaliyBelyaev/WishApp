@@ -2,7 +2,7 @@
 
 CREATE TABLE WishTagRelation (
  wishId TEXT NOT NULL,
- tagId INTEGER NOT NULL,
+ tagId TEXT NOT NULL,
  FOREIGN KEY (wishId) REFERENCES Wish(wishId),
  FOREIGN KEY (tagId) REFERENCES Tag(tagId),
  UNIQUE(wishId, tagId)

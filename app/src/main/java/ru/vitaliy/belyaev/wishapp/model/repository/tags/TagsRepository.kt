@@ -5,14 +5,15 @@ import ru.vitaliy.belyaev.model.database.Tag
 
 interface TagsRepository {
 
-    fun insertTag(title: String)
+    fun insertTag(tag: Tag)
 
-    fun updateTagTitle(title: String, tagId: Long)
+    fun updateTagTitle(title: String, tagId: String)
 
     suspend fun getAllTags(): List<Tag>
     fun observeAllTags(): Flow<List<Tag>>
+    fun observeTagsByWishId(wishId: String): Flow<List<Tag>>
 
-    fun deleteTagsByIds(ids: List<Long>)
+    fun deleteTagsByIds(ids: List<String>)
 
     fun clearAllTags()
 }
