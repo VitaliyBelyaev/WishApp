@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Tag
 import ru.vitaliy.belyaev.wishapp.model.repository.tags.TagsRepository
-import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.wishtagrelation.WishTagRelationRepository
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
@@ -23,7 +22,6 @@ import timber.log.Timber
 @HiltViewModel
 class WishTagsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val wishesRepository: WishesRepository,
     private val tagsRepository: TagsRepository,
     private val wishTagRelationRepository: WishTagRelationRepository,
 ) : ViewModel() {
@@ -62,6 +60,17 @@ class WishTagsViewModel @Inject constructor(
         currentQuery = query
         _uiState.value = filterTagItems()
         Timber.tag("RTRT").d("onQueryChanged query:$query, list:${_uiState.value}")
+    }
+
+    fun onTagCheckboxClicked(tagItem: TagItem) {
+        viewModelScope.launch {
+            val newIsSelected = !tagItem.isSelected
+            if (newIsSelected) {
+                wishTagRelationRepository.insertWishTagRelation(wishId, tagItem.tag.tagId)
+            } else {
+                wishTagRelationRepository.deleteWishTagRelation(wishId, tagItem.tag.tagId)
+            }
+        }
     }
 
     private fun filterTagItems(): List<TagItem> {

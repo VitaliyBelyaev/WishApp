@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.AddTagBlock
+import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.TagItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
 
 @Composable
@@ -113,7 +114,7 @@ fun WishTagsScreen(
                 }
             }
             items(state) { tagItem ->
-                Text(text = tagItem.tag.title)
+                TagItemBlock(tagItem = tagItem, onClick = { viewModel.onTagCheckboxClicked(it) })
             }
         }
     }
