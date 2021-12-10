@@ -208,7 +208,10 @@ fun WishDetailedScreen(
             val tags = wishItemValue?.wish?.tags ?: emptyList()
             TagsBlock(
                 tags = tags,
-                onClick = {},
+                onClick = {
+                    val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
+                    onWishTagsClicked(wishId)
+                },
                 modifier = Modifier.padding(start = 12.dp, end = 12.dp)
             )
         }
