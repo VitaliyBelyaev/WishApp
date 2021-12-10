@@ -18,4 +18,5 @@
     <color name="theme_card_border">#ffecb3</color>
     <color name="bottomSheetBgColor">@android:color/white</color>
     <color name="checkmarkColor">@android:color/white</color>
+    <color name="bgSecondary">#E9ECED</color>
 </resources>

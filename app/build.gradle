@@ -79,6 +79,9 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc02"
     implementation "androidx.compose.material3:material3:1.0.0-alpha01"
 
+    // Compose Accompanist Flow layout
+    implementation "com.google.accompanist:accompanist-flowlayout:0.21.4-beta"
+
     // Google
     implementation "com.google.android.material:material:1.4.0"
     implementation "com.google.android.gms:play-services-oss-licenses:17.0.0"

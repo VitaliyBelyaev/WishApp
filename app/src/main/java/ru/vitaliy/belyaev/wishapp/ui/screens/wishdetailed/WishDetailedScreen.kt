@@ -49,6 +49,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Data
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.components.TagsBlock
 
 @ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
@@ -199,6 +200,13 @@ fun WishDetailedScreen(
                     //nothing
                 }
             }
+
+            val tags = wishItemValue?.wish?.tags ?: emptyList()
+            TagsBlock(
+                tags = tags,
+                onClick = {},
+                modifier = Modifier.padding(12.dp)
+            )
         }
     }
 }

@@ -10,4 +10,5 @@
     <color name="theme_card_bg_unselected">#424242</color>
     <color name="bottomSheetBgColor">#343841</color>
     <color name="checkmarkColor">@color/surface</color>
+    <color name="bgSecondary">#2D3139</color>
 </resources>

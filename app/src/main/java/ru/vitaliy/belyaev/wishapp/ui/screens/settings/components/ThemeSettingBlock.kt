@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,7 +40,7 @@ fun ThemeSettingBlock(
 
         val (systemRef, darkRef, lightRef, space1, space2) = createRefs()
         val basePadding = 12.dp
-        val baseShape = RoundedCornerShape(12.dp)
+        val baseShape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius))
         val borderWidth = 2.dp
 
         val systemBgColorRes = getBgColorRes(Theme.SYSTEM, selectedTheme)
