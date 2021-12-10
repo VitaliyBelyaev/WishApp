@@ -6,17 +6,22 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.domain.WishInteractor
+import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
+import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.createEmptyWish
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkPreviewState
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.toWishItem
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
@@ -30,6 +35,7 @@ class WishDetailedViewModel @Inject constructor(
     lateinit var wishId: String
 
     val uiState: MutableStateFlow<Optional<WishItem>> = MutableStateFlow(Optional.empty())
+    private var cachedLinkPreviewState: LinkPreviewState = None
 
     init {
         viewModelScope.launch {
@@ -37,17 +43,36 @@ class WishDetailedViewModel @Inject constructor(
                 inputWishId
             } else {
                 val wish = createEmptyWish()
-                withContext(Dispatchers.IO) {
-                    wishesRepository.insertWish(wish)
-                }
+                wishesRepository.insertWish(wish)
                 wish.id
             }
-            val wishItem = wishInteractor.getById(wishId)
+
+            wishesRepository
+                .observeWishById(wishId)
+                .collect {
+                    val previousLink: String = uiState.value.toValueOfNull()?.wish?.link ?: ""
+                    val currentLink = it.link
+                    if (previousLink == currentLink) {
+                        val wishItem = it.toWishItem(cachedLinkPreviewState)
+                        uiState.value = Optional.of(wishItem)
+                    } else {
+                        tryLoadLinkPreview(currentLink, it)
+                    }
+                }
+        }
+    }
+
+    private suspend fun tryLoadLinkPreview(link: String, wish: WishWithTags) {
+        if (link.isBlank()) {
+            cachedLinkPreviewState = None
+            val wishItem = wish.toWishItem(cachedLinkPreviewState)
             uiState.value = Optional.of(wishItem)
-
-            val wishItemWithLinkPreview = wishInteractor.getLinkPreview(wishItem.wish)
-            uiState.value = Optional.of(wishItemWithLinkPreview)
-
+        } else {
+            val wishItemLoading = wish.toWishItem(Loading)
+            uiState.value = Optional.of(wishItemLoading)
+            cachedLinkPreviewState = wishInteractor.getLinkPreview(link)
+            val wishItem = wish.toWishItem(cachedLinkPreviewState)
+            uiState.value = Optional.of(wishItem)
         }
     }
 

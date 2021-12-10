@@ -3,7 +3,9 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -190,22 +192,24 @@ fun WishDetailedScreen(
                     cursorColor = colorResource(R.color.inputCursorColor)
                 )
             )
+            Spacer(modifier = Modifier.height(12.dp))
 
             val wishItemValue = wishItem.toValueOfNull()
-            val pd = PaddingValues(start = 12.dp, top = 8.dp, end = 12.dp)
+            val pd = PaddingValues(start = 12.dp, end = 12.dp)
             when (val linkPreviewState = wishItemValue?.linkPreviewState) {
-                is Data -> LinkPreview(linkPreviewState.linkInfo, wishItemValue.wish.link)
+                is Data -> LinkPreview(linkPreviewState.linkInfo, wishItemValue.wish.link, pd)
                 is Loading -> LinkPreviewLoading(pd)
                 is None -> {
                     //nothing
                 }
             }
+            Spacer(modifier = Modifier.height(12.dp))
 
             val tags = wishItemValue?.wish?.tags ?: emptyList()
             TagsBlock(
                 tags = tags,
                 onClick = {},
-                modifier = Modifier.padding(12.dp)
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp)
             )
         }
     }

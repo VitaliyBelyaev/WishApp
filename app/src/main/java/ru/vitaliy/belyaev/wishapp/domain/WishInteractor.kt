@@ -14,6 +14,7 @@ import ru.vitaliy.belyaev.wishapp.model.network.await
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Data
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkInfo
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkPreviewState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.toDefaultWishItem
@@ -27,7 +28,7 @@ class WishInteractor @Inject constructor(
     private val okHttpClient: OkHttpClient
 ) {
 
-    fun insertWish(wishWithTags: WishWithTags) {
+    suspend fun insertWish(wishWithTags: WishWithTags) {
         wishesRepository.insertWish(wishWithTags)
     }
 
@@ -51,12 +52,38 @@ class WishInteractor @Inject constructor(
             .flowOn(Dispatchers.IO)
     }
 
-    suspend fun getById(id: String): WishItem {
+    suspend fun getWishItemById(id: String): WishItem {
         return wishesRepository.getWishById(id).toDefaultWishItem()
     }
 
-    suspend fun getLinkPreview(wish: WishWithTags): WishItem {
-        return wish.toWishItem()
+    fun observeWishItem(id: String): Flow<WishItem> {
+        return wishesRepository
+            .observeWishById(id)
+            .map { it.toDefaultWishItem() }
+    }
+
+    suspend fun getLinkPreview(link: String): LinkPreviewState {
+        try {
+            val request = Request.Builder()
+                .url(link)
+                .build()
+
+            val response = okHttpClient.newCall(request).await()
+            val body: String = response.body!!.string()
+            val document = Jsoup.parse(body)
+            val title = document.getLinkTitle()
+            val description = document.getLinkDescription()
+            val image = document.getLinkImage()
+            val linkPreviewState = if (title.isBlank() && description.isBlank() && image.isBlank()) {
+                None
+            } else {
+                Data(LinkInfo(title, description, image))
+            }
+            return linkPreviewState
+        } catch (t: Throwable) {
+            Timber.e(t)
+            return None
+        }
     }
 
     suspend fun deleteByIds(ids: List<String>) {

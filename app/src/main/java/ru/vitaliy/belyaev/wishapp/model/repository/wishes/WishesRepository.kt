@@ -5,12 +5,12 @@ import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 
 interface WishesRepository {
 
-    fun insertWish(wishWithTags: WishWithTags)
+    suspend fun insertWish(wishWithTags: WishWithTags)
 
-    fun updateWishTitle(newValue: String, wishId: String)
-    fun updateWishLink(newValue: String, wishId: String)
-    fun updateWishComment(newValue: String, wishId: String)
-    fun updateWishIsCompleted(newValue: Boolean, wishId: String)
+    suspend fun updateWishTitle(newValue: String, wishId: String)
+    suspend fun updateWishLink(newValue: String, wishId: String)
+    suspend fun updateWishComment(newValue: String, wishId: String)
+    suspend fun updateWishIsCompleted(newValue: Boolean, wishId: String)
 
     fun observeWishById(id: String): Flow<WishWithTags>
     suspend fun getWishById(id: String): WishWithTags

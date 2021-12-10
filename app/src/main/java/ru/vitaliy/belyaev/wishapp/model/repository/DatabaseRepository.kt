@@ -35,30 +35,44 @@ class DatabaseRepository @Inject constructor(
     private val tagQueries: TagQueries = database.tagQueries
 
     // region WishesRepository
-    override fun insertWish(wishWithTags: WishWithTags) {
-        with(wishWithTags) {
-            wishQueries.insert(id, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp)
+    override suspend fun insertWish(wishWithTags: WishWithTags) {
+        withContext(dispatcherProvider.io()) {
+            with(wishWithTags) {
+                wishQueries.insert(id, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp)
+            }
         }
     }
 
-    override fun updateWishTitle(newValue: String, wishId: String) {
-        wishQueries.updateTitle(title = newValue, updatedTimestamp = System.currentTimeMillis(), wishId = wishId)
+    override suspend fun updateWishTitle(newValue: String, wishId: String) {
+        withContext(dispatcherProvider.io()) {
+            wishQueries.updateTitle(title = newValue, updatedTimestamp = System.currentTimeMillis(), wishId = wishId)
+        }
     }
 
-    override fun updateWishLink(newValue: String, wishId: String) {
-        wishQueries.updateLink(link = newValue, updatedTimestamp = System.currentTimeMillis(), wishId = wishId)
+    override suspend fun updateWishLink(newValue: String, wishId: String) {
+        withContext(dispatcherProvider.io()) {
+            wishQueries.updateLink(link = newValue, updatedTimestamp = System.currentTimeMillis(), wishId = wishId)
+        }
     }
 
-    override fun updateWishComment(newValue: String, wishId: String) {
-        wishQueries.updateComment(comment = newValue, updatedTimestamp = System.currentTimeMillis(), wishId = wishId)
+    override suspend fun updateWishComment(newValue: String, wishId: String) {
+        withContext(dispatcherProvider.io()) {
+            wishQueries.updateComment(
+                comment = newValue,
+                updatedTimestamp = System.currentTimeMillis(),
+                wishId = wishId
+            )
+        }
     }
 
-    override fun updateWishIsCompleted(newValue: Boolean, wishId: String) {
-        wishQueries.updateIsCompleted(
-            isCompleted = newValue,
-            updatedTimestamp = System.currentTimeMillis(),
-            wishId = wishId
-        )
+    override suspend fun updateWishIsCompleted(newValue: Boolean, wishId: String) {
+        withContext(dispatcherProvider.io()) {
+            wishQueries.updateIsCompleted(
+                isCompleted = newValue,
+                updatedTimestamp = System.currentTimeMillis(),
+                wishId = wishId
+            )
+        }
     }
 
     override fun observeWishById(id: String): Flow<WishWithTags> {

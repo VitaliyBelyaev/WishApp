@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,8 +15,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,7 +32,7 @@ fun LinkPreviewLoading(paddingValues: PaddingValues) =
             .padding(paddingValues),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val cornerRadius = 4.dp
+        val cornerRadius = dimensionResource(R.dimen.base_corner_radius)
         Box(
             modifier = Modifier
                 .size(LINK_IMAGE_SIZE)
@@ -43,7 +44,7 @@ fun LinkPreviewLoading(paddingValues: PaddingValues) =
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 8.dp)
+                .padding(start = 10.dp, top = 8.dp, bottom = 8.dp)
         ) {
             Text(
                 text = "",
@@ -58,14 +59,22 @@ fun LinkPreviewLoading(paddingValues: PaddingValues) =
                     )
             )
 
+            // We need this to fill max height of 2 lines for description in shimmer
+            val longInvisibleText =
+                """
+                    linklinklinklinklinklinklinklinklinklinklinklinklinklinklinklinklin
+                    klinklinklinklinklinklinklinklinklinklinklinklinklinklinklinklinklink
+                    linklinklinklinklinklinklinklinklinklink
+                """.trimIndent()
             Text(
-                text = "",
+                text = longInvisibleText,
                 style = MaterialTheme.typography.body2,
-                color = Color.Gray,
+                color = colorResource(R.color.shimmerColor),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .fillMaxHeight()
                     .padding(top = 4.dp)
                     .background(
                         color = colorResource(R.color.shimmerColor),
@@ -78,5 +87,5 @@ fun LinkPreviewLoading(paddingValues: PaddingValues) =
 @Preview
 @Composable
 fun LinkPreviewLoadingPreview() {
-    LinkPreviewLoading(PaddingValues(0.dp))
+    LinkPreviewLoading(PaddingValues())
 }

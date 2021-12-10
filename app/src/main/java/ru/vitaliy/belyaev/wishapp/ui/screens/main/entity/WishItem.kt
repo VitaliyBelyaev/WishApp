@@ -15,3 +15,8 @@ fun WishWithTags.toDefaultWishItem(): WishItem {
     }
 }
 
+fun WishWithTags.toWishItem(linkPreviewState: LinkPreviewState): WishItem =
+    WishItem(this, linkPreviewState)
+
+
+

@@ -3,6 +3,7 @@ package ru.vitaliy.belyaev.wishapp.ui.core.linkpreview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,14 +22,19 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkInfo
 
 @Composable
-fun LinkPreview(linkInfo: LinkInfo, url: String) {
+fun LinkPreview(
+    linkInfo: LinkInfo,
+    url: String,
+    paddingValues: PaddingValues = PaddingValues()
+) {
 
     val uriHandler = LocalUriHandler.current
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { uriHandler.openUri(url) },
+            .clickable { uriHandler.openUri(url) }
+            .padding(paddingValues),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
@@ -42,12 +48,11 @@ fun LinkPreview(linkInfo: LinkInfo, url: String) {
             contentDescription = null,
             modifier = Modifier
                 .size(LINK_IMAGE_SIZE)
-                .padding(start = 16.dp, top = 4.dp, bottom = 4.dp)
         )
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, top = 8.dp, bottom = 8.dp, end = 16.dp)
+                .padding(start = 10.dp, top = 8.dp, bottom = 8.dp)
         ) {
             Text(
                 text = linkInfo.title,
