@@ -17,7 +17,6 @@ import ru.vitaliy.belyaev.wishapp.model.repository.wishtagrelation.WishTagRelati
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.toTagItem
-import timber.log.Timber
 
 @HiltViewModel
 class WishTagsViewModel @Inject constructor(
@@ -32,18 +31,20 @@ class WishTagsViewModel @Inject constructor(
     private var originTagItems: List<TagItem> = emptyList()
     private val _uiState: MutableStateFlow<List<TagItem>> = MutableStateFlow(emptyList())
     val uiState: StateFlow<List<TagItem>> = _uiState
+    private val recentlyAddedTagIds: MutableList<String> = mutableListOf()
 
     init {
         viewModelScope.launch {
             tagsRepository
                 .observeAllTags()
                 .combine(tagsRepository.observeTagsByWishId(wishId)) { allTags, wishTags ->
-                    allTags.map { tag -> tag.toTagItem(wishTags.contains(tag)) }
+                    allTags
+                        .map { tag -> tag.toTagItem(wishTags.contains(tag)) }
+                        .sortedBy { it.tag.title }
                 }
                 .collect { tagItems ->
                     originTagItems = tagItems
-                    _uiState.value = filterTagItems()
-                    Timber.tag("RTRT").d("filtered:${_uiState.value}")
+                    _uiState.value = prepareTagItems()
                 }
         }
     }
@@ -51,6 +52,7 @@ class WishTagsViewModel @Inject constructor(
     fun onAddTagClicked(tagName: String) {
         viewModelScope.launch {
             val tagId = UUID.randomUUID().toString()
+            recentlyAddedTagIds.add(0, tagId)
             tagsRepository.insertTag(Tag(tagId, tagName))
             wishTagRelationRepository.insertWishTagRelation(wishId, tagId)
         }
@@ -58,8 +60,7 @@ class WishTagsViewModel @Inject constructor(
 
     fun onQueryChanged(query: String) {
         currentQuery = query
-        _uiState.value = filterTagItems()
-        Timber.tag("RTRT").d("onQueryChanged query:$query, list:${_uiState.value}")
+        _uiState.value = prepareTagItems()
     }
 
     fun onTagCheckboxClicked(tagItem: TagItem) {
@@ -73,13 +74,23 @@ class WishTagsViewModel @Inject constructor(
         }
     }
 
-    private fun filterTagItems(): List<TagItem> {
-        return originTagItems.filter {
+    private fun prepareTagItems(): List<TagItem> {
+        val filteredByQuery = originTagItems.filter {
             if (currentQuery.isBlank()) {
                 true
             } else {
                 it.tag.title.contains(currentQuery, ignoreCase = true)
             }
         }
+
+        val withoutRecentlyAdded = filteredByQuery.filter { it.tag.tagId !in recentlyAddedTagIds }
+        val result = mutableListOf<TagItem>().apply {
+            for (tagId in recentlyAddedTagIds) {
+                val tagItem = filteredByQuery.find { it.tag.tagId == tagId }
+                tagItem?.let { add(tagItem) }
+            }
+            addAll(withoutRecentlyAdded)
+        }
+        return result
     }
 }
