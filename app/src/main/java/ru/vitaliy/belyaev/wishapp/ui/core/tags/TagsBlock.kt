@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.components
+package ru.vitaliy.belyaev.wishapp.ui.core.tags
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,13 +10,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.flowlayout.FlowRow
 import ru.vitaliy.belyaev.model.database.Tag
 import ru.vitaliy.belyaev.wishapp.R
 
 @Composable
-fun TagsBlock(tags: List<Tag>, onClick: (Tag) -> Unit, modifier: Modifier = Modifier) {
+fun TagsBlock(
+    modifier: Modifier = Modifier,
+    tags: List<Tag>,
+    textSize: TextUnit,
+    onClick: ((Tag) -> Unit)? = null
+) {
 
     val shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius))
     val itemsSpacing = 8.dp
@@ -27,11 +33,10 @@ fun TagsBlock(tags: List<Tag>, onClick: (Tag) -> Unit, modifier: Modifier = Modi
     ) {
         repeat(tags.size) {
             val tag = tags[it]
-            val verticalPadding = 12.dp
-            val horizontalPadding = 8.dp
-            Text(
-                text = tag.title,
-                modifier = Modifier
+            val verticalPadding = (textSize.value * 3 / 4).dp
+            val horizontalPadding = (textSize.value / 2).dp
+            val textModifier = if (onClick != null) {
+                Modifier
                     .background(color = colorResource(R.color.bgSecondary), shape = shape)
                     .clip(shape)
                     .clickable { onClick(tag) }
@@ -41,6 +46,21 @@ fun TagsBlock(tags: List<Tag>, onClick: (Tag) -> Unit, modifier: Modifier = Modi
                         top = horizontalPadding,
                         bottom = horizontalPadding
                     )
+            } else {
+                Modifier
+                    .background(color = colorResource(R.color.bgSecondary), shape = shape)
+                    .clip(shape)
+                    .padding(
+                        start = verticalPadding,
+                        end = verticalPadding,
+                        top = horizontalPadding,
+                        bottom = horizontalPadding
+                    )
+            }
+            Text(
+                text = tag.title,
+                fontSize = textSize,
+                modifier = textModifier
             )
         }
     }

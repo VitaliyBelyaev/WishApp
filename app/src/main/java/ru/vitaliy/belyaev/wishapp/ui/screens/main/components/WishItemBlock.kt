@@ -3,7 +3,9 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.main.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
@@ -18,10 +20,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
+import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 
 @Composable
@@ -98,5 +102,11 @@ fun WishItemBlock(
                 overflow = TextOverflow.Ellipsis
             )
         }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TagsBlock(
+            tags = wishItem.wish.tags,
+            textSize = 13.sp,
+        )
     }
 }

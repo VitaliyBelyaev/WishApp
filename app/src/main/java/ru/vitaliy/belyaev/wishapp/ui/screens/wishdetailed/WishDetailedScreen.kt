@@ -37,6 +37,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import java.util.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,12 +47,12 @@ import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreview
 import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreviewLoading
+import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Data
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
-import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.components.TagsBlock
 
 @ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
@@ -208,6 +209,7 @@ fun WishDetailedScreen(
             val tags = wishItemValue?.wish?.tags ?: emptyList()
             TagsBlock(
                 tags = tags,
+                textSize = 16.sp,
                 onClick = {
                     val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
                     onWishTagsClicked(wishId)
