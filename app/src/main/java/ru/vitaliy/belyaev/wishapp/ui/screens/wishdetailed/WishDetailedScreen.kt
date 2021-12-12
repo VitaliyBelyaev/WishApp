@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -17,12 +19,14 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +38,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -70,6 +75,7 @@ fun WishDetailedScreen(
         onBackPressed()
         appViewModel.onWishScreenExit(viewModel.wishId)
     }
+    val openDialog: MutableState<Optional<WishItem>> = remember { mutableStateOf(Optional.empty()) }
 
     BackHandler { handleBackPressed() }
 
@@ -89,11 +95,7 @@ fun WishDetailedScreen(
                             contentDescription = "Open tags"
                         )
                     }
-                    IconButton(onClick = {
-                        viewModel.onDeleteWishClicked()
-                        onBackPressed()
-                        appViewModel.onDeleteWishClicked(viewModel.wishId)
-                    }) {
+                    IconButton(onClick = { openDialog.value = wishItem }) {
                         Icon(
                             Icons.Filled.Delete,
                             contentDescription = "Delete wish"
@@ -217,6 +219,42 @@ fun WishDetailedScreen(
                 modifier = Modifier.padding(start = 12.dp, end = 12.dp)
             )
         }
+    }
+
+    val wishToDelete = openDialog.value
+    if (wishToDelete.isPresent) {
+
+        AlertDialog(
+            backgroundColor = colorResource(R.color.bottomSheetBgColor),
+            shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius)),
+            onDismissRequest = { openDialog.value = Optional.empty() },
+            title = { Text(stringResource(R.string.delete_wish_title)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        openDialog.value = Optional.empty()
+                        viewModel.onDeleteWishClicked()
+                        onBackPressed()
+                        appViewModel.onDeleteWishClicked(viewModel.wishId)
+                    }
+                ) {
+                    Text(
+                        stringResource(R.string.delete),
+                        color = MaterialTheme.colors.onSurface
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { openDialog.value = Optional.empty() }
+                ) {
+                    Text(
+                        stringResource(R.string.cancel),
+                        color = MaterialTheme.colors.onSurface
+                    )
+                }
+            }
+        )
     }
 }
 

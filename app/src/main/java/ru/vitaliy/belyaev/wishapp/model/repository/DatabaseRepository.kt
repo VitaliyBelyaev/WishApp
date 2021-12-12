@@ -121,13 +121,20 @@ class DatabaseRepository @Inject constructor(
             .getAll()
             .asFlow()
             .mapToList(dispatcherProvider.io())
-        // We need this for reactive changes of tags
+
+        // We need this for reactive changes of tags in wish
         val wishTagRelationsFlow: Flow<List<WishTagRelation>> = wishTagRelationQueries
             .getAllRelations()
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
-        return wishesDtoFlow.combine(wishTagRelationsFlow) { wishesDto, _ ->
+        // We need this for reactive changes of tags
+        val tagFlow: Flow<List<Tag>> = tagQueries
+            .getAll()
+            .asFlow()
+            .mapToList(dispatcherProvider.io())
+
+        return combine(wishesDtoFlow, wishTagRelationsFlow, tagFlow) { wishesDto, _, _ ->
             val wishesWithTags = mutableListOf<WishWithTags>()
             for (wishDto in wishesDto) {
                 val tags: List<Tag> = wishTagRelationQueries
