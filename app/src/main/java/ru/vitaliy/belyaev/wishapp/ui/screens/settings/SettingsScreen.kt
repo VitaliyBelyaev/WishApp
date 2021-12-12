@@ -60,7 +60,7 @@ fun SettingsScreen(
         scrimColor = Color.Black.copy(alpha = 0.32f),
         sheetContent = {
             when (settingItem.value) {
-                is Backup -> BackupSheetContent()
+                is Backup -> BackupSheetContent(modalBottomSheetState)
                 else -> {
                 }
             }

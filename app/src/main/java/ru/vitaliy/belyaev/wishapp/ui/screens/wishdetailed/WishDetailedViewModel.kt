@@ -11,7 +11,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import ru.vitaliy.belyaev.wishapp.domain.WishInteractor
+import ru.vitaliy.belyaev.wishapp.domain.GetLinkPreviewInteractor
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
@@ -28,7 +28,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.toWishItem
 class WishDetailedViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val wishesRepository: WishesRepository,
-    private val wishInteractor: WishInteractor
+    private val getLinkPreviewInteractor: GetLinkPreviewInteractor
 ) : ViewModel() {
 
     private val inputWishId: String = savedStateHandle[ARG_WISH_ID] ?: ""
@@ -70,7 +70,7 @@ class WishDetailedViewModel @Inject constructor(
         } else {
             val wishItemLoading = wish.toWishItem(Loading)
             uiState.value = Optional.of(wishItemLoading)
-            cachedLinkPreviewState = wishInteractor.getLinkPreview(link)
+            cachedLinkPreviewState = getLinkPreviewInteractor(link)
             val wishItem = wish.toWishItem(cachedLinkPreviewState)
             uiState.value = Optional.of(wishItem)
         }

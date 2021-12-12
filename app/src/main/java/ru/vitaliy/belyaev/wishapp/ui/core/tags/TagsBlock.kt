@@ -8,6 +8,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.TextUnit
@@ -35,9 +36,10 @@ fun TagsBlock(
             val tag = tags[it]
             val verticalPadding = (textSize.value * 3 / 4).dp
             val horizontalPadding = (textSize.value / 2).dp
+            val bgColor: Color = colorResource(R.color.bgSecondary)
             val textModifier = if (onClick != null) {
                 Modifier
-                    .background(color = colorResource(R.color.bgSecondary), shape = shape)
+                    .background(color = bgColor, shape = shape)
                     .clip(shape)
                     .clickable { onClick(tag) }
                     .padding(
@@ -48,7 +50,7 @@ fun TagsBlock(
                     )
             } else {
                 Modifier
-                    .background(color = colorResource(R.color.bgSecondary), shape = shape)
+                    .background(color = bgColor, shape = shape)
                     .clip(shape)
                     .padding(
                         start = verticalPadding,

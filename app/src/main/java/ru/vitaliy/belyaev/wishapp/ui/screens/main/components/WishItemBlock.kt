@@ -26,11 +26,10 @@ import androidx.constraintlayout.compose.Dimension
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 
 @Composable
 fun WishItemBlock(
-    wishItem: WishItem,
+    wishItem: WishWithTags,
     isSelected: Boolean,
     onWishClicked: (WishWithTags) -> Unit,
     onWishLongPress: (WishWithTags) -> Unit,
@@ -47,14 +46,14 @@ fun WishItemBlock(
             .background(backgroundColor)
             .pointerInput(wishItem) {
                 detectTapGestures(
-                    onTap = { onWishClicked(wishItem.wish) },
-                    onLongPress = { onWishLongPress(wishItem.wish) }
+                    onTap = { onWishClicked(wishItem) },
+                    onLongPress = { onWishLongPress(wishItem) }
                 )
             }
             .padding(16.dp)
     ) {
-        val (title, titleColor) = if (wishItem.wish.title.isNotBlank()) {
-            wishItem.wish.title to Color.Unspecified
+        val (title, titleColor) = if (wishItem.title.isNotBlank()) {
+            wishItem.title to Color.Unspecified
         } else {
             stringResource(R.string.without_title) to Color.Gray
         }
@@ -68,7 +67,7 @@ fun WishItemBlock(
                     width = Dimension.preferredWrapContent
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
-                    val marginEnd = if (wishItem.wish.link.isNotBlank()) {
+                    val marginEnd = if (wishItem.link.isNotBlank()) {
                         36.dp
                     } else {
                         0.dp
@@ -76,7 +75,7 @@ fun WishItemBlock(
                     end.linkTo(parent.end, margin = marginEnd)
                 }
             )
-            if (wishItem.wish.link.isNotBlank()) {
+            if (wishItem.link.isNotBlank()) {
                 Icon(
                     painterResource(R.drawable.ic_link),
                     contentDescription = "Link",
@@ -92,9 +91,9 @@ fun WishItemBlock(
                 )
             }
         }
-        if (wishItem.wish.comment.isNotBlank()) {
+        if (wishItem.comment.isNotBlank()) {
             Text(
-                text = wishItem.wish.comment,
+                text = wishItem.comment,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
@@ -105,7 +104,7 @@ fun WishItemBlock(
         Spacer(modifier = Modifier.height(8.dp))
 
         TagsBlock(
-            tags = wishItem.wish.tags,
+            tags = wishItem.tags,
             textSize = 13.sp,
         )
     }

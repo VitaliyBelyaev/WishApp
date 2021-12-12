@@ -11,30 +11,55 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import ru.vitaliy.belyaev.wishapp.domain.WishInteractor
+import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
+import ru.vitaliy.belyaev.wishapp.model.repository.tags.TagsRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.AllTagsMenuItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.NavigationMenuItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.TagMenuItem
+import timber.log.Timber
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val wishesRepository: WishesRepository,
-    private val wishInteractor: WishInteractor
+    private val tagsRepository: TagsRepository
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<MainScreenState> = MutableStateFlow(MainScreenState())
-
     val uiState: StateFlow<MainScreenState> = _uiState
+
+    private val _navigationMenuUiState: MutableStateFlow<List<NavigationMenuItem>> = MutableStateFlow(emptyList())
+    val navigationMenuUiState: StateFlow<List<NavigationMenuItem>> = _navigationMenuUiState
+    private var selectedTagId: String = ""
 
     private val testWishes = createTestWishes()
 
     init {
         viewModelScope.launch {
-            wishInteractor
-                .getWishItems()
+            wishesRepository
+                .observeAllWishes()
                 .collect { wishItems ->
+                    Timber.tag("RTRT").d("wishItems:$wishItems")
                     _uiState.value = MainScreenState(wishes = wishItems)
+                }
+        }
+
+        viewModelScope.launch {
+            tagsRepository
+                .observeAllTags()
+                .collect { tags ->
+                    Timber.tag("RTRT").d("tags:$tags")
+                    val tagMenuItems = tags.map {
+                        TagMenuItem(it, it.tagId == selectedTagId)
+                    }
+                    val navMenuItems = mutableListOf<NavigationMenuItem>().apply {
+                        add(AllTagsMenuItem(R.string.all_wishes, selectedTagId.isBlank()))
+                        addAll(tagMenuItems)
+                    }
+                    _navigationMenuUiState.value = navMenuItems
                 }
         }
     }
@@ -48,7 +73,7 @@ class MainViewModel @Inject constructor(
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis
             )
-            wishInteractor.insertWish(wish)
+            wishesRepository.insertWish(wish)
         }
     }
 
@@ -59,12 +84,12 @@ class MainViewModel @Inject constructor(
     fun onDeleteSelectedClicked() {
         viewModelScope.launch {
             val selectedIds = uiState.value.selectedIds
-            wishInteractor.deleteByIds(selectedIds)
+            wishesRepository.deleteWishesByIds(selectedIds)
         }
     }
 
     fun onSelectAllClicked() {
-        val selectedIds = uiState.value.wishes.map { it.wish.id }
+        val selectedIds = uiState.value.wishes.map { it.id }
         _uiState.value = uiState.value.copy(selectedIds = selectedIds)
     }
 
@@ -86,6 +111,12 @@ class MainViewModel @Inject constructor(
             oldState.copy(selectedIds = selectedIds)
         }
         _uiState.value = newState
+    }
+
+    fun onNavItemSelected(tagId: String) {
+    }
+
+    fun onEditTagsClicked() {
     }
 
     private fun createTestWishes(): List<WishWithTags> {
