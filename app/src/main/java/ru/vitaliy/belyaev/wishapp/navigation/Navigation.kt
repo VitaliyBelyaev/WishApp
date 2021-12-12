@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.AboutAppScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.privacypolicy.PrivacyPolicyScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainScreen
@@ -16,7 +17,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.WishTagsScreen
 @ExperimentalCoroutinesApi
 @ExperimentalMaterialApi
 @Composable
-fun Navigation(onShareClick: () -> Unit) {
+fun Navigation(onShareClick: (List<WishWithTags>) -> Unit) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = MainRoute.VALUE) {
         composable(MainRoute.VALUE) {

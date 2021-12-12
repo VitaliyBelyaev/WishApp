@@ -49,7 +49,7 @@ class AppActivity : AppCompatActivity() {
             AppCompatDelegate.setDefaultNightMode(modeInt)
             WishAppTheme(selectedTheme = selectedTheme) {
                 Surface(color = MaterialTheme.colors.background) {
-                    Navigation { viewModel.onShareWishListClicked() }
+                    Navigation { viewModel.onShareWishListClicked(it) }
                 }
             }
         }

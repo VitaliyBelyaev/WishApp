@@ -48,7 +48,7 @@ fun MainScreen(
     openWishDetailed: (WishWithTags) -> Unit,
     onAddWishClicked: () -> Unit,
     onSettingIconClicked: () -> Unit,
-    onShareClick: () -> Unit,
+    onShareClick: (List<WishWithTags>) -> Unit,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -84,7 +84,7 @@ fun MainScreen(
             bottomBar = {
                 WishAppBottomBar(
                     cutoutShape = fabShape,
-                    onShareClick = onShareClick,
+                    onShareClick = { onShareClick(state.wishes) },
                     onMenuClick = { scope.launch { modalBottomSheetState.show() } }
                 )
             },

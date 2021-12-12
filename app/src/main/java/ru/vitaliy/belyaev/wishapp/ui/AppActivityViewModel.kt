@@ -50,10 +50,7 @@ class AppActivityViewModel @Inject constructor(
         }
     }
 
-    fun onShareWishListClicked() {
-        viewModelScope.launch {
-            val list = wishesRepository.getAllWishes()
-            wishListToShareLiveData.postValue(list)
-        }
+    fun onShareWishListClicked(wishes: List<WishWithTags>) {
+        wishListToShareLiveData.postValue(wishes)
     }
 }
