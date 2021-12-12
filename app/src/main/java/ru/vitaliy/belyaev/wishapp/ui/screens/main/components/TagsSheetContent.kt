@@ -61,8 +61,10 @@ fun TagsSheetContent(
                 title = stringResource(R.string.edit_tags),
                 isSelected = false,
                 onClick = {
-                    onEditTagsClicked()
-                    scope.launch { modalBottomSheetState.hide() }
+                    scope.launch {
+                        modalBottomSheetState.hide()
+                        onEditTagsClicked()
+                    }
                 }
             )
         }

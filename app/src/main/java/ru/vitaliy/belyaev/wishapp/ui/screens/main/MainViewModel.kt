@@ -139,9 +139,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun onEditTagsClicked() {
-    }
-
     private fun createTestWishes(): List<WishWithTags> {
         val currentMillis = System.currentTimeMillis()
         return listOf(

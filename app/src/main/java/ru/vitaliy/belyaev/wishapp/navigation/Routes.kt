@@ -30,6 +30,10 @@ object PrivacyPolicyRoute {
     const val VALUE = "privacy_policy"
 }
 
+object EditTagRoute {
+    const val VALUE = "edit_tag"
+}
+
 object WishTagsRoute {
     const val VALUE = "wish_tags/{$ARG_WISH_ID}"
 

@@ -9,6 +9,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.AboutAppScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.privacypolicy.PrivacyPolicyScreen
+import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.EditTagsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.WishDetailedScreen
@@ -25,7 +26,8 @@ fun Navigation(onShareClick: (List<WishWithTags>) -> Unit) {
                 openWishDetailed = { navController.navigate(WishDetailedRouteWithArgs.build(it.id)) },
                 onAddWishClicked = { navController.navigate(WishDetailedRoute.VALUE) },
                 onSettingIconClicked = { navController.navigate(SettingsRoute.VALUE) },
-                onShareClick = onShareClick
+                onShareClick = onShareClick,
+                onEditTagClick = { navController.navigate(EditTagRoute.VALUE) }
             )
         }
         composable(WishDetailedRoute.VALUE) {
@@ -59,6 +61,11 @@ fun Navigation(onShareClick: (List<WishWithTags>) -> Unit) {
         }
         composable(WishTagsRoute.VALUE) {
             WishTagsScreen(
+                onBackPressed = { navController.popBackStack() }
+            )
+        }
+        composable(EditTagRoute.VALUE) {
+            EditTagsScreen(
                 onBackPressed = { navController.popBackStack() }
             )
         }

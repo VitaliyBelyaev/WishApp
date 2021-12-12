@@ -49,6 +49,7 @@ fun MainScreen(
     onAddWishClicked: () -> Unit,
     onSettingIconClicked: () -> Unit,
     onShareClick: (List<WishWithTags>) -> Unit,
+    onEditTagClick: () -> Unit,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -68,7 +69,7 @@ fun MainScreen(
                 modalBottomSheetState = modalBottomSheetState,
                 navMenuItems = navMenuItems,
                 onNavItemSelected = { viewModel.onNavItemSelected(it) },
-                onEditTagsClicked = { viewModel.onEditTagsClicked() }
+                onEditTagsClicked = onEditTagClick
             )
         }
     ) {
@@ -135,6 +136,7 @@ fun MainScreen(
 @Composable
 fun MainScreenPreview() {
     MainScreen(
+        {},
         {},
         {},
         {},
