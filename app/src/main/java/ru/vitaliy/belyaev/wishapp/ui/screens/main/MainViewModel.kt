@@ -7,10 +7,13 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.random.Random
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import ru.vitaliy.belyaev.model.database.Tag
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.model.repository.tags.TagsRepository
@@ -19,7 +22,6 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.AllTagsMenuItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.NavigationMenuItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.TagMenuItem
-import timber.log.Timber
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
@@ -33,33 +35,34 @@ class MainViewModel @Inject constructor(
 
     private val _navigationMenuUiState: MutableStateFlow<List<NavigationMenuItem>> = MutableStateFlow(emptyList())
     val navigationMenuUiState: StateFlow<List<NavigationMenuItem>> = _navigationMenuUiState
-    private var selectedTagId: String = ""
+
+    private val selectedTagIdFlow: MutableStateFlow<String> = MutableStateFlow("")
 
     private val testWishes = createTestWishes()
 
+    private var allWishesJob: Job? = null
+    private var wishesByTagJob: Job? = null
+
     init {
-        viewModelScope.launch {
+        allWishesJob = viewModelScope.launch {
             wishesRepository
                 .observeAllWishes()
-                .collect { wishItems ->
-                    Timber.tag("RTRT").d("wishItems:$wishItems")
-                    _uiState.value = MainScreenState(wishes = wishItems)
-                }
+                .collect { wishItems -> _uiState.value = MainScreenState(wishes = wishItems) }
         }
 
         viewModelScope.launch {
             tagsRepository
                 .observeAllTags()
-                .collect { tags ->
-                    Timber.tag("RTRT").d("tags:$tags")
-                    val tagMenuItems = tags.map {
-                        TagMenuItem(it, it.tagId == selectedTagId)
-                    }
+                .combine(selectedTagIdFlow) { tags, selectedTagId ->
                     val navMenuItems = mutableListOf<NavigationMenuItem>().apply {
                         add(AllTagsMenuItem(R.string.all_wishes, selectedTagId.isBlank()))
+                        val tagMenuItems = tags.map { TagMenuItem(it, it.tagId == selectedTagId) }
                         addAll(tagMenuItems)
                     }
-                    _navigationMenuUiState.value = navMenuItems
+                    navMenuItems.toList()
+                }
+                .collect {
+                    _navigationMenuUiState.value = it
                 }
         }
     }
@@ -113,7 +116,27 @@ class MainViewModel @Inject constructor(
         _uiState.value = newState
     }
 
-    fun onNavItemSelected(tagId: String) {
+    fun onNavItemSelected(tag: Tag?) {
+        allWishesJob?.cancel()
+        wishesByTagJob?.cancel()
+        selectedTagIdFlow.value = tag?.tagId ?: ""
+        if (tag == null) {
+            allWishesJob = viewModelScope.launch {
+                wishesRepository
+                    .observeAllWishes()
+                    .collect { wishItems ->
+                        _uiState.value = MainScreenState(wishes = wishItems)
+                    }
+            }
+        } else {
+            wishesByTagJob = viewModelScope.launch {
+                wishesRepository
+                    .observeWishesByTag(tag.tagId)
+                    .collect { wishItems ->
+                        _uiState.value = MainScreenState(wishes = wishItems, selectedTag = tag)
+                    }
+            }
+        }
     }
 
     fun onEditTagsClicked() {

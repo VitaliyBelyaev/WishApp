@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
@@ -30,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import ru.vitaliy.belyaev.model.database.Tag
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.AllTagsMenuItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.NavigationMenuItem
@@ -41,7 +43,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.TagMenuItem
 fun TagsSheetContent(
     modalBottomSheetState: ModalBottomSheetState,
     navMenuItems: List<NavigationMenuItem>,
-    onNavItemSelected: (String) -> Unit,
+    onNavItemSelected: (Tag?) -> Unit,
     onEditTagsClicked: () -> Unit
 ) {
 
@@ -50,6 +52,7 @@ fun TagsSheetContent(
     BackHandler(enabled = modalBottomSheetState.isVisible) {
         scope.launch { modalBottomSheetState.hide() }
     }
+
     LazyColumn {
         item {
             Spacer(modifier = Modifier.height(10.dp))
@@ -57,7 +60,10 @@ fun TagsSheetContent(
                 icon = painterResource(R.drawable.ic_edit),
                 title = stringResource(R.string.edit_tags),
                 isSelected = false,
-                onClick = { onEditTagsClicked() }
+                onClick = {
+                    onEditTagsClicked()
+                    scope.launch { modalBottomSheetState.hide() }
+                }
             )
         }
         item { Divider() }
@@ -77,11 +83,12 @@ fun TagsSheetContent(
                 title = title,
                 isSelected = navMenuItem.isSelected,
                 onClick = {
-                    val tagId = when (navMenuItem) {
-                        is AllTagsMenuItem -> ""
-                        is TagMenuItem -> navMenuItem.tag.tagId
+                    val tag = when (navMenuItem) {
+                        is AllTagsMenuItem -> null
+                        is TagMenuItem -> navMenuItem.tag
                     }
-                    onNavItemSelected(tagId)
+                    onNavItemSelected(tag)
+                    scope.launch { modalBottomSheetState.hide() }
                 }
             )
         }
@@ -97,12 +104,15 @@ fun NavMenuItemBlock(
 ) {
 
     val bgColor = if (isSelected) colorResource(R.color.bgSecondary) else Color.Transparent
+    val cornerRadius = 50.dp
+    val shape = RoundedCornerShape(topEnd = cornerRadius, bottomEnd = cornerRadius)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .background(bgColor)
             .clickable { onClick() }
+            .padding(end = 16.dp)
+            .background(color = bgColor, shape = shape)
             .padding(16.dp)
     ) {
         Icon(

@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import ru.vitaliy.belyaev.model.database.Tag
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
@@ -17,12 +18,14 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainViewModel
 @Composable
 fun MainScreenTopBar(
     selectedIds: List<String>,
+    selectedTag: Tag?,
     onSettingIconClicked: () -> Unit,
     viewModel: MainViewModel
 ) {
     if (selectedIds.isEmpty()) {
+        val title = selectedTag?.title ?: stringResource(R.string.app_name)
         WishAppTopBar(
-            title = stringResource(R.string.app_name),
+            title = title,
             actions = {
                 if (BuildConfig.DEBUG) {
                     IconButton(onClick = { viewModel.onAddTestWishClicked() }) {

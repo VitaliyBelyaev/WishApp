@@ -76,6 +76,7 @@ fun MainScreen(
             topBar = {
                 MainScreenTopBar(
                     selectedIds = state.selectedIds,
+                    selectedTag = state.selectedTag,
                     onSettingIconClicked = onSettingIconClicked,
                     viewModel = viewModel
                 )
