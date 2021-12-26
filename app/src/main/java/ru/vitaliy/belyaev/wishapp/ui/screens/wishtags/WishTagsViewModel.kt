@@ -8,10 +8,10 @@ import java.util.*
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Tag
+import ru.vitaliy.belyaev.wishapp.model.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.tags.TagsRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.wishtagrelation.WishTagRelationRepository
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
@@ -23,6 +23,7 @@ class WishTagsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val tagsRepository: TagsRepository,
     private val wishTagRelationRepository: WishTagRelationRepository,
+    private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
 
     private val wishId: String = savedStateHandle[ARG_WISH_ID] ?: ""
@@ -55,6 +56,7 @@ class WishTagsViewModel @Inject constructor(
             recentlyAddedTagIds.add(0, tagId)
             tagsRepository.insertTag(Tag(tagId, tagName))
             wishTagRelationRepository.insertWishTagRelation(wishId, tagId)
+            dataStoreRepository.incrementPositiveActionsCount()
         }
     }
 

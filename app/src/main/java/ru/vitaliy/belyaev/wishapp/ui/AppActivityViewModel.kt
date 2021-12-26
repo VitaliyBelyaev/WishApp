@@ -14,7 +14,6 @@ import ru.vitaliy.belyaev.wishapp.model.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.isEmpty
 import ru.vitaliy.belyaev.wishapp.utils.SingleLiveEvent
-import timber.log.Timber
 
 @HiltViewModel
 class AppActivityViewModel @Inject constructor(
@@ -41,11 +40,9 @@ class AppActivityViewModel @Inject constructor(
                 dataStoreRepository.positiveActionsCountFlow,
                 dataStoreRepository.reviewRequestShownCountFlow
             ) { positiveActionsCount, reviewRequestShownCount ->
-                Timber.tag("RTRT")
-                    .d("AppViewModel, positiveActionsCount:$positiveActionsCount, reviewRequestShownCount:$reviewRequestShownCount")
                 val needShowReviewRequest = positiveActionsCount != 0 &&
                         reviewRequestShownCount != positiveActionsCount &&
-                        positiveActionsCount % 5 == 0
+                        positiveActionsCount % 10 == 0
                 needShowReviewRequest to positiveActionsCount
             }
                 .collect { (needShowReviewRequest, positiveActionsCount) ->
@@ -58,10 +55,8 @@ class AppActivityViewModel @Inject constructor(
     }
 
     fun onWishScreenExit(wishId: String, isNewWish: Boolean) {
-        Timber.tag("RTRT").d("onWishScreenExit, isNewWish:$isNewWish")
         deleteWishIfEmpty(wishId)
         if (isNewWish) {
-
             viewModelScope.launch { dataStoreRepository.incrementPositiveActionsCount() }
         }
     }
@@ -83,6 +78,5 @@ class AppActivityViewModel @Inject constructor(
 
     fun onShareWishListClicked(wishes: List<WishWithTags>) {
         wishListToShareLiveData.postValue(wishes)
-        viewModelScope.launch { dataStoreRepository.incrementPositiveActionsCount() }
     }
 }

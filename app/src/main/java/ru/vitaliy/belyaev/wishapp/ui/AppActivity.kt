@@ -19,7 +19,6 @@ import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.theme.WishAppTheme
-import timber.log.Timber
 
 @ExperimentalMaterialApi
 @AndroidEntryPoint
@@ -42,20 +41,15 @@ class AppActivity : AppCompatActivity() {
         }
 
         viewModel.requestReviewLiveData.observe(this) {
-            Timber.tag("RTRT").d("requestReviewLiveData")
             val reviewManager = ReviewManagerFactory.create(this)
             reviewManager
                 .requestReviewFlow()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val reviewInfo = task.result
-                        Timber.tag("RTRT").d("reviewInfo:$reviewInfo")
                         reviewManager.launchReviewFlow(this, reviewInfo)
                     } else {
-                        Timber.tag("RTRT").d("reviewInfo error:${task.exception}")
-                        task.exception?.let {
-                            FirebaseCrashlytics.getInstance().recordException(it)
-                        }
+                        task.exception?.let { FirebaseCrashlytics.getInstance().recordException(it) }
                     }
                 }
         }

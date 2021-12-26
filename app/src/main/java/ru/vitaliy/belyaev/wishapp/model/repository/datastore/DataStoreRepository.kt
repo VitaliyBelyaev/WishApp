@@ -17,7 +17,6 @@ import ru.vitaliy.belyaev.wishapp.entity.toTheme
 import ru.vitaliy.belyaev.wishapp.model.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_POSITIVE_ACTIONS_COUNT
 import ru.vitaliy.belyaev.wishapp.model.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_REVIEW_REQUEST_SHOWN_COUNT
 import ru.vitaliy.belyaev.wishapp.model.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_THEME
-import timber.log.Timber
 
 @Singleton
 class DataStoreRepository @Inject constructor(
@@ -55,7 +54,6 @@ class DataStoreRepository @Inject constructor(
         }
 
     suspend fun incrementPositiveActionsCount() {
-        Timber.tag("RTRT").d("incrementPositiveActionsCount")
         dataStore.edit {
             val current = it[KEY_POSITIVE_ACTIONS_COUNT] ?: 0
             it[KEY_POSITIVE_ACTIONS_COUNT] = current + 1
