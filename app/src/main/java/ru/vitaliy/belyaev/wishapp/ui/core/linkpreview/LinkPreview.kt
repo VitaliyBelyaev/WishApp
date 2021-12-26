@@ -18,6 +18,8 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkInfo
 
@@ -33,7 +35,10 @@ fun LinkPreview(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { uriHandler.openUri(url) }
+            .clickable {
+                Firebase.analytics.logEvent("wish_link_click", null)
+                uriHandler.openUri(url)
+            }
             .padding(paddingValues),
         verticalAlignment = Alignment.CenterVertically
     ) {

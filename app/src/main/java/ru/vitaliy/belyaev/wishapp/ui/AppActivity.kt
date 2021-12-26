@@ -12,7 +12,9 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.google.android.play.core.review.ReviewManagerFactory
+import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.Theme
@@ -41,12 +43,14 @@ class AppActivity : AppCompatActivity() {
         }
 
         viewModel.requestReviewLiveData.observe(this) {
+            Firebase.analytics.logEvent("in_app_review_requested", null)
             val reviewManager = ReviewManagerFactory.create(this)
             reviewManager
                 .requestReviewFlow()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val reviewInfo = task.result
+                        Firebase.analytics.logEvent("in_app_review_shown", null)
                         reviewManager.launchReviewFlow(this, reviewInfo)
                     } else {
                         task.exception?.let { FirebaseCrashlytics.getInstance().recordException(it) }
