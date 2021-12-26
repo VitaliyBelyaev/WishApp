@@ -13,6 +13,7 @@
     <string name="backup">Backup and restore</string>
     <string name="privacy_policy">Privacy policy</string>
     <string name="about_app">About App</string>
+    <string name="rate_app">Rate app</string>
     <string name="theme_title">Theme</string>
     <string name="other">Other</string>
     <string name="app_description"><![CDATA[This is an open-source app, you can check code <a href=\https://github.com/VitaliyBelyaev/WishApp\">here</a>]]></string>

@@ -9,7 +9,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.domain.GetLinkPreviewInteractor
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
@@ -31,7 +30,7 @@ class WishDetailedViewModel @Inject constructor(
     private val getLinkPreviewInteractor: GetLinkPreviewInteractor
 ) : ViewModel() {
 
-    private val inputWishId: String = savedStateHandle[ARG_WISH_ID] ?: ""
+    val inputWishId: String = savedStateHandle[ARG_WISH_ID] ?: ""
     lateinit var wishId: String
 
     val uiState: MutableStateFlow<Optional<WishItem>> = MutableStateFlow(Optional.empty())

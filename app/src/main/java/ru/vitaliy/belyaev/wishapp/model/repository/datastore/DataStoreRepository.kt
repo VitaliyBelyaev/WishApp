@@ -14,14 +14,17 @@ import kotlinx.coroutines.flow.map
 import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.entity.toInt
 import ru.vitaliy.belyaev.wishapp.entity.toTheme
+import ru.vitaliy.belyaev.wishapp.model.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_POSITIVE_ACTIONS_COUNT
+import ru.vitaliy.belyaev.wishapp.model.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_REVIEW_REQUEST_SHOWN_COUNT
 import ru.vitaliy.belyaev.wishapp.model.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_THEME
+import timber.log.Timber
 
 @Singleton
 class DataStoreRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
 
-    val selectedTheme: Flow<Theme> = dataStore.data
+    val selectedThemeFlow: Flow<Theme> = dataStore.data
         .catch { exception ->
             if (exception is IOException) {
                 emit(emptyPreferences())
@@ -39,7 +42,47 @@ class DataStoreRepository @Inject constructor(
         }
     }
 
+    val positiveActionsCountFlow: Flow<Int> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map {
+            it[KEY_POSITIVE_ACTIONS_COUNT] ?: 0
+        }
+
+    suspend fun incrementPositiveActionsCount() {
+        Timber.tag("RTRT").d("incrementPositiveActionsCount")
+        dataStore.edit {
+            val current = it[KEY_POSITIVE_ACTIONS_COUNT] ?: 0
+            it[KEY_POSITIVE_ACTIONS_COUNT] = current + 1
+        }
+    }
+
+    val reviewRequestShownCountFlow: Flow<Int> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map {
+            it[KEY_REVIEW_REQUEST_SHOWN_COUNT] ?: 0
+        }
+
+    suspend fun updateReviewRequestShownCount(count: Int) {
+        dataStore.edit {
+            it[KEY_REVIEW_REQUEST_SHOWN_COUNT] = count
+        }
+    }
+
     private object PreferencesKeys {
         val KEY_THEME = intPreferencesKey("KEY_THEME")
+        val KEY_POSITIVE_ACTIONS_COUNT = intPreferencesKey("KEY_POSITIVE_ACTIONS_COUNT")
+        val KEY_REVIEW_REQUEST_SHOWN_COUNT = intPreferencesKey("KEY_REVIEW_REQUEST_SHOWN_COUNT")
     }
 }

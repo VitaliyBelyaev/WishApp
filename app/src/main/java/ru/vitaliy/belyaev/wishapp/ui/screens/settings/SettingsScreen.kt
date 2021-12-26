@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +39,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.ThemeSettingBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.entity.Backup
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.entity.SettingItem
+import ru.vitaliy.belyaev.wishapp.utils.openGooglePlay
 
 @ExperimentalMaterialApi
 @Composable
@@ -47,6 +49,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
 
+    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
@@ -105,6 +108,10 @@ fun SettingsScreen(
                                 modalBottomSheetState.show()
                             }
                         }
+                    )
+                    SettingBlock(
+                        title = stringResource(R.string.rate_app),
+                        onClick = { context.openGooglePlay() }
                     )
                     SettingBlock(
                         title = stringResource(R.string.about_app),

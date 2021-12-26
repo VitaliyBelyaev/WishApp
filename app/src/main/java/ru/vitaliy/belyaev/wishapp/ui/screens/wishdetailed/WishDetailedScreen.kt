@@ -73,7 +73,7 @@ fun WishDetailedScreen(
     val handleBackPressed: () -> Unit = {
         viewModel.onBackPressed()
         onBackPressed()
-        appViewModel.onWishScreenExit(viewModel.wishId)
+        appViewModel.onWishScreenExit(viewModel.wishId, viewModel.inputWishId.isBlank())
     }
     val openDialog: MutableState<Optional<WishItem>> = remember { mutableStateOf(Optional.empty()) }
 

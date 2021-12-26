@@ -74,10 +74,10 @@ dependencies {
     implementation "androidx.compose.ui:ui:$composeVersion"
     implementation "androidx.compose.material:material:$composeVersion"
     implementation "androidx.compose.ui:ui-tooling-preview:$composeVersion"
-    implementation "androidx.navigation:navigation-compose:2.4.0-beta02"
-    implementation "androidx.hilt:hilt-navigation-compose:1.0.0-beta01"
+    implementation "androidx.navigation:navigation-compose:2.4.0-rc01"
+    implementation "androidx.hilt:hilt-navigation-compose:1.0.0-rc01"
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc02"
-    implementation "androidx.compose.material3:material3:1.0.0-alpha01"
+    implementation "androidx.compose.material3:material3:1.0.0-alpha02"
 
     // Compose Accompanist Flow layout
     implementation "com.google.accompanist:accompanist-flowlayout:0.21.4-beta"
@@ -85,6 +85,8 @@ dependencies {
     // Google
     implementation "com.google.android.material:material:1.4.0"
     implementation "com.google.android.gms:play-services-oss-licenses:17.0.0"
+    implementation "com.google.android.play:core:1.10.2"
+
 
     // Firebase
     implementation platform("com.google.firebase:firebase-bom:29.0.0")

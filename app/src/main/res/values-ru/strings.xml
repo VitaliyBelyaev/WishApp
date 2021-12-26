@@ -14,6 +14,7 @@
     <string name="backup">Сохранение данных</string>
     <string name="privacy_policy">Политика конфиденциальности</string>
     <string name="about_app">О приложении</string>
+    <string name="rate_app">Оценить приложение</string>
     <string name="theme_title">Тема</string>
     <string name="other">Другое</string>
     <string name="app_description"><![CDATA[Это open-source приложение, код можно посмотреть <a href=https://github.com/VitaliyBelyaev/WishApp">здесь</a>]]></string>

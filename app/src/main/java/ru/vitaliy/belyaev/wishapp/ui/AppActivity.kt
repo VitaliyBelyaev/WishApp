@@ -11,12 +11,15 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.google.android.play.core.review.ReviewManagerFactory
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.AndroidEntryPoint
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.theme.WishAppTheme
+import timber.log.Timber
 
 @ExperimentalMaterialApi
 @AndroidEntryPoint
@@ -36,6 +39,25 @@ class AppActivity : AppCompatActivity() {
 
             val shareIntent = Intent.createChooser(sendIntent, null)
             startActivity(shareIntent)
+        }
+
+        viewModel.requestReviewLiveData.observe(this) {
+            Timber.tag("RTRT").d("requestReviewLiveData")
+            val reviewManager = ReviewManagerFactory.create(this)
+            reviewManager
+                .requestReviewFlow()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val reviewInfo = task.result
+                        Timber.tag("RTRT").d("reviewInfo:$reviewInfo")
+                        reviewManager.launchReviewFlow(this, reviewInfo)
+                    } else {
+                        Timber.tag("RTRT").d("reviewInfo error:${task.exception}")
+                        task.exception?.let {
+                            FirebaseCrashlytics.getInstance().recordException(it)
+                        }
+                    }
+                }
         }
 
         setContent {

@@ -6,7 +6,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.model.repository.datastore.DataStoreRepository
@@ -22,7 +21,7 @@ class SettingsViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             dataStoreRepository
-                .selectedTheme
+                .selectedThemeFlow
                 .collect {
                     _selectedTheme.value = it
                 }
