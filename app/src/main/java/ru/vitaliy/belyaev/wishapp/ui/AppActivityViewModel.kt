@@ -83,5 +83,6 @@ class AppActivityViewModel @Inject constructor(
 
     fun onShareWishListClicked(wishes: List<WishWithTags>) {
         wishListToShareLiveData.postValue(wishes)
+        viewModelScope.launch { dataStoreRepository.incrementPositiveActionsCount() }
     }
 }
