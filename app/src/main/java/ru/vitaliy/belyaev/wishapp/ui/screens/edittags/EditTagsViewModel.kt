@@ -2,11 +2,14 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.edittags
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Tag
 import ru.vitaliy.belyaev.wishapp.model.repository.tags.TagsRepository
@@ -26,6 +29,9 @@ class EditTagsViewModel @Inject constructor(
 //    private var currentlyEditingIdFlow: MutableStateFlow<String> = MutableStateFlow("")
 
     init {
+        Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "EditTags")
+        }
 //        viewModelScope.launch {
 //            tagsRepository
 //                .observeAllTags()
@@ -82,6 +88,7 @@ class EditTagsViewModel @Inject constructor(
 //    }
 
     fun onTagRemoveClicked(tag: Tag) {
+        Firebase.analytics.logEvent("delete_tag_from_edit_tags", null)
         viewModelScope.launch {
             tagsRepository.deleteTagsByIds(listOf(tag.tagId))
         }

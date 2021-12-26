@@ -3,6 +3,10 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wishtags
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
@@ -35,6 +39,10 @@ class WishTagsViewModel @Inject constructor(
     private val recentlyAddedTagIds: MutableList<String> = mutableListOf()
 
     init {
+        Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "WishTags")
+        }
+
         viewModelScope.launch {
             tagsRepository
                 .observeAllTags()
@@ -51,6 +59,7 @@ class WishTagsViewModel @Inject constructor(
     }
 
     fun onAddTagClicked(tagName: String) {
+        Firebase.analytics.logEvent("add_new_tag", null)
         viewModelScope.launch {
             val tagId = UUID.randomUUID().toString()
             recentlyAddedTagIds.add(0, tagId)

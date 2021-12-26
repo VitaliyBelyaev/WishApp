@@ -30,6 +30,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.Theme
@@ -92,7 +95,12 @@ fun SettingsScreen(
                     )
                     ThemeSettingBlock(
                         selectedTheme = selectedTheme,
-                        onThemeClicked = { viewModel.updateSelectedTheme(it) }
+                        onThemeClicked = {
+                            Firebase.analytics.logEvent("select_app_theme") {
+                                param("theme", it.name)
+                            }
+                            viewModel.updateSelectedTheme(it)
+                        }
                     )
                     Text(
                         text = stringResource(R.string.other),
@@ -103,6 +111,7 @@ fun SettingsScreen(
                     SettingBlock(
                         title = stringResource(R.string.backup),
                         onClick = {
+                            Firebase.analytics.logEvent("about_data_backup_click", null)
                             settingItem.value = Backup
                             scope.launch {
                                 modalBottomSheetState.show()
@@ -111,7 +120,10 @@ fun SettingsScreen(
                     )
                     SettingBlock(
                         title = stringResource(R.string.rate_app),
-                        onClick = { context.openGooglePlay() }
+                        onClick = {
+                            Firebase.analytics.logEvent("rate_app_click", null)
+                            context.openGooglePlay()
+                        }
                     )
                     SettingBlock(
                         title = stringResource(R.string.about_app),

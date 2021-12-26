@@ -2,6 +2,10 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
@@ -10,7 +14,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Tag
@@ -44,6 +47,10 @@ class MainViewModel @Inject constructor(
     private var wishesByTagJob: Job? = null
 
     init {
+        Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "MainScreen")
+        }
+
         allWishesJob = viewModelScope.launch {
             wishesRepository
                 .observeAllWishes()
@@ -81,29 +88,34 @@ class MainViewModel @Inject constructor(
     }
 
     fun onCloseEditModeClicked() {
+        Firebase.analytics.logEvent("close_edit_mode_click", null)
         _uiState.value = _uiState.value.copy(selectedIds = emptyList())
     }
 
     fun onDeleteSelectedClicked() {
         viewModelScope.launch {
             val selectedIds = uiState.value.selectedIds
+            Firebase.analytics.logEvent("delete_from_edit_mode_click") {
+                param(FirebaseAnalytics.Param.QUANTITY, selectedIds.size.toString())
+            }
             wishesRepository.deleteWishesByIds(selectedIds)
         }
     }
 
     fun onSelectAllClicked() {
+        Firebase.analytics.logEvent("select_all_wishes_press", null)
         val selectedIds = uiState.value.wishes.map { it.id }
         _uiState.value = uiState.value.copy(selectedIds = selectedIds)
     }
 
     fun onWishLongPress(wish: WishWithTags) {
+        Firebase.analytics.logEvent("wish_long_press", null)
         val oldState = _uiState.value
         val wishId = wish.id
         val newState = if (oldState.selectedIds.isEmpty()) {
             val selectedIds = listOf(wishId)
             oldState.copy(selectedIds = selectedIds)
         } else {
-
             val oldSelectedIds = oldState.selectedIds.toMutableList()
             val alreadySelected = oldSelectedIds.contains(wishId)
             val selectedIds = if (alreadySelected) {
@@ -129,6 +141,7 @@ class MainViewModel @Inject constructor(
                     }
             }
         } else {
+            Firebase.analytics.logEvent("filter_by_tag", null)
             wishesByTagJob = viewModelScope.launch {
                 wishesRepository
                     .observeWishesByTag(tag.tagId)

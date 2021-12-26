@@ -3,6 +3,10 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
@@ -37,6 +41,10 @@ class WishDetailedViewModel @Inject constructor(
     private var cachedLinkPreviewState: LinkPreviewState = None
 
     init {
+        Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "WishDetailed")
+        }
+
         viewModelScope.launch {
             wishId = if (inputWishId.isNotBlank()) {
                 inputWishId
@@ -98,6 +106,7 @@ class WishDetailedViewModel @Inject constructor(
     }
 
     fun onDeleteWishClicked() {
+        Firebase.analytics.logEvent("delete_tag_from_wish_detailed", null)
         viewModelScope.cancel()
     }
 }

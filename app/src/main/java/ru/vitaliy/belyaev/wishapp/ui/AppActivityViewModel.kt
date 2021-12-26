@@ -2,6 +2,10 @@ package ru.vitaliy.belyaev.wishapp.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -77,6 +81,9 @@ class AppActivityViewModel @Inject constructor(
     }
 
     fun onShareWishListClicked(wishes: List<WishWithTags>) {
+        Firebase.analytics.logEvent(FirebaseAnalytics.Event.SHARE) {
+            param(FirebaseAnalytics.Param.QUANTITY, wishes.size.toString())
+        }
         wishListToShareLiveData.postValue(wishes)
     }
 }

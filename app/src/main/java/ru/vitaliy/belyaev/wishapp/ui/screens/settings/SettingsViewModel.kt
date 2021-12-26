@@ -2,6 +2,10 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +23,10 @@ class SettingsViewModel @Inject constructor(
     val selectedTheme: StateFlow<Theme> = _selectedTheme
 
     init {
+        Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "SettingsScreen")
+        }
+
         viewModelScope.launch {
             dataStoreRepository
                 .selectedThemeFlow

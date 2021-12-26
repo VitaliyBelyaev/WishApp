@@ -13,6 +13,7 @@ import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -25,6 +26,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
@@ -41,11 +46,18 @@ fun AboutAppScreen(
     onPrivacyPolicyClicked: () -> Unit
 ) {
 
+    LaunchedEffect(Unit) {
+        Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "AboutApp")
+        }
+    }
+
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
     val onSendFeedbackClicked: () -> Unit = {
+        Firebase.analytics.logEvent("send_feedback_click", null)
         val feedback = createAppFeedback(context.resources)
         val intent = createSendEmailIntent(feedback.email, feedback.subject, feedback.message)
         try {
@@ -94,6 +106,7 @@ fun AboutAppScreen(
                     style = TextStyle.Default.copy(fontSize = 16.sp, color = Color.Gray),
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
                     onClick = {
+                        Firebase.analytics.logEvent("source_code_url_click", null)
                         appDescription
                             .getStringAnnotations("URL", it, it)
                             .firstOrNull()?.let { stringAnnotation ->
