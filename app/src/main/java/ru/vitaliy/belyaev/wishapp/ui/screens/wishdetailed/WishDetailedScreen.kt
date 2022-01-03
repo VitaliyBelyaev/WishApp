@@ -50,6 +50,7 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
+import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreview
 import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreviewLoading
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
@@ -96,7 +97,7 @@ fun WishDetailedScreen(
                         )
                     }
                     IconButton(onClick = { openDialog.value = wishItem }) {
-                        Icon(
+                        ThemedIcon(
                             Icons.Filled.Delete,
                             contentDescription = "Delete wish"
                         )
@@ -142,7 +143,6 @@ fun WishDetailedScreen(
                     backgroundColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    cursorColor = colorResource(R.color.inputCursorColor)
                 )
             )
             DisposableEffect(Unit) {
@@ -170,7 +170,6 @@ fun WishDetailedScreen(
                     backgroundColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    cursorColor = colorResource(R.color.inputCursorColor)
                 )
             )
             TextField(
@@ -192,7 +191,6 @@ fun WishDetailedScreen(
                     backgroundColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    cursorColor = colorResource(R.color.inputCursorColor)
                 )
             )
             Spacer(modifier = Modifier.height(12.dp))

@@ -1,6 +1,5 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main.components
 
-import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -11,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.model.database.Tag
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainViewModel
 
@@ -29,14 +29,14 @@ fun MainScreenTopBar(
             actions = {
                 if (BuildConfig.DEBUG) {
                     IconButton(onClick = { viewModel.onAddTestWishClicked() }) {
-                        Icon(
+                        ThemedIcon(
                             Icons.Filled.Add,
                             contentDescription = "Add test wish"
                         )
                     }
                 }
                 IconButton(onClick = { onSettingIconClicked() }) {
-                    Icon(
+                    ThemedIcon(
                         Icons.Filled.Settings,
                         contentDescription = "Settings"
                     )

@@ -1,15 +1,16 @@
 package ru.vitaliy.belyaev.wishapp.ui.core.topappbar
 
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.material.Icon
+import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.colorResource
-import ru.vitaliy.belyaev.wishapp.R
+import androidx.compose.ui.unit.dp
+import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 
 @Composable
 fun WishAppTopBar(
@@ -23,16 +24,18 @@ fun WishAppTopBar(
         if (withBackIcon) {
             {
                 IconButton(onClick = { onBackPressed?.invoke() }) {
-                    Icon(Filled.ArrowBack, contentDescription = "Back")
+                    ThemedIcon(Filled.ArrowBack, contentDescription = "Back")
                 }
             }
         } else {
             null
         }
+
     TopAppBar(
         title = { Text(text = title) },
         navigationIcon = navIcon,
         actions = actions,
-        backgroundColor = colorResource(R.color.toolbarColor)
+        backgroundColor = MaterialTheme.colors.surface,
+        elevation = if (MaterialTheme.colors.isLight) AppBarDefaults.TopAppBarElevation else 0.dp
     )
 }

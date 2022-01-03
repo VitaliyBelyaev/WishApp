@@ -1,28 +1,12 @@
 package ru.vitaliy.belyaev.wishapp.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.Theme
-
-private val DarkColorPalette = darkColors(
-    primary = PrimaryNight,
-    primaryVariant = PrimaryVariant,
-    secondary = SecondaryNight,
-    secondaryVariant = SecondaryVariant,
-    surface = PrimaryNight
-)
-
-private val LightColorPalette = lightColors(
-    primary = Primary,
-    primaryVariant = Color.White,
-    secondary = Secondary,
-    secondaryVariant = SecondaryVariant,
-    onPrimary = Color.Black
-)
 
 @Composable
 fun WishAppTheme(selectedTheme: Theme, content: @Composable () -> Unit) {
@@ -31,11 +15,22 @@ fun WishAppTheme(selectedTheme: Theme, content: @Composable () -> Unit) {
         Theme.DARK -> true
         Theme.LIGHT -> false
     }
-    val colors = if (isDark) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
-    }
+
+    val colors = Colors(
+        primary = colorResource(R.color.primaryColor),
+        primaryVariant = colorResource(R.color.primaryColor),
+        secondary = colorResource(R.color.primaryColor),
+        secondaryVariant = colorResource(R.color.primaryColor),
+        background = colorResource(R.color.backgroundColor),
+        surface = colorResource(R.color.surfaceColor),
+        error = colorResource(R.color.errorColor),
+        onPrimary = colorResource(R.color.onPrimaryColor),
+        onSecondary = colorResource(R.color.onSecondaryColor),
+        onBackground = colorResource(R.color.onSurfaceColor),
+        onSurface = colorResource(R.color.onSurfaceColor),
+        onError = colorResource(R.color.onErrorColor),
+        isLight = !isDark
+    )
 
     MaterialTheme(
         colors = colors,

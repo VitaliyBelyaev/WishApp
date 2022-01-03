@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.AddTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.TagItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
@@ -73,12 +74,11 @@ fun WishTagsScreen(
                             backgroundColor = Color.Transparent,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
-                            cursorColor = colorResource(R.color.inputCursorColor)
                         ),
                         trailingIcon = {
                             if (query.isNotBlank()) {
                                 val shape = RoundedCornerShape(50.dp)
-                                Icon(
+                                ThemedIcon(
                                     Icons.Filled.Clear,
                                     contentDescription = "Clear",
                                     modifier = Modifier

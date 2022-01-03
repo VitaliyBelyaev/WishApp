@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primaryColor">#fff8e1</color>
-    <color name="primaryDarkColor">#ccc5af</color>
-    <color name="secondaryColor">#fff8e1</color>
-    <color name="secondaryDarkColor">#ccc5af</color>
-    <color name="black">#FF000000</color>
-    <color name="surface">#FF121212</color>
+    <color name="primaryColor">#808E95</color>
+    <color name="backgroundColor">#FFFFFFFF</color>
+    <color name="surfaceColor">#FFFFFFFF</color>
+    <color name="errorColor">#B00020</color>
+    <color name="onPrimaryColor">@android:color/white</color>
+    <color name="onSecondaryColor">@android:color/white</color>
+    <color name="onSurfaceColor">#04121B</color>
+    <color name="onErrorColor">@android:color/white</color>
+
+    <color name="iconPrimaryColor">#7304121B</color>
     <color name="shimmerColor">#e0e0e0</color>
     <color name="transparent">@android:color/transparent</color>
-
+    <color name="black">#FF000000</color>
     <color name="statusBarColor">@android:color/white</color>
     <color name="toolbarColor">@android:color/white</color>
     <color name="wishSelectedColor">@color/primaryColor</color>
-    <color name="inputCursorColor">@color/primaryDarkColor</color>
     <color name="theme_card_bg_selected">#FFFFFF</color>
     <color name="theme_card_bg_unselected">#f5f5f5</color>
     <color name="theme_card_border">#ffecb3</color>

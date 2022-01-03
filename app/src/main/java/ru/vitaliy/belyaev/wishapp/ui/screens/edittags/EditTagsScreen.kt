@@ -4,7 +4,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -29,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import java.util.*
 import ru.vitaliy.belyaev.model.database.Tag
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.components.RemoveTagBlock
 
 @Composable
@@ -46,7 +46,7 @@ fun EditTagsScreen(
                 title = { Text(text = stringResource(R.string.delete_tag)) },
                 navigationIcon = {
                     IconButton(onClick = { onBackPressed.invoke() }) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        ThemedIcon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 backgroundColor = colorResource(R.color.toolbarColor)

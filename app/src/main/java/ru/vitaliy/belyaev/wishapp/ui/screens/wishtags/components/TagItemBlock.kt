@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
-import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,6 +15,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import ru.vitaliy.belyaev.model.database.Tag
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
 
 @Composable
@@ -29,9 +29,8 @@ fun TagItemBlock(tagItem: TagItem, onClick: (TagItem) -> Unit) {
         val (iconRef, titleRef, checkboxRef) = createRefs()
         val verticalPadding = 8.dp
 
-        Icon(
-            painterResource(R.drawable.ic_label),
-            tint = colorResource(R.color.primaryDarkColor),
+        ThemedIcon(
+            painter = painterResource(R.drawable.ic_label),
             contentDescription = "Tag",
             modifier = Modifier
                 .constrainAs(iconRef) {
@@ -51,7 +50,7 @@ fun TagItemBlock(tagItem: TagItem, onClick: (TagItem) -> Unit) {
             }
         )
         val checkboxColors = CheckboxDefaults.colors(
-            checkedColor = colorResource(R.color.primaryDarkColor),
+            checkedColor = colorResource(R.color.primaryColor),
             checkmarkColor = colorResource(R.color.checkmarkColor)
         )
 

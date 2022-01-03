@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="base_corner_radius">10dp</dimen>
+    <dimen name="base_elevation">8dp</dimen>
 </resources>

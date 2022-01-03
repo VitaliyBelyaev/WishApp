@@ -2,10 +2,11 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.main.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -17,10 +18,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 
 @Composable
 fun EditModeTopBar(
@@ -32,14 +34,15 @@ fun EditModeTopBar(
     val expanded = remember { mutableStateOf(false) }
     TopAppBar(
         title = { Text(text = selectedCount.toString()) },
+        elevation = if (MaterialTheme.colors.isLight) AppBarDefaults.TopAppBarElevation else 0.dp,
         navigationIcon = {
             IconButton(onClick = onCloseEditModeClicked) {
-                Icon(Icons.Filled.Clear, contentDescription = "Close")
+                ThemedIcon(Icons.Filled.Clear, contentDescription = "Close")
             }
         },
         actions = {
             IconButton(onClick = onDeleteSelectedClicked) {
-                Icon(
+                ThemedIcon(
                     Icons.Filled.Delete,
                     contentDescription = "Delete"
                 )
@@ -48,7 +51,7 @@ fun EditModeTopBar(
                 IconButton(onClick = {
                     expanded.value = true
                 }) {
-                    Icon(
+                    ThemedIcon(
                         Icons.Filled.MoreVert,
                         contentDescription = "Menu"
                     )
@@ -68,7 +71,7 @@ fun EditModeTopBar(
             }
 
         },
-        backgroundColor = colorResource(R.color.toolbarColor)
+        backgroundColor = MaterialTheme.colors.surface,
     )
 }
 

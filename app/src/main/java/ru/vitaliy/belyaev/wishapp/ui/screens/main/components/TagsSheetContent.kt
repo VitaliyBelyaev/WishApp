@@ -16,7 +16,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Text
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -33,6 +32,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Tag
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.AllTagsMenuItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.NavigationMenuItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.TagMenuItem
@@ -118,7 +118,7 @@ fun NavMenuItemBlock(
             .background(color = bgColor, shape = shape)
             .padding(16.dp)
     ) {
-        Icon(
+        ThemedIcon(
             painter = icon,
             contentDescription = null,
             tint = Color.Gray,

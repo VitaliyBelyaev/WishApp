@@ -83,7 +83,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-flowlayout:0.21.4-beta"
 
     // Google
-    implementation "com.google.android.material:material:1.4.0"
+    implementation "com.google.android.material:material:1.6.0-alpha01"
     implementation "com.google.android.gms:play-services-oss-licenses:17.0.0"
     implementation "com.google.android.play:core:1.10.2"
 
