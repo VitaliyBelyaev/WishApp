@@ -47,9 +47,7 @@ class WishTagsViewModel @Inject constructor(
             tagsRepository
                 .observeAllTags()
                 .combine(tagsRepository.observeTagsByWishId(wishId)) { allTags, wishTags ->
-                    allTags
-                        .map { tag -> tag.toTagItem(wishTags.contains(tag)) }
-                        .sortedBy { it.tag.title }
+                    allTags.map { tag -> tag.toTagItem(wishTags.contains(tag)) }
                 }
                 .collect { tagItems ->
                     originTagItems = tagItems
