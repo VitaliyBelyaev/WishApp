@@ -1,5 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishtags
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,11 +24,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,8 +41,8 @@ import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.ScrollAwareTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.AddTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.TagItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
-import timber.log.Timber
 
+@ExperimentalComposeUiApi
 @Composable
 fun WishTagsScreen(
     onBackPressed: () -> Unit,
@@ -49,6 +52,13 @@ fun WishTagsScreen(
     var query: String by remember { mutableStateOf("") }
     val state: List<TagItem> by viewModel.uiState.collectAsState()
     val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val handleBackPressed: () -> Unit = {
+        keyboardController?.hide()
+        onBackPressed()
+    }
+
+    BackHandler { handleBackPressed() }
 
     Scaffold(
         topBar = {
@@ -61,7 +71,6 @@ fun WishTagsScreen(
                         value = query,
                         textStyle = MaterialTheme.typography.body1,
                         onValueChange = { newValue ->
-                            Timber.tag("RTRT").d("onValueChange:$newValue")
                             query = newValue
                             viewModel.onQueryChanged(newValue)
                         },
@@ -94,7 +103,7 @@ fun WishTagsScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { onBackPressed.invoke() }) {
+                    IconButton(onClick = handleBackPressed) {
                         ThemedIcon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -124,6 +133,7 @@ fun WishTagsScreen(
     }
 }
 
+@ExperimentalComposeUiApi
 @Preview
 @Composable
 fun WishTagsScreenPreview() {
