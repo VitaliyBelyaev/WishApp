@@ -57,7 +57,6 @@ fun SettingsScreen(
     val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
     val lazyLisState: LazyListState = rememberLazyListState()
 
-
     WishAppBottomSheet(
         sheetState = modalBottomSheetState,
         sheetContent = {
@@ -115,7 +114,7 @@ fun SettingsScreen(
                             Firebase.analytics.logEvent("about_data_backup_click", null)
                             settingItem.value = Backup
                             scope.launch {
-                                modalBottomSheetState.show()
+                                modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
                             }
                         }
                     )

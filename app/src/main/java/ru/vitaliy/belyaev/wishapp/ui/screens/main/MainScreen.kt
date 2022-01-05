@@ -86,7 +86,7 @@ fun MainScreen(
                 WishAppBottomBar(
                     cutoutShape = fabShape,
                     onShareClick = { onShareClick(state.wishes) },
-                    onMenuClick = { scope.launch { modalBottomSheetState.show() } }
+                    onMenuClick = { scope.launch { modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded) } }
                 )
             },
             floatingActionButton = {
