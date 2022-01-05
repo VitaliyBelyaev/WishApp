@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
@@ -18,14 +19,20 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,6 +67,7 @@ fun MainScreen(
     val state: MainScreenState by viewModel.uiState.collectAsState()
     val navMenuItems: List<NavigationMenuItem> by viewModel.navigationMenuUiState.collectAsState()
     val lazyListState: LazyListState = rememberLazyListState()
+    val openDeleteConfirmDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
 
     WishAppBottomSheet(
         sheetState = modalBottomSheetState,
@@ -78,6 +86,7 @@ fun MainScreen(
                     selectedIds = state.selectedIds,
                     selectedTag = state.selectedTag,
                     onSettingIconClicked = onSettingIconClicked,
+                    onDeleteSelectedClicked = { openDeleteConfirmDialog.value = true },
                     lazyListState = lazyListState,
                     viewModel = viewModel
                 )
@@ -138,6 +147,37 @@ fun MainScreen(
                     Spacer(modifier = Modifier.height(32.dp))
                 }
 
+            }
+
+            if (openDeleteConfirmDialog.value) {
+                AlertDialog(
+                    shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius)),
+                    onDismissRequest = { openDeleteConfirmDialog.value = false },
+                    title = { Text(stringResource(R.string.delete_wishes_title)) },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                openDeleteConfirmDialog.value = false
+                                viewModel.onDeleteSelectedClicked()
+                            }
+                        ) {
+                            Text(
+                                stringResource(R.string.delete),
+                                color = MaterialTheme.colors.onSurface
+                            )
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = { openDeleteConfirmDialog.value = false }
+                        ) {
+                            Text(
+                                stringResource(R.string.cancel),
+                                color = MaterialTheme.colors.onSurface
+                            )
+                        }
+                    }
+                )
             }
         }
     }

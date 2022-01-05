@@ -21,6 +21,7 @@ fun MainScreenTopBar(
     selectedIds: List<String>,
     selectedTag: Tag?,
     onSettingIconClicked: () -> Unit,
+    onDeleteSelectedClicked: () -> Unit,
     lazyListState: LazyListState,
     viewModel: MainViewModel
 ) {
@@ -50,7 +51,7 @@ fun MainScreenTopBar(
         EditModeTopBar(
             selectedCount = selectedIds.size,
             onCloseEditModeClicked = { viewModel.onCloseEditModeClicked() },
-            onDeleteSelectedClicked = { viewModel.onDeleteSelectedClicked() },
+            onDeleteSelectedClicked = onDeleteSelectedClicked,
             onSelectAllClicked = { viewModel.onSelectAllClicked() },
             lazyListState = lazyListState
         )

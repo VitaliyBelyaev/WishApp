@@ -36,4 +36,5 @@
     <string name="delete_tag_title">Delete tag?</string>
     <string name="delete_tag_description">We\'ll delete this label and remove it from all of your wishes. Your wishes wont\'t be deleted.</string>
     <string name="delete_wish_title">Delete wish?</string>
+    <string name="delete_wishes_title">Delete selected wishes?</string>
 </resources>
