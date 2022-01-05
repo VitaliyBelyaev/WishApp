@@ -38,6 +38,7 @@ import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.ScrollAwareTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.AddTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.TagItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
+import timber.log.Timber
 
 @Composable
 fun WishTagsScreen(
@@ -60,6 +61,7 @@ fun WishTagsScreen(
                         value = query,
                         textStyle = MaterialTheme.typography.body1,
                         onValueChange = { newValue ->
+                            Timber.tag("RTRT").d("onValueChange:$newValue")
                             query = newValue
                             viewModel.onQueryChanged(newValue)
                         },
@@ -82,7 +84,10 @@ fun WishTagsScreen(
                                     contentDescription = "Clear",
                                     modifier = Modifier
                                         .clip(shape)
-                                        .clickable { query = "" }
+                                        .clickable {
+                                            query = ""
+                                            viewModel.onQueryChanged(query)
+                                        }
                                 )
                             }
                         }
