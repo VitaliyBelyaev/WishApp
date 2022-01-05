@@ -11,6 +11,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -22,6 +23,7 @@ import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.theme.WishAppTheme
 
+@ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @AndroidEntryPoint
 class AppActivity : AppCompatActivity() {
@@ -29,6 +31,7 @@ class AppActivity : AppCompatActivity() {
     private val viewModel: AppActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_WishApp)
         super.onCreate(savedInstanceState)
 
         viewModel.wishListToShareLiveData.observe(this) {

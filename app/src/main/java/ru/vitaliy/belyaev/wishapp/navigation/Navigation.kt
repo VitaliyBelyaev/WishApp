@@ -2,6 +2,7 @@ package ru.vitaliy.belyaev.wishapp.navigation
 
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -15,6 +16,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.WishDetailedScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.WishTagsScreen
 
+@ExperimentalComposeUiApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterialApi
 @Composable

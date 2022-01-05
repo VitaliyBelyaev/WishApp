@@ -17,7 +17,7 @@
                 android:name=".ui.AppActivity"
                 android:exported="true"
                 android:label="@string/app_name"
-                android:theme="@style/Theme.WishApp">
+                android:theme="@style/Theme.WishApp.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

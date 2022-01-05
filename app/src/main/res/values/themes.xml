@@ -6,6 +6,12 @@
         <item name="android:windowLightStatusBar">@bool/is_day_theme</item>
     </style>
 
+    <style name="Theme.WishApp.Splash" parent="Theme.WishApp">
+        <item name="android:statusBarColor">@color/primaryColor</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowBackground">@drawable/background_splash</item>
+    </style>
+
     <style name="LicensesTheme" parent="Theme.MaterialComponents.DayNight">
         <item name="android:statusBarColor">@color/statusBarColor</item>
         <item name="android:windowLightStatusBar">@bool/is_day_theme</item>
