@@ -32,11 +32,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -59,6 +61,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 
+@ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
 @Composable
@@ -70,7 +73,9 @@ fun WishDetailedScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val wishItem: Optional<WishItem> by viewModel.uiState.collectAsState()
+    val keyboardController = LocalSoftwareKeyboardController.current
     val handleBackPressed: () -> Unit = {
+        keyboardController?.hide()
         viewModel.onBackPressed()
         onBackPressed()
         appViewModel.onWishScreenExit(viewModel.wishId, viewModel.inputWishId.isBlank())
