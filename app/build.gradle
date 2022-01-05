@@ -68,6 +68,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0"
     implementation "androidx.datastore:datastore-preferences:1.0.0"
     implementation "androidx.appcompat:appcompat:1.4.0"
+    implementation "androidx.webkit:webkit:1.4.0"
 
     // Android X Compose
     implementation "androidx.activity:activity-compose:1.4.0"

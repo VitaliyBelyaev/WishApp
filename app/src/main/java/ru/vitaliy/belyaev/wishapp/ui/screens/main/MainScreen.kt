@@ -5,14 +5,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.FloatingActionButtonDefaults
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
@@ -24,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,6 +34,7 @@ import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
+import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheet
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.MainScreenTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.TagsSheetContent
@@ -58,11 +59,10 @@ fun MainScreen(
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val state: MainScreenState by viewModel.uiState.collectAsState()
     val navMenuItems: List<NavigationMenuItem> by viewModel.navigationMenuUiState.collectAsState()
+    val lazyListState: LazyListState = rememberLazyListState()
 
-    ModalBottomSheetLayout(
+    WishAppBottomSheet(
         sheetState = modalBottomSheetState,
-        sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-        scrimColor = Color.Black.copy(alpha = 0.32f),
         sheetContent = {
             TagsSheetContent(
                 modalBottomSheetState = modalBottomSheetState,
@@ -78,6 +78,7 @@ fun MainScreen(
                     selectedIds = state.selectedIds,
                     selectedTag = state.selectedTag,
                     onSettingIconClicked = onSettingIconClicked,
+                    lazyListState = lazyListState,
                     viewModel = viewModel
                 )
             },
@@ -121,6 +122,7 @@ fun MainScreen(
             }
 
             LazyColumn(
+                state = lazyListState,
                 modifier = Modifier.padding(it)
             ) {
                 items(state.wishes) { wishItem ->

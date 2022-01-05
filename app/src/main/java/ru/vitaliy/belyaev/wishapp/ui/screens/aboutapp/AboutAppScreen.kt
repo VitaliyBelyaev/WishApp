@@ -1,11 +1,11 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp
 
 import android.content.Intent
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
@@ -55,6 +55,7 @@ fun AboutAppScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val lazyListState: LazyListState = rememberLazyListState()
 
     val onSendFeedbackClicked: () -> Unit = {
         Firebase.analytics.logEvent("send_feedback_click", null)
@@ -74,7 +75,8 @@ fun AboutAppScreen(
             WishAppTopBar(
                 stringResource(R.string.about_app),
                 withBackIcon = true,
-                onBackPressed = onBackPressed
+                onBackPressed = onBackPressed,
+                lazyListState = lazyListState
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -85,13 +87,10 @@ fun AboutAppScreen(
             val intent = Intent(context, OssLicensesMenuActivity::class.java)
             ContextCompat.startActivity(context, intent, null)
         }
-        val scrollState = rememberScrollState()
         val uriHandler = LocalUriHandler.current
-        Column(
-            modifier = Modifier.verticalScroll(scrollState)
-        ) {
-            Column {
 
+        LazyColumn(state = lazyListState) {
+            item {
                 Text(
                     text = stringResource(
                         R.string.app_version_pattern,
@@ -100,6 +99,8 @@ fun AboutAppScreen(
                     color = Color.Gray,
                     modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
                 )
+            }
+            item {
                 val appDescription = annotatedStringResource(R.string.app_description)
                 ClickableText(
                     text = appDescription,
@@ -114,15 +115,27 @@ fun AboutAppScreen(
                             }
                     }
                 )
+
+            }
+            item {
                 Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp))
+            }
+
+            item {
                 SettingBlock(
                     title = stringResource(R.string.feedback),
                     onClick = { onSendFeedbackClicked() }
                 )
+            }
+
+            item {
                 SettingBlock(
                     title = licensesTitle,
                     onClick = { onLicensesClick() }
                 )
+            }
+
+            item {
                 SettingBlock(
                     title = stringResource(R.string.privacy_policy),
                     onClick = { onPrivacyPolicyClicked() }

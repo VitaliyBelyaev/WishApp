@@ -1,5 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main.components
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -20,12 +21,14 @@ fun MainScreenTopBar(
     selectedIds: List<String>,
     selectedTag: Tag?,
     onSettingIconClicked: () -> Unit,
+    lazyListState: LazyListState,
     viewModel: MainViewModel
 ) {
     if (selectedIds.isEmpty()) {
         val title = selectedTag?.title ?: stringResource(R.string.app_name)
         WishAppTopBar(
             title = title,
+            lazyListState = lazyListState,
             actions = {
                 if (BuildConfig.DEBUG) {
                     IconButton(onClick = { viewModel.onAddTestWishClicked() }) {
@@ -49,6 +52,7 @@ fun MainScreenTopBar(
             onCloseEditModeClicked = { viewModel.onCloseEditModeClicked() },
             onDeleteSelectedClicked = { viewModel.onDeleteSelectedClicked() },
             onSelectAllClicked = { viewModel.onSelectAllClicked() },
+            lazyListState = lazyListState
         )
     }
 }

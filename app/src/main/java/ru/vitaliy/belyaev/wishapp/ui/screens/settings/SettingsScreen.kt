@@ -1,12 +1,10 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.settings
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
@@ -21,7 +19,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,6 +32,7 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.Theme
+import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheet
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.BackupSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
@@ -57,11 +55,11 @@ fun SettingsScreen(
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val settingItem: MutableState<SettingItem> = remember { mutableStateOf(Backup) }
     val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
+    val lazyLisState: LazyListState = rememberLazyListState()
 
-    ModalBottomSheetLayout(
+
+    WishAppBottomSheet(
         sheetState = modalBottomSheetState,
-        sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-        scrimColor = Color.Black.copy(alpha = 0.32f),
         sheetContent = {
             when (settingItem.value) {
                 is Backup -> BackupSheetContent(modalBottomSheetState)
@@ -75,22 +73,23 @@ fun SettingsScreen(
                 WishAppTopBar(
                     stringResource(R.string.settings),
                     withBackIcon = true,
-                    onBackPressed = onBackPressed
+                    onBackPressed = onBackPressed,
+                    lazyListState = lazyLisState
                 )
             },
             snackbarHost = { SnackbarHost(snackbarHostState) }
         ) {
-            val scrollState = rememberScrollState()
-            Column(
-                modifier = Modifier.verticalScroll(scrollState)
-            ) {
-                Column {
+
+            LazyColumn(state = lazyLisState) {
+                item {
                     Text(
                         text = stringResource(R.string.theme_title),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
                     )
+                }
+                item {
                     ThemeSettingBlock(
                         selectedTheme = selectedTheme,
                         onThemeClicked = {
@@ -100,12 +99,16 @@ fun SettingsScreen(
                             viewModel.updateSelectedTheme(it)
                         }
                     )
+                }
+                item {
                     Text(
                         text = stringResource(R.string.other),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
                     )
+                }
+                item {
                     SettingBlock(
                         title = stringResource(R.string.backup),
                         onClick = {
@@ -116,6 +119,8 @@ fun SettingsScreen(
                             }
                         }
                     )
+                }
+                item {
                     SettingBlock(
                         title = stringResource(R.string.rate_app),
                         onClick = {
@@ -123,6 +128,8 @@ fun SettingsScreen(
                             context.openGooglePlay()
                         }
                     )
+                }
+                item {
                     SettingBlock(
                         title = stringResource(R.string.about_app),
                         onClick = { onAboutAppClicked() }

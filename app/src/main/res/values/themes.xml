@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <style name="Theme.WishApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/statusBarColor</item>
         <item name="android:windowLightStatusBar">@bool/is_day_theme</item>
@@ -9,6 +8,6 @@
     <style name="LicensesTheme" parent="Theme.MaterialComponents.DayNight">
         <item name="android:statusBarColor">@color/statusBarColor</item>
         <item name="android:windowLightStatusBar">@bool/is_day_theme</item>
-        <item name="colorPrimary">@android:color/white</item>
+        <item name="colorPrimary">@color/primaryColor</item>
     </style>
 </resources>

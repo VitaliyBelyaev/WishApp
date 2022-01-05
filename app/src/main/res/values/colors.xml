@@ -12,6 +12,7 @@
     <color name="backgroundColorSecondary">#E9ECED</color>
     <color name="statusBarColor">@android:color/white</color>
     <color name="iconPrimaryColor">#7304121B</color>
+    <color name="bottomSheetBackgroundColor">#FFFFFFFF</color>
 
     <color name="transparent">@android:color/transparent</color>
 </resources>

@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -106,7 +106,7 @@ fun NavMenuItemBlock(
     onClick: () -> Unit
 ) {
 
-    val bgColor = if (isSelected) colorResource(R.color.backgroundColorSecondary) else Color.Transparent
+    val bgColor = if (isSelected) MaterialTheme.colors.primary.copy(alpha = 0.3f) else Color.Transparent
     val cornerRadius = 50.dp
     val shape = RoundedCornerShape(topEnd = cornerRadius, bottomEnd = cornerRadius)
     Row(

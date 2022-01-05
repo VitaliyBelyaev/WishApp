@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AppBarDefaults
+import androidx.compose.material.Divider
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -14,7 +14,6 @@ import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
@@ -35,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
+import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.ScrollAwareTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.AddTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.TagItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
@@ -51,7 +51,7 @@ fun WishTagsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            ScrollAwareTopBar(
                 title = {
                     TextField(
                         modifier = Modifier
@@ -92,13 +92,12 @@ fun WishTagsScreen(
                     IconButton(onClick = { onBackPressed.invoke() }) {
                         ThemedIcon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
-                },
-                backgroundColor = MaterialTheme.colors.surface,
-                elevation = if (MaterialTheme.colors.isLight) AppBarDefaults.TopAppBarElevation else 0.dp
+                }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {
+        Divider()
 
         LazyColumn {
             if (query.isNotBlank()) {
