@@ -36,7 +36,7 @@ fun TagsBlock(
             val tag = tags[it]
             val verticalPadding = (textSize.value * 3 / 4).dp
             val horizontalPadding = (textSize.value / 2).dp
-            val bgColor: Color = colorResource(R.color.bgSecondary)
+            val bgColor: Color = colorResource(R.color.backgroundColorSecondary)
             val textModifier = if (onClick != null) {
                 Modifier
                     .background(color = bgColor, shape = shape)

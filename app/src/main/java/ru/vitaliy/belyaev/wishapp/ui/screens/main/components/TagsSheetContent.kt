@@ -106,7 +106,7 @@ fun NavMenuItemBlock(
     onClick: () -> Unit
 ) {
 
-    val bgColor = if (isSelected) colorResource(R.color.bgSecondary) else Color.Transparent
+    val bgColor = if (isSelected) colorResource(R.color.backgroundColorSecondary) else Color.Transparent
     val cornerRadius = 50.dp
     val shape = RoundedCornerShape(topEnd = cornerRadius, bottomEnd = cornerRadius)
     Row(

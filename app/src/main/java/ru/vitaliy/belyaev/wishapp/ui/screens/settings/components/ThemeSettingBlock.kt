@@ -154,11 +154,11 @@ fun ThemeSettingBlock(
 }
 
 private fun getBgColorRes(theme: Theme, selected: Theme): Int {
-    return if (theme == selected) R.color.theme_card_bg_selected else R.color.theme_card_bg_unselected
+    return if (theme == selected) R.color.transparent else R.color.backgroundColorSecondary
 }
 
 private fun getBorderColorRes(theme: Theme, selected: Theme): Int {
-    return if (theme == selected) R.color.theme_card_border else R.color.transparent
+    return if (theme == selected) R.color.primaryColor else R.color.transparent
 }
 
 @Composable

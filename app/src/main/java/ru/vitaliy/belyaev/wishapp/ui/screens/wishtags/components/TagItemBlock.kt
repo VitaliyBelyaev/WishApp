@@ -50,8 +50,7 @@ fun TagItemBlock(tagItem: TagItem, onClick: (TagItem) -> Unit) {
             }
         )
         val checkboxColors = CheckboxDefaults.colors(
-            checkedColor = colorResource(R.color.primaryColor),
-            checkmarkColor = colorResource(R.color.checkmarkColor)
+            checkedColor = colorResource(R.color.primaryColor)
         )
 
         Checkbox(

@@ -4,6 +4,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -20,10 +21,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import java.util.*
 import ru.vitaliy.belyaev.model.database.Tag
@@ -49,7 +50,8 @@ fun EditTagsScreen(
                         ThemedIcon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                backgroundColor = colorResource(R.color.toolbarColor)
+                backgroundColor = MaterialTheme.colors.surface,
+                elevation = if (MaterialTheme.colors.isLight) AppBarDefaults.TopAppBarElevation else 0.dp
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -70,7 +72,6 @@ fun EditTagsScreen(
         if (tagToDelete.isPresent) {
 
             AlertDialog(
-                backgroundColor = colorResource(R.color.bottomSheetBgColor),
                 shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius)),
                 onDismissRequest = { openDialog.value = Optional.empty() },
                 title = { Text(stringResource(R.string.delete_tag_title)) },

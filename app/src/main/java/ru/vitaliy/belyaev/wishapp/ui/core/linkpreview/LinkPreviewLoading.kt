@@ -37,7 +37,7 @@ fun LinkPreviewLoading(paddingValues: PaddingValues) =
             modifier = Modifier
                 .size(LINK_IMAGE_SIZE)
                 .background(
-                    color = colorResource(R.color.shimmerColor),
+                    color = colorResource(R.color.primaryColor),
                     shape = RoundedCornerShape(cornerRadius)
                 )
         )
@@ -54,7 +54,7 @@ fun LinkPreviewLoading(paddingValues: PaddingValues) =
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = colorResource(R.color.shimmerColor),
+                        color = colorResource(R.color.primaryColor),
                         shape = RoundedCornerShape(cornerRadius)
                     )
             )
@@ -69,7 +69,7 @@ fun LinkPreviewLoading(paddingValues: PaddingValues) =
             Text(
                 text = longInvisibleText,
                 style = MaterialTheme.typography.body2,
-                color = colorResource(R.color.shimmerColor),
+                color = colorResource(R.color.primaryColor),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -77,7 +77,7 @@ fun LinkPreviewLoading(paddingValues: PaddingValues) =
                     .fillMaxHeight()
                     .padding(top = 4.dp)
                     .background(
-                        color = colorResource(R.color.shimmerColor),
+                        color = colorResource(R.color.primaryColor),
                         shape = RoundedCornerShape(cornerRadius)
                     )
             )

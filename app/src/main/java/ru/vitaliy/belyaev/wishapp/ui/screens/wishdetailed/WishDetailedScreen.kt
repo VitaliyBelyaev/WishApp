@@ -37,7 +37,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -91,7 +90,7 @@ fun WishDetailedScreen(
                         val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@IconButton
                         onWishTagsClicked(wishId)
                     }) {
-                        Icon(
+                        ThemedIcon(
                             painterResource(R.drawable.ic_label),
                             contentDescription = "Open tags"
                         )
@@ -223,7 +222,6 @@ fun WishDetailedScreen(
     if (wishToDelete.isPresent) {
 
         AlertDialog(
-            backgroundColor = colorResource(R.color.bottomSheetBgColor),
             shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius)),
             onDismissRequest = { openDialog.value = Optional.empty() },
             title = { Text(stringResource(R.string.delete_wish_title)) },
