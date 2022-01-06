@@ -39,6 +39,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -234,6 +235,7 @@ fun WishDetailedScreen(
     if (wishToDelete.isPresent) {
         AlertDialog(
             shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius)),
+            backgroundColor = colorResource(R.color.bottomSheetBackgroundColor),
             onDismissRequest = { openDialog.value = Optional.empty() },
             title = { Text(stringResource(R.string.delete_wish_title)) },
             confirmButton = {

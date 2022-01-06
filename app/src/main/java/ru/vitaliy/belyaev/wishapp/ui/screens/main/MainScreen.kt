@@ -30,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -152,6 +153,7 @@ fun MainScreen(
             if (openDeleteConfirmDialog.value) {
                 AlertDialog(
                     shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius)),
+                    backgroundColor = colorResource(R.color.bottomSheetBackgroundColor),
                     onDismissRequest = { openDeleteConfirmDialog.value = false },
                     title = { Text(stringResource(R.string.delete_wishes_title)) },
                     confirmButton = {

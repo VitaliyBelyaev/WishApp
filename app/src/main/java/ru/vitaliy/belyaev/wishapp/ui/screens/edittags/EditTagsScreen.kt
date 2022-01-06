@@ -18,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,6 +66,7 @@ fun EditTagsScreen(
         if (tagToDelete.isPresent) {
             AlertDialog(
                 shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius)),
+                backgroundColor = colorResource(R.color.bottomSheetBackgroundColor),
                 onDismissRequest = { openDialog.value = Optional.empty() },
                 title = { Text(stringResource(R.string.delete_tag_title)) },
                 text = { Text(stringResource(R.string.delete_tag_description)) },

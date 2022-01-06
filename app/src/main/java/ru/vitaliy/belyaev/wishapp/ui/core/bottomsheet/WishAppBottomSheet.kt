@@ -27,7 +27,7 @@ fun WishAppBottomSheet(
     sheetElevation: Dp = 0.dp,
     sheetBackgroundColor: Color = colorResource(R.color.bottomSheetBackgroundColor),
     sheetContentColor: Color = contentColorFor(sheetBackgroundColor),
-    scrimColor: Color = Color.Black.copy(alpha = 0.32f),
+    scrimColor: Color = Color.Black.copy(alpha = 0.5f),
     content: @Composable () -> Unit
 ) {
     ModalBottomSheetLayout(
