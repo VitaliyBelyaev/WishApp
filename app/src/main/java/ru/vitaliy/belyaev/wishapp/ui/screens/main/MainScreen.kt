@@ -131,9 +131,10 @@ fun MainScreen(
                 }
             }
 
+            val cardsPadding = 10.dp
             LazyColumn(
                 state = lazyListState,
-                modifier = Modifier.padding(it)
+                modifier = Modifier.padding(start = cardsPadding, end = cardsPadding)
             ) {
                 items(state.wishes) { wishItem ->
                     val isSelected: Boolean = state.selectedIds.contains(wishItem.id)
@@ -143,11 +144,11 @@ fun MainScreen(
                         onWishClicked = onWishClicked,
                         onWishLongPress = { wish -> viewModel.onWishLongPress(wish) }
                     )
+                    Spacer(modifier = Modifier.height(cardsPadding))
                 }
                 item {
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(84.dp))
                 }
-
             }
 
             if (openDeleteConfirmDialog.value) {

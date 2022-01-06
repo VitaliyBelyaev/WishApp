@@ -1,6 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,13 +9,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,15 +39,23 @@ fun WishItemBlock(
     onWishLongPress: (WishWithTags) -> Unit,
 ) {
     val backgroundColor: Color = if (isSelected) {
-        MaterialTheme.colors.primary.copy(alpha = 0.5f)
+        MaterialTheme.colors.primary.copy(alpha = 0.4f)
     } else {
         Color.Transparent
+    }
+    val baseShape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius))
+    val borderWidth = if (isSelected) {
+        1.5.dp
+    } else {
+        1.dp
     }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(backgroundColor)
+            .background(color = backgroundColor, shape = baseShape)
+            .border(borderWidth, colorResource(R.color.iconPrimaryColor), baseShape)
+            .clip(baseShape)
             .pointerInput(wishItem) {
                 detectTapGestures(
                     onTap = { onWishClicked(wishItem) },
