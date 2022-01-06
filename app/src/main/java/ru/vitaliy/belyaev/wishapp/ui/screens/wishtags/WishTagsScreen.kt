@@ -121,7 +121,7 @@ fun WishTagsScreen(
                         onClick = {
                             query = ""
                             viewModel.onQueryChanged("")
-                            viewModel.onAddTagClicked(it)
+                            viewModel.onAddTagClicked(it.trim())
                         }
                     )
                 }

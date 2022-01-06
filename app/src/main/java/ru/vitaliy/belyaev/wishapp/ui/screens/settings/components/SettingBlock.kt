@@ -44,7 +44,6 @@ fun SettingBlock(title: String, onClick: () -> Unit) {
                     end.linkTo(parent.end, margin = 16.dp)
                 }
         )
-
     }
 }
 
