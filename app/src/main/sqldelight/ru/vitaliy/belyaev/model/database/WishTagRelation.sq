@@ -21,13 +21,15 @@ SELECT *
 FROM WishTagRelation relation
 INNER JOIN Wish wish ON wish.wishId = relation.wishId
 INNER JOIN Tag tag ON tag.tagId = relation.tagId
-WHERE relation.tagId = ?;
+WHERE relation.tagId = ?
+ORDER BY wish.createdTimestamp DESC;
 
 getWishTags:
 SELECT *
 FROM WishTagRelation relation
 INNER JOIN Tag tag ON tag.tagId = relation.tagId
-WHERE relation.wishId = ?;
+WHERE relation.wishId = ?
+ORDER BY tag.title ASC;
 
 delete:
 DELETE FROM WishTagRelation

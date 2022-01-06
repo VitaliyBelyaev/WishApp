@@ -15,7 +15,8 @@ SET title = ?
 
 getAll:
 SELECT *
-FROM Tag;
+FROM Tag
+ORDER BY title ASC;
 
 deleteByIds:
 DELETE FROM Tag

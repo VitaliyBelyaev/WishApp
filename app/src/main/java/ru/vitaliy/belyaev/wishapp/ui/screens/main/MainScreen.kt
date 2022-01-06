@@ -114,7 +114,7 @@ fun MainScreen(
                         painter = painterResource(R.drawable.ic_add),
                         contentDescription = "Add",
                         tint = MaterialTheme.colors.primary,
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(36.dp)
                     )
                 }
             },

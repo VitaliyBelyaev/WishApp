@@ -40,11 +40,13 @@ SET isCompleted = ?,
 getById:
 SELECT *
 FROM Wish
-WHERE wishId = ?;
+WHERE wishId = ?
+ORDER BY createdTimestamp DESC;
 
 getAll:
 SELECT *
-FROM Wish;
+FROM Wish
+ORDER BY createdTimestamp DESC;
 
 deleteByIds:
 DELETE FROM Wish

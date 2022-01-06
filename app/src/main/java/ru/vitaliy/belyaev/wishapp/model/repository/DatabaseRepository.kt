@@ -222,7 +222,6 @@ class DatabaseRepository @Inject constructor(
             tagQueries
                 .getAll()
                 .executeAsList()
-                .sortedBy { it.title }
         }
     }
 
@@ -231,7 +230,6 @@ class DatabaseRepository @Inject constructor(
             .getAll()
             .asFlow()
             .mapToList(dispatcherProvider.io())
-            .map { list -> list.sortedBy { it.title } }
     }
 
     override fun observeTagsByWishId(wishId: String): Flow<List<Tag>> {
@@ -241,7 +239,6 @@ class DatabaseRepository @Inject constructor(
             .mapToList(dispatcherProvider.io())
             .map { list ->
                 list.map { Tag(it.tagId_, it.title) }
-                    .sortedBy { it.title }
             }
     }
 
