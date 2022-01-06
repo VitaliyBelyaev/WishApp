@@ -41,7 +41,7 @@ class MainViewModel @Inject constructor(
 
     private val selectedTagIdFlow: MutableStateFlow<String> = MutableStateFlow("")
 
-    private val testWishes = createTestWishes()
+    private val testWishes = createRuTestWishes()
 
     private var allWishesJob: Job? = null
     private var wishesByTagJob: Job? = null
@@ -152,7 +152,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun createTestWishes(): List<WishWithTags> {
+    private fun createRuTestWishes(): List<WishWithTags> {
         val currentMillis = System.currentTimeMillis()
         return listOf(
             WishWithTags(

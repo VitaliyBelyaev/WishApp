@@ -25,9 +25,6 @@ class EditTagsViewModel @Inject constructor(
 
     private var currentEditingTag: Tag? = null
 
-//    private val recentlyAddedTagIds: MutableList<String> = mutableListOf()
-//    private var currentlyEditingIdFlow: MutableStateFlow<String> = MutableStateFlow("")
-
     init {
         Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
             param(FirebaseAnalytics.Param.SCREEN_NAME, "EditTags")
@@ -42,7 +39,7 @@ class EditTagsViewModel @Inject constructor(
     }
 
     fun onTagClicked(tag: Tag) {
-        Firebase.analytics.logEvent("tag_clicked", null)
+        Firebase.analytics.logEvent("tag_clicked_from_edit_tags", null)
         currentEditingTag = tag
         _uiState.value = _uiState.value.map { it.copy(inEditMode = it.tag == currentEditingTag) }
     }
@@ -55,7 +52,7 @@ class EditTagsViewModel @Inject constructor(
     }
 
     fun onEditTagDoneClicked(newTitle: String, tag: Tag) {
-        Firebase.analytics.logEvent("edit_tag_done_clicked", null)
+        Firebase.analytics.logEvent("edit_tag_done_clicked_from_edit_tags", null)
         viewModelScope.launch {
             currentEditingTag = null
             tagsRepository.updateTagTitle(newTitle, tag.tagId)
