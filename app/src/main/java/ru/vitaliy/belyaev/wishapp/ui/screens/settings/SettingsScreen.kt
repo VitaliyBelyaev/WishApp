@@ -26,9 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.analytics.ktx.logEvent
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.Theme
@@ -91,12 +88,7 @@ fun SettingsScreen(
                 item {
                     ThemeSettingBlock(
                         selectedTheme = selectedTheme,
-                        onThemeClicked = {
-                            Firebase.analytics.logEvent("select_app_theme") {
-                                param("theme", it.name)
-                            }
-                            viewModel.updateSelectedTheme(it)
-                        }
+                        onThemeClicked = { viewModel.onThemeItemClicked(it) }
                     )
                 }
                 item {
@@ -111,7 +103,7 @@ fun SettingsScreen(
                     SettingBlock(
                         title = stringResource(R.string.backup),
                         onClick = {
-                            Firebase.analytics.logEvent("about_data_backup_click", null)
+                            viewModel.onBackupAndRestoreItemClicked()
                             settingItem.value = Backup
                             scope.launch {
                                 modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
@@ -123,7 +115,7 @@ fun SettingsScreen(
                     SettingBlock(
                         title = stringResource(R.string.rate_app),
                         onClick = {
-                            Firebase.analytics.logEvent("rate_app_click", null)
+                            viewModel.onRateAppItemClicked()
                             context.openGooglePlay()
                         }
                     )

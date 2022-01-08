@@ -8,26 +8,29 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkInfo
 
+@ExperimentalMaterialApi
+@ExperimentalComposeUiApi
 @Composable
 fun LinkPreview(
     linkInfo: LinkInfo,
     url: String,
-    paddingValues: PaddingValues = PaddingValues()
+    paddingValues: PaddingValues = PaddingValues(),
+    onLinkPreviewClick: () -> Unit
 ) {
 
     val uriHandler = LocalUriHandler.current
@@ -36,7 +39,7 @@ fun LinkPreview(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                Firebase.analytics.logEvent("wish_link_click", null)
+                onLinkPreviewClick()
                 uriHandler.openUri(url)
             }
             .padding(paddingValues),
