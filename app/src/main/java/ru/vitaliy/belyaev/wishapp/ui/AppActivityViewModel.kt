@@ -2,10 +2,6 @@ package ru.vitaliy.belyaev.wishapp.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.analytics.ktx.logEvent
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +10,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
+import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsNames
+import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.isEmpty
@@ -22,7 +20,8 @@ import ru.vitaliy.belyaev.wishapp.utils.SingleLiveEvent
 @HiltViewModel
 class AppActivityViewModel @Inject constructor(
     private val wishesRepository: WishesRepository,
-    private val dataStoreRepository: DataStoreRepository
+    private val dataStoreRepository: DataStoreRepository,
+    private val analyticsRepository: AnalyticsRepository
 ) : ViewModel() {
 
     val wishListToShareLiveData: SingleLiveEvent<List<WishWithTags>> = SingleLiveEvent()
@@ -81,8 +80,8 @@ class AppActivityViewModel @Inject constructor(
     }
 
     fun onShareWishListClicked(wishes: List<WishWithTags>) {
-        Firebase.analytics.logEvent(FirebaseAnalytics.Event.SHARE) {
-            param(FirebaseAnalytics.Param.QUANTITY, wishes.size.toString())
+        analyticsRepository.trackEvent(AnalyticsNames.Event.SHARE) {
+            param(AnalyticsNames.Param.QUANTITY, wishes.size.toString())
         }
         wishListToShareLiveData.postValue(wishes)
     }

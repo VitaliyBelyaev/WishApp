@@ -13,13 +13,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import com.google.android.play.core.review.ReviewManagerFactory
-import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
+import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsNames
+import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.theme.WishAppTheme
 
@@ -29,6 +30,9 @@ import ru.vitaliy.belyaev.wishapp.theme.WishAppTheme
 class AppActivity : AppCompatActivity() {
 
     private val viewModel: AppActivityViewModel by viewModels()
+
+    @Inject
+    lateinit var analyticsRepository: AnalyticsRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_WishApp)
@@ -46,14 +50,14 @@ class AppActivity : AppCompatActivity() {
         }
 
         viewModel.requestReviewLiveData.observe(this) {
-            Firebase.analytics.logEvent("in_app_review_requested", null)
+            analyticsRepository.trackEvent(AnalyticsNames.Event.IN_APP_REVIEW_REQUESTED)
             val reviewManager = ReviewManagerFactory.create(this)
             reviewManager
                 .requestReviewFlow()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val reviewInfo = task.result
-                        Firebase.analytics.logEvent("in_app_review_shown", null)
+                        analyticsRepository.trackEvent(AnalyticsNames.Event.IN_APP_REVIEW_SHOWN)
                         reviewManager.launchReviewFlow(this, reviewInfo)
                     } else {
                         task.exception?.let { FirebaseCrashlytics.getInstance().recordException(it) }

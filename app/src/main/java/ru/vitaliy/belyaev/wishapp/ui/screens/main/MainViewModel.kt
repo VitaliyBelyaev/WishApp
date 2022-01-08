@@ -2,10 +2,6 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.analytics.ktx.logEvent
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
@@ -18,6 +14,8 @@ import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Tag
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
+import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsNames
+import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.tags.TagsRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.AllTagsMenuItem
@@ -29,7 +27,8 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.TagMenuItem
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val wishesRepository: WishesRepository,
-    private val tagsRepository: TagsRepository
+    private val tagsRepository: TagsRepository,
+    private val analyticsRepository: AnalyticsRepository
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<MainScreenState> = MutableStateFlow(MainScreenState())
@@ -47,8 +46,8 @@ class MainViewModel @Inject constructor(
     private var wishesByTagJob: Job? = null
 
     init {
-        Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
-            param(FirebaseAnalytics.Param.SCREEN_NAME, "MainScreen")
+        analyticsRepository.trackEvent(AnalyticsNames.Event.SCREEN_VIEW) {
+            param(AnalyticsNames.Param.SCREEN_NAME, "MainScreen")
         }
 
         allWishesJob = viewModelScope.launch {
@@ -88,28 +87,28 @@ class MainViewModel @Inject constructor(
     }
 
     fun onCloseEditModeClicked() {
-        Firebase.analytics.logEvent("close_edit_mode_click", null)
+        analyticsRepository.trackEvent(AnalyticsNames.Event.CLOSE_EDIT_MODE_CLICK)
         _uiState.value = _uiState.value.copy(selectedIds = emptyList())
     }
 
     fun onDeleteSelectedClicked() {
         viewModelScope.launch {
             val selectedIds = uiState.value.selectedIds
-            Firebase.analytics.logEvent("delete_from_edit_mode_click") {
-                param(FirebaseAnalytics.Param.QUANTITY, selectedIds.size.toString())
+            analyticsRepository.trackEvent(AnalyticsNames.Event.DELETE_FROM_EDIT_MODE_CLICK) {
+                param(AnalyticsNames.Param.QUANTITY, selectedIds.size.toString())
             }
             wishesRepository.deleteWishesByIds(selectedIds)
         }
     }
 
     fun onSelectAllClicked() {
-        Firebase.analytics.logEvent("select_all_wishes_press", null)
+        analyticsRepository.trackEvent(AnalyticsNames.Event.SELECT_ALL_WISHES_PRESS)
         val selectedIds = uiState.value.wishes.map { it.id }
         _uiState.value = uiState.value.copy(selectedIds = selectedIds)
     }
 
     fun onWishLongPress(wish: WishWithTags) {
-        Firebase.analytics.logEvent("wish_long_press", null)
+        analyticsRepository.trackEvent(AnalyticsNames.Event.WISH_LONG_PRESS)
         val oldState = _uiState.value
         val wishId = wish.id
         val newState = if (oldState.selectedIds.isEmpty()) {
@@ -141,7 +140,7 @@ class MainViewModel @Inject constructor(
                     }
             }
         } else {
-            Firebase.analytics.logEvent("filter_by_tag", null)
+            analyticsRepository.trackEvent(AnalyticsNames.Event.FILTER_BY_TAG_CLICK)
             wishesByTagJob = viewModelScope.launch {
                 wishesRepository
                     .observeWishesByTag(tag.tagId)

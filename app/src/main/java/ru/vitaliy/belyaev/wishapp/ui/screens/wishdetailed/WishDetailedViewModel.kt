@@ -3,10 +3,6 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.analytics.ktx.logEvent
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
@@ -17,6 +13,8 @@ import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.domain.GetLinkPreviewInteractor
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
+import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsNames
+import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.wishes.createEmptyWish
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
@@ -31,7 +29,8 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.toWishItem
 class WishDetailedViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val wishesRepository: WishesRepository,
-    private val getLinkPreviewInteractor: GetLinkPreviewInteractor
+    private val getLinkPreviewInteractor: GetLinkPreviewInteractor,
+    private val analyticsRepository: AnalyticsRepository
 ) : ViewModel() {
 
     val inputWishId: String = savedStateHandle[ARG_WISH_ID] ?: ""
@@ -41,8 +40,8 @@ class WishDetailedViewModel @Inject constructor(
     private var cachedLinkPreviewState: LinkPreviewState = None
 
     init {
-        Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
-            param(FirebaseAnalytics.Param.SCREEN_NAME, "WishDetailed")
+        analyticsRepository.trackEvent(AnalyticsNames.Event.SCREEN_VIEW) {
+            param(AnalyticsNames.Param.SCREEN_NAME, "WishDetailed")
         }
 
         viewModelScope.launch {
@@ -106,7 +105,11 @@ class WishDetailedViewModel @Inject constructor(
     }
 
     fun onDeleteWishClicked() {
-        Firebase.analytics.logEvent("delete_tag_from_wish_detailed", null)
+        analyticsRepository.trackEvent(AnalyticsNames.Event.DELETE_TAG_FROM_WISH_DETAILED)
         viewModelScope.cancel()
+    }
+
+    fun onLinkPreviewClick() {
+        analyticsRepository.trackEvent(AnalyticsNames.Event.WISH_LINK_CLICK)
     }
 }

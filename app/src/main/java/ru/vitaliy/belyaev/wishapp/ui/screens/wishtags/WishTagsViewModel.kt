@@ -3,10 +3,6 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wishtags
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.analytics.ktx.logEvent
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
@@ -15,6 +11,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Tag
+import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsNames
+import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.tags.TagsRepository
 import ru.vitaliy.belyaev.wishapp.model.repository.wishtagrelation.WishTagRelationRepository
@@ -27,7 +25,8 @@ class WishTagsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val tagsRepository: TagsRepository,
     private val wishTagRelationRepository: WishTagRelationRepository,
-    private val dataStoreRepository: DataStoreRepository
+    private val dataStoreRepository: DataStoreRepository,
+    private val analyticsRepository: AnalyticsRepository
 ) : ViewModel() {
 
     private val wishId: String = savedStateHandle[ARG_WISH_ID] ?: ""
@@ -39,8 +38,8 @@ class WishTagsViewModel @Inject constructor(
     private val recentlyAddedTagIds: MutableList<String> = mutableListOf()
 
     init {
-        Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
-            param(FirebaseAnalytics.Param.SCREEN_NAME, "WishTags")
+        analyticsRepository.trackEvent(AnalyticsNames.Event.SCREEN_VIEW) {
+            param(AnalyticsNames.Param.SCREEN_NAME, "WishTags")
         }
 
         viewModelScope.launch {
@@ -57,7 +56,7 @@ class WishTagsViewModel @Inject constructor(
     }
 
     fun onAddTagClicked(tagName: String) {
-        Firebase.analytics.logEvent("add_new_tag", null)
+        analyticsRepository.trackEvent(AnalyticsNames.Event.ADD_NEW_TAG)
         viewModelScope.launch {
             val tagId = UUID.randomUUID().toString()
             recentlyAddedTagIds.add(0, tagId)
