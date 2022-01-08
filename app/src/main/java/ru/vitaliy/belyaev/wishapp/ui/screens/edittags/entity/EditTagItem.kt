@@ -4,5 +4,5 @@ import ru.vitaliy.belyaev.model.database.Tag
 
 data class EditTagItem(
     val tag: Tag,
-    val inEditMode: Boolean
+    val isEditMode: Boolean
 )

@@ -41,7 +41,7 @@ class EditTagsViewModel @Inject constructor(
     fun onTagClicked(tag: Tag) {
         Firebase.analytics.logEvent("tag_clicked_from_edit_tags", null)
         currentEditingTag = tag
-        _uiState.value = _uiState.value.map { it.copy(inEditMode = it.tag == currentEditingTag) }
+        _uiState.value = _uiState.value.map { it.copy(isEditMode = it.tag == currentEditingTag) }
     }
 
     fun onTagRemoveClicked(tag: Tag) {
@@ -53,6 +53,9 @@ class EditTagsViewModel @Inject constructor(
 
     fun onEditTagDoneClicked(newTitle: String, tag: Tag) {
         Firebase.analytics.logEvent("edit_tag_done_clicked_from_edit_tags", null)
+        if (newTitle.isBlank()) {
+            return
+        }
         viewModelScope.launch {
             currentEditingTag = null
             tagsRepository.updateTagTitle(newTitle, tag.tagId)

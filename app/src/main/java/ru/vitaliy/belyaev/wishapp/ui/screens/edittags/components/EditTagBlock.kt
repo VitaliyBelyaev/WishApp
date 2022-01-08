@@ -3,10 +3,11 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.edittags.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
@@ -18,11 +19,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
@@ -43,7 +42,7 @@ fun EditTagBlock(
     onRemoveClick: (Tag) -> Unit,
     onEditDoneClick: (String) -> Unit,
 ) {
-    val inEditMode = editTagItem.inEditMode
+    val isEditMode = editTagItem.isEditMode
     val tag = editTagItem.tag
 
     ConstraintLayout(
@@ -51,14 +50,14 @@ fun EditTagBlock(
             .fillMaxWidth()
             .height(54.dp)
             .clickable {
-                if (!inEditMode) {
+                if (!isEditMode) {
                     onClick(tag)
                 }
             }
     ) {
         val (startIconRef, titleRef, endIconRef, topDividerRef, bottomDividerRef) = createRefs()
 
-        val dividerColor: Color = if (inEditMode) {
+        val dividerColor: Color = if (isEditMode) {
             MaterialTheme.colors.primary
         } else {
             Color.Transparent
@@ -81,24 +80,25 @@ fun EditTagBlock(
                 })
 
         val focusRequester = remember { FocusRequester() }
-        val iconsRippleShape = RoundedCornerShape(50.dp)
-        if (inEditMode) {
+        if (isEditMode) {
             DisposableEffect(Unit) {
                 focusRequester.requestFocus()
                 onDispose { }
             }
-            ThemedIcon(
-                painterResource(R.drawable.ic_delete),
-                contentDescription = "Delete",
+            IconButton(
+                onClick = { onRemoveClick(tag) },
                 modifier = Modifier
                     .constrainAs(startIconRef) {
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start, margin = 16.dp)
+                        start.linkTo(parent.start, margin = 4.dp)
                     }
-                    .clip(iconsRippleShape)
-                    .clickable { onRemoveClick(tag) }
-            )
+            ) {
+                ThemedIcon(
+                    painterResource(R.drawable.ic_delete),
+                    contentDescription = "Delete"
+                )
+            }
             var textFieldValue: TextFieldValue by remember {
                 mutableStateOf(
                     TextFieldValue(
@@ -111,6 +111,7 @@ fun EditTagBlock(
             TextField(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(0.dp)
                     .focusRequester(focusRequester)
                     .constrainAs(titleRef) {
                         width = Dimension.fillToConstraints
@@ -140,21 +141,27 @@ fun EditTagBlock(
                     unfocusedIndicatorColor = Color.Transparent
                 )
             )
-            ThemedIcon(
-                painterResource(R.drawable.ic_check),
-                contentDescription = "Done",
-                tint = colorResource(R.color.primaryColor),
+            val doneIconTint: Color = if (textFieldValue.text.isNotBlank()) {
+                MaterialTheme.colors.primary
+            } else {
+                MaterialTheme.colors.primary.copy(alpha = 0.5f)
+            }
+            IconButton(
+                onClick = { onEditDoneClick(textFieldValue.text) },
+                enabled = textFieldValue.text.isNotBlank(),
                 modifier = Modifier
                     .constrainAs(endIconRef) {
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
-                        end.linkTo(parent.end, margin = 16.dp)
+                        end.linkTo(parent.end, margin = 4.dp)
                     }
-                    .clip(iconsRippleShape)
-                    .clickable {
-                        onEditDoneClick(textFieldValue.text)
-                    }
-            )
+            ) {
+                ThemedIcon(
+                    painterResource(R.drawable.ic_check),
+                    contentDescription = "Done",
+                    tint = doneIconTint,
+                )
+            }
         } else {
             ThemedIcon(
                 painterResource(R.drawable.ic_label),
@@ -175,24 +182,26 @@ fun EditTagBlock(
                 modifier = Modifier
                     .constrainAs(titleRef) {
                         width = Dimension.fillToConstraints
-                        start.linkTo(startIconRef.end, margin = 16.dp)
+                        start.linkTo(startIconRef.end, margin = 28.dp)
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
                         end.linkTo(endIconRef.start, margin = 16.dp)
                     }
             )
-            ThemedIcon(
-                painterResource(R.drawable.ic_edit),
-                contentDescription = "Edit",
+            IconButton(
+                onClick = { onClick(tag) },
                 modifier = Modifier
                     .constrainAs(endIconRef) {
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
-                        end.linkTo(parent.end, margin = 16.dp)
+                        end.linkTo(parent.end, margin = 4.dp)
                     }
-                    .clip(iconsRippleShape)
-                    .clickable { onClick(tag) }
-            )
+            ) {
+                ThemedIcon(
+                    painterResource(R.drawable.ic_edit),
+                    contentDescription = "Edit",
+                )
+            }
         }
     }
 }
