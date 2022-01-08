@@ -136,6 +136,9 @@ fun MainScreen(
                 state = lazyListState,
                 modifier = Modifier.padding(start = cardsPadding, end = cardsPadding)
             ) {
+                item {
+                    Spacer(modifier = Modifier.height(cardsPadding))
+                }
                 items(state.wishes) { wishItem ->
                     val isSelected: Boolean = state.selectedIds.contains(wishItem.id)
                     WishItemBlock(

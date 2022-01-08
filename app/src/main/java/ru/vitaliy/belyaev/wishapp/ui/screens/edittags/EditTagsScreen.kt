@@ -1,5 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.edittags
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -18,6 +19,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -27,24 +30,34 @@ import java.util.*
 import ru.vitaliy.belyaev.model.database.Tag
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
-import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.components.RemoveTagBlock
+import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.components.EditTagBlock
+import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
 
+@ExperimentalComposeUiApi
 @Composable
 fun EditTagsScreen(
     onBackPressed: () -> Unit,
     viewModel: EditTagsViewModel = hiltViewModel()
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    val state: List<Tag> by viewModel.uiState.collectAsState()
+    val editTagItems: List<EditTagItem> by viewModel.uiState.collectAsState()
     val openDialog: MutableState<Optional<Tag>> = remember { mutableStateOf(Optional.empty()) }
     val lazyListState: LazyListState = rememberLazyListState()
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val handleBackPressed: () -> Unit = {
+        keyboardController?.hide()
+        onBackPressed()
+    }
+
+    BackHandler { handleBackPressed() }
 
     Scaffold(
         topBar = {
             WishAppTopBar(
-                title = stringResource(R.string.delete_tag),
+                title = stringResource(R.string.edit_tags),
                 withBackIcon = true,
-                onBackPressed = onBackPressed,
+                onBackPressed = handleBackPressed,
                 lazyListState = lazyListState
             )
         },
@@ -52,12 +65,14 @@ fun EditTagsScreen(
     ) {
 
         LazyColumn(state = lazyListState) {
-            items(state) { tag ->
-                RemoveTagBlock(
-                    tag = tag,
+            items(editTagItems) { editTagItem ->
+                EditTagBlock(
+                    editTagItem = editTagItem,
+                    onClick = { viewModel.onTagClicked(it) },
                     onRemoveClick = {
                         openDialog.value = Optional.of(it)
-                    }
+                    },
+                    onEditDoneClick = { viewModel.onEditTagDoneClicked(it, editTagItem.tag) }
                 )
             }
         }
@@ -98,6 +113,7 @@ fun EditTagsScreen(
     }
 }
 
+@ExperimentalComposeUiApi
 @Preview
 @Composable
 fun EditTagsScreenPreview() {

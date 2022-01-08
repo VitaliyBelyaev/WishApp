@@ -9,7 +9,6 @@ import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
-import kotlin.random.Random
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +41,7 @@ class MainViewModel @Inject constructor(
     private val selectedTagIdFlow: MutableStateFlow<String> = MutableStateFlow("")
 
     private val testWishes = createTestWishes()
+    private var testWishIndex = 0
 
     private var allWishesJob: Job? = null
     private var wishesByTagJob: Job? = null
@@ -77,13 +77,13 @@ class MainViewModel @Inject constructor(
     fun onAddTestWishClicked() {
         viewModelScope.launch {
             val currentMillis = System.currentTimeMillis()
-            val index = Random.nextInt(0, testWishes.lastIndex)
-            val wish = testWishes[index].copy(
+            val wish = testWishes[testWishIndex % testWishes.size].copy(
                 id = UUID.randomUUID().toString(),
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis
             )
             wishesRepository.insertWish(wish)
+            testWishIndex++
         }
     }
 
@@ -159,7 +159,7 @@ class MainViewModel @Inject constructor(
                 id = "1",
                 title = "Шуруповерт",
                 link = "https://www.citilink.ru/product/drel-shurupovert-bosch-universaldrill-18v-akkum-patron-bystrozazhimnoi-1492081/?region_id=123062&gclid=CjwKCAiAm7OMBhAQEiwArvGi3Aom3wUbhHlBUu-9OPINzsyF9rM0Q2rBUgp1jFV68iT7IUaAoTA-1xoCzPcQAvD_BwE",
-                comment = "Не душманский, качественный, чтобы кейс был, головки разные и запасной аккумулятор и фонарик включался когда начинаешь крутить",
+                comment = "С кейсом, чтобы были головки разные и запасной аккумулятор",
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,
@@ -167,9 +167,9 @@ class MainViewModel @Inject constructor(
             ),
             WishWithTags(
                 id = "2",
-                title = "Айфон 13",
-                link = "https://www.apple.com/ru/shop/buy-iphone/iphone-13/%D0%B4%D0%B8%D1%81%D0%BF%D0%BB%D0%B5%D0%B9-6,1-%D0%B4%D1%8E%D0%B9%D0%BC%D0%B0-128%D0%B3%D0%B1-%D1%81%D0%B8%D0%BD%D0%B8%D0%B9?afid=p238%7CsIxKMMS92-dc_mtid_187079nc38483_pcrid_546456592051_pgrid_129042575244_&cid=aos-ru-kwgo-pla-iphone--slid---product-MLP13-RU",
-                comment = "Очень хочетса",
+                title = "Поход в SPA",
+                link = "",
+                comment = "Побольше массажа",
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,
@@ -187,9 +187,19 @@ class MainViewModel @Inject constructor(
             ),
             WishWithTags(
                 id = "4",
-                title = "Халат теплый и нежный",
+                title = "Халат",
                 link = "",
-                comment = "Цвет не яркий, спокойный какой-нибудь",
+                comment = "Цвет не яркий",
+                isCompleted = false,
+                createdTimestamp = currentMillis,
+                updatedTimestamp = currentMillis,
+                tags = emptyList()
+            ),
+            WishWithTags(
+                id = "5",
+                title = "Мультитул LEATHERMAN",
+                link = "https://ileatherman.ru/multitul-leatherman-wave-plus-832524-s-nejlonovym-chexlom",
+                comment = "",
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,

@@ -57,8 +57,8 @@ fun TagsSheetContent(
         item {
             Spacer(modifier = Modifier.height(10.dp))
             NavMenuItemBlock(
-                icon = painterResource(R.drawable.ic_delete),
-                title = stringResource(R.string.delete_tag),
+                icon = painterResource(R.drawable.ic_edit),
+                title = stringResource(R.string.edit_tags),
                 isSelected = false,
                 onClick = {
                     scope.launch {
@@ -121,10 +121,8 @@ fun NavMenuItemBlock(
         ThemedIcon(
             painter = icon,
             contentDescription = null,
-            tint = Color.Gray,
             modifier = Modifier.size(24.dp)
         )
-
         Text(
             text = title,
             maxLines = 1,
