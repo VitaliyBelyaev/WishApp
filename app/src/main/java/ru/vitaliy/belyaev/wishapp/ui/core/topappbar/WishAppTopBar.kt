@@ -7,6 +7,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.style.TextOverflow
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 
 @Composable
@@ -30,7 +31,13 @@ fun WishAppTopBar(
         }
 
     ScrollAwareTopBar(
-        title = { Text(text = title) },
+        title = {
+            Text(
+                text = title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
         navigationIcon = navIcon,
         actions = actions,
         lazyListState = lazyListState
