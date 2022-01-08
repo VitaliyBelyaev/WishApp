@@ -61,7 +61,7 @@ class WishTagsViewModel @Inject constructor(
         viewModelScope.launch {
             val tagId = UUID.randomUUID().toString()
             recentlyAddedTagIds.add(0, tagId)
-            tagsRepository.insertTag(Tag(tagId, tagName))
+            tagsRepository.insertTag(Tag(tagId, tagName.trim()))
             wishTagRelationRepository.insertWishTagRelation(wishId, tagId)
             dataStoreRepository.incrementPositiveActionsCount()
         }
