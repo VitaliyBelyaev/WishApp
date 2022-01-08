@@ -11,9 +11,11 @@ class FirebaseAnalyticsRepository : AnalyticsRepository {
     override fun trackEvent(eventName: String, block: ParametersBuilder.() -> Unit) {
         val parametersBuilder = ParametersBuilder()
         block.invoke(parametersBuilder)
-        Firebase.analytics.logEvent(eventName) {
-            val params = parametersBuilder.params
-            if (params.isNotEmpty()) {
+        val params = parametersBuilder.params
+        if (params.isEmpty()) {
+            Firebase.analytics.logEvent(eventName, null)
+        } else {
+            Firebase.analytics.logEvent(eventName) {
                 val iterator = params.iterator()
                 while (iterator.hasNext()) {
                     val entry = iterator.next()
