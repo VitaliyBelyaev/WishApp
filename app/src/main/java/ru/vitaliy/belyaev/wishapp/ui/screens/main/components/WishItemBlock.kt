@@ -62,7 +62,7 @@ fun WishItemBlock(
                     onLongPress = { onWishLongPress(wishItem) }
                 )
             }
-            .padding(16.dp)
+            .padding(14.dp)
     ) {
         val (title, titleColor) = if (wishItem.title.isNotBlank()) {
             wishItem.title to Color.Unspecified
@@ -75,6 +75,8 @@ fun WishItemBlock(
                 text = title,
                 color = titleColor,
                 style = MaterialTheme.typography.h6,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.constrainAs(titleRef) {
                     width = Dimension.preferredWrapContent
                     start.linkTo(parent.start)
@@ -104,20 +106,20 @@ fun WishItemBlock(
             }
         }
         if (wishItem.comment.isNotBlank()) {
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = wishItem.comment,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                maxLines = 2,
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 3,
                 overflow = TextOverflow.Ellipsis
             )
         }
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TagsBlock(
-            tags = wishItem.tags,
-            textSize = 13.sp,
-        )
+        if (wishItem.tags.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(10.dp))
+            TagsBlock(
+                tags = wishItem.tags,
+                textSize = 13.sp,
+            )
+        }
     }
 }
