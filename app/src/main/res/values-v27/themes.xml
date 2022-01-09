@@ -6,6 +6,7 @@
         <item name="android:statusBarColor">@color/statusBarColor</item>
         <item name="android:windowLightStatusBar">@bool/is_day_theme</item>
         <item name="android:navigationBarColor">@color/navigationBarColor</item>
+        <item name="android:windowLightNavigationBar">@bool/is_day_theme</item>
     </style>
 
     <style name="Theme.WishApp.Splash" parent="Theme.WishApp">
@@ -13,6 +14,7 @@
         <item name="android:statusBarColor">@color/primaryColor</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:navigationBarColor">@color/primaryColor</item>
+        <item name="android:windowLightNavigationBar">@bool/is_day_theme</item>
         <item name="android:windowBackground">@drawable/background_splash</item>
     </style>
 
@@ -21,11 +23,9 @@
         <item name="android:statusBarColor">@color/statusBarColor</item>
         <item name="android:windowLightStatusBar">@bool/is_day_theme</item>
         <item name="android:navigationBarColor">@color/navigationBarColor</item>
+        <item name="android:windowLightNavigationBar">@bool/is_day_theme</item>
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="toolbarStyle">@style/LicensesToolbarStyle</item>
     </style>
 
-    <style name="LicensesToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
-        <item name="android:background">@color/statusBarColor</item>
-    </style>
 </resources>

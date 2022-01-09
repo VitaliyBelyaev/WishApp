@@ -11,6 +11,7 @@
 
     <color name="backgroundColorSecondary">#2D3139</color>
     <color name="statusBarColor">@android:color/black</color>
+    <color name="navigationBarColor">@color/surfaceColor</color>
     <color name="iconPrimaryColor">#99B4BEC5</color>
     <color name="bottomSheetBackgroundColor">#2D3139</color>
 </resources>
