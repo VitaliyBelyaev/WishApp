@@ -1,8 +1,8 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -133,8 +133,7 @@ fun MainScreen(
 
             val cardsPadding = 10.dp
             LazyColumn(
-                state = lazyListState,
-                modifier = Modifier.padding(start = cardsPadding, end = cardsPadding)
+                state = lazyListState
             ) {
                 item {
                     Spacer(modifier = Modifier.height(cardsPadding))
@@ -144,6 +143,7 @@ fun MainScreen(
                     WishItemBlock(
                         wishItem = wishItem,
                         isSelected = isSelected,
+                        paddingValues = PaddingValues(horizontal = cardsPadding),
                         onWishClicked = onWishClicked,
                         onWishLongPress = { wish -> viewModel.onWishLongPress(wish) }
                     )
