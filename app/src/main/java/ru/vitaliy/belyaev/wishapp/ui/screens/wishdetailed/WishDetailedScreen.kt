@@ -94,10 +94,12 @@ fun WishDetailedScreen(
                 onBackPressed = handleBackPressed,
                 lazyListState = lazyListState,
                 actions = {
-                    IconButton(onClick = {
-                        val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@IconButton
-                        onWishTagsClicked(wishId)
-                    }) {
+                    IconButton(
+                        onClick = {
+                            val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@IconButton
+                            onWishTagsClicked(wishId)
+                        }
+                    ) {
                         ThemedIcon(
                             painterResource(R.drawable.ic_label),
                             contentDescription = "Open tags"
@@ -223,9 +225,9 @@ fun WishDetailedScreen(
                 }
             }
             item { Spacer(modifier = Modifier.height(12.dp)) }
+
+            val tags = wishItem.toValueOfNull()?.wish?.tags ?: emptyList()
             item {
-                val wishItemValue = wishItem.toValueOfNull()
-                val tags = wishItemValue?.wish?.tags ?: emptyList()
                 TagsBlock(
                     tags = tags,
                     textSize = 16.sp,
@@ -233,9 +235,14 @@ fun WishDetailedScreen(
                         val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
                         onWishTagsClicked(wishId)
                     },
+                    onAddNewTagClick = {
+                        val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
+                        onWishTagsClicked(wishId)
+                    },
                     modifier = Modifier.padding(start = 12.dp, end = 12.dp)
                 )
             }
+
             item { Spacer(modifier = Modifier.height(12.dp)) }
         }
     }

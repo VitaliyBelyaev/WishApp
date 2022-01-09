@@ -28,12 +28,13 @@
     <string name="enter_label_name">Enter label name</string>
     <string name="create_new_pattern">Create \"%s\"</string>
     <string name="all_wishes">All wishes</string>
-    <string name="edit_tags">Edit tags</string>
-    <string name="create_tag">Create tag</string>
-    <string name="delete_tag">Delete tags</string>
+    <string name="edit_tags">Edit labels</string>
+    <string name="create_tag">Create label</string>
+    <string name="add_tag">Add label</string>
+    <string name="delete_tag">Delete labels</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
-    <string name="delete_tag_title">Delete tag?</string>
+    <string name="delete_tag_title">Delete label?</string>
     <string name="delete_tag_description">We\'ll delete this label and remove it from all of your wishes. Your wishes wont\'t be deleted.</string>
     <string name="delete_wish_title">Delete wish?</string>
     <string name="delete_wishes_title">Delete selected wishes?</string>

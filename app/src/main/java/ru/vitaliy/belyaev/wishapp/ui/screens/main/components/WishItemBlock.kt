@@ -119,6 +119,7 @@ fun WishItemBlock(
             TagsBlock(
                 tags = wishItem.tags,
                 textSize = 13.sp,
+                onClick = { onWishClicked(wishItem) }
             )
         }
     }
