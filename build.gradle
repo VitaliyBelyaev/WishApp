@@ -10,6 +10,7 @@ buildscript {
         kotlinCoroutinesVersion = '1.6.0'
         sqlDelightVersion = '1.5.2'
         hiltVersion = '2.38.1'
+        accompanistVesrion = '0.22.0-rc'
     }
 
     repositories {
