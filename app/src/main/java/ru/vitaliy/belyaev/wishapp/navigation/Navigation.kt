@@ -3,6 +3,7 @@ package ru.vitaliy.belyaev.wishapp.navigation
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
@@ -21,7 +22,6 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.WishDetailedScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.WishTagsScreen
-import timber.log.Timber
 
 @ExperimentalAnimationApi
 @ExperimentalComposeUiApi
@@ -31,9 +31,8 @@ import timber.log.Timber
 fun Navigation(onShareClick: (List<WishWithTags>) -> Unit) {
     val navController = rememberAnimatedNavController()
     val dampingRatio: Float = Spring.DampingRatioNoBouncy
-    val stiffness: Float = 150f
-    val visibilityThreshold: IntOffset = IntOffset(1, 1)
-    val visibilityThreshold2: IntOffset = IntOffset(200, 1)
+    val stiffness: Float = Spring.StiffnessMediumLow
+    val visibilityThreshold: IntOffset = IntOffset.VisibilityThreshold
     AnimatedNavHost(
         navController = navController,
         startDestination = MainRoute.VALUE,
@@ -56,7 +55,6 @@ fun Navigation(onShareClick: (List<WishWithTags>) -> Unit) {
                     visibilityThreshold = visibilityThreshold
                 ),
                 targetOffset = {
-                    Timber.tag("RTRT").d("targetOffset:$it")
                     (it * 0.65).roundToInt()
                 }
             )
@@ -68,10 +66,7 @@ fun Navigation(onShareClick: (List<WishWithTags>) -> Unit) {
                     dampingRatio = dampingRatio,
                     stiffness = stiffness,
                     visibilityThreshold = visibilityThreshold
-                ),
-                initialOffset = {
-                    (it * 0.65).roundToInt()
-                }
+                )
             )
         },
         popExitTransition = {
