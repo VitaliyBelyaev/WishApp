@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Хотелки</string>
     <string name="enter_title">Название</string>
     <string name="enter_link">Ссылка</string>
     <string name="enter_comment">Комментарий</string>

@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">WishApp</string>
     <string name="enter_title">Title</string>
     <string name="enter_link">Link</string>
     <string name="enter_comment">Comment</string>
