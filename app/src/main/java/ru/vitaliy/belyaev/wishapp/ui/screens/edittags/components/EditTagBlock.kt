@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -35,12 +36,15 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
 
+@ExperimentalComposeUiApi
 @Composable
 fun EditTagBlock(
     editTagItem: EditTagItem,
+    editTagItemIndex: Int,
     onClick: (Tag) -> Unit,
     onRemoveClick: (Tag) -> Unit,
     onEditDoneClick: (String) -> Unit,
+    onEditingItemFocusRequested: () -> Unit,
 ) {
     val isEditMode = editTagItem.isEditMode
     val tag = editTagItem.tag
@@ -69,7 +73,8 @@ fun EditTagBlock(
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                })
+                }
+        )
         Divider(
             color = dividerColor,
             modifier = Modifier
@@ -77,12 +82,14 @@ fun EditTagBlock(
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                })
+                }
+        )
 
         val focusRequester = remember { FocusRequester() }
         if (isEditMode) {
             DisposableEffect(Unit) {
                 focusRequester.requestFocus()
+                onEditingItemFocusRequested()
                 onDispose { }
             }
             IconButton(
@@ -129,12 +136,7 @@ fun EditTagBlock(
                         onEditDoneClick(textFieldValue.text)
                     }
                 ),
-                onValueChange = { newValue ->
-                    textFieldValue = newValue.copy(
-                        selection = TextRange(newValue.text.length),
-                        composition = TextRange(0, newValue.text.length)
-                    )
-                },
+                onValueChange = { newValue -> textFieldValue = newValue },
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,

@@ -212,10 +212,10 @@ fun WishDetailedScreen(
                 when (val linkPreviewState = wishItemValue?.linkPreviewState) {
                     is Data -> {
                         LinkPreview(
-                            linkPreviewState.linkInfo,
-                            wishItemValue.wish.link,
-                            pd,
-                            { viewModel.onLinkPreviewClick() }
+                            linkInfo = linkPreviewState.linkInfo,
+                            url = wishItemValue.wish.link,
+                            paddingValues = pd,
+                            onLinkPreviewClick = { viewModel.onLinkPreviewClick() }
                         )
                     }
                     is Loading -> {

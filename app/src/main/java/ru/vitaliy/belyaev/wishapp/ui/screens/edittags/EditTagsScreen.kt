@@ -3,7 +3,7 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.edittags
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
@@ -19,19 +19,22 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import java.util.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Tag
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.components.EditTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
+import timber.log.Timber
 
 @ExperimentalComposeUiApi
 @Composable
@@ -43,6 +46,7 @@ fun EditTagsScreen(
     val editTagItems: List<EditTagItem> by viewModel.uiState.collectAsState()
     val openDialog: MutableState<Optional<Tag>> = remember { mutableStateOf(Optional.empty()) }
     val lazyListState: LazyListState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
 
     val keyboardController = LocalSoftwareKeyboardController.current
     val handleBackPressed: () -> Unit = {
@@ -65,14 +69,30 @@ fun EditTagsScreen(
     ) {
 
         LazyColumn(state = lazyListState) {
-            items(editTagItems) { editTagItem ->
+            itemsIndexed(editTagItems) { index, editTagItem ->
                 EditTagBlock(
                     editTagItem = editTagItem,
-                    onClick = { viewModel.onTagClicked(it) },
-                    onRemoveClick = {
-                        openDialog.value = Optional.of(it)
-                    },
-                    onEditDoneClick = { viewModel.onEditTagDoneClicked(it, editTagItem.tag) }
+                    editTagItemIndex = index,
+                    onClick = { clickedTag -> viewModel.onTagClicked(clickedTag) },
+                    onRemoveClick = { openDialog.value = Optional.of(it) },
+                    onEditDoneClick = { viewModel.onEditTagDoneClicked(it, editTagItem.tag) },
+                    onEditingItemFocusRequested = {
+                        coroutineScope.launch {
+                            delay(200)
+                            val visibleItems = lazyListState.layoutInfo.visibleItemsInfo
+                            val editingTagItemVisibleInfo = visibleItems.find { it.index == index }
+                            val isEditTagItemFullyVisible = editingTagItemVisibleInfo != null
+                            Timber.tag("RTRT").d("startOffset:${lazyListState.layoutInfo.viewportStartOffset}")
+                            Timber.tag("RTRT").d("endOffset:${lazyListState.layoutInfo.viewportEndOffset}")
+                            Timber.tag("RTRT")
+                                .d("editingTagItemVisibleInfo offset:${editingTagItemVisibleInfo?.offset}")
+                            Timber.tag("RTRT").d("editingTagItemVisibleInfo size:${editingTagItemVisibleInfo?.size}")
+
+                            if (!isEditTagItemFullyVisible) {
+                                lazyListState.scrollToItem(index)
+                            }
+                        }
+                    }
                 )
             }
         }
@@ -113,11 +133,11 @@ fun EditTagsScreen(
     }
 }
 
-@ExperimentalComposeUiApi
-@Preview
-@Composable
-fun EditTagsScreenPreview() {
-    EditTagsScreen(
-        { }
-    )
-}
+//@ExperimentalComposeUiApi
+//@Preview
+//@Composable
+//fun EditTagsScreenPreview() {
+//    EditTagsScreen(
+//        { }
+//    )
+//}

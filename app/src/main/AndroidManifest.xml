@@ -17,7 +17,8 @@
                 android:name=".ui.AppActivity"
                 android:exported="true"
                 android:label="@string/app_name"
-                android:theme="@style/Theme.WishApp.Splash">
+                android:theme="@style/Theme.WishApp.Splash"
+                android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -57,7 +57,7 @@ class EditTagsViewModel @Inject constructor(
         }
         viewModelScope.launch {
             currentEditingTag = null
-            tagsRepository.updateTagTitle(newTitle, tag.tagId)
+            tagsRepository.updateTagTitle(newTitle.trim(), tag.tagId)
         }
     }
 }
