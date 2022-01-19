@@ -19,12 +19,12 @@ import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 @Composable
 fun AddTagBlock(
     tagName: String,
-    onClick: (String) -> Unit
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick(tagName) }
+            .clickable { onClick() }
             .padding(16.dp)
     ) {
         ThemedIcon(

@@ -1,18 +1,12 @@
 package ru.vitaliy.belyaev.wishapp.navigation
 
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.VisibilityThreshold
-import androidx.compose.animation.core.spring
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.unit.IntOffset
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import kotlin.math.roundToInt
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.AboutAppScreen
@@ -29,56 +23,10 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.WishTagsScreen
 @ExperimentalMaterialApi
 @Composable
 fun Navigation(onShareClick: (List<WishWithTags>) -> Unit) {
-    val navController = rememberAnimatedNavController()
-    val dampingRatio: Float = Spring.DampingRatioNoBouncy
-    val stiffness: Float = Spring.StiffnessMediumLow
-    val visibilityThreshold: IntOffset = IntOffset.VisibilityThreshold
-    AnimatedNavHost(
+    val navController = rememberNavController()
+    NavHost(
         navController = navController,
-        startDestination = MainRoute.VALUE,
-        enterTransition = {
-            slideIntoContainer(
-                towards = AnimatedContentScope.SlideDirection.Left,
-                animationSpec = spring(
-                    dampingRatio = dampingRatio,
-                    stiffness = stiffness,
-                    visibilityThreshold = visibilityThreshold
-                )
-            )
-        },
-        exitTransition = {
-            slideOutOfContainer(
-                towards = AnimatedContentScope.SlideDirection.Left,
-                animationSpec = spring(
-                    dampingRatio = dampingRatio,
-                    stiffness = stiffness,
-                    visibilityThreshold = visibilityThreshold
-                ),
-                targetOffset = {
-                    (it * 0.65).roundToInt()
-                }
-            )
-        },
-        popEnterTransition = {
-            slideIntoContainer(
-                towards = AnimatedContentScope.SlideDirection.Right,
-                animationSpec = spring(
-                    dampingRatio = dampingRatio,
-                    stiffness = stiffness,
-                    visibilityThreshold = visibilityThreshold
-                )
-            )
-        },
-        popExitTransition = {
-            slideOutOfContainer(
-                towards = AnimatedContentScope.SlideDirection.Right,
-                animationSpec = spring(
-                    dampingRatio = dampingRatio,
-                    stiffness = stiffness,
-                    visibilityThreshold = visibilityThreshold
-                )
-            )
-        }
+        startDestination = MainRoute.VALUE
     ) {
         composable(MainRoute.VALUE) {
             MainScreen(

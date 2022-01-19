@@ -4,6 +4,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -29,6 +31,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import ru.vitaliy.belyaev.wishapp.R
@@ -56,6 +60,17 @@ fun WishTagsScreen(
 
     BackHandler { handleBackPressed() }
 
+    val onAddTagRequested: () -> Unit = {
+        val tagName = query
+        if (tagName.isNotBlank()) {
+            query = ""
+            viewModel.onQueryChanged("")
+            viewModel.onAddTagClicked(tagName)
+        } else {
+            keyboardController?.hide()
+        }
+    }
+
     Scaffold(
         topBar = {
             ScrollAwareTopBar(
@@ -82,6 +97,11 @@ fun WishTagsScreen(
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                         ),
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Sentences,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(onDone = { onAddTagRequested() }),
                         trailingIcon = {
                             if (query.isNotBlank()) {
                                 IconButton(
@@ -115,11 +135,7 @@ fun WishTagsScreen(
                 item {
                     AddTagBlock(
                         tagName = query,
-                        onClick = {
-                            query = ""
-                            viewModel.onQueryChanged("")
-                            viewModel.onAddTagClicked(it)
-                        }
+                        onClick = { onAddTagRequested() }
                     )
                 }
             }

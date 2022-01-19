@@ -34,7 +34,6 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.components.EditTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
-import timber.log.Timber
 
 @ExperimentalComposeUiApi
 @Composable
@@ -72,23 +71,14 @@ fun EditTagsScreen(
             itemsIndexed(editTagItems) { index, editTagItem ->
                 EditTagBlock(
                     editTagItem = editTagItem,
-                    editTagItemIndex = index,
                     onClick = { clickedTag -> viewModel.onTagClicked(clickedTag) },
                     onRemoveClick = { openDialog.value = Optional.of(it) },
                     onEditDoneClick = { viewModel.onEditTagDoneClicked(it, editTagItem.tag) },
                     onEditingItemFocusRequested = {
                         coroutineScope.launch {
-                            delay(200)
-                            val visibleItems = lazyListState.layoutInfo.visibleItemsInfo
-                            val editingTagItemVisibleInfo = visibleItems.find { it.index == index }
-                            val isEditTagItemFullyVisible = editingTagItemVisibleInfo != null
-                            Timber.tag("RTRT").d("startOffset:${lazyListState.layoutInfo.viewportStartOffset}")
-                            Timber.tag("RTRT").d("endOffset:${lazyListState.layoutInfo.viewportEndOffset}")
-                            Timber.tag("RTRT")
-                                .d("editingTagItemVisibleInfo offset:${editingTagItemVisibleInfo?.offset}")
-                            Timber.tag("RTRT").d("editingTagItemVisibleInfo size:${editingTagItemVisibleInfo?.size}")
-
-                            if (!isEditTagItemFullyVisible) {
+                            // We need delay to wait keyboard show that triggers rebuild our ui.
+                            delay(300)
+                            if (!isEditTagItemFullyVisible(lazyListState, index)) {
                                 lazyListState.scrollToItem(index)
                             }
                         }
@@ -129,6 +119,17 @@ fun EditTagsScreen(
                     }
                 }
             )
+        }
+    }
+}
+
+private fun isEditTagItemFullyVisible(lazyListState: LazyListState, editTagItemIndex: Int): Boolean {
+    with(lazyListState.layoutInfo) {
+        val editingTagItemVisibleInfo = visibleItemsInfo.find { it.index == editTagItemIndex }
+        return if (editingTagItemVisibleInfo == null) {
+            false
+        } else {
+            viewportEndOffset - editingTagItemVisibleInfo.offset >= editingTagItemVisibleInfo.size
         }
     }
 }

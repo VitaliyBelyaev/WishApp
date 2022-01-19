@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -40,7 +41,6 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
 @Composable
 fun EditTagBlock(
     editTagItem: EditTagItem,
-    editTagItemIndex: Int,
     onClick: (Tag) -> Unit,
     onRemoveClick: (Tag) -> Unit,
     onEditDoneClick: (String) -> Unit,
@@ -87,7 +87,7 @@ fun EditTagBlock(
 
         val focusRequester = remember { FocusRequester() }
         if (isEditMode) {
-            DisposableEffect(Unit) {
+            DisposableEffect(isEditMode) {
                 focusRequester.requestFocus()
                 onEditingItemFocusRequested()
                 onDispose { }
@@ -130,7 +130,10 @@ fun EditTagBlock(
                 value = textFieldValue,
                 singleLine = true,
                 textStyle = MaterialTheme.typography.body1,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction = ImeAction.Done
+                ),
                 keyboardActions = KeyboardActions(
                     onDone = {
                         onEditDoneClick(textFieldValue.text)
