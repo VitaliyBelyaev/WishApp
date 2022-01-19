@@ -1,7 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -65,7 +64,6 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 
-@ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
