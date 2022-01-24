@@ -1,8 +1,9 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -33,6 +33,7 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
 
+@ExperimentalFoundationApi
 @Composable
 fun WishItemBlock(
     wishItem: WishWithTags,
@@ -61,12 +62,10 @@ fun WishItemBlock(
                 .background(color = backgroundColor, shape = baseShape)
                 .border(borderWidth, colorResource(R.color.iconPrimaryColor), baseShape)
                 .clip(baseShape)
-                .pointerInput(wishItem) {
-                    detectTapGestures(
-                        onTap = { onWishClicked(wishItem) },
-                        onLongPress = { onWishLongPress(wishItem) }
-                    )
-                }
+                .combinedClickable(
+                    onLongClick = { onWishLongPress(wishItem) },
+                    onClick = { onWishClicked(wishItem) }
+                )
                 .padding(14.dp)
         ) {
             val (title, titleColor) = if (wishItem.title.isNotBlank()) {
