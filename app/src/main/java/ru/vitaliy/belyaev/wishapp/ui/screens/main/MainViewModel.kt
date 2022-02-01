@@ -3,7 +3,7 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Tag
+import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsNames
@@ -70,6 +71,18 @@ class MainViewModel @Inject constructor(
                 .collect {
                     _navigationMenuUiState.value = it
                 }
+        }
+
+        if (BuildConfig.DEBUG) {
+            viewModelScope.launch {
+                val haveTags = tagsRepository.getAllTags().isNotEmpty()
+                if (!haveTags) {
+                    val testTags = createTestTags()
+                    testTags.forEach {
+                        tagsRepository.insertTag(it)
+                    }
+                }
+            }
         }
     }
 
@@ -205,5 +218,30 @@ class MainViewModel @Inject constructor(
                 tags = emptyList()
             )
         )
+    }
+
+    private fun createTestTags(): List<Tag> {
+        val tagNames = listOf(
+            "Power",
+            "Internet",
+            "Direction",
+            "Series",
+            "Manufacturer",
+            "Drama",
+            "Efficiency",
+            "Maintenance",
+            "Football",
+            "Moment",
+            "Memory",
+            "Birthday",
+            "Insurance"
+        )
+        val tags = mutableListOf<Tag>()
+
+        tagNames.forEach {
+            val tag = Tag(UUID.randomUUID().toString(), it)
+            tags.add(tag)
+        }
+        return tags
     }
 }
