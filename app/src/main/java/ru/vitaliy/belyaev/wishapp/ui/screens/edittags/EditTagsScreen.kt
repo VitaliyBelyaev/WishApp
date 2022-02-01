@@ -15,19 +15,22 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import java.util.*
-import kotlinx.coroutines.delay
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.navigationBarsWithImePadding
+import java.util.Optional
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Tag
 import ru.vitaliy.belyaev.wishapp.R
@@ -55,6 +58,15 @@ fun EditTagsScreen(
 
     BackHandler { handleBackPressed() }
 
+    val onTagClick: (Tag) -> Unit = {
+        viewModel.onTagClicked(it)
+    }
+    val onEditDoneClick: (String, Tag) -> Unit = { newTitle, tag ->
+        viewModel.onEditTagDoneClicked(newTitle, tag)
+    }
+    val onRemoveClick: (Tag) -> Unit = {
+        openDialog.value = Optional.of(it)
+    }
     Scaffold(
         topBar = {
             WishAppTopBar(
@@ -64,26 +76,40 @@ fun EditTagsScreen(
                 lazyListState = lazyListState
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        modifier = Modifier.navigationBarsWithImePadding()
     ) {
 
-        LazyColumn(state = lazyListState) {
+        LazyColumn(
+            state = lazyListState
+        ) {
             itemsIndexed(editTagItems) { index, editTagItem ->
                 EditTagBlock(
                     editTagItem = editTagItem,
-                    onClick = { clickedTag -> viewModel.onTagClicked(clickedTag) },
-                    onRemoveClick = { openDialog.value = Optional.of(it) },
-                    onEditDoneClick = { viewModel.onEditTagDoneClicked(it, editTagItem.tag) },
-                    onEditingItemFocusRequested = {
+                    onClick = onTagClick,
+                    onRemoveClick = onRemoveClick,
+                    onEditDoneClick = onEditDoneClick,
+                )
+            }
+        }
+
+        val focusedTag = editTagItems.find { it.isEditMode }
+        if (focusedTag != null) {
+            val insets = LocalWindowInsets.current
+            val isImeVisible = insets.ime.isVisible
+            val focusedTagIndex = editTagItems.indexOf(focusedTag)
+            val isEditTagItemFullyVisible = isEditTagItemFullyVisible(lazyListState, focusedTagIndex)
+
+            if (isImeVisible && !isEditTagItemFullyVisible) {
+                SideEffect {
+                    with(lazyListState.layoutInfo) {
+                        val itemSize = visibleItemsInfo.first().size
+                        val itemScrollOffset = viewportEndOffset - itemSize
                         coroutineScope.launch {
-                            // We need delay to wait keyboard show that triggers rebuild our ui.
-                            delay(300)
-                            if (!isEditTagItemFullyVisible(lazyListState, index)) {
-                                lazyListState.scrollToItem(index)
-                            }
+                            lazyListState.scrollToItem(focusedTagIndex, -itemScrollOffset)
                         }
                     }
-                )
+                }
             }
         }
 

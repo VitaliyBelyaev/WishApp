@@ -1,6 +1,5 @@
 package ru.vitaliy.belyaev.wishapp.ui.core.topappbar
 
-import android.app.Activity
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.AppBarDefaults
@@ -8,13 +7,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import ru.vitaliy.belyaev.wishapp.utils.setStatusBarColor
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun ScrollAwareTopBar(
@@ -25,14 +23,6 @@ fun ScrollAwareTopBar(
     lazyListState: LazyListState? = null
 ) {
 
-    val context = LocalContext.current
-    val surfaceColorInt = remember {
-        context.resources.getColor(ru.vitaliy.belyaev.wishapp.R.color.surfaceColor, context.theme)
-    }
-    val backgroundColorInt = remember {
-        context.resources.getColor(ru.vitaliy.belyaev.wishapp.R.color.backgroundColor, context.theme)
-    }
-
     val firstVisibleIndex = lazyListState?.firstVisibleItemIndex ?: 0
     val firstVisibleItemScrollOffset = lazyListState?.firstVisibleItemScrollOffset ?: 0
     val isScrolledFromIdle: Boolean = if (firstVisibleIndex == 0) {
@@ -41,18 +31,22 @@ fun ScrollAwareTopBar(
         true
     }
 
-    val statusBarColorInt = if (MaterialTheme.colors.isLight) {
-        surfaceColorInt
+    val systemUiController = rememberSystemUiController()
+    val isLightTheme = MaterialTheme.colors.isLight
+    val statusBarColor = if (!isLightTheme && isScrolledFromIdle) {
+        MaterialTheme.colors.surface
     } else {
-        if (isScrolledFromIdle) {
-            surfaceColorInt
-        } else {
-            backgroundColorInt
-        }
+        MaterialTheme.colors.background
     }
-    (context as? Activity)?.setStatusBarColor(statusBarColorInt)
 
-    val toolbarElevation: Dp = if (MaterialTheme.colors.isLight) {
+    LaunchedEffect(key1 = isScrolledFromIdle) {
+        systemUiController.setStatusBarColor(
+            color = statusBarColor,
+            darkIcons = isLightTheme
+        )
+    }
+
+    val toolbarElevation: Dp = if (isLightTheme) {
         if (isScrolledFromIdle) {
             AppBarDefaults.TopAppBarElevation
         } else {
@@ -62,14 +56,10 @@ fun ScrollAwareTopBar(
         0.dp
     }
 
-    val backgroundColor: Color = if (MaterialTheme.colors.isLight) {
-        Color(surfaceColorInt)
+    val backgroundColor: Color = if (!isLightTheme && !isScrolledFromIdle) {
+        MaterialTheme.colors.background
     } else {
-        if (isScrolledFromIdle) {
-            Color(surfaceColorInt)
-        } else {
-            Color(backgroundColorInt)
-        }
+        MaterialTheme.colors.surface
     }
     val contentColor = contentColorFor(backgroundColor)
 

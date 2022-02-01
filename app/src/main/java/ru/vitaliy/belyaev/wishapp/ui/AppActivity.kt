@@ -6,12 +6,21 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.core.view.WindowCompat
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,6 +33,7 @@ import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.theme.WishAppTheme
 
+@ExperimentalFoundationApi
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @AndroidEntryPoint
@@ -37,6 +47,8 @@ class AppActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_WishApp)
         super.onCreate(savedInstanceState)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         viewModel.wishListToShareLiveData.observe(this) {
             val wishListAsFormattedText = generateFormattedWishList(it)
@@ -75,8 +87,25 @@ class AppActivity : AppCompatActivity() {
             // We need to change theme in Activity too for proper colors that we get from resources
             AppCompatDelegate.setDefaultNightMode(modeInt)
             WishAppTheme(selectedTheme = selectedTheme) {
-                Surface(color = MaterialTheme.colors.background) {
-                    Navigation { viewModel.onShareWishListClicked(it) }
+                val systemUiController = rememberSystemUiController()
+                val useDarkIcons = MaterialTheme.colors.isLight
+                val navBarColor = MaterialTheme.colors.background
+                SideEffect {
+                    systemUiController.setNavigationBarColor(
+                        color = navBarColor,
+                        darkIcons = useDarkIcons
+                    )
+                }
+
+                ProvideWindowInsets {
+                    val insets = LocalWindowInsets.current
+                    val statusBar = with(LocalDensity.current) { insets.statusBars.top.toDp() }
+                    Surface(
+                        color = MaterialTheme.colors.background,
+                        modifier = Modifier.padding(top = statusBar)
+                    ) {
+                        Navigation { viewModel.onShareWishListClicked(it) }
+                    }
                 }
             }
         }

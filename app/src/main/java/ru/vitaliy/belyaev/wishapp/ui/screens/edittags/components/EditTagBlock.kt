@@ -43,8 +43,7 @@ fun EditTagBlock(
     editTagItem: EditTagItem,
     onClick: (Tag) -> Unit,
     onRemoveClick: (Tag) -> Unit,
-    onEditDoneClick: (String) -> Unit,
-    onEditingItemFocusRequested: () -> Unit,
+    onEditDoneClick: (String, Tag) -> Unit,
 ) {
     val isEditMode = editTagItem.isEditMode
     val tag = editTagItem.tag
@@ -89,7 +88,7 @@ fun EditTagBlock(
         if (isEditMode) {
             DisposableEffect(isEditMode) {
                 focusRequester.requestFocus()
-                onEditingItemFocusRequested()
+                // onEditingItemFocusRequested()
                 onDispose { }
             }
             IconButton(
@@ -136,7 +135,7 @@ fun EditTagBlock(
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        onEditDoneClick(textFieldValue.text)
+                        onEditDoneClick(textFieldValue.text, editTagItem.tag)
                     }
                 ),
                 onValueChange = { newValue -> textFieldValue = newValue },
@@ -152,7 +151,7 @@ fun EditTagBlock(
                 MaterialTheme.colors.primary.copy(alpha = 0.5f)
             }
             IconButton(
-                onClick = { onEditDoneClick(textFieldValue.text) },
+                onClick = { onEditDoneClick(textFieldValue.text, editTagItem.tag) },
                 enabled = textFieldValue.text.isNotBlank(),
                 modifier = Modifier
                     .constrainAs(endIconRef) {

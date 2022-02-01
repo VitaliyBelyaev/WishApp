@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.insets.navigationBarsWithImePadding
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Tag
@@ -53,7 +54,7 @@ fun TagsSheetContent(
         scope.launch { modalBottomSheetState.hide() }
     }
 
-    LazyColumn {
+    LazyColumn(modifier = Modifier.navigationBarsWithImePadding()) {
         item {
             Spacer(modifier = Modifier.height(10.dp))
             NavMenuItemBlock(

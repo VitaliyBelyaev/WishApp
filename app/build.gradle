@@ -84,6 +84,8 @@ dependencies {
     // Google Accompanist
     implementation "com.google.accompanist:accompanist-flowlayout:$accompanistVesrion"
     implementation "com.google.accompanist:accompanist-navigation-animation:$accompanistVesrion"
+    implementation "com.google.accompanist:accompanist-insets:$accompanistVesrion"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanistVesrion"
 
     // Google
     implementation "com.google.android.material:material:1.6.0-alpha01"

@@ -2,10 +2,8 @@
 <resources>
 
     <style name="Theme.WishApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@color/statusBarColor</item>
         <item name="android:windowLightStatusBar">@bool/is_day_theme</item>
-        <item name="android:navigationBarColor">@color/navigationBarColor</item>
     </style>
 
     <style name="Theme.WishApp.Splash" parent="Theme.WishApp">
