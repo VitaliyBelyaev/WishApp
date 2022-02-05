@@ -1,9 +1,9 @@
 package ru.vitaliy.belyaev.wishapp.data.repository.wishes
 
 import java.util.UUID
-import ru.vitaliy.belyaev.model.database.GetAllWishesByTag
-import ru.vitaliy.belyaev.model.database.Tag
-import ru.vitaliy.belyaev.model.database.Wish
+import ru.vitaliy.belyaev.wishapp.data.database.GetAllWishesByTag
+import ru.vitaliy.belyaev.wishapp.data.database.Tag
+import ru.vitaliy.belyaev.wishapp.data.database.Wish
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 
 fun createEmptyWish(): WishWithTags {

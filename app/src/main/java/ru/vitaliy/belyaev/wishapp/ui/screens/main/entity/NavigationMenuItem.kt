@@ -1,7 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main.entity
 
 import androidx.annotation.StringRes
-import ru.vitaliy.belyaev.model.database.Tag
+import ru.vitaliy.belyaev.wishapp.data.database.Tag
 
 sealed class NavigationMenuItem(
     open val isSelected: Boolean

@@ -151,7 +151,7 @@ dependencies {
 
 sqldelight {
     WishAppDb {
-        packageName = "ru.vitaliy.belyaev.wishapp.model.database"
+        packageName = "ru.vitaliy.belyaev.wishapp.data.database"
         dialect = "sqlite:3.24"
     }
 }

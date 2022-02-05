@@ -1,7 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.data.repository.tags
 
 import kotlinx.coroutines.flow.Flow
-import ru.vitaliy.belyaev.model.database.Tag
+import ru.vitaliy.belyaev.wishapp.data.database.Tag
 
 interface TagsRepository {
 
