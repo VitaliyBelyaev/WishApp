@@ -14,11 +14,11 @@ import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.model.database.Tag
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
+import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.tags.TagsRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
-import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsNames
-import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.model.repository.tags.TagsRepository
-import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.AllTagsMenuItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.NavigationMenuItem

@@ -1,6 +1,6 @@
-package ru.vitaliy.belyaev.wishapp.model.repository.wishes
+package ru.vitaliy.belyaev.wishapp.data.repository.wishes
 
-import java.util.*
+import java.util.UUID
 import ru.vitaliy.belyaev.model.database.GetAllWishesByTag
 import ru.vitaliy.belyaev.model.database.Tag
 import ru.vitaliy.belyaev.model.database.Wish

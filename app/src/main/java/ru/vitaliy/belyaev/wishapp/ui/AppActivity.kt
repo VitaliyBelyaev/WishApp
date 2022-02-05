@@ -26,12 +26,12 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
+import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
-import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsNames
-import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
-import ru.vitaliy.belyaev.wishapp.theme.WishAppTheme
+import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi

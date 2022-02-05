@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.model.repository.wishes
+package ru.vitaliy.belyaev.wishapp.data.repository.wishes
 
 import kotlinx.coroutines.flow.Flow
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags

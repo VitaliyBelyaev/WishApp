@@ -8,13 +8,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
+import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.wishes.WishesRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.wishes.isEmpty
 import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
-import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsNames
-import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.model.repository.datastore.DataStoreRepository
-import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
-import ru.vitaliy.belyaev.wishapp.model.repository.wishes.isEmpty
 import ru.vitaliy.belyaev.wishapp.utils.SingleLiveEvent
 
 @HiltViewModel

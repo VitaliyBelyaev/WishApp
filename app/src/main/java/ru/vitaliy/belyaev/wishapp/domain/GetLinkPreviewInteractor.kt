@@ -4,7 +4,7 @@ import javax.inject.Inject
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
-import ru.vitaliy.belyaev.wishapp.model.network.await
+import ru.vitaliy.belyaev.wishapp.data.network.await
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Data
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkInfo
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkPreviewState

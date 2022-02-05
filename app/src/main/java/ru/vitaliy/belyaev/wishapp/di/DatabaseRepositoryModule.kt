@@ -5,10 +5,10 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
-import ru.vitaliy.belyaev.wishapp.model.repository.tags.TagsRepository
-import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
-import ru.vitaliy.belyaev.wishapp.model.repository.wishtagrelation.WishTagRelationRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.DatabaseRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.tags.TagsRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.wishes.WishesRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.wishtagrelation.WishTagRelationRepository
 
 @InstallIn(SingletonComponent::class)
 @Module

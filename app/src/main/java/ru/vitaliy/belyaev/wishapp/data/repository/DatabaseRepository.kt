@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.model.repository
+package ru.vitaliy.belyaev.wishapp.data.repository
 
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
@@ -16,12 +16,12 @@ import ru.vitaliy.belyaev.model.database.Wish
 import ru.vitaliy.belyaev.model.database.WishQueries
 import ru.vitaliy.belyaev.model.database.WishTagRelation
 import ru.vitaliy.belyaev.model.database.WishTagRelationQueries
+import ru.vitaliy.belyaev.wishapp.data.database.WishAppDb
+import ru.vitaliy.belyaev.wishapp.data.repository.tags.TagsRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.wishes.WishesRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.wishes.toWishWithTags
+import ru.vitaliy.belyaev.wishapp.data.repository.wishtagrelation.WishTagRelationRepository
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
-import ru.vitaliy.belyaev.wishapp.model.database.WishAppDb
-import ru.vitaliy.belyaev.wishapp.model.repository.tags.TagsRepository
-import ru.vitaliy.belyaev.wishapp.model.repository.wishes.WishesRepository
-import ru.vitaliy.belyaev.wishapp.model.repository.wishes.toWishWithTags
-import ru.vitaliy.belyaev.wishapp.model.repository.wishtagrelation.WishTagRelationRepository
 import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
 
 @Singleton

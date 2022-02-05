@@ -5,7 +5,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import java.io.IOException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.test.runBlockingTest
@@ -16,9 +15,9 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import ru.vitaliy.belyaev.model.database.Tag
+import ru.vitaliy.belyaev.wishapp.data.database.WishAppDb
+import ru.vitaliy.belyaev.wishapp.data.repository.DatabaseRepository
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
-import ru.vitaliy.belyaev.wishapp.model.database.WishAppDb
-import ru.vitaliy.belyaev.wishapp.model.repository.DatabaseRepository
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)

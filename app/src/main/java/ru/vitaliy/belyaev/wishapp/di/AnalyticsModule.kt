@@ -6,9 +6,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import ru.vitaliy.belyaev.wishapp.BuildConfig
-import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.model.repository.analytics.FirebaseAnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.model.repository.analytics.LogAnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.analytics.FirebaseAnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.analytics.LogAnalyticsRepository
 
 @InstallIn(SingletonComponent::class)
 @Module

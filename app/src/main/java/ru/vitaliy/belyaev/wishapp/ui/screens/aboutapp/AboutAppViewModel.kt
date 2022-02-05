@@ -3,8 +3,8 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsNames
-import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
+import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 
 @HiltViewModel
 class AboutAppViewModel @Inject constructor(

@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.model.repository.tags
+package ru.vitaliy.belyaev.wishapp.data.repository.tags
 
 import kotlinx.coroutines.flow.Flow
 import ru.vitaliy.belyaev.model.database.Tag

@@ -7,10 +7,10 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
+import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.entity.Theme
-import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsNames
-import ru.vitaliy.belyaev.wishapp.model.repository.analytics.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.model.repository.datastore.DataStoreRepository
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(

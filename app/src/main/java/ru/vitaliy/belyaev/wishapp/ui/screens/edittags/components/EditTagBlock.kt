@@ -88,7 +88,6 @@ fun EditTagBlock(
         if (isEditMode) {
             DisposableEffect(isEditMode) {
                 focusRequester.requestFocus()
-                // onEditingItemFocusRequested()
                 onDispose { }
             }
             IconButton(

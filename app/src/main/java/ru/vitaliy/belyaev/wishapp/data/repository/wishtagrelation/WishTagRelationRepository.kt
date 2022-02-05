@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.model.repository.wishtagrelation
+package ru.vitaliy.belyaev.wishapp.data.repository.wishtagrelation
 
 interface WishTagRelationRepository {
 

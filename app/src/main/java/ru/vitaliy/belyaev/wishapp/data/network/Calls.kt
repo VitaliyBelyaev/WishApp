@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.model.network
+package ru.vitaliy.belyaev.wishapp.data.network
 
 import java.io.IOException
 import kotlin.coroutines.resumeWithException

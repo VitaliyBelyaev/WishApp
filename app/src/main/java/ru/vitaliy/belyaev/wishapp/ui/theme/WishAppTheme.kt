@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.theme
+package ru.vitaliy.belyaev.wishapp.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.Colors

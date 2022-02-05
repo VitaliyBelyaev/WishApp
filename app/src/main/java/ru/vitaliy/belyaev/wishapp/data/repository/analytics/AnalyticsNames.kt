@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.model.repository.analytics
+package ru.vitaliy.belyaev.wishapp.data.repository.analytics
 
 object AnalyticsNames {
 
