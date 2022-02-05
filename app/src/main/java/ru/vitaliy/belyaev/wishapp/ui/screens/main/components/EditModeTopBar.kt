@@ -2,7 +2,6 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.main.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.IconButton
@@ -28,7 +27,7 @@ fun EditModeTopBar(
     onCloseEditModeClicked: () -> Unit,
     onDeleteSelectedClicked: () -> Unit,
     onSelectAllClicked: () -> Unit,
-    lazyListState: LazyListState? = null
+    isScrollInInitialState: (() -> Boolean)? = null,
 ) {
     val expanded = remember { mutableStateOf(false) }
     ScrollAwareTopBar(
@@ -69,7 +68,7 @@ fun EditModeTopBar(
             }
 
         },
-        lazyListState = lazyListState
+        isScrollInInitialState = isScrollInInitialState
     )
 }
 

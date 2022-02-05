@@ -1,11 +1,12 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp
 
 import android.content.Intent
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
@@ -34,6 +35,7 @@ import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
 import ru.vitaliy.belyaev.wishapp.utils.annotatedStringResource
 import ru.vitaliy.belyaev.wishapp.utils.createSendEmailIntent
+import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 
 @ExperimentalMaterialApi
 @Composable
@@ -46,7 +48,7 @@ fun AboutAppScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val lazyListState: LazyListState = rememberLazyListState()
+    val scrollState: ScrollState = rememberScrollState()
 
     val onSendFeedbackClicked: () -> Unit = {
         viewModel.onSendFeedbackClicked()
@@ -67,7 +69,7 @@ fun AboutAppScreen(
                 stringResource(R.string.about_app),
                 withBackIcon = true,
                 onBackPressed = onBackPressed,
-                lazyListState = lazyListState
+                isScrollInInitialState = { scrollState.isScrollInInitialState() }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -80,58 +82,42 @@ fun AboutAppScreen(
         }
         val uriHandler = LocalUriHandler.current
 
-        LazyColumn(state = lazyListState) {
-            item {
-                Text(
-                    text = stringResource(
-                        R.string.app_version_pattern,
-                        "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
-                    ),
-                    color = Color.Gray,
-                    modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
-                )
-            }
-            item {
-                val appDescription = annotatedStringResource(R.string.app_description)
-                ClickableText(
-                    text = appDescription,
-                    style = TextStyle.Default.copy(fontSize = 16.sp, color = Color.Gray),
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
-                    onClick = {
-                        viewModel.onSourceCodeUrlClicked()
-                        appDescription
-                            .getStringAnnotations("URL", it, it)
-                            .firstOrNull()?.let { stringAnnotation ->
-                                uriHandler.openUri(stringAnnotation.item)
-                            }
-                    }
-                )
-
-            }
-            item {
-                Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp))
-            }
-
-            item {
-                SettingBlock(
-                    title = stringResource(R.string.feedback),
-                    onClick = { onSendFeedbackClicked() }
-                )
-            }
-
-            item {
-                SettingBlock(
-                    title = licensesTitle,
-                    onClick = { onLicensesClick() }
-                )
-            }
-
-            item {
-                SettingBlock(
-                    title = stringResource(R.string.privacy_policy),
-                    onClick = { onPrivacyPolicyClicked() }
-                )
-            }
+        Column(modifier = Modifier.verticalScroll(scrollState)) {
+            Text(
+                text = stringResource(
+                    R.string.app_version_pattern,
+                    "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+                ),
+                color = Color.Gray,
+                modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
+            )
+            val appDescription = annotatedStringResource(R.string.app_description)
+            ClickableText(
+                text = appDescription,
+                style = TextStyle.Default.copy(fontSize = 16.sp, color = Color.Gray),
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
+                onClick = {
+                    viewModel.onSourceCodeUrlClicked()
+                    appDescription
+                        .getStringAnnotations("URL", it, it)
+                        .firstOrNull()?.let { stringAnnotation ->
+                            uriHandler.openUri(stringAnnotation.item)
+                        }
+                }
+            )
+            Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp))
+            SettingBlock(
+                title = stringResource(R.string.feedback),
+                onClick = { onSendFeedbackClicked() }
+            )
+            SettingBlock(
+                title = licensesTitle,
+                onClick = { onLicensesClick() }
+            )
+            SettingBlock(
+                title = stringResource(R.string.privacy_policy),
+                onClick = { onPrivacyPolicyClicked() }
+            )
         }
     }
 }

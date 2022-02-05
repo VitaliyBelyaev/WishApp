@@ -1,9 +1,10 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.settings
 
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
@@ -36,6 +37,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.ThemeSettingBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.entity.Backup
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.entity.SettingItem
+import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 import ru.vitaliy.belyaev.wishapp.utils.openGooglePlay
 
 @ExperimentalMaterialApi
@@ -52,7 +54,7 @@ fun SettingsScreen(
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val settingItem: MutableState<SettingItem> = remember { mutableStateOf(Backup) }
     val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
-    val lazyLisState: LazyListState = rememberLazyListState()
+    val scrollState: ScrollState = rememberScrollState()
 
     WishAppBottomSheet(
         sheetState = modalBottomSheetState,
@@ -70,62 +72,50 @@ fun SettingsScreen(
                     stringResource(R.string.settings),
                     withBackIcon = true,
                     onBackPressed = onBackPressed,
-                    lazyListState = lazyLisState
+                    isScrollInInitialState = { scrollState.isScrollInInitialState() }
                 )
             },
             snackbarHost = { SnackbarHost(snackbarHostState) }
         ) {
 
-            LazyColumn(state = lazyLisState) {
-                item {
-                    Text(
-                        text = stringResource(R.string.theme_title),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
-                    )
-                }
-                item {
-                    ThemeSettingBlock(
-                        selectedTheme = selectedTheme,
-                        onThemeClicked = { viewModel.onThemeItemClicked(it) }
-                    )
-                }
-                item {
-                    Text(
-                        text = stringResource(R.string.other),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
-                    )
-                }
-                item {
-                    SettingBlock(
-                        title = stringResource(R.string.backup),
-                        onClick = {
-                            viewModel.onBackupAndRestoreItemClicked()
-                            settingItem.value = Backup
-                            scope.launch {
-                                modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
-                            }
+            Column(modifier = Modifier.verticalScroll(scrollState)) {
+                Text(
+                    text = stringResource(R.string.theme_title),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
+                )
+                ThemeSettingBlock(
+                    selectedTheme = selectedTheme,
+                    onThemeClicked = { viewModel.onThemeItemClicked(it) }
+                )
+                Text(
+                    text = stringResource(R.string.other),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
+                )
+                SettingBlock(
+                    title = stringResource(R.string.backup),
+                    onClick = {
+                        viewModel.onBackupAndRestoreItemClicked()
+                        settingItem.value = Backup
+                        scope.launch {
+                            modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
                         }
-                    )
-                }
-                item {
-                    SettingBlock(
-                        title = stringResource(R.string.rate_app),
-                        onClick = {
-                            viewModel.onRateAppItemClicked()
-                            context.openGooglePlay()
-                        }
-                    )
-                }
-                item {
-                    SettingBlock(
-                        title = stringResource(R.string.about_app),
-                        onClick = { onAboutAppClicked() }
-                    )
-                }
+                    }
+                )
+                SettingBlock(
+                    title = stringResource(R.string.rate_app),
+                    onClick = {
+                        viewModel.onRateAppItemClicked()
+                        context.openGooglePlay()
+                    }
+                )
+                SettingBlock(
+                    title = stringResource(R.string.about_app),
+                    onClick = { onAboutAppClicked() }
+                )
             }
         }
     }

@@ -37,6 +37,7 @@ import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.components.EditTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
+import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 
 @ExperimentalComposeUiApi
 @Composable
@@ -73,7 +74,7 @@ fun EditTagsScreen(
                 title = stringResource(R.string.edit_tags),
                 withBackIcon = true,
                 onBackPressed = handleBackPressed,
-                lazyListState = lazyListState
+                isScrollInInitialState = { lazyListState.isScrollInInitialState() }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },

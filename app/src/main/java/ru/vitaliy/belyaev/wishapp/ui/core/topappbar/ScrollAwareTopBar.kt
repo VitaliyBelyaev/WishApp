@@ -1,7 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui.core.topappbar
 
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TopAppBar
@@ -20,16 +19,10 @@ fun ScrollAwareTopBar(
     modifier: Modifier = Modifier,
     navigationIcon: @Composable (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
-    lazyListState: LazyListState? = null
+    isScrollInInitialState: (() -> Boolean)? = null,
 ) {
 
-    val firstVisibleIndex = lazyListState?.firstVisibleItemIndex ?: 0
-    val firstVisibleItemScrollOffset = lazyListState?.firstVisibleItemScrollOffset ?: 0
-    val isScrolledFromIdle: Boolean = if (firstVisibleIndex == 0) {
-        firstVisibleItemScrollOffset > 5
-    } else {
-        true
-    }
+    val isScrolledFromIdle: Boolean = isScrollInInitialState?.invoke() == false
 
     val systemUiController = rememberSystemUiController()
     val isLightTheme = MaterialTheme.colors.isLight

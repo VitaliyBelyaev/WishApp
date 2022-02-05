@@ -14,6 +14,7 @@ import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainViewModel
+import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 
 @ExperimentalCoroutinesApi
 @Composable
@@ -29,7 +30,7 @@ fun MainScreenTopBar(
         val title = selectedTag?.title ?: stringResource(R.string.app_name)
         WishAppTopBar(
             title = title,
-            lazyListState = lazyListState,
+            isScrollInInitialState = { lazyListState.isScrollInInitialState() },
             actions = {
                 if (BuildConfig.DEBUG) {
                     IconButton(onClick = { viewModel.onAddTestWishClicked() }) {
@@ -53,7 +54,7 @@ fun MainScreenTopBar(
             onCloseEditModeClicked = { viewModel.onCloseEditModeClicked() },
             onDeleteSelectedClicked = onDeleteSelectedClicked,
             onSelectAllClicked = { viewModel.onSelectAllClicked() },
-            lazyListState = lazyListState
+            isScrollInInitialState = { lazyListState.isScrollInInitialState() }
         )
     }
 }

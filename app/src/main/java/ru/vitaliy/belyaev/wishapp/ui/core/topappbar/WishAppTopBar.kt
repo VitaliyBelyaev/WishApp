@@ -1,7 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui.core.topappbar
 
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
@@ -15,7 +14,7 @@ fun WishAppTopBar(
     title: String = "",
     withBackIcon: Boolean = false,
     onBackPressed: (() -> Unit)? = null,
-    lazyListState: LazyListState? = null,
+    isScrollInInitialState: (() -> Boolean)? = null,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
 
@@ -40,6 +39,6 @@ fun WishAppTopBar(
         },
         navigationIcon = navIcon,
         actions = actions,
-        lazyListState = lazyListState
+        isScrollInInitialState = isScrollInInitialState
     )
 }
