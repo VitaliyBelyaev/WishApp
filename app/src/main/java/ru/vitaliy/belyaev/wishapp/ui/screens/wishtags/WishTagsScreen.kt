@@ -37,7 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
-import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.ScrollAwareTopBar
+import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.ScrollAwareTopAppBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.AddTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.TagItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
@@ -73,7 +73,7 @@ fun WishTagsScreen(
 
     Scaffold(
         topBar = {
-            ScrollAwareTopBar(
+            ScrollAwareTopAppBar(
                 title = {
                     TextField(
                         modifier = Modifier

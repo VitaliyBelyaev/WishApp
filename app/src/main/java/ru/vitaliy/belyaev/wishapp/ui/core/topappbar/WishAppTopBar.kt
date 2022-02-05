@@ -29,7 +29,7 @@ fun WishAppTopBar(
             null
         }
 
-    ScrollAwareTopBar(
+    ScrollAwareTopAppBar(
         title = {
             Text(
                 text = title,

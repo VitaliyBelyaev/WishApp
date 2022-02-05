@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
-import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.ScrollAwareTopBar
+import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.ScrollAwareTopAppBar
 
 @Composable
 fun EditModeTopBar(
@@ -30,7 +30,7 @@ fun EditModeTopBar(
     isScrollInInitialState: (() -> Boolean)? = null,
 ) {
     val expanded = remember { mutableStateOf(false) }
-    ScrollAwareTopBar(
+    ScrollAwareTopAppBar(
         title = { Text(text = selectedCount.toString()) },
         navigationIcon = {
             IconButton(onClick = onCloseEditModeClicked) {
