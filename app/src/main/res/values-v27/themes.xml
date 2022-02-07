@@ -4,7 +4,7 @@
     <style name="Theme.WishApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/statusBarColor</item>
         <item name="android:windowLightStatusBar">@bool/is_day_theme</item>
-        <item name="android:navigationBarColor">@color/surfaceColor</item>
+        <item name="android:navigationBarColor">@color/backgroundColor</item>
         <item name="android:windowLightNavigationBar">@bool/is_day_theme</item>
     </style>
 

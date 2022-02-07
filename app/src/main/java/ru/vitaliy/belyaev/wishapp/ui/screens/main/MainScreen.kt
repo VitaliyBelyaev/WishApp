@@ -161,7 +161,7 @@ fun MainScreen(
 
             val systemUiController = rememberSystemUiController()
             val useDarkIcons = MaterialTheme.colors.isLight
-            val mainScreenNavBarColor = MaterialTheme.colors.surface
+            val mainScreenNavBarColor = MaterialTheme.colors.background
             val bottomSheetNavbarColor = colorResource(R.color.bottomSheetBackgroundColor)
             LaunchedEffect(key1 = modalBottomSheetState.targetValue) {
                 val navbarColor = if (modalBottomSheetState.targetValue != ModalBottomSheetValue.Hidden) {
