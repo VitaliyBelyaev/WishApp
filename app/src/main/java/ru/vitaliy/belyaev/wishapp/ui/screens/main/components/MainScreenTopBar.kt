@@ -1,6 +1,5 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main.components
 
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -14,7 +13,6 @@ import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainViewModel
-import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 
 @ExperimentalCoroutinesApi
 @Composable
@@ -23,14 +21,14 @@ fun MainScreenTopBar(
     selectedTag: Tag?,
     onSettingIconClicked: () -> Unit,
     onDeleteSelectedClicked: () -> Unit,
-    lazyListState: LazyListState,
+    isScrollInInitialState: (() -> Boolean),
     viewModel: MainViewModel
 ) {
     if (selectedIds.isEmpty()) {
         val title = selectedTag?.title ?: stringResource(R.string.app_name)
         WishAppTopBar(
             title = title,
-            isScrollInInitialState = { lazyListState.isScrollInInitialState() },
+            isScrollInInitialState = isScrollInInitialState,
             actions = {
                 if (BuildConfig.DEBUG) {
                     IconButton(onClick = { viewModel.onAddTestWishClicked() }) {
@@ -54,7 +52,7 @@ fun MainScreenTopBar(
             onCloseEditModeClicked = { viewModel.onCloseEditModeClicked() },
             onDeleteSelectedClicked = onDeleteSelectedClicked,
             onSelectAllClicked = { viewModel.onSelectAllClicked() },
-            isScrollInInitialState = { lazyListState.isScrollInInitialState() }
+            isScrollInInitialState = isScrollInInitialState
         )
     }
 }

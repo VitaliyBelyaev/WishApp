@@ -51,6 +51,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.TagsSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.WishItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.NavigationMenuItem
+import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
@@ -91,7 +92,7 @@ fun MainScreen(
                     selectedTag = state.selectedTag,
                     onSettingIconClicked = onSettingIconClicked,
                     onDeleteSelectedClicked = { openDeleteConfirmDialog.value = true },
-                    lazyListState = lazyListState,
+                    isScrollInInitialState = { lazyListState.isScrollInInitialState() },
                     viewModel = viewModel
                 )
             },
