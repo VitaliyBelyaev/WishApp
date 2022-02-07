@@ -7,7 +7,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -20,6 +19,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.core.view.WindowCompat
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.insets.navigationBarsWithImePadding
+import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -102,7 +103,9 @@ class AppActivity : AppCompatActivity() {
                     val statusBar = with(LocalDensity.current) { insets.statusBars.top.toDp() }
                     Surface(
                         color = MaterialTheme.colors.background,
-                        modifier = Modifier.padding(top = statusBar)
+                        modifier = Modifier
+                            .statusBarsPadding()
+                            .navigationBarsWithImePadding()
                     ) {
                         Navigation { viewModel.onShareWishListClicked(it) }
                     }
