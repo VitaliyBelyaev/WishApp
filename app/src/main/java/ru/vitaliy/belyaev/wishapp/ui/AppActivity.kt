@@ -10,14 +10,11 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.core.view.WindowCompat
-import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.statusBarsPadding
@@ -90,17 +87,15 @@ class AppActivity : AppCompatActivity() {
             WishAppTheme(selectedTheme = selectedTheme) {
                 val systemUiController = rememberSystemUiController()
                 val useDarkIcons = MaterialTheme.colors.isLight
-                val navBarColor = MaterialTheme.colors.background
-                SideEffect {
-                    systemUiController.setNavigationBarColor(
-                        color = navBarColor,
-                        darkIcons = useDarkIcons
-                    )
-                }
+                val navBarColor = MaterialTheme.colors.surface
+//                SideEffect {
+//                    systemUiController.setNavigationBarColor(
+//                        color = navBarColor,
+//                        darkIcons = useDarkIcons
+//                    )
+//                }
 
                 ProvideWindowInsets {
-                    val insets = LocalWindowInsets.current
-                    val statusBar = with(LocalDensity.current) { insets.statusBars.top.toDp() }
                     Surface(
                         color = MaterialTheme.colors.background,
                         modifier = Modifier
