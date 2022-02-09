@@ -22,12 +22,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.navigationBarsWithImePadding
 import java.util.Optional
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
@@ -76,6 +78,7 @@ fun EditTagsScreen(
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
+        modifier = Modifier.navigationBarsWithImePadding()
     ) {
 
         LazyColumn(

@@ -45,9 +45,7 @@ class WishDetailedViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            wishId = if (inputWishId.isNotBlank()) {
-                inputWishId
-            } else {
+            wishId = inputWishId.ifBlank {
                 val wish = createEmptyWish()
                 wishesRepository.insertWish(wish)
                 wish.id

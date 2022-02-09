@@ -16,7 +16,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import com.google.accompanist.insets.ProvideWindowInsets
-import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -89,9 +88,7 @@ class AppActivity : AppCompatActivity() {
                 ProvideWindowInsets {
                     Surface(
                         color = MaterialTheme.colors.background,
-                        modifier = Modifier
-                            .statusBarsPadding()
-                            .navigationBarsWithImePadding()
+                        modifier = Modifier.statusBarsPadding()
                     ) {
                         Navigation { viewModel.onShareWishListClicked(it) }
                     }

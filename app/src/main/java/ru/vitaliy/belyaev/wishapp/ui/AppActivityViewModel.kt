@@ -16,12 +16,14 @@ import ru.vitaliy.belyaev.wishapp.data.repository.wishes.isEmpty
 import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.utils.SingleLiveEvent
+import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
 
 @HiltViewModel
 class AppActivityViewModel @Inject constructor(
     private val wishesRepository: WishesRepository,
     private val dataStoreRepository: DataStoreRepository,
-    private val analyticsRepository: AnalyticsRepository
+    private val analyticsRepository: AnalyticsRepository,
+    private val dispatcherProvider: DispatcherProvider
 ) : ViewModel() {
 
     val wishListToShareLiveData: SingleLiveEvent<List<WishWithTags>> = SingleLiveEvent()
@@ -58,17 +60,15 @@ class AppActivityViewModel @Inject constructor(
     }
 
     fun onWishScreenExit(wishId: String, isNewWish: Boolean) {
-        deleteWishIfEmpty(wishId)
-        if (isNewWish) {
-            viewModelScope.launch { dataStoreRepository.incrementPositiveActionsCount() }
-        }
-    }
-
-    private fun deleteWishIfEmpty(wishId: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcherProvider.io()) {
             val wish: WishWithTags = wishesRepository.getWishById(wishId)
             if (wish.isEmpty()) {
                 wishesRepository.deleteWishesByIds(listOf(wishId))
+                return@launch
+            }
+
+            if (isNewWish) {
+                dataStoreRepository.incrementPositiveActionsCount()
             }
         }
     }

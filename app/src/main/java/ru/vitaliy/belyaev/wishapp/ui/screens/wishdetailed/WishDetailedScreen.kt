@@ -28,7 +28,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -50,8 +50,10 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.insets.navigationBarsWithImePadding
 import java.util.Optional
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
@@ -84,8 +86,8 @@ fun WishDetailedScreen(
     val handleBackPressed: () -> Unit = {
         keyboardController?.hide()
         viewModel.onBackPressed()
-        onBackPressed()
         appViewModel.onWishScreenExit(viewModel.wishId, viewModel.inputWishId.isBlank())
+        onBackPressed()
     }
     val openDialog: MutableState<Optional<WishItem>> = remember { mutableStateOf(Optional.empty()) }
     val scrollState: ScrollState = rememberScrollState()
@@ -120,7 +122,8 @@ fun WishDetailedScreen(
                 }
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        modifier = Modifier.navigationBarsWithImePadding()
     ) {
         if (!wishItem.isPresent) {
             return@Scaffold
@@ -158,11 +161,11 @@ fun WishDetailedScreen(
                     capitalization = KeyboardCapitalization.Sentences
                 )
             )
-            DisposableEffect(Unit) {
+            LaunchedEffect(title) {
+                delay(300)
                 if (title.isBlank()) {
                     focusRequester.requestFocus()
                 }
-                onDispose { }
             }
 
             TextField(

@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
@@ -79,7 +80,8 @@ fun SettingsScreen(
                     isScrollInInitialState = { scrollState.isScrollInInitialState() }
                 )
             },
-            snackbarHost = { SnackbarHost(snackbarHostState) }
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            modifier = Modifier.navigationBarsPadding()
         ) {
 
             val systemUiController = rememberSystemUiController()

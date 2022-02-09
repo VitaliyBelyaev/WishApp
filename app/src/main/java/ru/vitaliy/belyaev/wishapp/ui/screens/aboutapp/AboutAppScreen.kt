@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.insets.navigationBarsPadding
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.BuildConfig
@@ -72,7 +73,8 @@ fun AboutAppScreen(
                 isScrollInInitialState = { scrollState.isScrollInInitialState() }
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        modifier = Modifier.navigationBarsPadding()
     ) {
         val licensesTitle = stringResource(R.string.licenses)
         val onLicensesClick: () -> Unit = {

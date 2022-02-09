@@ -18,6 +18,7 @@ import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.tags.TagsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.wishes.WishesRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.wishes.isEmpty
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.AllTagsMenuItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
@@ -54,7 +55,10 @@ class MainViewModel @Inject constructor(
         allWishesJob = viewModelScope.launch {
             wishesRepository
                 .observeAllWishes()
-                .collect { wishItems -> _uiState.value = MainScreenState(wishes = wishItems) }
+                .collect { wishItems ->
+                    val withoutEmpty = wishItems.filter { !it.isEmpty() }
+                    _uiState.value = MainScreenState(wishes = withoutEmpty)
+                }
         }
 
         viewModelScope.launch {
