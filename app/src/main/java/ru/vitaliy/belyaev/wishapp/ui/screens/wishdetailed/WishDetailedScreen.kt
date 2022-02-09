@@ -53,7 +53,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import java.util.Optional
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
@@ -162,7 +161,6 @@ fun WishDetailedScreen(
                 )
             )
             LaunchedEffect(title) {
-                delay(300)
                 if (title.isBlank()) {
                     focusRequester.requestFocus()
                 }
