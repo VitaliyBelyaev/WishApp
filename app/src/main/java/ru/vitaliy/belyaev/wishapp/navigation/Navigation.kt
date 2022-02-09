@@ -9,7 +9,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
-import ru.vitaliy.belyaev.wishapp.ui.core.navbarcolor.DefaultNavbarColor
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.AboutAppScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.privacypolicy.PrivacyPolicyScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.EditTagsScreen
@@ -43,14 +42,12 @@ fun Navigation(onShareClick: (List<WishWithTags>) -> Unit) {
                 onBackPressed = { navController.popBackStack() },
                 onWishTagsClicked = { navController.navigate(WishTagsRoute.build(it)) }
             )
-            DefaultNavbarColor()
         }
         composable(WishDetailedRouteWithArgs.VALUE) {
             WishDetailedScreen(
                 onBackPressed = { navController.popBackStack() },
                 onWishTagsClicked = { navController.navigate(WishTagsRoute.build(it)) }
             )
-            DefaultNavbarColor()
         }
         composable(SettingsRoute.VALUE) {
             SettingsScreen(
@@ -63,25 +60,21 @@ fun Navigation(onShareClick: (List<WishWithTags>) -> Unit) {
                 onBackPressed = { navController.popBackStack() },
                 onPrivacyPolicyClicked = { navController.navigate(PrivacyPolicyRoute.VALUE) }
             )
-            DefaultNavbarColor()
         }
         composable(PrivacyPolicyRoute.VALUE) {
             PrivacyPolicyScreen(
                 onBackPressed = { navController.popBackStack() }
             )
-            DefaultNavbarColor()
         }
         composable(WishTagsRoute.VALUE) {
             WishTagsScreen(
                 onBackPressed = { navController.popBackStack() }
             )
-            DefaultNavbarColor()
         }
         composable(EditTagRoute.VALUE) {
             EditTagsScreen(
                 onBackPressed = { navController.popBackStack() }
             )
-            DefaultNavbarColor()
         }
     }
 }

@@ -18,11 +18,11 @@ import androidx.core.view.WindowCompat
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.statusBarsPadding
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
@@ -42,6 +42,7 @@ class AppActivity : AppCompatActivity() {
     @Inject
     lateinit var analyticsRepository: AnalyticsRepository
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_WishApp)
         super.onCreate(savedInstanceState)
@@ -85,16 +86,6 @@ class AppActivity : AppCompatActivity() {
             // We need to change theme in Activity too for proper colors that we get from resources
             AppCompatDelegate.setDefaultNightMode(modeInt)
             WishAppTheme(selectedTheme = selectedTheme) {
-                val systemUiController = rememberSystemUiController()
-                val useDarkIcons = MaterialTheme.colors.isLight
-                val navBarColor = MaterialTheme.colors.surface
-//                SideEffect {
-//                    systemUiController.setNavigationBarColor(
-//                        color = navBarColor,
-//                        darkIcons = useDarkIcons
-//                    )
-//                }
-
                 ProvideWindowInsets {
                     Surface(
                         color = MaterialTheme.colors.background,
