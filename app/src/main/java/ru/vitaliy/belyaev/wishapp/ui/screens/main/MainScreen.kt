@@ -85,7 +85,8 @@ fun MainScreen(
                 onNavItemSelected = { viewModel.onNavItemSelected(it) },
                 onEditTagsClicked = onEditTagClick
             )
-        }
+        },
+        modifier = Modifier.navigationBarsPadding()
     ) {
         Scaffold(
             topBar = {
@@ -128,7 +129,6 @@ fun MainScreen(
             isFloatingActionButtonDocked = true,
             floatingActionButtonPosition = FabPosition.Center,
             snackbarHost = { SnackbarHost(snackbarHostState) },
-            modifier = Modifier.navigationBarsPadding()
         ) {
             val onWishClicked: (WishWithTags) -> Unit = { wish ->
                 if (state.selectedIds.isEmpty()) {

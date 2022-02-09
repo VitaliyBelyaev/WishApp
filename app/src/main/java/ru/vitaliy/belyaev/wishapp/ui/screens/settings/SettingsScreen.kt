@@ -69,7 +69,8 @@ fun SettingsScreen(
                 else -> {
                 }
             }
-        }
+        },
+        modifier = Modifier.navigationBarsPadding()
     ) {
         Scaffold(
             topBar = {
@@ -80,8 +81,7 @@ fun SettingsScreen(
                     isScrollInInitialState = { scrollState.isScrollInInitialState() }
                 )
             },
-            snackbarHost = { SnackbarHost(snackbarHostState) },
-            modifier = Modifier.navigationBarsPadding()
+            snackbarHost = { SnackbarHost(snackbarHostState) }
         ) {
 
             val systemUiController = rememberSystemUiController()
