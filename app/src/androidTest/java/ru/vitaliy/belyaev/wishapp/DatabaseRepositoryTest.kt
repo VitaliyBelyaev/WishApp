@@ -14,7 +14,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import ru.vitaliy.belyaev.model.database.Tag
+import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.data.database.WishAppDb
 import ru.vitaliy.belyaev.wishapp.data.repository.DatabaseRepository
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
@@ -77,16 +77,16 @@ class DatabaseRepositoryTest {
     fun observe_wishes_change() = coroutinesTestRule.testDispatcher.runBlockingTest {
         populateDBWithWishes()
         populateDBWithTags()
-        db.wishTagRelationQueries.insert("1", 1)
-        db.wishTagRelationQueries.insert("1", 2)
-        db.wishTagRelationQueries.insert("3", 1)
+        db.wishTagRelationQueries.insert("1", "1")
+        db.wishTagRelationQueries.insert("1", "2")
+        db.wishTagRelationQueries.insert("3", "1")
         val expected1 = testWishes.map { wish ->
             when (wish.id) {
                 "1" -> {
-                    wish.copy(tags = testTags.filter { it.id == 1L || it.id == 2L })
+                    wish.copy(tags = testTags.filter { it.tagId == "1" || it.tagId == "2" })
                 }
                 "3" -> {
-                    wish.copy(tags = testTags.filter { it.id == 1L })
+                    wish.copy(tags = testTags.filter { it.tagId == "1" })
                 }
                 else -> wish
             }
@@ -95,13 +95,13 @@ class DatabaseRepositoryTest {
         val expected2 = testWishes.map { wish ->
             when (wish.id) {
                 "1" -> {
-                    wish.copy(tags = testTags.filter { it.id == 1L || it.id == 2L })
+                    wish.copy(tags = testTags.filter { it.tagId == "1" || it.tagId == "2" })
                 }
                 "3" -> {
-                    wish.copy(tags = testTags.filter { it.id == 1L })
+                    wish.copy(tags = testTags.filter { it.tagId == "1" })
                 }
                 "2" -> {
-                    wish.copy(tags = testTags.filter { it.id == 3L })
+                    wish.copy(tags = testTags.filter { it.tagId == "3" })
                 }
                 else -> wish
             }
@@ -113,7 +113,7 @@ class DatabaseRepositoryTest {
             Assert.assertEquals(expected1, it)
         }
 
-        db.wishTagRelationQueries.insert("2", 3)
+        db.wishTagRelationQueries.insert("2", "3")
 
         wishesFlow.drop(1).collect {
             Assert.assertEquals(expected2, it)
@@ -121,7 +121,7 @@ class DatabaseRepositoryTest {
         clearWishes()
     }
 
-    private fun populateDBWithWishes() {
+    private suspend fun populateDBWithWishes() {
         for (wish in testWishes) {
             databaseRepository.insertWish(wish)
         }
@@ -129,7 +129,7 @@ class DatabaseRepositoryTest {
 
     private fun populateDBWithTags() {
         for (tag in testTags) {
-            db.tagQueries.insert(tag.id, tag.title)
+            db.tagQueries.insert(tag.tagId, tag.title)
         }
     }
 
@@ -139,9 +139,9 @@ class DatabaseRepositoryTest {
 
     private fun createTestTags(): List<Tag> {
         return listOf(
-            Tag(1, "ДР"),
-            Tag(2, "Эмоции"),
-            Tag(3, "Крупные")
+            Tag("1", "ДР"),
+            Tag("2", "Эмоции"),
+            Tag("3", "Крупные")
         )
     }
 
