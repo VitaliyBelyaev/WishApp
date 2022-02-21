@@ -77,20 +77,23 @@ class MainViewModel @Inject constructor(
                 }
         }
 
-        if (BuildConfig.DEBUG) {
-            viewModelScope.launch {
-                val haveTags = tagsRepository.getAllTags().isNotEmpty()
-                if (!haveTags) {
-                    val testTags = createTestTags()
-                    testTags.forEach {
-                        tagsRepository.insertTag(it)
-                    }
-                }
-            }
-        }
+//        if (BuildConfig.DEBUG) {
+//            viewModelScope.launch {
+//                val haveTags = tagsRepository.getAllTags().isNotEmpty()
+//                if (!haveTags) {
+//                    val testTags = createTestTags()
+//                    testTags.forEach {
+//                        tagsRepository.insertTag(it)
+//                    }
+//                }
+//            }
+//        }
     }
 
     fun onAddTestWishClicked() {
+        if (testWishes.isEmpty()) {
+            return
+        }
         viewModelScope.launch {
             val currentMillis = System.currentTimeMillis()
             val wish = testWishes[testWishIndex % testWishes.size].copy(
@@ -169,6 +172,9 @@ class MainViewModel @Inject constructor(
     }
 
     private fun createTestWishes(): List<WishWithTags> {
+        if (!BuildConfig.DEBUG) {
+            return emptyList()
+        }
         val currentMillis = System.currentTimeMillis()
         return listOf(
             WishWithTags(
