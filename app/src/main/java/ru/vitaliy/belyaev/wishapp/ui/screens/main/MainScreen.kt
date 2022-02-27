@@ -52,7 +52,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.MainScreenTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.TagsSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.WishItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.NavigationMenuItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.TagMenuItem
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 
 @ExperimentalFoundationApi
@@ -70,9 +70,12 @@ fun MainScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val fabShape = RoundedCornerShape(50)
     val scope = rememberCoroutineScope()
-    val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+    val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden) { state ->
+        return@rememberModalBottomSheetState state != ModalBottomSheetValue.HalfExpanded
+    }
     val state: MainScreenState by viewModel.uiState.collectAsState()
-    val navMenuItems: List<NavigationMenuItem> by viewModel.navigationMenuUiState.collectAsState()
+    val tagMenuItems: List<TagMenuItem> by viewModel.tagMenuItems.collectAsState()
+    val selectedTagId: String by viewModel.selectedTagIdFlow.collectAsState()
     val lazyListState: LazyListState = rememberLazyListState()
     val openDeleteConfirmDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
 
@@ -81,7 +84,8 @@ fun MainScreen(
         sheetContent = {
             TagsSheetContent(
                 modalBottomSheetState = modalBottomSheetState,
-                navMenuItems = navMenuItems,
+                tagMenuItems = tagMenuItems,
+                selectedTagId = selectedTagId,
                 onNavItemSelected = { viewModel.onNavItemSelected(it) },
                 onEditTagsClicked = onEditTagClick
             )

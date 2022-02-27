@@ -3,6 +3,7 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.main.components
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -28,13 +30,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.AllTagsMenuItem
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.NavigationMenuItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.TagMenuItem
 
 @ExperimentalMaterialApi
@@ -42,7 +44,8 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.TagMenuItem
 @Composable
 fun TagsSheetContent(
     modalBottomSheetState: ModalBottomSheetState,
-    navMenuItems: List<NavigationMenuItem>,
+    tagMenuItems: List<TagMenuItem>,
+    selectedTagId: String,
     onNavItemSelected: (Tag?) -> Unit,
     onEditTagsClicked: () -> Unit
 ) {
@@ -53,48 +56,62 @@ fun TagsSheetContent(
         scope.launch { modalBottomSheetState.hide() }
     }
 
-    LazyColumn {
-        item {
-            Spacer(modifier = Modifier.height(10.dp))
+    ConstraintLayout {
+        val (scrollableRef, staticRef) = createRefs()
+
+        LazyColumn(
+            modifier = Modifier.constrainAs(scrollableRef) {
+                height = Dimension.preferredWrapContent
+                top.linkTo(parent.top)
+                bottom.linkTo(staticRef.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }
+        ) {
+            item { Spacer(modifier = Modifier.height(10.dp)) }
+            items(tagMenuItems) { navMenuItem ->
+                NavMenuItemBlock(
+                    icon = painterResource(R.drawable.ic_label),
+                    title = navMenuItem.tag.title,
+                    isSelected = navMenuItem.isSelected,
+                    onClick = {
+                        onNavItemSelected(navMenuItem.tag)
+                        scope.launch { modalBottomSheetState.snapTo(ModalBottomSheetValue.Hidden) }
+                    }
+                )
+            }
+        }
+        Column(
+            modifier = Modifier.constrainAs(staticRef) {
+                height = Dimension.wrapContent
+                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }
+        ) {
+            Divider()
+            NavMenuItemBlock(
+                icon = painterResource(R.drawable.ic_list_bulleted),
+                title = stringResource(R.string.all_wishes),
+                isSelected = selectedTagId.isBlank(),
+                onClick = {
+                    onNavItemSelected(null)
+                    scope.launch { modalBottomSheetState.snapTo(ModalBottomSheetValue.Hidden) }
+                }
+            )
             NavMenuItemBlock(
                 icon = painterResource(R.drawable.ic_edit),
                 title = stringResource(R.string.edit_tags),
                 isSelected = false,
                 onClick = {
                     scope.launch {
-                        modalBottomSheetState.hide()
+                        modalBottomSheetState.snapTo(ModalBottomSheetValue.Hidden)
                         onEditTagsClicked()
                     }
                 }
             )
+            Spacer(modifier = Modifier.height(10.dp))
         }
-        item { Divider() }
-
-        items(navMenuItems) { navMenuItem ->
-            val icon = when (navMenuItem) {
-                is AllTagsMenuItem -> painterResource(R.drawable.ic_list_bulleted)
-                is TagMenuItem -> painterResource(R.drawable.ic_label)
-            }
-            val title = when (navMenuItem) {
-                is AllTagsMenuItem -> stringResource(navMenuItem.titleRes)
-                is TagMenuItem -> navMenuItem.tag.title
-            }
-
-            NavMenuItemBlock(
-                icon = icon,
-                title = title,
-                isSelected = navMenuItem.isSelected,
-                onClick = {
-                    val tag = when (navMenuItem) {
-                        is AllTagsMenuItem -> null
-                        is TagMenuItem -> navMenuItem.tag
-                    }
-                    onNavItemSelected(tag)
-                    scope.launch { modalBottomSheetState.hide() }
-                }
-            )
-        }
-        item { Spacer(modifier = Modifier.height(10.dp)) }
     }
 }
 

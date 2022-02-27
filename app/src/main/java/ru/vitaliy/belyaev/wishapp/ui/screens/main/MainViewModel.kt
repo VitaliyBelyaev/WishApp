@@ -9,10 +9,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.BuildConfig
-import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
@@ -20,9 +20,7 @@ import ru.vitaliy.belyaev.wishapp.data.repository.tags.TagsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.wishes.isEmpty
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.AllTagsMenuItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.NavigationMenuItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.TagMenuItem
 
 @ExperimentalCoroutinesApi
@@ -34,12 +32,13 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<MainScreenState> = MutableStateFlow(MainScreenState())
-    val uiState: StateFlow<MainScreenState> = _uiState
+    val uiState: StateFlow<MainScreenState> = _uiState.asStateFlow()
 
-    private val _navigationMenuUiState: MutableStateFlow<List<NavigationMenuItem>> = MutableStateFlow(emptyList())
-    val navigationMenuUiState: StateFlow<List<NavigationMenuItem>> = _navigationMenuUiState
+    private val _tagMenuItems: MutableStateFlow<List<TagMenuItem>> = MutableStateFlow(emptyList())
+    val tagMenuItems: StateFlow<List<TagMenuItem>> = _tagMenuItems.asStateFlow()
 
-    private val selectedTagIdFlow: MutableStateFlow<String> = MutableStateFlow("")
+    private val _selectedTagIdFlow: MutableStateFlow<String> = MutableStateFlow("")
+    val selectedTagIdFlow: StateFlow<String> = _selectedTagIdFlow.asStateFlow()
 
     private val testWishes = createTestWishes()
     private var testWishIndex = 0
@@ -64,16 +63,12 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             tagsRepository
                 .observeAllTags()
-                .combine(selectedTagIdFlow) { tags, selectedTagId ->
-                    val navMenuItems = mutableListOf<NavigationMenuItem>().apply {
-                        add(AllTagsMenuItem(R.string.all_wishes, selectedTagId.isBlank()))
-                        val tagMenuItems = tags.map { TagMenuItem(it, it.tagId == selectedTagId) }
-                        addAll(tagMenuItems)
-                    }
-                    navMenuItems.toList()
+                .combine(_selectedTagIdFlow) { tags, selectedTagId ->
+                    val tagMenuItems = tags.map { TagMenuItem(it, it.tagId == selectedTagId) }
+                    tagMenuItems.toList()
                 }
                 .collect {
-                    _navigationMenuUiState.value = it
+                    _tagMenuItems.value = it
                 }
         }
 
@@ -150,7 +145,7 @@ class MainViewModel @Inject constructor(
     fun onNavItemSelected(tag: Tag?) {
         allWishesJob?.cancel()
         wishesByTagJob?.cancel()
-        selectedTagIdFlow.value = tag?.tagId ?: ""
+        _selectedTagIdFlow.value = tag?.tagId ?: ""
         if (tag == null) {
             allWishesJob = viewModelScope.launch {
                 wishesRepository
