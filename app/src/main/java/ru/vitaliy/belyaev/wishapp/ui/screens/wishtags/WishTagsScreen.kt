@@ -51,7 +51,7 @@ fun WishTagsScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     var query: String by remember { mutableStateOf("") }
-    val state: List<TagItem> by viewModel.uiState.collectAsState()
+    val tagItems: List<TagItem> by viewModel.uiState.collectAsState()
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     val handleBackPressed: () -> Unit = {
@@ -133,7 +133,8 @@ fun WishTagsScreen(
         Divider()
 
         LazyColumn {
-            if (query.isNotBlank()) {
+            val showAddTagBlock = query.isNotBlank() && tagItems.none { it.tag.title == query }
+            if (showAddTagBlock) {
                 item {
                     AddTagBlock(
                         tagName = query,
@@ -141,7 +142,7 @@ fun WishTagsScreen(
                     )
                 }
             }
-            items(state) { tagItem ->
+            items(tagItems) { tagItem ->
                 TagItemBlock(tagItem = tagItem, onClick = { viewModel.onTagCheckboxClicked(it) })
             }
         }
