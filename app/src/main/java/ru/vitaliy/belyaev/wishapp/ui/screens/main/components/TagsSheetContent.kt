@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
@@ -57,18 +58,32 @@ fun TagsSheetContent(
     }
 
     ConstraintLayout {
-        val (scrollableRef, staticRef) = createRefs()
+        val (closeButtonRef, scrollableRef, staticRef) = createRefs()
+
+        IconButton(
+            onClick = { scope.launch { modalBottomSheetState.hide() } },
+            modifier = Modifier
+                .constrainAs(closeButtonRef) {
+                    top.linkTo(parent.top, margin = 8.dp)
+                    end.linkTo(parent.end, margin = 8.dp)
+                }
+        ) {
+            ThemedIcon(
+                painter = painterResource(R.drawable.ic_close),
+                contentDescription = null,
+                modifier = Modifier.size(32.dp)
+            )
+        }
 
         LazyColumn(
             modifier = Modifier.constrainAs(scrollableRef) {
                 height = Dimension.preferredWrapContent
-                top.linkTo(parent.top)
+                top.linkTo(closeButtonRef.bottom)
                 bottom.linkTo(staticRef.top)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             }
         ) {
-            item { Spacer(modifier = Modifier.height(10.dp)) }
             items(tagMenuItems) { navMenuItem ->
                 NavMenuItemBlock(
                     icon = painterResource(R.drawable.ic_label),
