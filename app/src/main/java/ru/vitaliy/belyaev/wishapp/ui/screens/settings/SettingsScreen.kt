@@ -86,7 +86,7 @@ fun SettingsScreen(
 
             val systemUiController = rememberSystemUiController()
             val useDarkIcons = MaterialTheme.colors.isLight
-            val settingsScreenNavBarColor = MaterialTheme.colors.background
+            val settingsScreenNavBarColor = colorResource(R.color.navigationBarColor)
             val bottomSheetNavbarColor = colorResource(R.color.bottomSheetBackgroundColor)
             LaunchedEffect(key1 = modalBottomSheetState.targetValue) {
                 val navbarColor = if (modalBottomSheetState.targetValue != ModalBottomSheetValue.Hidden) {
