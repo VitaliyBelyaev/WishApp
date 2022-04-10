@@ -6,7 +6,7 @@
     <color name="errorColor">#CF6679</color>
     <color name="onPrimaryColor">@android:color/black</color>
     <color name="onSecondaryColor">@android:color/black</color>
-    <color name="onSurfaceColor">#FBFDFE</color>
+    <color name="onSurfaceColor">#e0e0e0</color>
     <color name="onErrorColor">@android:color/black</color>
 
     <color name="backgroundColorSecondary">#2D3139</color>

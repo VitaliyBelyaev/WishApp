@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="primaryColor">#808E95</color>
-    <color name="backgroundColor">#FFFFFFFF</color>
-    <color name="surfaceColor">#FFFFFFFF</color>
+    <color name="backgroundColor">#ededed</color>
+    <color name="surfaceColor">#ededed</color>
     <color name="errorColor">#B00020</color>
     <color name="onPrimaryColor">@android:color/white</color>
     <color name="onSecondaryColor">@android:color/white</color>
     <color name="onSurfaceColor">#04121B</color>
     <color name="onErrorColor">@android:color/white</color>
 
-    <color name="backgroundColorSecondary">#E9ECED</color>
+    <color name="backgroundColorSecondary">#e0e0e0</color>
     <color name="statusBarColor">@color/backgroundColor</color>
     <color name="navigationBarColor">@android:color/white</color>
     <color name="iconPrimaryColor">#7304121B</color>
-    <color name="bottomSheetBackgroundColor">#FFFFFFFF</color>
+    <color name="bottomSheetBackgroundColor">#ededed</color>
 
     <color name="transparent">@android:color/transparent</color>
 </resources>
