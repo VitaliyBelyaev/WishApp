@@ -6,4 +6,6 @@ object Loading : LinkPreviewState()
 
 object None : LinkPreviewState()
 
+object NoData : LinkPreviewState()
+
 data class Data(val linkInfo: LinkInfo) : LinkPreviewState()

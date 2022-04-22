@@ -34,6 +34,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -42,6 +43,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -53,6 +55,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import java.util.Optional
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
@@ -63,10 +66,13 @@ import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreviewLoading
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Data
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkInfo
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.NoData
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
+import timber.log.Timber
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -80,6 +86,9 @@ fun WishDetailedScreen(
     viewModel: WishDetailedViewModel = hiltViewModel()
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val uriHandler = LocalUriHandler.current
     val wishItem: Optional<WishItem> by viewModel.uiState.collectAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
     val handleBackPressed: () -> Unit = {
@@ -92,6 +101,18 @@ fun WishDetailedScreen(
     val scrollState: ScrollState = rememberScrollState()
 
     BackHandler { handleBackPressed() }
+
+    val onLinkPreviewClick: (String) -> Unit = { url ->
+        viewModel.onLinkPreviewClick()
+        try {
+            uriHandler.openUri(url)
+        } catch (error: Throwable) {
+            Timber.e(error)
+            scope.launch {
+                snackbarHostState.showSnackbar(context.getString(R.string.fail_to_open_link))
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -222,17 +243,28 @@ fun WishDetailedScreen(
                         linkInfo = linkPreviewState.linkInfo,
                         url = wishItemValue.wish.link,
                         paddingValues = pd,
-                        onLinkPreviewClick = { viewModel.onLinkPreviewClick() }
+                        onLinkPreviewClick = onLinkPreviewClick,
                     )
                 }
                 is Loading -> {
                     LinkPreviewLoading(pd)
                 }
+                is NoData -> {
+                    LinkPreview(
+                        linkInfo = LinkInfo(title = stringResource(R.string.open_link)),
+                        url = wishItemValue.wish.link,
+                        paddingValues = pd,
+                        onLinkPreviewClick = onLinkPreviewClick,
+                    )
+                }
                 is None -> {
                     //nothing
                 }
+                else -> {
+                    //nothing
+                }
             }
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             val tags = wishItem.toValueOfNull()?.wish?.tags ?: emptyList()
             TagsBlock(
