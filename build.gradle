@@ -5,9 +5,9 @@ task clean(type: Delete) {
 
 buildscript {
     ext {
-        composeVersion = '1.1.0-rc01'
-        kotlinVersion = '1.6.0'
-        kotlinCoroutinesVersion = '1.6.0'
+        composeVersion = '1.1.1'
+        kotlinVersion = '1.6.10'
+        kotlinCoroutinesVersion = '1.6.1'
         sqlDelightVersion = '1.5.2'
         hiltVersion = '2.38.1'
         accompanistVesrion = '0.22.0-rc'
@@ -28,7 +28,7 @@ buildscript {
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion"
         classpath "com.google.gms:google-services:4.3.10"
         classpath "com.google.firebase:firebase-crashlytics-gradle:2.8.1"
-        classpath "com.google.firebase:perf-plugin:1.4.0"
-        classpath "com.google.android.gms:oss-licenses-plugin:0.10.4"
+        classpath "com.google.firebase:perf-plugin:1.4.1"
+        classpath "com.google.android.gms:oss-licenses-plugin:0.10.5"
     }
 }
