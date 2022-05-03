@@ -45,6 +45,16 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+
+    signingConfigs {
+        signingTest {
+            storeFile file('test_keystore')
+            storePassword "notasecret"
+            keyAlias "test"
+            keyPassword "notasecret"
+        }
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
