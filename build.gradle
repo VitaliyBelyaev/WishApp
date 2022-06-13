@@ -9,8 +9,8 @@ buildscript {
         kotlinVersion = '1.6.10'
         kotlinCoroutinesVersion = '1.6.1'
         sqlDelightVersion = '1.5.2'
-        hiltVersion = '2.38.1'
-        accompanistVesrion = '0.22.0-rc'
+        hiltVersion = '2.42'
+        accompanistVesrion = '0.23.1'
     }
 
     repositories {
@@ -27,7 +27,7 @@ buildscript {
         classpath "com.squareup.sqldelight:gradle-plugin:$sqlDelightVersion"
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion"
         classpath "com.google.gms:google-services:4.3.10"
-        classpath "com.google.firebase:firebase-crashlytics-gradle:2.8.1"
+        classpath "com.google.firebase:firebase-crashlytics-gradle:2.9.0"
         classpath "com.google.firebase:perf-plugin:1.4.1"
         classpath "com.google.android.gms:oss-licenses-plugin:0.10.5"
     }
