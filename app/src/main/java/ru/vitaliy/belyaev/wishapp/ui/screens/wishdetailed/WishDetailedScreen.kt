@@ -15,7 +15,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -195,10 +194,9 @@ fun WishDetailedScreen(
                     viewModel.onWishCommentChanged(newValue)
                 },
                 leadingIcon = {
-                    Icon(
+                    ThemedIcon(
                         painterResource(R.drawable.ic_notes),
-                        contentDescription = "Comment",
-                        tint = iconsColor
+                        contentDescription = "Comment"
                     )
                 },
                 placeholder = { Text(text = stringResource(R.string.enter_comment)) },
@@ -220,10 +218,9 @@ fun WishDetailedScreen(
                     viewModel.onWishLinkChanged(newValue)
                 },
                 leadingIcon = {
-                    Icon(
+                    ThemedIcon(
                         painterResource(R.drawable.ic_link),
-                        contentDescription = "Link",
-                        tint = iconsColor
+                        contentDescription = "Link"
                     )
                 },
                 placeholder = { Text(text = stringResource(R.string.enter_link)) },
