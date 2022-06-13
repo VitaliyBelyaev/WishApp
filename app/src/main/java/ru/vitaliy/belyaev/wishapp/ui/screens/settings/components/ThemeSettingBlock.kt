@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -26,6 +25,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.Theme
+import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 
 @Composable
 fun ThemeSettingBlock(
@@ -43,12 +43,12 @@ fun ThemeSettingBlock(
         val baseShape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius))
         val borderWidth = 2.dp
 
-        val systemBgColorRes = getBgColorRes(Theme.SYSTEM, selectedTheme)
-        val systemBorderColorRes = getBorderColorRes(Theme.SYSTEM, selectedTheme)
+        val systemBgColor = getBgColor(Theme.SYSTEM, selectedTheme)
+        val systemBorderColor = getBorderColor(Theme.SYSTEM, selectedTheme)
         Column(
             modifier = Modifier
-                .background(color = colorResource(systemBgColorRes), shape = baseShape)
-                .border(borderWidth, colorResource(systemBorderColorRes), baseShape)
+                .background(color = systemBgColor, shape = baseShape)
+                .border(borderWidth, systemBorderColor, baseShape)
                 .clip(baseShape)
                 .clickable { onThemeClicked(Theme.SYSTEM) }
                 .constrainAs(systemRef) {
@@ -81,12 +81,12 @@ fun ThemeSettingBlock(
                 bottom.linkTo(parent.bottom)
             }
         )
-        val darkBgColorRes = getBgColorRes(Theme.DARK, selectedTheme)
-        val darkBorderColorRes = getBorderColorRes(Theme.DARK, selectedTheme)
+        val darkBgColor = getBgColor(Theme.DARK, selectedTheme)
+        val darkBorderColor = getBorderColor(Theme.DARK, selectedTheme)
         Column(
             modifier = Modifier
-                .background(color = colorResource(darkBgColorRes), shape = baseShape)
-                .border(borderWidth, colorResource(darkBorderColorRes), baseShape)
+                .background(color = darkBgColor, shape = baseShape)
+                .border(borderWidth, darkBorderColor, baseShape)
                 .clip(baseShape)
                 .clickable { onThemeClicked(Theme.DARK) }
                 .constrainAs(darkRef) {
@@ -119,12 +119,12 @@ fun ThemeSettingBlock(
                 bottom.linkTo(parent.bottom)
             }
         )
-        val lightBgColorRes = getBgColorRes(Theme.LIGHT, selectedTheme)
-        val lightBorderColorRes = getBorderColorRes(Theme.LIGHT, selectedTheme)
+        val lightBgColor = getBgColor(Theme.LIGHT, selectedTheme)
+        val lightBorderColor = getBorderColor(Theme.LIGHT, selectedTheme)
         Column(
             modifier = Modifier
-                .background(color = colorResource(lightBgColorRes), shape = baseShape)
-                .border(borderWidth, colorResource(lightBorderColorRes), baseShape)
+                .background(color = lightBgColor, shape = baseShape)
+                .border(borderWidth, lightBorderColor, baseShape)
                 .clip(baseShape)
                 .clickable { onThemeClicked(Theme.LIGHT) }
                 .constrainAs(lightRef) {
@@ -153,12 +153,22 @@ fun ThemeSettingBlock(
     }
 }
 
-private fun getBgColorRes(theme: Theme, selected: Theme): Int {
-    return if (theme == selected) R.color.transparent else R.color.backgroundColorSecondary
+@Composable
+private fun getBgColor(theme: Theme, selected: Theme): Color {
+    return if (theme == selected) {
+        Color.Transparent
+    } else {
+        localTheme.colors.backgroundColorSecondary
+    }
 }
 
-private fun getBorderColorRes(theme: Theme, selected: Theme): Int {
-    return if (theme == selected) R.color.primaryColor else R.color.transparent
+@Composable
+private fun getBorderColor(theme: Theme, selected: Theme): Color {
+    return if (theme == selected) {
+        localTheme.colors.primaryColor
+    } else {
+        Color.Transparent
+    }
 }
 
 @Composable

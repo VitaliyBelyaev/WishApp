@@ -43,7 +43,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -70,6 +69,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.NoData
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
+import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 import timber.log.Timber
 
@@ -285,7 +285,7 @@ fun WishDetailedScreen(
     if (wishToDelete.isPresent) {
         AlertDialog(
             shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius)),
-            backgroundColor = colorResource(R.color.bottomSheetBackgroundColor),
+            backgroundColor = localTheme.colors.bottomSheetBackgroundColor,
             onDismissRequest = { openDialog.value = Optional.empty() },
             title = { Text(stringResource(R.string.delete_wish_title)) },
             confirmButton = {

@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,6 +41,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.ThemeSettingBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.entity.Backup
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.entity.SettingItem
+import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 import ru.vitaliy.belyaev.wishapp.utils.openGooglePlay
 
@@ -86,8 +86,8 @@ fun SettingsScreen(
 
             val systemUiController = rememberSystemUiController()
             val useDarkIcons = MaterialTheme.colors.isLight
-            val settingsScreenNavBarColor = colorResource(R.color.navigationBarColor)
-            val bottomSheetNavbarColor = colorResource(R.color.bottomSheetBackgroundColor)
+            val settingsScreenNavBarColor = localTheme.colors.navigationBarColor
+            val bottomSheetNavbarColor = localTheme.colors.bottomSheetBackgroundColor
             LaunchedEffect(key1 = modalBottomSheetState.targetValue) {
                 val navbarColor = if (modalBottomSheetState.targetValue != ModalBottomSheetValue.Hidden) {
                     bottomSheetNavbarColor

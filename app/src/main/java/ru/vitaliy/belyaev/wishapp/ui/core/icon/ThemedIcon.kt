@@ -6,15 +6,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
-import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 
 @Composable
 fun ThemedIcon(
     imageVector: ImageVector,
     contentDescription: String?,
     modifier: Modifier = Modifier,
-    tint: Color = colorResource(R.color.iconPrimaryColor)
+    tint: Color = localTheme.colors.iconPrimaryColor
 ) {
     Icon(imageVector, contentDescription, modifier, tint)
 }
@@ -24,7 +23,7 @@ fun ThemedIcon(
     painter: Painter,
     contentDescription: String?,
     modifier: Modifier = Modifier,
-    tint: Color = colorResource(R.color.iconPrimaryColor)
+    tint: Color = localTheme.colors.iconPrimaryColor
 ) {
     Icon(painter, contentDescription, modifier, tint)
 }

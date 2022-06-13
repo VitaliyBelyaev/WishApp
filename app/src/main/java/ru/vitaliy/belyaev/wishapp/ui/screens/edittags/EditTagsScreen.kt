@@ -24,7 +24,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -37,6 +36,7 @@ import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.components.EditTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
+import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 
 @ExperimentalComposeUiApi
@@ -118,7 +118,7 @@ fun EditTagsScreen(
         if (tagToDelete.isPresent) {
             AlertDialog(
                 shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius)),
-                backgroundColor = colorResource(R.color.bottomSheetBackgroundColor),
+                backgroundColor = localTheme.colors.bottomSheetBackgroundColor,
                 onDismissRequest = { openDialog.value = Optional.empty() },
                 title = { Text(stringResource(R.string.delete_tag_title)) },
                 text = { Text(stringResource(R.string.delete_tag_description)) },

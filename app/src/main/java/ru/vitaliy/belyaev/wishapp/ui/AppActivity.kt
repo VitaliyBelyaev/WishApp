@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -77,13 +76,6 @@ class AppActivity : AppCompatActivity() {
 
         setContent {
             val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
-            val modeInt = when (selectedTheme) {
-                Theme.SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                Theme.DARK -> AppCompatDelegate.MODE_NIGHT_YES
-                Theme.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
-            }
-            // We need to change theme in Activity too for proper colors that we get from resources
-            AppCompatDelegate.setDefaultNightMode(modeInt)
             WishAppTheme(selectedTheme = selectedTheme) {
                 ProvideWindowInsets {
                     Surface(

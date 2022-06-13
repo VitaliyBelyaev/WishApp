@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,6 +31,7 @@ import androidx.constraintlayout.compose.Dimension
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
+import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 
 @ExperimentalFoundationApi
 @Composable
@@ -60,7 +60,7 @@ fun WishItemBlock(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = backgroundColor, shape = baseShape)
-                .border(borderWidth, colorResource(R.color.iconPrimaryColor), baseShape)
+                .border(borderWidth, localTheme.colors.iconPrimaryColor, baseShape)
                 .clip(baseShape)
                 .combinedClickable(
                     onLongClick = { onWishLongPress(wishItem) },

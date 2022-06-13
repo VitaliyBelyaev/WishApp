@@ -1,17 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="primaryColor">#808E95</color>
-    <color name="backgroundColor">#121212</color>
-    <color name="surfaceColor">#1E2024</color>
-    <color name="errorColor">#CF6679</color>
-    <color name="onPrimaryColor">@android:color/black</color>
-    <color name="onSecondaryColor">@android:color/black</color>
-    <color name="onSurfaceColor">#e0e0e0</color>
-    <color name="onErrorColor">@android:color/black</color>
-
-    <color name="backgroundColorSecondary">#2D3139</color>
-    <color name="statusBarColor">@color/backgroundColor</color>
-    <color name="navigationBarColor">@android:color/black</color>
-    <color name="iconPrimaryColor">#99B4BEC5</color>
-    <color name="bottomSheetBackgroundColor">#2D3139</color>
+    <color name="statusBarColor">#121212</color>
 </resources>

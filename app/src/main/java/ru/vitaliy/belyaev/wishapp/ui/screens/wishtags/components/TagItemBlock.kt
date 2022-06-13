@@ -7,7 +7,6 @@ import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -17,6 +16,7 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
+import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 
 @Composable
 fun TagItemBlock(tagItem: TagItem, onClick: (TagItem) -> Unit) {
@@ -50,7 +50,7 @@ fun TagItemBlock(tagItem: TagItem, onClick: (TagItem) -> Unit) {
             }
         )
         val checkboxColors = CheckboxDefaults.colors(
-            checkedColor = colorResource(R.color.primaryColor)
+            checkedColor = localTheme.colors.primaryColor
         )
 
         Checkbox(

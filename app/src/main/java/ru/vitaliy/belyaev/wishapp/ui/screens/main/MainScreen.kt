@@ -32,7 +32,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,6 +52,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.TagsSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.WishItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.TagMenuItem
+import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 
 @ExperimentalFoundationApi
@@ -94,6 +94,7 @@ fun MainScreen(
     ) {
         Scaffold(
             topBar = {
+                MaterialTheme.colors.primary
                 MainScreenTopBar(
                     selectedIds = state.selectedIds,
                     selectedTag = state.selectedTag,
@@ -167,8 +168,8 @@ fun MainScreen(
 
             val systemUiController = rememberSystemUiController()
             val useDarkIcons = MaterialTheme.colors.isLight
-            val mainScreenNavBarColor = colorResource(R.color.navigationBarColor)
-            val bottomSheetNavbarColor = colorResource(R.color.bottomSheetBackgroundColor)
+            val mainScreenNavBarColor = localTheme.colors.navigationBarColor
+            val bottomSheetNavbarColor = localTheme.colors.bottomSheetBackgroundColor
             LaunchedEffect(key1 = modalBottomSheetState.targetValue) {
                 val navbarColor = if (modalBottomSheetState.targetValue != ModalBottomSheetValue.Hidden) {
                     bottomSheetNavbarColor
@@ -184,7 +185,7 @@ fun MainScreen(
             if (openDeleteConfirmDialog.value) {
                 AlertDialog(
                     shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius)),
-                    backgroundColor = colorResource(R.color.bottomSheetBackgroundColor),
+                    backgroundColor = localTheme.colors.bottomSheetBackgroundColor,
                     onDismissRequest = { openDeleteConfirmDialog.value = false },
                     title = { Text(stringResource(R.string.delete_wishes_title)) },
                     confirmButton = {

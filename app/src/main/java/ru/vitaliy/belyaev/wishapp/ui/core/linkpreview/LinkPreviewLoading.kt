@@ -12,12 +12,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.shimmer
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 
 @Composable
 fun LinkPreviewLoading(paddingValues: PaddingValues) {
@@ -37,7 +37,7 @@ fun LinkPreviewLoading(paddingValues: PaddingValues) {
             )
             .clip(shape)
             .shimmer()
-            .background(color = colorResource(R.color.primaryColor))
+            .background(color = localTheme.colors.primaryColor)
     )
 }
 
