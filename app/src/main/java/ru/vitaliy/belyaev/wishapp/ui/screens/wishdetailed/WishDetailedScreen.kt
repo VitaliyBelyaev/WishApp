@@ -3,9 +3,11 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,12 +16,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
@@ -35,6 +39,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -47,8 +52,11 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import java.util.Optional
@@ -150,134 +158,192 @@ fun WishDetailedScreen(
         var title: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.title }) }
         var link: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.link }) }
         var comment: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.comment }) }
-        val iconsColor: Color = Color.Gray
         val focusRequester = remember { FocusRequester() }
+        val isCompleted: Boolean = wishItem.toValueOfNull()?.wish?.isCompleted ?: false
 
-        Column(modifier = Modifier.verticalScroll(scrollState)) {
-            TextField(
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            val (contentRef, bottomPanelRef) = createRefs()
+
+            Column(
                 modifier = Modifier
-                    .padding(top = 8.dp)
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester),
-                value = title,
-                textStyle = MaterialTheme.typography.h6,
-                onValueChange = { newValue ->
-                    title = newValue
-                    viewModel.onWishTitleChanged(newValue)
-                },
-                placeholder = {
-                    Text(
-                        text = stringResource(R.string.enter_title),
-                        style = MaterialTheme.typography.h6,
+                    .verticalScroll(scrollState)
+                    .constrainAs(contentRef) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(bottomPanelRef.top)
+                        width = Dimension.fillToConstraints
+                        height = Dimension.fillToConstraints
+                    }
+            ) {
+                TextField(
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
+                    value = title,
+                    textStyle = MaterialTheme.typography.h5.copy(
+                        textDecoration = if (isCompleted) TextDecoration.LineThrough else null
+                    ),
+                    onValueChange = { newValue ->
+                        title = newValue
+                        viewModel.onWishTitleChanged(newValue)
+                    },
+                    placeholder = {
+                        Text(
+                            text = stringResource(R.string.enter_title),
+                            style = MaterialTheme.typography.h6,
+                        )
+                    },
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences
                     )
-                },
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                ),
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences
                 )
-            )
-            LaunchedEffect(title) {
-                if (title.isBlank()) {
-                    focusRequester.requestFocus()
+                LaunchedEffect(title) {
+                    if (title.isBlank()) {
+                        focusRequester.requestFocus()
+                    }
                 }
+
+                TextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = comment,
+                    onValueChange = { newValue ->
+                        comment = newValue
+                        viewModel.onWishCommentChanged(newValue)
+                    },
+                    leadingIcon = {
+                        ThemedIcon(
+                            painterResource(R.drawable.ic_notes),
+                            contentDescription = "Comment"
+                        )
+                    },
+                    placeholder = { Text(text = stringResource(R.string.enter_comment)) },
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences
+                    )
+                )
+
+                TextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = link,
+                    onValueChange = { newValue ->
+                        link = newValue
+                        viewModel.onWishLinkChanged(newValue)
+                    },
+                    leadingIcon = {
+                        ThemedIcon(
+                            painterResource(R.drawable.ic_link),
+                            contentDescription = "Link"
+                        )
+                    },
+                    placeholder = { Text(text = stringResource(R.string.enter_link)) },
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                    )
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                val wishItemValue = wishItem.toValueOfNull()
+                val pd = PaddingValues(start = 12.dp, end = 12.dp)
+                when (val linkPreviewState = wishItemValue?.linkPreviewState) {
+                    is Data -> {
+                        LinkPreview(
+                            linkInfo = linkPreviewState.linkInfo,
+                            url = wishItemValue.wish.link,
+                            paddingValues = pd,
+                            onLinkPreviewClick = onLinkPreviewClick,
+                        )
+                    }
+                    is Loading -> {
+                        LinkPreviewLoading(pd)
+                    }
+                    is NoData -> {
+                        LinkPreview(
+                            linkInfo = LinkInfo(title = stringResource(R.string.open_link)),
+                            url = wishItemValue.wish.link,
+                            paddingValues = pd,
+                            onLinkPreviewClick = onLinkPreviewClick,
+                        )
+                    }
+                    is None -> {
+                        //nothing
+                    }
+                    else -> {
+                        //nothing
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                val tags = wishItem.toValueOfNull()?.wish?.tags ?: emptyList()
+                TagsBlock(
+                    tags = tags,
+                    textSize = 16.sp,
+                    onClick = {
+                        val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
+                        onWishTagsClicked(wishId)
+                    },
+                    onAddNewTagClick = {
+                        val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
+                        onWishTagsClicked(wishId)
+                    },
+                    modifier = Modifier.padding(start = 12.dp, end = 12.dp)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
             }
 
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = comment,
-                onValueChange = { newValue ->
-                    comment = newValue
-                    viewModel.onWishCommentChanged(newValue)
-                },
-                leadingIcon = {
-                    ThemedIcon(
-                        painterResource(R.drawable.ic_notes),
-                        contentDescription = "Comment"
-                    )
-                },
-                placeholder = { Text(text = stringResource(R.string.enter_comment)) },
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                ),
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences
-                )
-            )
-
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = link,
-                onValueChange = { newValue ->
-                    link = newValue
-                    viewModel.onWishLinkChanged(newValue)
-                },
-                leadingIcon = {
-                    ThemedIcon(
-                        painterResource(R.drawable.ic_link),
-                        contentDescription = "Link"
-                    )
-                },
-                placeholder = { Text(text = stringResource(R.string.enter_link)) },
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                )
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-
-            val wishItemValue = wishItem.toValueOfNull()
-            val pd = PaddingValues(start = 12.dp, end = 12.dp)
-            when (val linkPreviewState = wishItemValue?.linkPreviewState) {
-                is Data -> {
-                    LinkPreview(
-                        linkInfo = linkPreviewState.linkInfo,
-                        url = wishItemValue.wish.link,
-                        paddingValues = pd,
-                        onLinkPreviewClick = onLinkPreviewClick,
-                    )
-                }
-                is Loading -> {
-                    LinkPreviewLoading(pd)
-                }
-                is NoData -> {
-                    LinkPreview(
-                        linkInfo = LinkInfo(title = stringResource(R.string.open_link)),
-                        url = wishItemValue.wish.link,
-                        paddingValues = pd,
-                        onLinkPreviewClick = onLinkPreviewClick,
-                    )
-                }
-                is None -> {
-                    //nothing
-                }
-                else -> {
-                    //nothing
+            val bottomPanelElevation = if (MaterialTheme.colors.isLight) {
+                AppBarDefaults.BottomAppBarElevation
+            } else {
+                0.dp
+            }
+            val text = if (isCompleted) {
+                stringResource(R.string.wish_not_done)
+            } else {
+                stringResource(R.string.wish_done)
+            }
+            Surface(
+                color = localTheme.colors.surfaceColor,
+                elevation = bottomPanelElevation,
+                modifier = Modifier
+                    .constrainAs(bottomPanelRef) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
+                        width = Dimension.fillToConstraints
+                        height = Dimension.value(56.dp)
+                    }
+            ) {
+                Box {
+                    TextButton(
+                        onClick = { viewModel.onDoneButtonClicked(isCompleted) },
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .padding(end = 16.dp)
+                    ) {
+                        Text(
+                            text = text,
+                            style = MaterialTheme.typography.button,
+                            color = MaterialTheme.colors.onSurface
+                        )
+                    }
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
-
-            val tags = wishItem.toValueOfNull()?.wish?.tags ?: emptyList()
-            TagsBlock(
-                tags = tags,
-                textSize = 16.sp,
-                onClick = {
-                    val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
-                    onWishTagsClicked(wishId)
-                },
-                onAddNewTagClick = {
-                    val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
-                    onWishTagsClicked(wishId)
-                },
-                modifier = Modifier.padding(start = 12.dp, end = 12.dp)
-            )
-            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 

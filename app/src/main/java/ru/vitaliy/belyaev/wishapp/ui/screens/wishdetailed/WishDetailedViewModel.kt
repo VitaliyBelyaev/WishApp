@@ -110,4 +110,10 @@ class WishDetailedViewModel @Inject constructor(
     fun onLinkPreviewClick() {
         analyticsRepository.trackEvent(AnalyticsNames.Event.WISH_LINK_CLICK)
     }
+
+    fun onDoneButtonClicked(oldIsCompleted: Boolean) {
+        viewModelScope.launch {
+            wishesRepository.updateWishIsCompleted(!oldIsCompleted, wishId)
+        }
+    }
 }

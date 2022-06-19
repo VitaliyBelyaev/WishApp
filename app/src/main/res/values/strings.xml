@@ -39,4 +39,6 @@
     <string name="delete_wishes_title">Delete selected wishes?</string>
     <string name="fail_to_open_link">Failed to open link</string>
     <string name="open_link">Open link</string>
+    <string name="wish_done">Done</string>
+    <string name="wish_not_done">Not done</string>
 </resources>
