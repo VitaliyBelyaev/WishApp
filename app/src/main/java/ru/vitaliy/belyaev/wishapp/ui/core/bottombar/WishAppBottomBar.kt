@@ -13,9 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
 
 @Composable
 fun WishAppBottomBar(
+    wishesFilter: WishesFilter,
     cutoutShape: Shape? = null,
     onShareClick: () -> Unit,
     onMenuClick: () -> Unit
@@ -30,8 +32,17 @@ fun WishAppBottomBar(
             ThemedIcon(Filled.Menu, contentDescription = "Tags")
         }
         Spacer(Modifier.weight(1f, true))
-        IconButton(onClick = { onShareClick() }) {
-            ThemedIcon(Filled.Share, contentDescription = "Share")
+
+        when (wishesFilter) {
+            is WishesFilter.ByTag,
+            is WishesFilter.All -> {
+                IconButton(onClick = { onShareClick() }) {
+                    ThemedIcon(Filled.Share, contentDescription = "Share")
+                }
+            }
+            is WishesFilter.Completed -> {
+                // do nothing
+            }
         }
     }
 }

@@ -42,4 +42,5 @@
     <string name="open_link">Открыть ссылку</string>
     <string name="wish_done">Выполнена</string>
     <string name="wish_not_done">Не выполнена</string>
+    <string name="completed_wishes">Выполненные хотелки</string>
 </resources>

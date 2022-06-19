@@ -10,7 +10,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
@@ -18,58 +17,46 @@ import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.tags.TagsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.wishes.WishesRepository
-import ru.vitaliy.belyaev.wishapp.data.repository.wishes.isEmpty
+import ru.vitaliy.belyaev.wishapp.domain.WishesInteractor
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.TagMenuItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val wishesRepository: WishesRepository,
     private val tagsRepository: TagsRepository,
-    private val analyticsRepository: AnalyticsRepository
+    private val analyticsRepository: AnalyticsRepository,
+    private val wishesInteractor: WishesInteractor
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<MainScreenState> = MutableStateFlow(MainScreenState())
     val uiState: StateFlow<MainScreenState> = _uiState.asStateFlow()
 
-    private val _tagMenuItems: MutableStateFlow<List<TagMenuItem>> = MutableStateFlow(emptyList())
-    val tagMenuItems: StateFlow<List<TagMenuItem>> = _tagMenuItems.asStateFlow()
-
-    private val _selectedTagIdFlow: MutableStateFlow<String> = MutableStateFlow("")
-    val selectedTagIdFlow: StateFlow<String> = _selectedTagIdFlow.asStateFlow()
+    private val _tags: MutableStateFlow<List<Tag>> = MutableStateFlow(emptyList())
+    val tags: StateFlow<List<Tag>> = _tags.asStateFlow()
 
     private val testWishes = createTestWishes()
     private var testWishIndex = 0
 
-    private var allWishesJob: Job? = null
-    private var wishesByTagJob: Job? = null
+    private var observeWishesJob: Job? = null
 
     init {
         analyticsRepository.trackEvent(AnalyticsNames.Event.SCREEN_VIEW) {
             param(AnalyticsNames.Param.SCREEN_NAME, "MainScreen")
         }
 
-        allWishesJob = viewModelScope.launch {
-            wishesRepository
-                .observeAllWishes()
-                .collect { wishItems ->
-                    val withoutEmpty = wishItems.filter { !it.isEmpty() }
-                    _uiState.value = MainScreenState(wishes = withoutEmpty)
-                }
+        observeWishesJob = viewModelScope.launch {
+            wishesInteractor
+                .observeNotCompletedWishes()
+                .collect { _uiState.value = MainScreenState(wishes = it) }
         }
 
         viewModelScope.launch {
             tagsRepository
                 .observeAllTags()
-                .combine(_selectedTagIdFlow) { tags, selectedTagId ->
-                    val tagMenuItems = tags.map { TagMenuItem(it, it.tagId == selectedTagId) }
-                    tagMenuItems.toList()
-                }
-                .collect {
-                    _tagMenuItems.value = it
-                }
+                .collect { _tags.value = it }
         }
 
 //        if (BuildConfig.DEBUG) {
@@ -142,27 +129,24 @@ class MainViewModel @Inject constructor(
         _uiState.value = newState
     }
 
-    fun onNavItemSelected(tag: Tag?) {
-        allWishesJob?.cancel()
-        wishesByTagJob?.cancel()
-        _selectedTagIdFlow.value = tag?.tagId ?: ""
-        if (tag == null) {
-            allWishesJob = viewModelScope.launch {
-                wishesRepository
-                    .observeAllWishes()
-                    .collect { wishItems ->
-                        _uiState.value = MainScreenState(wishes = wishItems)
-                    }
+    fun onNavItemSelected(wishesFilter: WishesFilter) {
+        observeWishesJob?.cancel()
+        val filteredWishesFlow = when (wishesFilter) {
+            is WishesFilter.ByTag -> {
+                analyticsRepository.trackEvent(AnalyticsNames.Event.FILTER_BY_TAG_CLICK)
+                wishesInteractor.observeNotCompletedWishesByTag(wishesFilter.tag.tagId)
             }
-        } else {
-            analyticsRepository.trackEvent(AnalyticsNames.Event.FILTER_BY_TAG_CLICK)
-            wishesByTagJob = viewModelScope.launch {
-                wishesRepository
-                    .observeWishesByTag(tag.tagId)
-                    .collect { wishItems ->
-                        _uiState.value = MainScreenState(wishes = wishItems, selectedTag = tag)
-                    }
+            is WishesFilter.All -> {
+                wishesInteractor.observeNotCompletedWishes()
             }
+            is WishesFilter.Completed -> {
+                wishesInteractor.observeCompletedWishes()
+            }
+        }
+
+        observeWishesJob = viewModelScope.launch {
+            filteredWishesFlow
+                .collect { _uiState.value = MainScreenState(wishes = it, wishesFilter = wishesFilter) }
         }
     }
 

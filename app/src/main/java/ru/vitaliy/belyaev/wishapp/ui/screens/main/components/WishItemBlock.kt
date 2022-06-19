@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -78,7 +79,9 @@ fun WishItemBlock(
                 Text(
                     text = title,
                     color = titleColor,
-                    style = MaterialTheme.typography.h6,
+                    style = MaterialTheme.typography.h6.copy(
+                        textDecoration = if (wishItem.isCompleted) TextDecoration.LineThrough else null
+                    ),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.constrainAs(titleRef) {

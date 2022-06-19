@@ -38,16 +38,16 @@ import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.TagMenuItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
 
 @ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
 @Composable
 fun TagsSheetContent(
     modalBottomSheetState: ModalBottomSheetState,
-    tagMenuItems: List<TagMenuItem>,
-    selectedTagId: String,
-    onNavItemSelected: (Tag?) -> Unit,
+    tags: List<Tag>,
+    wishesFilter: WishesFilter,
+    onNavItemSelected: (WishesFilter) -> Unit,
     onEditTagsClicked: () -> Unit
 ) {
 
@@ -84,13 +84,14 @@ fun TagsSheetContent(
                 end.linkTo(parent.end)
             }
         ) {
-            items(tagMenuItems) { navMenuItem ->
+            items(tags) { tag ->
+                val isTagSelected = wishesFilter is WishesFilter.ByTag && wishesFilter.tag.tagId == tag.tagId
                 NavMenuItemBlock(
                     icon = painterResource(R.drawable.ic_label),
-                    title = navMenuItem.tag.title,
-                    isSelected = navMenuItem.isSelected,
+                    title = tag.title,
+                    isSelected = isTagSelected,
                     onClick = {
-                        onNavItemSelected(navMenuItem.tag)
+                        onNavItemSelected(WishesFilter.ByTag(tag))
                         scope.launch { modalBottomSheetState.snapTo(ModalBottomSheetValue.Hidden) }
                     }
                 )
@@ -108,9 +109,18 @@ fun TagsSheetContent(
             NavMenuItemBlock(
                 icon = painterResource(R.drawable.ic_list_bulleted),
                 title = stringResource(R.string.all_wishes),
-                isSelected = selectedTagId.isBlank(),
+                isSelected = wishesFilter is WishesFilter.All,
                 onClick = {
-                    onNavItemSelected(null)
+                    onNavItemSelected(WishesFilter.All)
+                    scope.launch { modalBottomSheetState.snapTo(ModalBottomSheetValue.Hidden) }
+                }
+            )
+            NavMenuItemBlock(
+                icon = painterResource(R.drawable.ic_check),
+                title = stringResource(R.string.completed_wishes),
+                isSelected = wishesFilter is WishesFilter.Completed,
+                onClick = {
+                    onNavItemSelected(WishesFilter.Completed)
                     scope.launch { modalBottomSheetState.snapTo(ModalBottomSheetValue.Hidden) }
                 }
             )

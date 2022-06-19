@@ -9,23 +9,27 @@ import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainViewModel
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
 
 @ExperimentalCoroutinesApi
 @Composable
 fun MainScreenTopBar(
     selectedIds: List<String>,
-    selectedTag: Tag?,
+    wishesFilter: WishesFilter,
     onSettingIconClicked: () -> Unit,
     onDeleteSelectedClicked: () -> Unit,
     isScrollInInitialState: (() -> Boolean),
     viewModel: MainViewModel
 ) {
     if (selectedIds.isEmpty()) {
-        val title = selectedTag?.title ?: stringResource(R.string.app_name)
+        val title = when (wishesFilter) {
+            is WishesFilter.ByTag -> wishesFilter.tag.title
+            is WishesFilter.All -> stringResource(R.string.app_name)
+            is WishesFilter.Completed -> stringResource(R.string.completed_wishes)
+        }
         WishAppTopBar(
             title = title,
             isScrollInInitialState = isScrollInInitialState,

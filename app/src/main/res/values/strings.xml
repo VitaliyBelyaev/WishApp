@@ -41,4 +41,5 @@
     <string name="open_link">Open link</string>
     <string name="wish_done">Done</string>
     <string name="wish_not_done">Not done</string>
+    <string name="completed_wishes">Done wishes</string>
 </resources>

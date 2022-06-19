@@ -45,6 +45,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheet
@@ -53,7 +54,6 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.MainScreenTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.TagsSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.WishItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.TagMenuItem
 import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 
@@ -76,8 +76,7 @@ fun MainScreen(
         return@rememberModalBottomSheetState state != ModalBottomSheetValue.HalfExpanded
     }
     val state: MainScreenState by viewModel.uiState.collectAsState()
-    val tagMenuItems: List<TagMenuItem> by viewModel.tagMenuItems.collectAsState()
-    val selectedTagId: String by viewModel.selectedTagIdFlow.collectAsState()
+    val tags: List<Tag> by viewModel.tags.collectAsState()
     val lazyListState: LazyListState = rememberLazyListState()
     val openDeleteConfirmDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
 
@@ -86,8 +85,8 @@ fun MainScreen(
         sheetContent = {
             TagsSheetContent(
                 modalBottomSheetState = modalBottomSheetState,
-                tagMenuItems = tagMenuItems,
-                selectedTagId = selectedTagId,
+                tags = tags,
+                wishesFilter = state.wishesFilter,
                 onNavItemSelected = { viewModel.onNavItemSelected(it) },
                 onEditTagsClicked = onEditTagClick
             )
@@ -99,7 +98,7 @@ fun MainScreen(
                 MaterialTheme.colors.primary
                 MainScreenTopBar(
                     selectedIds = state.selectedIds,
-                    selectedTag = state.selectedTag,
+                    wishesFilter = state.wishesFilter,
                     onSettingIconClicked = onSettingIconClicked,
                     onDeleteSelectedClicked = { openDeleteConfirmDialog.value = true },
                     isScrollInInitialState = { lazyListState.isScrollInInitialState() },
@@ -108,6 +107,7 @@ fun MainScreen(
             },
             bottomBar = {
                 WishAppBottomBar(
+                    wishesFilter = state.wishesFilter,
                     cutoutShape = fabShape,
                     onShareClick = { onShareClick(state.wishes) },
                     onMenuClick = { scope.launch { modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded) } }
