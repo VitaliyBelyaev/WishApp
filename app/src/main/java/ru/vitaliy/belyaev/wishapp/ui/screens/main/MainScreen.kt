@@ -1,6 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.gestures.LocalOverScrollConfiguration
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -24,6 +25,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -144,25 +146,30 @@ fun MainScreen(
             }
 
             val cardsPadding = 10.dp
-            LazyColumn(
-                state = lazyListState
+
+            CompositionLocalProvider(
+                LocalOverScrollConfiguration provides null
             ) {
-                item {
-                    Spacer(modifier = Modifier.height(cardsPadding))
-                }
-                items(state.wishes) { wishItem ->
-                    val isSelected: Boolean = state.selectedIds.contains(wishItem.id)
-                    WishItemBlock(
-                        wishItem = wishItem,
-                        isSelected = isSelected,
-                        paddingValues = PaddingValues(horizontal = cardsPadding),
-                        onWishClicked = onWishClicked,
-                        onWishLongPress = { wish -> viewModel.onWishLongPress(wish) }
-                    )
-                    Spacer(modifier = Modifier.height(cardsPadding))
-                }
-                item {
-                    Spacer(modifier = Modifier.height(84.dp))
+                LazyColumn(
+                    state = lazyListState
+                ) {
+                    item {
+                        Spacer(modifier = Modifier.height(cardsPadding))
+                    }
+                    items(state.wishes) { wishItem ->
+                        val isSelected: Boolean = state.selectedIds.contains(wishItem.id)
+                        WishItemBlock(
+                            wishItem = wishItem,
+                            isSelected = isSelected,
+                            paddingValues = PaddingValues(horizontal = cardsPadding),
+                            onWishClicked = onWishClicked,
+                            onWishLongPress = { wish -> viewModel.onWishLongPress(wish) }
+                        )
+                        Spacer(modifier = Modifier.height(cardsPadding))
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(84.dp))
+                    }
                 }
             }
 
