@@ -26,7 +26,7 @@
     <string name="feedback_subject_pattern">Feedback. Application %s</string>
     <string name="enter_label_name">Enter label name</string>
     <string name="create_new_pattern">Create \"%s\"</string>
-    <string name="all_wishes">All wishes</string>
+    <string name="all_wishes">Current wishes</string>
     <string name="edit_tags">Edit labels</string>
     <string name="create_tag">Create label</string>
     <string name="add_tag">Add label</string>

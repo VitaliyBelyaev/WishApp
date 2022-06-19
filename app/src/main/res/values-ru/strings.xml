@@ -27,7 +27,7 @@
     <string name="feedback_subject_pattern">Обратная связь. Приложение %s</string>
     <string name="enter_label_name">Введите название ярлыка</string>
     <string name="create_new_pattern">Создать \"%s\"</string>
-    <string name="all_wishes">Все хотелки</string>
+    <string name="all_wishes">Текущие хотелки</string>
     <string name="edit_tags">Редактировать ярлыки</string>
     <string name="create_tag">Создать ярлык</string>
     <string name="add_tag">Добавить ярлык</string>
