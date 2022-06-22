@@ -1,7 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.Optional
@@ -9,7 +8,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.wishes.WishesRepository
@@ -18,6 +16,7 @@ import ru.vitaliy.belyaev.wishapp.domain.GetLinkPreviewInteractor
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
+import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkPreviewState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
@@ -31,7 +30,7 @@ class WishDetailedViewModel @Inject constructor(
     private val wishesRepository: WishesRepository,
     private val getLinkPreviewInteractor: GetLinkPreviewInteractor,
     private val analyticsRepository: AnalyticsRepository
-) : ViewModel() {
+) : BaseViewModel() {
 
     val inputWishId: String = savedStateHandle[ARG_WISH_ID] ?: ""
     lateinit var wishId: String
@@ -44,7 +43,7 @@ class WishDetailedViewModel @Inject constructor(
             param(AnalyticsNames.Param.SCREEN_NAME, "WishDetailed")
         }
 
-        viewModelScope.launch {
+        launchSafe {
             wishId = inputWishId.ifBlank {
                 val wish = createEmptyWish()
                 wishesRepository.insertWish(wish)
@@ -85,19 +84,19 @@ class WishDetailedViewModel @Inject constructor(
     }
 
     fun onWishTitleChanged(newValue: String) {
-        viewModelScope.launch {
+        launchSafe {
             wishesRepository.updateWishTitle(newValue, wishId)
         }
     }
 
     fun onWishLinkChanged(newValue: String) {
-        viewModelScope.launch {
+        launchSafe {
             wishesRepository.updateWishLink(newValue, wishId)
         }
     }
 
     fun onWishCommentChanged(newValue: String) {
-        viewModelScope.launch {
+        launchSafe {
             wishesRepository.updateWishComment(newValue, wishId)
         }
     }
@@ -111,9 +110,7 @@ class WishDetailedViewModel @Inject constructor(
         analyticsRepository.trackEvent(AnalyticsNames.Event.WISH_LINK_CLICK)
     }
 
-    fun onDoneButtonClicked(oldIsCompleted: Boolean) {
-        viewModelScope.launch {
-            wishesRepository.updateWishIsCompleted(!oldIsCompleted, wishId)
-        }
+    fun onCompleteWishButtonClicked() {
+        viewModelScope.cancel()
     }
 }

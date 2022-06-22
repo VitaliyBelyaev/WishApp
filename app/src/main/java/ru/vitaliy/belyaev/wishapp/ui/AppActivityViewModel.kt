@@ -1,13 +1,15 @@
 package ru.vitaliy.belyaev.wishapp.ui
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
@@ -15,8 +17,10 @@ import ru.vitaliy.belyaev.wishapp.data.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.wishes.isEmpty
 import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
+import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.utils.SingleLiveEvent
 import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
+import timber.log.Timber
 
 @HiltViewModel
 class AppActivityViewModel @Inject constructor(
@@ -24,15 +28,18 @@ class AppActivityViewModel @Inject constructor(
     private val dataStoreRepository: DataStoreRepository,
     private val analyticsRepository: AnalyticsRepository,
     private val dispatcherProvider: DispatcherProvider
-) : ViewModel() {
+) : BaseViewModel() {
 
     val wishListToShareLiveData: SingleLiveEvent<List<WishWithTags>> = SingleLiveEvent()
     val requestReviewLiveData: SingleLiveEvent<Unit> = SingleLiveEvent()
     private val _selectedTheme: MutableStateFlow<Theme> = MutableStateFlow(Theme.SYSTEM)
     val selectedTheme: StateFlow<Theme> = _selectedTheme
 
+    private val _showSnackOnMainFlow = Channel<String>(capacity = Channel.BUFFERED)
+    val showSnackOnMainFlow: Flow<String> = _showSnackOnMainFlow.receiveAsFlow()
+
     init {
-        viewModelScope.launch {
+        launchSafe {
             dataStoreRepository
                 .selectedThemeFlow
                 .collect {
@@ -40,7 +47,7 @@ class AppActivityViewModel @Inject constructor(
                 }
         }
 
-        viewModelScope.launch {
+        launchSafe {
             combine(
                 dataStoreRepository.positiveActionsCountFlow,
                 dataStoreRepository.reviewRequestShownCountFlow
@@ -60,11 +67,11 @@ class AppActivityViewModel @Inject constructor(
     }
 
     fun onWishScreenExit(wishId: String, isNewWish: Boolean) {
-        viewModelScope.launch(dispatcherProvider.io()) {
+        launchSafe(dispatcherProvider.io()) {
             val wish: WishWithTags = wishesRepository.getWishById(wishId)
             if (wish.isEmpty()) {
                 wishesRepository.deleteWishesByIds(listOf(wishId))
-                return@launch
+                return@launchSafe
             }
 
             if (isNewWish) {
@@ -74,8 +81,14 @@ class AppActivityViewModel @Inject constructor(
     }
 
     fun onDeleteWishClicked(wishId: String) {
-        viewModelScope.launch {
+        launchSafe {
             wishesRepository.deleteWishesByIds(listOf(wishId))
+        }
+    }
+
+    fun onCompleteWishButtonClicked(wishId: String, oldIsCompleted: Boolean) {
+        launchSafe {
+            wishesRepository.updateWishIsCompleted(!oldIsCompleted, wishId)
         }
     }
 
@@ -84,5 +97,20 @@ class AppActivityViewModel @Inject constructor(
             param(AnalyticsNames.Param.QUANTITY, wishes.size.toString())
         }
         wishListToShareLiveData.postValue(wishes)
+    }
+
+    fun showSnackMessageOnMain(message: String) {
+        launchSafe(Dispatchers.Main) {
+            val result = _showSnackOnMainFlow.trySend(message)
+            if (!result.isSuccess) {
+                val throwable =
+                    result.exceptionOrNull() ?: IllegalStateException("Unknown send message on main exception")
+                FirebaseCrashlytics.getInstance().recordException(throwable)
+                Timber.e(
+                    throwable,
+                    "Failed to send message on main $message"
+                )
+            }
+        }
     }
 }

@@ -1,15 +1,12 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishtags
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
@@ -17,6 +14,7 @@ import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.tags.TagsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.wishtagrelation.WishTagRelationRepository
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
+import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.toTagItem
 
@@ -27,7 +25,7 @@ class WishTagsViewModel @Inject constructor(
     private val wishTagRelationRepository: WishTagRelationRepository,
     private val dataStoreRepository: DataStoreRepository,
     private val analyticsRepository: AnalyticsRepository
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val wishId: String = savedStateHandle[ARG_WISH_ID] ?: ""
 
@@ -42,7 +40,7 @@ class WishTagsViewModel @Inject constructor(
             param(AnalyticsNames.Param.SCREEN_NAME, "WishTags")
         }
 
-        viewModelScope.launch {
+        launchSafe {
             tagsRepository
                 .observeAllTags()
                 .combine(tagsRepository.observeTagsByWishId(wishId)) { allTags, wishTags ->
@@ -57,7 +55,7 @@ class WishTagsViewModel @Inject constructor(
 
     fun onAddTagClicked(tagName: String) {
         analyticsRepository.trackEvent(AnalyticsNames.Event.ADD_NEW_TAG)
-        viewModelScope.launch {
+        launchSafe {
             val tagId = UUID.randomUUID().toString()
             recentlyAddedTagIds.add(0, tagId)
             tagsRepository.insertTag(Tag(tagId, tagName.trim()))
@@ -72,7 +70,7 @@ class WishTagsViewModel @Inject constructor(
     }
 
     fun onTagCheckboxClicked(tagItem: TagItem) {
-        viewModelScope.launch {
+        launchSafe {
             val newIsSelected = !tagItem.isSelected
             if (newIsSelected) {
                 wishTagRelationRepository.insertWishTagRelation(wishId, tagItem.tag.tagId)

@@ -331,7 +331,17 @@ fun WishDetailedScreen(
             ) {
                 Box {
                     TextButton(
-                        onClick = { viewModel.onDoneButtonClicked(isCompleted) },
+                        onClick = {
+                            val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TextButton
+                            appViewModel.onCompleteWishButtonClicked(
+                                wishId = wishId,
+                                oldIsCompleted = isCompleted
+                            )
+                            if (!isCompleted) {
+                                appViewModel.showSnackMessageOnMain(context.getString(R.string.wish_done_snack_message))
+                                onBackPressed()
+                            }
+                        },
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .padding(end = 16.dp)
@@ -359,8 +369,8 @@ fun WishDetailedScreen(
                     onClick = {
                         openDialog.value = Optional.empty()
                         viewModel.onDeleteWishClicked()
-                        onBackPressed()
                         appViewModel.onDeleteWishClicked(viewModel.wishId)
+                        onBackPressed()
                     }
                 ) {
                     Text(

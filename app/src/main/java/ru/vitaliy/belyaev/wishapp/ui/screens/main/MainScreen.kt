@@ -33,7 +33,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -47,6 +49,8 @@ import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
+import ru.vitaliy.belyaev.wishapp.ui.AppActivity
+import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheet
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
@@ -57,6 +61,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 
+@ExperimentalComposeUiApi
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
@@ -67,7 +72,8 @@ fun MainScreen(
     onSettingIconClicked: () -> Unit,
     onShareClick: (List<WishWithTags>) -> Unit,
     onEditTagClick: () -> Unit,
-    viewModel: MainViewModel = hiltViewModel()
+    viewModel: MainViewModel = hiltViewModel(),
+    appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val fabShape = RoundedCornerShape(50)
@@ -79,6 +85,14 @@ fun MainScreen(
     val tags: List<Tag> by viewModel.tags.collectAsState()
     val lazyListState: LazyListState = rememberLazyListState()
     val openDeleteConfirmDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = Unit) {
+        appViewModel.showSnackOnMainFlow.collect {
+            scope.launch {
+                snackbarHostState.showSnackbar(it)
+            }
+        }
+    }
 
     WishAppBottomSheet(
         sheetState = modalBottomSheetState,
@@ -224,6 +238,7 @@ fun MainScreen(
     }
 }
 
+@ExperimentalComposeUiApi
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
@@ -235,6 +250,6 @@ fun MainScreenPreview() {
         {},
         {},
         {},
-        {}
+        {},
     )
 }

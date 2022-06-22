@@ -1,15 +1,15 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp
 
-import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 
 @HiltViewModel
 class AboutAppViewModel @Inject constructor(
     private val analyticsRepository: AnalyticsRepository
-) : ViewModel() {
+) : BaseViewModel() {
 
     init {
         analyticsRepository.trackEvent(AnalyticsNames.Event.SCREEN_VIEW) {

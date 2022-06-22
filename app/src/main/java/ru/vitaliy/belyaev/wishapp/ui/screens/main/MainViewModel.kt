@@ -1,7 +1,5 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.UUID
 import javax.inject.Inject
@@ -10,7 +8,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
@@ -19,6 +16,7 @@ import ru.vitaliy.belyaev.wishapp.data.repository.tags.TagsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.domain.WishesInteractor
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
+import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
 
@@ -29,7 +27,7 @@ class MainViewModel @Inject constructor(
     private val tagsRepository: TagsRepository,
     private val analyticsRepository: AnalyticsRepository,
     private val wishesInteractor: WishesInteractor
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val _uiState: MutableStateFlow<MainScreenState> = MutableStateFlow(MainScreenState())
     val uiState: StateFlow<MainScreenState> = _uiState.asStateFlow()
@@ -47,20 +45,20 @@ class MainViewModel @Inject constructor(
             param(AnalyticsNames.Param.SCREEN_NAME, "MainScreen")
         }
 
-        observeWishesJob = viewModelScope.launch {
+        observeWishesJob = launchSafe {
             wishesInteractor
                 .observeNotCompletedWishes()
                 .collect { _uiState.value = MainScreenState(wishes = it) }
         }
 
-        viewModelScope.launch {
+        launchSafe {
             tagsRepository
                 .observeAllTags()
                 .collect { _tags.value = it }
         }
 
 //        if (BuildConfig.DEBUG) {
-//            viewModelScope.launch {
+//            launchSafe {
 //                val haveTags = tagsRepository.getAllTags().isNotEmpty()
 //                if (!haveTags) {
 //                    val testTags = createTestTags()
@@ -76,7 +74,7 @@ class MainViewModel @Inject constructor(
         if (testWishes.isEmpty()) {
             return
         }
-        viewModelScope.launch {
+        launchSafe {
             val currentMillis = System.currentTimeMillis()
             val wish = testWishes[testWishIndex % testWishes.size].copy(
                 id = UUID.randomUUID().toString(),
@@ -94,7 +92,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun onDeleteSelectedClicked() {
-        viewModelScope.launch {
+        launchSafe {
             val selectedIds = uiState.value.selectedIds
             analyticsRepository.trackEvent(AnalyticsNames.Event.DELETE_FROM_EDIT_MODE_CLICK) {
                 param(AnalyticsNames.Param.QUANTITY, selectedIds.size.toString())
@@ -144,7 +142,7 @@ class MainViewModel @Inject constructor(
             }
         }
 
-        observeWishesJob = viewModelScope.launch {
+        observeWishesJob = launchSafe {
             filteredWishesFlow
                 .collect { _uiState.value = MainScreenState(wishes = it, wishesFilter = wishesFilter) }
         }

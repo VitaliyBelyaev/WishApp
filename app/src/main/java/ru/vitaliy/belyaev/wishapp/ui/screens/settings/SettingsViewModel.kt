@@ -1,22 +1,20 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.settings
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.entity.Theme
+import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val dataStoreRepository: DataStoreRepository,
     private val analyticsRepository: AnalyticsRepository
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val _selectedTheme: MutableStateFlow<Theme> = MutableStateFlow(Theme.SYSTEM)
     val selectedTheme: StateFlow<Theme> = _selectedTheme
@@ -26,7 +24,7 @@ class SettingsViewModel @Inject constructor(
             param(AnalyticsNames.Param.SCREEN_NAME, "SettingsScreen")
         }
 
-        viewModelScope.launch {
+        launchSafe {
             dataStoreRepository
                 .selectedThemeFlow
                 .collect {
@@ -39,7 +37,7 @@ class SettingsViewModel @Inject constructor(
         analyticsRepository.trackEvent(AnalyticsNames.Event.SELECT_APP_THEME) {
             param(AnalyticsNames.Param.THEME, theme.name)
         }
-        viewModelScope.launch {
+        launchSafe {
             dataStoreRepository.updateSelectedTheme(theme)
         }
     }
