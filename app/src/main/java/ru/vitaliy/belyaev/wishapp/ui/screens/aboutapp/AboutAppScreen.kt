@@ -84,7 +84,11 @@ fun AboutAppScreen(
         }
         val uriHandler = LocalUriHandler.current
 
-        Column(modifier = Modifier.verticalScroll(scrollState)) {
+        Column(
+            modifier = Modifier
+                .verticalScroll(scrollState)
+                .padding(it)
+        ) {
             Text(
                 text = stringResource(
                     R.string.app_version_pattern,

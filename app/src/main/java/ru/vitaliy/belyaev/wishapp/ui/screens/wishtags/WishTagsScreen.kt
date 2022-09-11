@@ -2,6 +2,7 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wishtags
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
@@ -132,7 +133,7 @@ fun WishTagsScreen(
     ) {
         Divider()
 
-        LazyColumn {
+        LazyColumn(modifier = Modifier.padding(it)) {
             val showAddTagBlock = query.isNotBlank() && tagItems.none { it.tag.title == query }
             if (showAddTagBlock) {
                 item {

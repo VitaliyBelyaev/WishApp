@@ -100,7 +100,11 @@ fun SettingsScreen(
                 )
             }
 
-            Column(modifier = Modifier.verticalScroll(scrollState)) {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .padding(it)
+            ) {
                 Text(
                     text = stringResource(R.string.theme_title),
                     fontSize = 14.sp,

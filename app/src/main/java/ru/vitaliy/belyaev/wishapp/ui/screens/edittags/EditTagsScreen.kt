@@ -1,6 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.edittags
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -82,7 +83,8 @@ fun EditTagsScreen(
     ) {
 
         LazyColumn(
-            state = lazyListState
+            state = lazyListState,
+            modifier = Modifier.padding(it)
         ) {
             itemsIndexed(editTagItems) { index, editTagItem ->
                 EditTagBlock(

@@ -164,6 +164,7 @@ fun WishDetailedScreen(
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(it)
         ) {
             val (contentRef, bottomPanelRef) = createRefs()
 
