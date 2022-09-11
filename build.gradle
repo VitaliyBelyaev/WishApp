@@ -7,7 +7,6 @@ buildscript {
     ext {
         composeVersion = '1.2.0'
         kotlinVersion = '1.7.0'
-        kotlinCoroutinesVersion = '1.6.1'
         sqlDelightVersion = '1.5.2'
         hiltVersion = '2.42'
         accompanistVesrion = '0.23.1'
