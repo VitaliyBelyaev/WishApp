@@ -44,6 +44,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
@@ -91,6 +92,11 @@ fun MainScreen(
                 snackbarHostState.showSnackbar(it)
             }
         }
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.uiState.first { it.wishes.isNotEmpty() }
+        appViewModel.onWishesLoaded()
     }
 
     WishAppBottomSheet(

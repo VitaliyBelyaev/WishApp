@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
@@ -42,10 +43,9 @@ class AppActivity : AppCompatActivity() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.Theme_WishApp)
-        super.onCreate(savedInstanceState)
-
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        setupSplashScreen()
+        super.onCreate(savedInstanceState)
 
         viewModel.wishListToShareLiveData.observe(this) {
             val wishListAsFormattedText = generateFormattedWishList(it)
@@ -112,5 +112,11 @@ class AppActivity : AppCompatActivity() {
             }
         }
         return builder.toString()
+    }
+
+    private fun setupSplashScreen() {
+        installSplashScreen().apply {
+            setKeepOnScreenCondition { !viewModel.shouldHideSplash() }
+        }
     }
 }

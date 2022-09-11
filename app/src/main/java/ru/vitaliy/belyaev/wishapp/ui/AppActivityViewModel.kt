@@ -38,6 +38,8 @@ class AppActivityViewModel @Inject constructor(
     private val _showSnackOnMainFlow = Channel<String>(capacity = Channel.BUFFERED)
     val showSnackOnMainFlow: Flow<String> = _showSnackOnMainFlow.receiveAsFlow()
 
+    private var isWishesLoaded = false
+
     init {
         launchSafe {
             dataStoreRepository
@@ -112,5 +114,13 @@ class AppActivityViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun onWishesLoaded() {
+        isWishesLoaded = true
+    }
+
+    fun shouldHideSplash(): Boolean {
+        return isWishesLoaded
     }
 }
