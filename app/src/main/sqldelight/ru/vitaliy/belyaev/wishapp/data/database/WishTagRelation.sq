@@ -34,3 +34,11 @@ delete:
 DELETE FROM WishTagRelation
 WHERE wishId = ?
 AND tagId = ?;
+
+deleteByTagIds:
+DELETE FROM WishTagRelation
+WHERE tagId IN ?;
+
+deleteByWishIds:
+DELETE FROM WishTagRelation
+WHERE wishId IN ?;

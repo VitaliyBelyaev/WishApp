@@ -157,7 +157,10 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun deleteWishesByIds(ids: List<String>) {
         withContext(dispatcherProvider.io()) {
-            wishQueries.deleteByIds(ids)
+            wishQueries.transaction {
+                wishQueries.deleteByIds(ids)
+                wishTagRelationQueries.deleteByWishIds(ids)
+            }
         }
     }
 
@@ -209,7 +212,10 @@ class DatabaseRepository @Inject constructor(
     }
 
     override fun deleteTagsByIds(ids: List<String>) {
-        tagQueries.deleteByIds(ids)
+        tagQueries.transaction {
+            tagQueries.deleteByIds(ids)
+            wishTagRelationQueries.deleteByTagIds(ids)
+        }
     }
 
     override fun clearAllTags() {
