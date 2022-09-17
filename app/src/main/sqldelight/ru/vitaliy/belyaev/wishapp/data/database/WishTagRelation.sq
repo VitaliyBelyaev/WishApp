@@ -17,18 +17,17 @@ SELECT *
 FROM WishTagRelation;
 
 getAllWishesByTag:
-SELECT *
-FROM WishTagRelation relation
-INNER JOIN Wish wish ON wish.wishId = relation.wishId
-INNER JOIN Tag tag ON tag.tagId = relation.tagId
-WHERE relation.tagId = ?
+SELECT wish.wishId, wish.title, wish.link, wish.comment, wish.isCompleted, wish.createdTimestamp, wish.updatedTimestamp
+FROM Wish wish
+JOIN WishTagRelation relation
+ON wish.wishId = relation.wishId AND relation.tagId = ?
 ORDER BY wish.createdTimestamp DESC;
 
 getWishTags:
-SELECT *
-FROM WishTagRelation relation
-INNER JOIN Tag tag ON tag.tagId = relation.tagId
-WHERE relation.wishId = ?
+SELECT tag.tagId, tag.title
+FROM Tag tag
+JOIN WishTagRelation relation
+ON tag.tagId = relation.tagId AND relation.wishId = ?
 ORDER BY tag.title ASC;
 
 delete:

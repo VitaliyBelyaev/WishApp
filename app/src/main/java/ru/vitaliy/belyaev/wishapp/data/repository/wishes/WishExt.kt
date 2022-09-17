@@ -1,7 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.data.repository.wishes
 
 import java.util.UUID
-import ru.vitaliy.belyaev.wishapp.data.database.GetAllWishesByTag
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.data.database.Wish
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
@@ -25,10 +24,6 @@ fun WishWithTags.toWishDto(): Wish {
 }
 
 fun Wish.toWishWithTags(tags: List<Tag>): WishWithTags {
-    return WishWithTags(wishId, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, tags)
-}
-
-fun GetAllWishesByTag.toWishWithTags(tags: List<Tag>): WishWithTags {
     return WishWithTags(wishId, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, tags)
 }
 

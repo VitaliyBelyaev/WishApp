@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import ru.vitaliy.belyaev.wishapp.data.database.GetAllWishesByTag
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.data.database.TagQueries
 import ru.vitaliy.belyaev.wishapp.data.database.Wish
@@ -84,7 +83,6 @@ class DatabaseRepository @Inject constructor(
             .getWishTags(id)
             .asFlow()
             .mapToList(dispatcherProvider.io())
-            .map { tagDtos -> tagDtos.map { Tag(it.tagId, it.title) } }
         return wishDtoFlow.combine(tagsFlow) { wishDto, tags ->
             wishDto.toWishWithTags(tags)
         }
@@ -98,26 +96,12 @@ class DatabaseRepository @Inject constructor(
             val tags: List<Tag> = wishTagRelationQueries
                 .getWishTags(id)
                 .executeAsList()
-                .map { Tag(it.tagId, it.title) }
             wishDto.toWishWithTags(tags)
         }
     }
 
     override fun observeAllWishes(): Flow<List<WishWithTags>> {
-        // Вот это работает в тестах, а когда делаю combine, то This job has not completed yet
-//        return wishQueries
-//            .getAll()
-//            .asFlow()
-//            .mapToList(dispatcherProvider.io())
-//            .map { wishesDto ->
-//                val wishesWithTags = mutableListOf<WishWithTags>()
-//                for (wishDto in wishesDto) {
-//                    wishesWithTags.add(wishDto.toWishWithTags(emptyList()))
-//                }
-//                wishesWithTags.toList()
-//            }
-
-        val wishesDtoFlow: Flow<List<Wish>> = wishQueries
+        val wishesFlow: Flow<List<Wish>> = wishQueries
             .getAll()
             .asFlow()
             .mapToList(dispatcherProvider.io())
@@ -128,20 +112,13 @@ class DatabaseRepository @Inject constructor(
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
-        // We need this for reactive changes of tags
-        val tagFlow: Flow<List<Tag>> = tagQueries
-            .getAll()
-            .asFlow()
-            .mapToList(dispatcherProvider.io())
-
-        return combine(wishesDtoFlow, wishTagRelationsFlow, tagFlow) { wishesDto, _, _ ->
+        return combine(wishesFlow, wishTagRelationsFlow) { wishes, _ ->
             val wishesWithTags = mutableListOf<WishWithTags>()
-            for (wishDto in wishesDto) {
+            for (wish in wishes) {
                 val tags: List<Tag> = wishTagRelationQueries
-                    .getWishTags(wishDto.wishId)
+                    .getWishTags(wish.wishId)
                     .executeAsList()
-                    .map { Tag(it.tagId, it.title) }
-                wishesWithTags.add(wishDto.toWishWithTags(tags))
+                wishesWithTags.add(wish.toWishWithTags(tags))
             }
             wishesWithTags.toList()
         }
@@ -156,34 +133,26 @@ class DatabaseRepository @Inject constructor(
                     val tags: List<Tag> = wishTagRelationQueries
                         .getWishTags(wishDto.wishId)
                         .executeAsList()
-                        .map { Tag(it.tagId, it.title) }
                     wishDto.toWishWithTags(tags)
                 }
         }
     }
 
     override fun observeWishesByTag(tagId: String): Flow<List<WishWithTags>> {
-        val wishesDtoFlow: Flow<List<GetAllWishesByTag>> = wishTagRelationQueries
+        return wishTagRelationQueries
             .getAllWishesByTag(tagId)
             .asFlow()
             .mapToList(dispatcherProvider.io())
-
-        val wishTagRelationsFlow: Flow<List<WishTagRelation>> = wishTagRelationQueries
-            .getAllRelations()
-            .asFlow()
-            .mapToList(dispatcherProvider.io())
-
-        return wishesDtoFlow.combine(wishTagRelationsFlow) { wishesDto, _ ->
-            val wishesWithTags = mutableListOf<WishWithTags>()
-            for (wishDto in wishesDto) {
-                val tags: List<Tag> = wishTagRelationQueries
-                    .getWishTags(wishDto.wishId_)
-                    .executeAsList()
-                    .map { Tag(it.tagId, it.title) }
-                wishesWithTags.add(wishDto.toWishWithTags(tags))
+            .map { wishes ->
+                val wishesWithTags = mutableListOf<WishWithTags>()
+                for (wish in wishes) {
+                    val tags: List<Tag> = wishTagRelationQueries
+                        .getWishTags(wish.wishId)
+                        .executeAsList()
+                    wishesWithTags.add(wish.toWishWithTags(tags))
+                }
+                wishesWithTags
             }
-            wishesWithTags.toList()
-        }
     }
 
     override suspend fun deleteWishesByIds(ids: List<String>) {
@@ -237,9 +206,6 @@ class DatabaseRepository @Inject constructor(
             .getWishTags(wishId)
             .asFlow()
             .mapToList(dispatcherProvider.io())
-            .map { list ->
-                list.map { Tag(it.tagId_, it.title) }
-            }
     }
 
     override fun deleteTagsByIds(ids: List<String>) {
