@@ -6,6 +6,10 @@ object MainRoute {
     const val VALUE = "main"
 }
 
+object TestRoute {
+    const val VALUE = "test"
+}
+
 object WishDetailedRoute {
     const val VALUE = "wish_detailed"
 }

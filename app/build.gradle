@@ -139,6 +139,8 @@ dependencies {
     // Shimmer animation for loading
     implementation "com.valentinilk.shimmer:compose-shimmer:1.0.1"
 
+    implementation "org.burnoutcrew.composereorderable:reorderable:0.9.2"
+
     // JUnit
     testImplementation "junit:junit:4.13.2"
     testImplementation "org.hamcrest:hamcrest-junit:2.0.0.0"

@@ -47,7 +47,7 @@ class WishDetailedViewModel @Inject constructor(
             wishId = inputWishId.ifBlank {
                 val wish = createEmptyWish()
                 wishesRepository.insertWish(wish)
-                wish.id
+                wish.wishId
             }
 
             wishesRepository

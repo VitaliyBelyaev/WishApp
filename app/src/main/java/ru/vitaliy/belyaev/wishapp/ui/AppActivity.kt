@@ -44,7 +44,7 @@ class AppActivity : AppCompatActivity() {
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        setupSplashScreen()
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         viewModel.wishListToShareLiveData.observe(this) {
@@ -112,11 +112,5 @@ class AppActivity : AppCompatActivity() {
             }
         }
         return builder.toString()
-    }
-
-    private fun setupSplashScreen() {
-        installSplashScreen().apply {
-            setKeepOnScreenCondition { !viewModel.shouldHideSplash() }
-        }
     }
 }

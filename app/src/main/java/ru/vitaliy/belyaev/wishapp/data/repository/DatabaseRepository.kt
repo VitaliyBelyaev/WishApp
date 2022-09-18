@@ -34,10 +34,22 @@ class DatabaseRepository @Inject constructor(
     private val tagQueries: TagQueries = database.tagQueries
 
     // region WishesRepository
-    override suspend fun insertWish(wishWithTags: WishWithTags) {
+    override suspend fun insertWish(wish: Wish) {
         withContext(dispatcherProvider.io()) {
-            with(wishWithTags) {
-                wishQueries.insert(id, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp)
+            wishQueries.transaction {
+                val position = wishQueries.getWishesCount().executeAsOne()
+                with(wish) {
+                    wishQueries.insert(
+                        wishId,
+                        title,
+                        link,
+                        comment,
+                        isCompleted,
+                        createdTimestamp,
+                        updatedTimestamp,
+                        position
+                    )
+                }
             }
         }
     }
@@ -71,6 +83,41 @@ class DatabaseRepository @Inject constructor(
                 updatedTimestamp = System.currentTimeMillis(),
                 wishId = wishId
             )
+        }
+    }
+
+    override suspend fun updatePosition(newValue: Long, wishId: String) {
+        withContext(dispatcherProvider.io()) {
+            wishQueries.updatePosition(
+                position = newValue,
+                wishId = wishId
+            )
+        }
+    }
+
+    override suspend fun updatePositions(
+        fromPosition: Long,
+        fromWishId: String,
+        toPosition: Long,
+        toWishId: String
+    ) {
+        withContext(dispatcherProvider.io()) {
+            wishQueries.transaction {
+                wishQueries.updatePosition(
+                    position = toPosition,
+                    wishId = fromWishId
+                )
+                wishQueries.updatePosition(
+                    position = fromPosition,
+                    wishId = toWishId
+                )
+            }
+        }
+    }
+
+    override suspend fun getWishesCount(): Long {
+        return withContext(dispatcherProvider.io()) {
+            wishQueries.getWishesCount().executeAsOne()
         }
     }
 
@@ -158,7 +205,11 @@ class DatabaseRepository @Inject constructor(
     override suspend fun deleteWishesByIds(ids: List<String>) {
         withContext(dispatcherProvider.io()) {
             wishQueries.transaction {
-                wishQueries.deleteByIds(ids)
+                for (id in ids) {
+                    val wishToDelete = wishQueries.getById(id).executeAsOne()
+                    wishQueries.updatePositionsOnDelete(wishToDelete.position)
+                    wishQueries.deleteById(id)
+                }
                 wishTagRelationQueries.deleteByWishIds(ids)
             }
         }

@@ -5,5 +5,6 @@ import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 data class MainScreenState(
     val wishes: List<WishWithTags> = emptyList(),
     val selectedIds: List<String> = emptyList(),
-    val wishesFilter: WishesFilter = WishesFilter.All
+    val wishesFilter: WishesFilter = WishesFilter.All,
+    val isReorderEnabled: Boolean = false
 )

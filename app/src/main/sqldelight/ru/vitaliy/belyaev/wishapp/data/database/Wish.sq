@@ -6,12 +6,13 @@ CREATE TABLE Wish (
   comment TEXT NOT NULL,
   isCompleted INTEGER AS Boolean DEFAULT 0 NOT NULL,
   createdTimestamp INTEGER NOT NULL,
-  updatedTimestamp INTEGER NOT NULL
+  updatedTimestamp INTEGER NOT NULL,
+  position INTEGER NOT NULL
 );
 
 insert:
-INSERT INTO Wish(wishId, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp)
-VALUES (?,?,?,?,?,?,?);
+INSERT INTO Wish(wishId, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, position)
+VALUES (?,?,?,?,?,?,?, ?);
 
 updateTitle:
 UPDATE Wish
@@ -37,20 +38,37 @@ SET isCompleted = ?,
     updatedTimestamp = ?
     WHERE  wishId = ?;
 
+updatePosition:
+UPDATE Wish
+SET position = ?
+WHERE  wishId = ?;
+
 getById:
 SELECT *
 FROM Wish
-WHERE wishId = ?
-ORDER BY createdTimestamp DESC;
+WHERE wishId = ?;
 
 getAll:
 SELECT *
 FROM Wish
-ORDER BY createdTimestamp DESC;
+ORDER BY position DESC;
+
+getWishesCount:
+SELECT count(*)
+FROM Wish;
 
 deleteByIds:
 DELETE FROM Wish
 WHERE wishId IN ?;
+
+deleteById:
+DELETE FROM Wish
+WHERE wishId = ?;
+
+updatePositionsOnDelete:
+UPDATE Wish
+SET position = position - 1
+WHERE position > ?;
 
 clear:
 DELETE FROM Wish;

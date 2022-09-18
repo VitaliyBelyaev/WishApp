@@ -17,7 +17,7 @@ SELECT *
 FROM WishTagRelation;
 
 getAllWishesByTag:
-SELECT wish.wishId, wish.title, wish.link, wish.comment, wish.isCompleted, wish.createdTimestamp, wish.updatedTimestamp
+SELECT wish.wishId, wish.title, wish.link, wish.comment, wish.isCompleted, wish.createdTimestamp, wish.updatedTimestamp, wish.position
 FROM Wish wish
 JOIN WishTagRelation relation
 ON wish.wishId = relation.wishId AND relation.tagId = ?
