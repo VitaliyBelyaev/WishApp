@@ -60,7 +60,6 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.WishItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
-import timber.log.Timber
 
 @ExperimentalComposeUiApi
 @ExperimentalFoundationApi
@@ -84,17 +83,22 @@ fun MainScreen(
     }
     val state: MainScreenState by viewModel.uiState.collectAsState()
     val tags: List<Tag> by viewModel.tags.collectAsState()
-    val reorderableListState = rememberReorderableLazyListState(onMove = { from, to ->
-        Timber.tag("RTRT").d("from:$from, to:$to")
-        viewModel.onMove(from, to)
-    })
+    val reorderableListState = rememberReorderableLazyListState(
+        onMove = { from, to -> viewModel.onMove(from, to) }
+    )
     val openDeleteConfirmDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
 
     LaunchedEffect(key1 = Unit) {
         appViewModel.showSnackOnMainFlow.collect {
-            scope.launch {
-                snackbarHostState.showSnackbar(it)
-            }
+            snackbarHostState.showSnackbar(it)
+        }
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.showSnackFlow.collect {
+            snackbarHostState.showSnackbar(context.getString(it))
         }
     }
 
@@ -128,7 +132,9 @@ fun MainScreen(
                     wishesFilter = state.wishesFilter,
                     cutoutShape = fabShape,
                     onShareClick = { onShareClick(state.wishes) },
-                    onMenuClick = { scope.launch { modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded) } }
+                    onMenuClick = { scope.launch { modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded) } },
+                    isReorderEnabled = state.isReorderEnabled,
+                    onReorderClick = { viewModel.onReorderIconClicked() }
                 )
             },
             floatingActionButton = {

@@ -38,7 +38,6 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
-import timber.log.Timber
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -54,8 +53,6 @@ fun TestScreen(
     val onLongClicked: (TestItem) -> Unit = {}
 
     val reorderableLazyListState = rememberReorderableLazyListState(onMove = { from, to ->
-        Timber.tag("RTRT").d("from:$from, to:$to")
-
         viewModel.onMove(from, to)
     })
 

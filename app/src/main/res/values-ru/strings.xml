@@ -44,4 +44,5 @@
     <string name="wish_not_done">Не выполнена</string>
     <string name="completed_wishes">Выполненные хотелки</string>
     <string name="wish_done_snack_message">Хотелка перемещена в выполненные</string>
+    <string name="delete_wishes_error_message">При удалении хотелок произошла ошибка</string>
 </resources>

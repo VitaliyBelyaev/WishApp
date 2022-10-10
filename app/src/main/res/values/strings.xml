@@ -43,4 +43,5 @@
     <string name="wish_not_done">Not done</string>
     <string name="completed_wishes">Done wishes</string>
     <string name="wish_done_snack_message">Wish moved to completed</string>
+    <string name="delete_wishes_error_message">An error occurred while deleting wishes</string>
 </resources>

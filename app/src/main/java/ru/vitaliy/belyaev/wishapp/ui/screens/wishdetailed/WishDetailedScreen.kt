@@ -196,7 +196,7 @@ fun WishDetailedScreen(
                     placeholder = {
                         Text(
                             text = stringResource(R.string.enter_title),
-                            style = MaterialTheme.typography.h6,
+                            style = MaterialTheme.typography.h5,
                         )
                     },
                     colors = TextFieldDefaults.textFieldColors(

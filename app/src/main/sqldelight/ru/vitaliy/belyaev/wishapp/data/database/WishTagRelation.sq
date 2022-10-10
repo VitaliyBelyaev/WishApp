@@ -21,7 +21,7 @@ SELECT wish.wishId, wish.title, wish.link, wish.comment, wish.isCompleted, wish.
 FROM Wish wish
 JOIN WishTagRelation relation
 ON wish.wishId = relation.wishId AND relation.tagId = ?
-ORDER BY wish.createdTimestamp DESC;
+ORDER BY wish.position DESC;
 
 getWishTags:
 SELECT tag.tagId, tag.title

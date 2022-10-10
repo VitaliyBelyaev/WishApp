@@ -34,7 +34,7 @@ fun Navigation(onShareClick: (List<WishWithTags>) -> Unit) {
                 openWishDetailed = { navController.navigate(WishDetailedRouteWithArgs.build(it.id)) },
                 onAddWishClicked = { navController.navigate(WishDetailedRoute.VALUE) },
                 onSettingIconClicked = { navController.navigate(SettingsRoute.VALUE) },
-                onShareClick = { navController.navigate(TestRoute.VALUE) },
+                onShareClick = onShareClick,
                 onEditTagClick = { navController.navigate(EditTagRoute.VALUE) }
             )
         }

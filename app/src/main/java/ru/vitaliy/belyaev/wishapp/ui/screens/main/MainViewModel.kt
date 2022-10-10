@@ -4,12 +4,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import org.burnoutcrew.reorderable.ItemPosition
 import ru.vitaliy.belyaev.wishapp.BuildConfig
+import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.data.database.Wish
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
@@ -38,22 +42,37 @@ class MainViewModel @Inject constructor(
     private val _tags: MutableStateFlow<List<Tag>> = MutableStateFlow(emptyList())
     val tags: StateFlow<List<Tag>> = _tags.asStateFlow()
 
+    private val _showSnackFlow = MutableSharedFlow<Int>()
+    val showSnackFlow: SharedFlow<Int> = _showSnackFlow.asSharedFlow()
+
+    private val wishesFilterFlow = MutableStateFlow<WishesFilter>(WishesFilter.All)
+
     private val testWishes = createTestWishes()
     private var testWishIndex = 0
-
-    private var observeWishesJob: Job? = null
 
     init {
         analyticsRepository.trackEvent(AnalyticsNames.Event.SCREEN_VIEW) {
             param(AnalyticsNames.Param.SCREEN_NAME, "MainScreen")
         }
 
-        observeWishesJob = launchSafe {
-            wishesInteractor
-                .observeNotCompletedWishes()
+        launchSafe {
+            wishesFilterFlow
+                .flatMapLatest {
+                    when (it) {
+                        is WishesFilter.ByTag -> {
+                            wishesInteractor.observeNotCompletedWishesByTag(it.tag.tagId)
+                        }
+                        is WishesFilter.All -> {
+                            wishesInteractor.observeNotCompletedWishes()
+                        }
+                        is WishesFilter.Completed -> {
+                            wishesInteractor.observeCompletedWishes()
+                        }
+                    }
+                }
                 .collect {
                     Timber.tag("RTRT").d("wishes:${it.joinToString(separator = "\n\n")}")
-                    _uiState.value = _uiState.value.copy(wishes = it)
+                    _uiState.value = _uiState.value.copy(wishes = it, wishesFilter = wishesFilterFlow.value)
                 }
         }
 
@@ -77,8 +96,16 @@ class MainViewModel @Inject constructor(
     }
 
     fun onReorderIconClicked() {
-        val oldIsReorderEnabled = _uiState.value.isReorderEnabled
-        _uiState.value = _uiState.value.copy(isReorderEnabled = !oldIsReorderEnabled)
+        val newIsReorderEnabled = !_uiState.value.isReorderEnabled
+        val selectedIds = if (newIsReorderEnabled) {
+            emptyList()
+        } else {
+            uiState.value.selectedIds
+        }
+        _uiState.value = _uiState.value.copy(
+            isReorderEnabled = newIsReorderEnabled,
+            selectedIds = selectedIds
+        )
     }
 
     fun onAddTestWishClicked() {
@@ -122,7 +149,9 @@ class MainViewModel @Inject constructor(
             analyticsRepository.trackEvent(AnalyticsNames.Event.DELETE_FROM_EDIT_MODE_CLICK) {
                 param(AnalyticsNames.Param.QUANTITY, selectedIds.size.toString())
             }
-            wishesRepository.deleteWishesByIds(selectedIds)
+            runCatching { wishesRepository.deleteWishesByIds(selectedIds) }
+                .onSuccess { _uiState.value = uiState.value.copy(selectedIds = emptyList()) }
+                .onFailure { _showSnackFlow.emit(R.string.delete_wishes_error_message) }
         }
     }
 
@@ -136,41 +165,30 @@ class MainViewModel @Inject constructor(
         analyticsRepository.trackEvent(AnalyticsNames.Event.WISH_LONG_PRESS)
         val oldState = _uiState.value
         val wishId = wish.id
-        val newState = if (oldState.selectedIds.isEmpty()) {
-            val selectedIds = listOf(wishId)
-            oldState.copy(selectedIds = selectedIds)
+        val selectedIds = if (oldState.selectedIds.isEmpty()) {
+            listOf(wishId)
         } else {
             val oldSelectedIds = oldState.selectedIds.toMutableList()
             val alreadySelected = oldSelectedIds.contains(wishId)
-            val selectedIds = if (alreadySelected) {
+            if (alreadySelected) {
                 oldSelectedIds - wishId
             } else {
                 oldSelectedIds + wishId
             }
-            oldState.copy(selectedIds = selectedIds)
         }
-        _uiState.value = newState
+        val isReorderEnabled = if (selectedIds.isNotEmpty()) {
+            false
+        } else {
+            uiState.value.isReorderEnabled
+        }
+        _uiState.value = oldState.copy(selectedIds = selectedIds, isReorderEnabled = isReorderEnabled)
     }
 
     fun onNavItemSelected(wishesFilter: WishesFilter) {
-        observeWishesJob?.cancel()
-        val filteredWishesFlow = when (wishesFilter) {
-            is WishesFilter.ByTag -> {
-                analyticsRepository.trackEvent(AnalyticsNames.Event.FILTER_BY_TAG_CLICK)
-                wishesInteractor.observeNotCompletedWishesByTag(wishesFilter.tag.tagId)
-            }
-            is WishesFilter.All -> {
-                wishesInteractor.observeNotCompletedWishes()
-            }
-            is WishesFilter.Completed -> {
-                wishesInteractor.observeCompletedWishes()
-            }
+        if (wishesFilter is WishesFilter.ByTag) {
+            analyticsRepository.trackEvent(AnalyticsNames.Event.FILTER_BY_TAG_CLICK)
         }
-
-        observeWishesJob = launchSafe {
-            filteredWishesFlow
-                .collect { _uiState.value = _uiState.value.copy(wishes = it, wishesFilter = wishesFilter) }
-        }
+        wishesFilterFlow.value = wishesFilter
     }
 
     private fun createTestWishes(): List<Wish> {

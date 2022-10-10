@@ -17,6 +17,7 @@ interface ThemeColors {
     val onSecondaryColor: Color
     val onSurfaceColor: Color
     val onErrorColor: Color
+    val invertedIconColor: Color
 }
 
 @Stable
@@ -34,6 +35,7 @@ data class WishAppDayColors(
     override val onSecondaryColor: Color = DayColors.onSecondaryColor,
     override val onSurfaceColor: Color = DayColors.onSurfaceColor,
     override val onErrorColor: Color = DayColors.onErrorColor,
+    override val invertedIconColor: Color = DayColors.invertedIconColor,
 ) : ThemeColors
 
 @Stable
@@ -51,5 +53,6 @@ data class WishAppNightColors(
     override val onSecondaryColor: Color = NightColors.onSecondaryColor,
     override val onSurfaceColor: Color = NightColors.onSurfaceColor,
     override val onErrorColor: Color = NightColors.onErrorColor,
+    override val invertedIconColor: Color = NightColors.invertedIconColor,
 ) : ThemeColors
 
