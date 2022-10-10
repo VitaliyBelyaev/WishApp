@@ -9,10 +9,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -36,6 +36,7 @@ import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.detectReorder
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
+import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
 import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 
@@ -153,15 +154,24 @@ fun WishItemBlock(
 
 
         if (isReorderEnabled) {
-            Box(modifier = Modifier.padding(start = 8.dp, end = 16.dp)) {
-                Icon(
-                    painterResource(R.drawable.ic_list_bulleted),
-                    contentDescription = "Reorder",
-                    tint = Color.Gray,
+            ConstraintLayout(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = MaterialTheme.colors.background)
+            ) {
+
+                val iconRef = createRef()
+                ThemedIcon(
+                    painter = painterResource(R.drawable.ic_drag_indicator),
+                    contentDescription = "Drag",
                     modifier = Modifier
-                        .size(32.dp)
-                        .background(color = MaterialTheme.colors.background)
-                        .fillMaxSize()
+                        .constrainAs(iconRef) {
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end, margin = 16.dp)
+                        }
+                        .requiredSize(36.dp)
                         .detectReorder(reorderableListState)
                 )
             }
