@@ -4,6 +4,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -49,6 +50,8 @@ class MainViewModel @Inject constructor(
 
     private val testWishes = createTestWishes()
     private var testWishIndex = 0
+
+    private var lastMoveWishesJob: Job? = null
 
     init {
         analyticsRepository.trackEvent(AnalyticsNames.Event.SCREEN_VIEW) {
@@ -126,6 +129,7 @@ class MainViewModel @Inject constructor(
 
     fun onMove(from: ItemPosition, to: ItemPosition) {
         launchSafe {
+            lastMoveWishesJob?.join()
             val fromWish = uiState.value.wishes.find { it.id == from.key } ?: return@launchSafe
             val toWish = uiState.value.wishes.find { it.id == to.key } ?: return@launchSafe
 
