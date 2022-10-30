@@ -63,10 +63,6 @@ SELECT *
 FROM Wish
 ORDER BY position DESC;
 
-getWishesCount:
-SELECT count(*)
-FROM Wish;
-
 getWishesCountWithValidPosition:
 SELECT count(*)
 FROM Wish

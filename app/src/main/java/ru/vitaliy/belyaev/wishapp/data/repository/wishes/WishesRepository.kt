@@ -16,8 +16,6 @@ interface WishesRepository {
 
     suspend fun updatePositionsOnItemMove(startIndex: Int, endIndex: Int, wishId: String, isMoveDown: Boolean)
 
-    suspend fun getWishesCount(): Long
-
     fun observeWishById(id: String): Flow<WishWithTags>
     suspend fun getWishById(id: String): WishWithTags
 

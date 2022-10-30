@@ -37,7 +37,7 @@ class DatabaseRepository @Inject constructor(
     override suspend fun insertWish(wish: Wish) {
         withContext(dispatcherProvider.io()) {
             wishQueries.transaction {
-                val position = wishQueries.getWishesCount().executeAsOne()
+                val position = wishQueries.getWishesCountWithValidPosition().executeAsOne()
                 with(wish) {
                     wishQueries.insert(
                         wishId,
@@ -133,12 +133,6 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
-    override suspend fun getWishesCount(): Long {
-        return withContext(dispatcherProvider.io()) {
-            wishQueries.getWishesCount().executeAsOne()
-        }
-    }
-
     override fun observeWishById(id: String): Flow<WishWithTags> {
         val wishDtoFlow: Flow<Wish> = wishQueries
             .getById(id)
@@ -225,7 +219,9 @@ class DatabaseRepository @Inject constructor(
             wishQueries.transaction {
                 for (id in ids) {
                     val wishToDelete = wishQueries.getById(id).executeAsOne()
-                    wishQueries.updatePositionsOnDelete(wishToDelete.position)
+                    if (wishToDelete.position != -1L) {
+                        wishQueries.updatePositionsOnDelete(wishToDelete.position)
+                    }
                     wishQueries.deleteById(id)
                 }
                 wishTagRelationQueries.deleteByWishIds(ids)
