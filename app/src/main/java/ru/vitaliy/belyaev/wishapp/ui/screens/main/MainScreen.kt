@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
@@ -60,6 +61,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.WishItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
+import timber.log.Timber
 
 @ExperimentalComposeUiApi
 @ExperimentalFoundationApi
@@ -84,7 +86,8 @@ fun MainScreen(
     val state: MainScreenState by viewModel.uiState.collectAsState()
     val tags: List<Tag> by viewModel.tags.collectAsState()
     val reorderableListState = rememberReorderableLazyListState(
-        onMove = { from, to -> viewModel.onMove(from, to) }
+        onMove = { from, to -> viewModel.onMove(from, to) },
+        onDragEnd = { startIndex, endIndex -> viewModel.onDragEnd(startIndex, endIndex) }
     )
     val openDeleteConfirmDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
 
@@ -178,10 +181,18 @@ fun MainScreen(
                     .reorderable(reorderableListState)
 
             ) {
-                item {
-                    Spacer(modifier = Modifier.height(cardsPadding))
-                }
-                items(state.wishes, { wish -> wish.id }) { wishItem ->
+
+                Timber.tag("RTRT").d("LazyColumn recomposition, wishes:${state.wishes}")
+//                item {
+//                    Spacer(modifier = Modifier.height(cardsPadding))
+//                }
+                itemsIndexed(
+                    items = state.wishes,
+                    key = { _, wishItem -> wishItem.id })
+                { index, wishItem ->
+                    if (index == 0) {
+                        Spacer(modifier = Modifier.height(cardsPadding))
+                    }
                     ReorderableItem(
                         reorderableState = reorderableListState,
                         key = wishItem.id
@@ -197,11 +208,16 @@ fun MainScreen(
                             state.isReorderEnabled,
                         )
                     }
-                    Spacer(modifier = Modifier.height(cardsPadding))
+                    val afterWishPadding = if (index == state.wishes.lastIndex) {
+                       36.dp
+                    } else {
+                        cardsPadding
+                    }
+                    Spacer(modifier = Modifier.height(afterWishPadding))
                 }
-                item {
-                    Spacer(modifier = Modifier.height(84.dp))
-                }
+//                item {
+//                    Spacer(modifier = Modifier.height(84.dp))
+//                }
             }
 
             val systemUiController = rememberSystemUiController()

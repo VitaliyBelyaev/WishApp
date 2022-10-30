@@ -78,11 +78,22 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun updateWishIsCompleted(newValue: Boolean, wishId: String) {
         withContext(dispatcherProvider.io()) {
-            wishQueries.updateIsCompleted(
-                isCompleted = newValue,
-                updatedTimestamp = System.currentTimeMillis(),
-                wishId = wishId
-            )
+            wishQueries.transaction {
+                wishQueries.updateIsCompleted(
+                    isCompleted = newValue,
+                    updatedTimestamp = System.currentTimeMillis(),
+                    wishId = wishId
+                )
+
+                if (newValue) {
+                    val wish = wishQueries.getById(wishId).executeAsOne()
+                    wishQueries.updatePositionsOnDelete(wish.position)
+                    wishQueries.updatePosition(-1L, wishId)
+                } else {
+                    val position = wishQueries.getWishesCountWithValidPosition().executeAsOne()
+                    wishQueries.updatePosition(position, wishId)
+                }
+            }
         }
     }
 
@@ -95,21 +106,28 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
-    override suspend fun updatePositions(
-        fromPosition: Long,
-        fromWishId: String,
-        toPosition: Long,
-        toWishId: String
+    override suspend fun updatePositionsOnItemMove(
+        startIndex: Int,
+        endIndex: Int,
+        wishId: String,
+        isMoveDown: Boolean
     ) {
         withContext(dispatcherProvider.io()) {
             wishQueries.transaction {
+                if (isMoveDown) {
+                    wishQueries.updatePositionsOnItemMoveDown(
+                        position = startIndex.toLong(),
+                        position_ = endIndex.toLong()
+                    )
+                } else {
+                    wishQueries.updatePositionsOnItemMoveUp(
+                        position = startIndex.toLong(),
+                        position_ = endIndex.toLong()
+                    )
+                }
                 wishQueries.updatePosition(
-                    position = toPosition,
-                    wishId = fromWishId
-                )
-                wishQueries.updatePosition(
-                    position = fromPosition,
-                    wishId = toWishId
+                    position = endIndex.toLong(),
+                    wishId = wishId
                 )
             }
         }

@@ -38,6 +38,7 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
+import timber.log.Timber
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -47,7 +48,7 @@ fun TestScreen(
 ) {
 
     val snackbarHostState = remember { SnackbarHostState() }
-    val items: List<TestItem> by viewModel.uiState.collectAsState()
+    val state: TestScreenState by viewModel.uiState.collectAsState()
 
     val onClicked: (TestItem) -> Unit = {}
     val onLongClicked: (TestItem) -> Unit = {}
@@ -78,7 +79,7 @@ fun TestScreen(
                 .detectReorderAfterLongPress(reorderableLazyListState)
         ) {
 
-            items(items, { item -> item.id }) { testItem ->
+            items(state.items, { item -> item.id }) { testItem ->
 
                 ReorderableItem(reorderableState = reorderableLazyListState, key = testItem.id) { isDragging ->
                     Box(modifier = Modifier.padding(horizontal = 16.dp)) {

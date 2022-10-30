@@ -43,6 +43,16 @@ UPDATE Wish
 SET position = ?
 WHERE  wishId = ?;
 
+updatePositionsOnItemMoveDown:
+UPDATE Wish
+SET position = position + 1
+WHERE position < ? AND position >= ?  AND position != -1;
+
+updatePositionsOnItemMoveUp:
+UPDATE Wish
+SET position = position - 1
+WHERE position > ? AND position <= ? AND position != -1;
+
 getById:
 SELECT *
 FROM Wish
@@ -56,6 +66,11 @@ ORDER BY position DESC;
 getWishesCount:
 SELECT count(*)
 FROM Wish;
+
+getWishesCountWithValidPosition:
+SELECT count(*)
+FROM Wish
+WHERE position != -1;
 
 deleteByIds:
 DELETE FROM Wish

@@ -21,50 +21,43 @@ class TestViewModel @Inject constructor(
 
     private var list: List<TestItem> = createTestItems()
 
-    var list2 by mutableStateOf(list)
-
     private val testListFlow: MutableSharedFlow<List<TestItem>> = MutableSharedFlow()
 
-    private val _uiState: MutableStateFlow<List<TestItem>> = MutableStateFlow(listOf())
-    val uiState: StateFlow<List<TestItem>> = _uiState.asStateFlow()
+    private val _uiState: MutableStateFlow<TestScreenState> =
+        MutableStateFlow(TestScreenState(items = list.sortedBy { it.position }))
+    val uiState: StateFlow<TestScreenState> = _uiState.asStateFlow()
 
     init {
-        launchSafe {
-            testListFlow
-                .collect {
-                    _uiState.value = it.sortedByDescending { it.position }
-                }
-        }
-
-        launchSafe {
-            testListFlow.emit(list)
-        }
+//        launchSafe {
+//            testListFlow
+//                .collect {
+//                    _uiState.value = uiState.value.copy(items = it.sortedBy { it.position })
+//                }
+//        }
+//
+//        launchSafe {
+//            testListFlow.emit(list)
+//        }
     }
 
     fun onMove(from: ItemPosition, to: ItemPosition) {
-//        list2 = list2.toMutableList().apply {
-//            add(to.index, removeAt(from.index))
-//        }
-
-        val fromItem = list.find { it.id == from.key }
-        val toItem = list.find { it.id == to.key }
-        val newList = list.map {
+        val currentList = uiState.value.items
+        val fromItem = currentList.find { it.id == from.key }
+        val toItem = currentList.find { it.id == to.key }
+        val newList = currentList.map {
             when (it.id) {
-                from.key -> {
-                    it.copy(position = toItem!!.position)
-                }
                 to.key -> {
                     it.copy(position = fromItem!!.position)
+                }
+                from.key -> {
+                    it.copy(position = toItem!!.position)
                 }
                 else -> {
                     it
                 }
             }
         }
-        list = newList
-        launchSafe {
-            testListFlow.emit(newList)
-        }
+        _uiState.value = uiState.value.copy(items = newList.sortedBy { it.position })
     }
 
     private fun createTestItems(): MutableList<TestItem> {

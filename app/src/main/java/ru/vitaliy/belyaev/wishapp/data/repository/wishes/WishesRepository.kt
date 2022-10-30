@@ -14,11 +14,7 @@ interface WishesRepository {
     suspend fun updateWishIsCompleted(newValue: Boolean, wishId: String)
     suspend fun updatePosition(newValue: Long, wishId: String)
 
-    suspend fun updatePositions(
-        fromPosition: Long,
-        fromWishId: String,
-        toPosition: Long, toWishId: String
-    )
+    suspend fun updatePositionsOnItemMove(startIndex: Int, endIndex: Int, wishId: String, isMoveDown: Boolean)
 
     suspend fun getWishesCount(): Long
 
