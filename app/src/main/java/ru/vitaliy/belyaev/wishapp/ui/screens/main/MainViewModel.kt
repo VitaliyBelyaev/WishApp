@@ -45,10 +45,15 @@ class MainViewModel @Inject constructor(
     private val _showSnackFlow = MutableSharedFlow<Int>()
     val showSnackFlow: SharedFlow<Int> = _showSnackFlow.asSharedFlow()
 
+    private val _positionToScrollAfterMoveFlow = MutableSharedFlow<Int>()
+    val positionToScrollAfterMoveFlow: SharedFlow<Int> = _positionToScrollAfterMoveFlow.asSharedFlow()
+
     private val wishesFilterFlow = MutableStateFlow<WishesFilter>(WishesFilter.All)
 
     private val testWishes = createTestWishes()
     private var testWishIndex = 0
+
+    private var scrollAfterMovePosTemp: Int? = null
 
     init {
         analyticsRepository.trackEvent(AnalyticsNames.Event.SCREEN_VIEW) {
@@ -73,6 +78,10 @@ class MainViewModel @Inject constructor(
                 .collect {
                     Timber.tag("RTRT").d("wishes:${it.joinToString(separator = "\n\n")}")
                     _uiState.value = _uiState.value.copy(wishes = it, wishesFilter = wishesFilterFlow.value)
+                    scrollAfterMovePosTemp?.let {
+                        _positionToScrollAfterMoveFlow.emit(it)
+                        scrollAfterMovePosTemp = null
+                    }
                 }
         }
 
@@ -216,6 +225,7 @@ class MainViewModel @Inject constructor(
         val wish2 = uiState.value.wishes[wish2Index]
 
         launchSafe {
+            scrollAfterMovePosTemp = wish2Index
             wishesRepository.swapWishesPositions(
                 wish1Id = wish1.id,
                 wish1Position = wish1.position,

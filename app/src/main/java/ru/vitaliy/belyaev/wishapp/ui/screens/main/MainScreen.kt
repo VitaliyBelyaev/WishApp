@@ -3,6 +3,8 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.main
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -104,6 +106,12 @@ fun MainScreen(
         }
     }
 
+    LaunchedEffect(key1 = state) {
+        viewModel.positionToScrollAfterMoveFlow.collect {
+            lazyListState.scrollToItem(it, -lazyListState.layoutInfo.viewportSize.height / 2)
+        }
+    }
+
     WishAppBottomSheet(
         sheetState = modalBottomSheetState,
         sheetContent = {
@@ -186,9 +194,9 @@ fun MainScreen(
                     items = state.wishes,
                     key = { _, wishItem -> wishItem.id })
                 { index, wishItem ->
-//                    if (index == 0) {
-//                        Spacer(modifier = Modifier.height(cardsPadding))
-//                    }
+                    if (index == 0) {
+                        Spacer(modifier = Modifier.height(cardsPadding))
+                    }
 //                    ReorderableItem(
 //                        reorderableState = reorderableListState,
 //                        key = wishItem.id
@@ -218,13 +226,13 @@ fun MainScreen(
                             .animateItemPlacement()
                             .focusable(false)
                     )
-//                    }
-//                    val afterWishPadding = if (index == state.wishes.lastIndex) {
-//                        36.dp
-//                    } else {
-//                        cardsPadding
-//                    }
-//                    Spacer(modifier = Modifier.height(afterWishPadding))
+
+                    val afterWishPadding = if (index == state.wishes.lastIndex) {
+                        36.dp
+                    } else {
+                        cardsPadding
+                    }
+                    Spacer(modifier = Modifier.height(afterWishPadding))
                 }
 //                item {
 //                    Spacer(modifier = Modifier.height(84.dp))
