@@ -106,6 +106,26 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    override suspend fun swapWishesPositions(
+        wish1Id: String,
+        wish1Position: Long,
+        wish2Id: String,
+        wish2Position: Long
+    ) {
+        withContext(dispatcherProvider.io()) {
+            wishQueries.transaction {
+                wishQueries.updatePosition(
+                    position = wish2Position,
+                    wishId = wish1Id
+                )
+                wishQueries.updatePosition(
+                    position = wish1Position,
+                    wishId = wish2Id
+                )
+            }
+        }
+    }
+
     override suspend fun updatePositionsOnItemMove(
         startIndex: Int,
         endIndex: Int,

@@ -3,6 +3,7 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.main.components
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,8 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import org.burnoutcrew.reorderable.ReorderableLazyListState
-import org.burnoutcrew.reorderable.detectReorder
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
@@ -48,19 +47,50 @@ fun WishItemBlock(
     paddingValues: PaddingValues,
     onWishClicked: (WishWithTags) -> Unit,
     onWishLongPress: (WishWithTags) -> Unit,
-    reorderableListState: ReorderableLazyListState,
+//    reorderableListState: ReorderableLazyListState,
     isReorderEnabled: Boolean,
+    onMoveItemUp: (WishWithTags) -> Unit,
+    onMoveItemDown: (WishWithTags) -> Unit,
+    modifier: Modifier = Modifier
 ) {
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
     ) {
 
-        val boxFraction = if (isReorderEnabled) {
-            0.8f
+        val reorderIconsWidthFraction = 0.2f
+        val contentWidthFraction = if (isReorderEnabled) {
+            1f - reorderIconsWidthFraction * 2
         } else {
             1f
+        }
+
+
+        if (isReorderEnabled) {
+            ConstraintLayout(
+                modifier = Modifier
+                    .fillMaxWidth(reorderIconsWidthFraction)
+                    .background(color = MaterialTheme.colors.background)
+            ) {
+
+                val iconRef = createRef()
+                ThemedIcon(
+                    painter = painterResource(R.drawable.ic_drag_indicator),
+                    contentDescription = "Drag",
+                    modifier = Modifier
+                        .constrainAs(iconRef) {
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end, margin = 16.dp)
+                        }
+                        .requiredSize(36.dp)
+                        .clickable {
+                            onMoveItemUp(wishItem)
+                        }
+                )
+            }
         }
 
         Box(modifier = Modifier.padding(paddingValues)) {
@@ -78,7 +108,7 @@ fun WishItemBlock(
 
             Column(
                 modifier = Modifier
-                    .fillMaxWidth(boxFraction)
+                    .fillMaxWidth(contentWidthFraction)
                     .background(color = backgroundColor, shape = baseShape)
                     .border(borderWidth, localTheme.colors.iconPrimaryColor, baseShape)
                     .clip(baseShape)
@@ -156,7 +186,7 @@ fun WishItemBlock(
         if (isReorderEnabled) {
             ConstraintLayout(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(reorderIconsWidthFraction)
                     .background(color = MaterialTheme.colors.background)
             ) {
 
@@ -172,7 +202,9 @@ fun WishItemBlock(
                             end.linkTo(parent.end, margin = 16.dp)
                         }
                         .requiredSize(36.dp)
-                        .detectReorder(reorderableListState)
+                        .clickable {
+                            onMoveItemDown(wishItem)
+                        }
                 )
             }
         }

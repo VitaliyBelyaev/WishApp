@@ -1,7 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -203,6 +203,26 @@ class MainViewModel @Inject constructor(
             uiState.value.isReorderEnabled
         }
         _uiState.value = oldState.copy(selectedIds = selectedIds, isReorderEnabled = isReorderEnabled)
+    }
+
+    fun onMoveWish(wishWithTags: WishWithTags, isMoveUp: Boolean) {
+        val wish1 = uiState.value.wishes.find { it.id == wishWithTags.id } ?: return
+        val wish1Index = uiState.value.wishes.indexOf(wish1).takeIf { it != -1 } ?: return
+        val wish2Index = if (isMoveUp) {
+            wish1Index - 1
+        } else {
+            wish1Index + 1
+        }.takeIf { it in 0..uiState.value.wishes.lastIndex } ?: return
+        val wish2 = uiState.value.wishes[wish2Index]
+
+        launchSafe {
+            wishesRepository.swapWishesPositions(
+                wish1Id = wish1.id,
+                wish1Position = wish1.position,
+                wish2Id = wish2.id,
+                wish2Position = wish2.position
+            )
+        }
     }
 
     fun onNavItemSelected(wishesFilter: WishesFilter) {
