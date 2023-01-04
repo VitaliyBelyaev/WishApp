@@ -6,5 +6,12 @@ data class MainScreenState(
     val wishes: List<WishWithTags> = emptyList(),
     val selectedIds: List<String> = emptyList(),
     val wishesFilter: WishesFilter = WishesFilter.All,
-    val isReorderEnabled: Boolean = false
+    val reorderButtonState: ReorderButtonState = ReorderButtonState.Visible(false)
 )
+
+sealed class ReorderButtonState {
+
+    object Hidden : ReorderButtonState()
+
+    data class Visible(val isEnabled: Boolean) : ReorderButtonState()
+}

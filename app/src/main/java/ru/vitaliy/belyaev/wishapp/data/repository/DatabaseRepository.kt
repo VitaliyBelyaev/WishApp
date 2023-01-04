@@ -7,7 +7,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.data.database.TagQueries
@@ -185,13 +184,16 @@ class DatabaseRepository @Inject constructor(
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
-        // We need this for reactive changes of tags in wish
+        // We need this for reactive changes of tags count in wish
         val wishTagRelationsFlow: Flow<List<WishTagRelation>> = wishTagRelationQueries
             .getAllRelations()
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
-        return combine(wishesFlow, wishTagRelationsFlow) { wishes, _ ->
+        // We need this for reactive changes of tags content in wish
+        val tagsFlow: Flow<List<Tag>> = observeAllTags()
+
+        return combine(wishesFlow, wishTagRelationsFlow, tagsFlow) { wishes, _, _ ->
             val wishesWithTags = mutableListOf<WishWithTags>()
             for (wish in wishes) {
                 val tags: List<Tag> = wishTagRelationQueries
@@ -218,20 +220,25 @@ class DatabaseRepository @Inject constructor(
     }
 
     override fun observeWishesByTag(tagId: String): Flow<List<WishWithTags>> {
-        return wishTagRelationQueries
+
+        val wishesByTagFlow: Flow<List<Wish>> = wishTagRelationQueries
             .getAllWishesByTag(tagId)
             .asFlow()
             .mapToList(dispatcherProvider.io())
-            .map { wishes ->
-                val wishesWithTags = mutableListOf<WishWithTags>()
-                for (wish in wishes) {
-                    val tags: List<Tag> = wishTagRelationQueries
-                        .getWishTags(wish.wishId)
-                        .executeAsList()
-                    wishesWithTags.add(wish.toWishWithTags(tags))
-                }
-                wishesWithTags
+
+        // We need this for reactive changes of tags content in wish
+        val tagsFlow: Flow<List<Tag>> = observeAllTags()
+
+        return combine(wishesByTagFlow, tagsFlow) { wishes, _ ->
+            val wishesWithTags = mutableListOf<WishWithTags>()
+            for (wish in wishes) {
+                val tags: List<Tag> = wishTagRelationQueries
+                    .getWishTags(wish.wishId)
+                    .executeAsList()
+                wishesWithTags.add(wish.toWishWithTags(tags))
             }
+            wishesWithTags
+        }
     }
 
     override suspend fun deleteWishesByIds(ids: List<String>) {

@@ -3,11 +3,9 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.main.components
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +15,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -37,6 +37,8 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.ReorderButtonState
 import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 
 @ExperimentalFoundationApi
@@ -44,56 +46,41 @@ import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 fun WishItemBlock(
     wishItem: WishWithTags,
     isSelected: Boolean,
-    paddingValues: PaddingValues,
+    horizontalPadding: Dp,
     onWishClicked: (WishWithTags) -> Unit,
     onWishLongPress: (WishWithTags) -> Unit,
-//    reorderableListState: ReorderableLazyListState,
-    isReorderEnabled: Boolean,
-    onMoveItemUp: (WishWithTags) -> Unit,
-    onMoveItemDown: (WishWithTags) -> Unit,
+    reorderButtonState: ReorderButtonState,
+    onMoveItem: (WishWithTags, MoveDirection) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
+    val isReorderEnabled = reorderButtonState is ReorderButtonState.Visible &&
+            reorderButtonState.isEnabled
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = if (isReorderEnabled) 0.dp else horizontalPadding),
     ) {
 
-        val reorderIconsWidthFraction = 0.2f
-        val contentWidthFraction = if (isReorderEnabled) {
-            1f - reorderIconsWidthFraction * 2
-        } else {
-            1f
-        }
-
-
         if (isReorderEnabled) {
-            ConstraintLayout(
-                modifier = Modifier
-                    .fillMaxWidth(reorderIconsWidthFraction)
-                    .background(color = MaterialTheme.colors.background)
+            IconButton(
+                onClick = { onMoveItem(wishItem, MoveDirection.UP) },
+                modifier = Modifier.weight(2f)
             ) {
 
-                val iconRef = createRef()
                 ThemedIcon(
-                    painter = painterResource(R.drawable.ic_drag_indicator),
+                    painter = painterResource(R.drawable.ic_arrow_up_24),
                     contentDescription = "Drag",
                     modifier = Modifier
-                        .constrainAs(iconRef) {
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end, margin = 16.dp)
-                        }
                         .requiredSize(36.dp)
-                        .clickable {
-                            onMoveItemUp(wishItem)
-                        }
+
                 )
             }
         }
 
-        Box(modifier = Modifier.padding(paddingValues)) {
+        Box(modifier = Modifier.weight(8f)) {
             val backgroundColor: Color = if (isSelected) {
                 MaterialTheme.colors.primary.copy(alpha = 0.4f)
             } else {
@@ -108,7 +95,7 @@ fun WishItemBlock(
 
             Column(
                 modifier = Modifier
-                    .fillMaxWidth(contentWidthFraction)
+                    .fillMaxWidth()
                     .background(color = backgroundColor, shape = baseShape)
                     .border(borderWidth, localTheme.colors.iconPrimaryColor, baseShape)
                     .clip(baseShape)
@@ -184,27 +171,16 @@ fun WishItemBlock(
 
 
         if (isReorderEnabled) {
-            ConstraintLayout(
-                modifier = Modifier
-                    .fillMaxWidth(reorderIconsWidthFraction)
-                    .background(color = MaterialTheme.colors.background)
+            IconButton(
+                onClick = { onMoveItem(wishItem, MoveDirection.DOWN) },
+                modifier = Modifier.weight(2f)
             ) {
-
-                val iconRef = createRef()
                 ThemedIcon(
-                    painter = painterResource(R.drawable.ic_drag_indicator),
+                    painter = painterResource(R.drawable.ic_arrow_down_24),
                     contentDescription = "Drag",
                     modifier = Modifier
-                        .constrainAs(iconRef) {
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end, margin = 16.dp)
-                        }
                         .requiredSize(36.dp)
-                        .clickable {
-                            onMoveItemDown(wishItem)
-                        }
+
                 )
             }
         }

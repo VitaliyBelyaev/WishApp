@@ -15,6 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.ReorderButtonState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
 import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 
@@ -24,7 +25,7 @@ fun WishAppBottomBar(
     cutoutShape: Shape? = null,
     onShareClick: () -> Unit,
     onMenuClick: () -> Unit,
-    isReorderEnabled: Boolean,
+    reorderButtonState: ReorderButtonState,
     onReorderClick: () -> Unit,
 ) {
 
@@ -38,18 +39,25 @@ fun WishAppBottomBar(
         }
         Spacer(Modifier.weight(1f, true))
 
-        IconButton(onClick = { onReorderClick() }) {
-            val tint = if (isReorderEnabled) {
-                localTheme.colors.invertedIconColor
-            } else {
-                localTheme.colors.iconPrimaryColor
+        when (reorderButtonState) {
+            is ReorderButtonState.Visible -> {
+                IconButton(onClick = { onReorderClick() }) {
+                    val tint = if (reorderButtonState.isEnabled) {
+                        localTheme.colors.invertedIconColor
+                    } else {
+                        localTheme.colors.iconPrimaryColor
+                    }
+                    ThemedIcon(
+                        painter = painterResource(R.drawable.img_reorder_filled),
+                        contentDescription = "Reorder",
+                        tint = tint
+                    )
+                }
             }
-            ThemedIcon(
-                painter = painterResource(R.drawable.img_reorder_filled),
-                contentDescription = "Reorder",
-                tint = tint
-            )
+            is ReorderButtonState.Hidden -> {
+            }
         }
+
 
         when (wishesFilter) {
             is WishesFilter.ByTag,

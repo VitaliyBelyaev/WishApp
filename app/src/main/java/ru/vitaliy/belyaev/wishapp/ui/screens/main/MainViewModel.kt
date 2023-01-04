@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import org.burnoutcrew.reorderable.ItemPosition
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
@@ -24,8 +23,10 @@ import ru.vitaliy.belyaev.wishapp.domain.WishesInteractor
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.ReorderButtonState
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.ScrollInfo
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
-import timber.log.Timber
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
@@ -45,15 +46,15 @@ class MainViewModel @Inject constructor(
     private val _showSnackFlow = MutableSharedFlow<Int>()
     val showSnackFlow: SharedFlow<Int> = _showSnackFlow.asSharedFlow()
 
-    private val _positionToScrollAfterMoveFlow = MutableSharedFlow<Int>()
-    val positionToScrollAfterMoveFlow: SharedFlow<Int> = _positionToScrollAfterMoveFlow.asSharedFlow()
+    private val _scrollInfoFlow = MutableSharedFlow<ScrollInfo>()
+    val scrollInfoFlow: SharedFlow<ScrollInfo> = _scrollInfoFlow.asSharedFlow()
 
     private val wishesFilterFlow = MutableStateFlow<WishesFilter>(WishesFilter.All)
 
     private val testWishes = createTestWishes()
     private var testWishIndex = 0
 
-    private var scrollAfterMovePosTemp: Int? = null
+    private var scrollInfo: ScrollInfo? = null
 
     init {
         analyticsRepository.trackEvent(AnalyticsNames.Event.SCREEN_VIEW) {
@@ -75,12 +76,11 @@ class MainViewModel @Inject constructor(
                         }
                     }
                 }
-                .collect {
-                    Timber.tag("RTRT").d("wishes:${it.joinToString(separator = "\n\n")}")
-                    _uiState.value = _uiState.value.copy(wishes = it, wishesFilter = wishesFilterFlow.value)
-                    scrollAfterMovePosTemp?.let {
-                        _positionToScrollAfterMoveFlow.emit(it)
-                        scrollAfterMovePosTemp = null
+                .collect { wishes ->
+                    _uiState.value = uiState.value.copy(wishes = wishes, wishesFilter = wishesFilterFlow.value)
+                    scrollInfo?.let {
+                        _scrollInfoFlow.emit(it)
+                        scrollInfo = null
                     }
                 }
         }
@@ -88,7 +88,16 @@ class MainViewModel @Inject constructor(
         launchSafe {
             tagsRepository
                 .observeAllTags()
-                .collect { _tags.value = it }
+                .collect { tags ->
+                    _tags.value = tags
+
+                    val currentWishesFilter = wishesFilterFlow.value
+                    if (currentWishesFilter is WishesFilter.ByTag) {
+                        tags.find { it.tagId == currentWishesFilter.tag.tagId }?.let {
+                            wishesFilterFlow.value = currentWishesFilter.copy(tag = it)
+                        }
+                    }
+                }
         }
 
 //        if (BuildConfig.DEBUG) {
@@ -105,14 +114,15 @@ class MainViewModel @Inject constructor(
     }
 
     fun onReorderIconClicked() {
-        val newIsReorderEnabled = !_uiState.value.isReorderEnabled
+        val oldReorderButtonState = uiState.value.reorderButtonState as? ReorderButtonState.Visible ?: return
+        val newIsReorderEnabled = !oldReorderButtonState.isEnabled
         val selectedIds = if (newIsReorderEnabled) {
             emptyList()
         } else {
             uiState.value.selectedIds
         }
         _uiState.value = _uiState.value.copy(
-            isReorderEnabled = newIsReorderEnabled,
+            reorderButtonState = oldReorderButtonState.copy(isEnabled = newIsReorderEnabled),
             selectedIds = selectedIds
         )
     }
@@ -131,41 +141,6 @@ class MainViewModel @Inject constructor(
             wishesRepository.insertWish(wish)
             testWishIndex++
         }
-    }
-
-    fun onMove(from: ItemPosition, to: ItemPosition) {
-        launchSafe {
-            val fromWish = uiState.value.wishes.find { it.id == from.key } ?: return@launchSafe
-            val toWish = uiState.value.wishes.find { it.id == to.key } ?: return@launchSafe
-            Timber.tag("RTRT").d("onMove event, from:$fromWish, to:$toWish")
-            Timber.tag("RTRT").d("onMove event, from index:${from.index}, to index:${to.index}")
-
-            val newList = _uiState.value.wishes.toMutableList().apply {
-                add(to.index, removeAt(from.index))
-            }
-            _uiState.value = _uiState.value.copy(wishes = newList)
-
-//            wishesRepository.updatePositions(
-//                fromPosition = fromWish.position,
-//                fromWishId = fromWish.id,
-//                toPosition = toWish.position,
-//                toWishId = toWish.id
-//            )
-        }
-    }
-
-    fun onDragEnd(uiStartIndex: Int, uiEndIndex: Int) {
-        val lastIndex = uiState.value.wishes.lastIndex
-        val dataStartIndex = lastIndex - uiStartIndex
-        val dataEndIndex = lastIndex - uiEndIndex
-        val isMoveDown = uiEndIndex > uiStartIndex
-        val movedWishId = uiState.value.wishes[uiEndIndex].id
-
-        launchSafe {
-            wishesRepository.updatePositionsOnItemMove(dataStartIndex, dataEndIndex, movedWishId, isMoveDown)
-        }
-
-        //Timber.tag("RTRT").d("onDragEnd, start:$dataStartIndex, end:$dataEndIndex")
     }
 
     fun onCloseEditModeClicked() {
@@ -206,29 +181,28 @@ class MainViewModel @Inject constructor(
                 oldSelectedIds + wishId
             }
         }
-        val isReorderEnabled = if (selectedIds.isNotEmpty()) {
-            false
+        val oldReorderButtonState = uiState.value.reorderButtonState
+        val reorderButtonState = if (selectedIds.isNotEmpty() && oldReorderButtonState is ReorderButtonState.Visible) {
+            oldReorderButtonState.copy(isEnabled = false)
         } else {
-            uiState.value.isReorderEnabled
+            oldReorderButtonState
         }
-        _uiState.value = oldState.copy(selectedIds = selectedIds, isReorderEnabled = isReorderEnabled)
+        _uiState.value = oldState.copy(selectedIds = selectedIds, reorderButtonState = reorderButtonState)
     }
 
-    fun onMoveWish(wishWithTags: WishWithTags, isMoveUp: Boolean) {
-        val wish1 = uiState.value.wishes.find { it.id == wishWithTags.id } ?: return
-        val wish1Index = uiState.value.wishes.indexOf(wish1).takeIf { it != -1 } ?: return
-        val wish2Index = if (isMoveUp) {
-            wish1Index - 1
-        } else {
-            wish1Index + 1
+    fun onMoveWish(movedWish: WishWithTags, moveDirection: MoveDirection, scrollOffset: Int) {
+        val wish1Index = uiState.value.wishes.indexOf(movedWish).takeIf { it != -1 } ?: return
+        val wish2Index = when (moveDirection) {
+            MoveDirection.UP -> wish1Index - 1
+            MoveDirection.DOWN -> wish1Index + 1
         }.takeIf { it in 0..uiState.value.wishes.lastIndex } ?: return
         val wish2 = uiState.value.wishes[wish2Index]
 
         launchSafe {
-            scrollAfterMovePosTemp = wish2Index
+            this.scrollInfo = ScrollInfo(wish2Index, scrollOffset)
             wishesRepository.swapWishesPositions(
-                wish1Id = wish1.id,
-                wish1Position = wish1.position,
+                wish1Id = movedWish.id,
+                wish1Position = movedWish.position,
                 wish2Id = wish2.id,
                 wish2Position = wish2.position
             )
@@ -240,6 +214,20 @@ class MainViewModel @Inject constructor(
             analyticsRepository.trackEvent(AnalyticsNames.Event.FILTER_BY_TAG_CLICK)
         }
         wishesFilterFlow.value = wishesFilter
+
+        val oldReorderButtonState = uiState.value.reorderButtonState
+        val reorderButtonState = when (wishesFilter) {
+            is WishesFilter.All,
+            is WishesFilter.ByTag -> {
+                if (oldReorderButtonState is ReorderButtonState.Visible) {
+                    oldReorderButtonState
+                } else {
+                    ReorderButtonState.Visible(isEnabled = false)
+                }
+            }
+            is WishesFilter.Completed -> ReorderButtonState.Hidden
+        }
+        _uiState.value = uiState.value.copy(reorderButtonState = reorderButtonState, selectedIds = emptyList())
     }
 
     private fun createTestWishes(): List<Wish> {

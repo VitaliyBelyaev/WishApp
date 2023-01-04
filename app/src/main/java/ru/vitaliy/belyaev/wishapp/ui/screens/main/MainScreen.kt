@@ -1,8 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.focusable
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -57,9 +55,9 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.MainScreenTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.TagsSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.WishItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
 import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
-import timber.log.Timber
 
 @ExperimentalComposeUiApi
 @ExperimentalFoundationApi
@@ -83,11 +81,6 @@ fun MainScreen(
     }
     val state: MainScreenState by viewModel.uiState.collectAsState()
     val tags: List<Tag> by viewModel.tags.collectAsState()
-//    val reorderableListState = rememberReorderableLazyListState(
-//        onMove = { from, to -> viewModel.onMove(from, to) },
-//        onDragEnd = { startIndex, endIndex -> viewModel.onDragEnd(startIndex, endIndex) },
-//        maxScrollPerFrame = 40.dp
-//    )
 
     val lazyListState = rememberLazyListState()
     val openDeleteConfirmDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
@@ -107,8 +100,8 @@ fun MainScreen(
     }
 
     LaunchedEffect(key1 = state) {
-        viewModel.positionToScrollAfterMoveFlow.collect {
-            lazyListState.scrollToItem(it, -lazyListState.layoutInfo.viewportSize.height / 2)
+        viewModel.scrollInfoFlow.collect {
+            lazyListState.scrollToItem(it.position, -it.offset)
         }
     }
 
@@ -143,7 +136,7 @@ fun MainScreen(
                     cutoutShape = fabShape,
                     onShareClick = { onShareClick(state.wishes) },
                     onMenuClick = { scope.launch { modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded) } },
-                    isReorderEnabled = state.isReorderEnabled,
+                    reorderButtonState = state.reorderButtonState,
                     onReorderClick = { viewModel.onReorderIconClicked() }
                 )
             },
@@ -179,17 +172,24 @@ fun MainScreen(
                 }
             }
 
+            val onMoveItem: (WishWithTags, MoveDirection) -> Unit = { wishWithTags, moveDirection ->
+                val movedLazyListItemInfo =
+                    lazyListState.layoutInfo.visibleItemsInfo.find { info -> info.key == wishWithTags.id }
+
+                viewModel.onMoveWish(
+                    movedWish = wishWithTags,
+                    moveDirection = moveDirection,
+                    scrollOffset = movedLazyListItemInfo?.offset ?: 0
+                )
+            }
+
             val cardsPadding = 10.dp
 
             LazyColumn(
                 state = lazyListState,
-                modifier = Modifier
-                    .padding(it)
-//                    .reorderable(reorderableListState)
-
+                modifier = Modifier.padding(it)
             ) {
 
-                Timber.tag("RTRT").d("LazyColumn recomposition, wishes:${state.wishes}")
                 itemsIndexed(
                     items = state.wishes,
                     key = { _, wishItem -> wishItem.id })
@@ -197,46 +197,24 @@ fun MainScreen(
                     if (index == 0) {
                         Spacer(modifier = Modifier.height(cardsPadding))
                     }
-//                    ReorderableItem(
-//                        reorderableState = reorderableListState,
-//                        key = wishItem.id
-//                    ) {
                     val isSelected: Boolean = state.selectedIds.contains(wishItem.id)
+                    val bottomPadding = if (index == state.wishes.lastIndex) {
+                        36.dp
+                    } else {
+                        0.dp
+                    }
                     WishItemBlock(
                         wishItem = wishItem,
                         isSelected = isSelected,
-                        paddingValues = PaddingValues(horizontal = cardsPadding),
+                        horizontalPadding = cardsPadding,
                         onWishClicked = onWishClicked,
                         onWishLongPress = { wish -> viewModel.onWishLongPress(wish) },
-//                        reorderableListState,
-                        state.isReorderEnabled,
-                        onMoveItemUp = { wishWithTags ->
-                            viewModel.onMoveWish(
-                                wishWithTags = wishWithTags,
-                                isMoveUp = true
-                            )
-                        },
-                        onMoveItemDown = { wishWithTags ->
-                            viewModel.onMoveWish(
-                                wishWithTags = wishWithTags,
-                                isMoveUp = false
-                            )
-                        },
+                        state.reorderButtonState,
+                        onMoveItem = onMoveItem,
                         modifier = Modifier
-                            .animateItemPlacement()
-                            .focusable(false)
+                            .padding(top = cardsPadding, bottom = bottomPadding)
                     )
-
-                    val afterWishPadding = if (index == state.wishes.lastIndex) {
-                        36.dp
-                    } else {
-                        cardsPadding
-                    }
-                    Spacer(modifier = Modifier.height(afterWishPadding))
                 }
-//                item {
-//                    Spacer(modifier = Modifier.height(84.dp))
-//                }
             }
 
             val systemUiController = rememberSystemUiController()
