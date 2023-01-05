@@ -51,11 +51,14 @@ import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheet
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.EmptyWishesPlaceholder
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.Loader
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.MainScreenTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.TagsSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.WishItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
 import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 
@@ -132,6 +135,7 @@ fun MainScreen(
             },
             bottomBar = {
                 WishAppBottomBar(
+                    wishes = state.wishes,
                     wishesFilter = state.wishesFilter,
                     cutoutShape = fabShape,
                     onShareClick = { onShareClick(state.wishes) },
@@ -163,7 +167,7 @@ fun MainScreen(
             isFloatingActionButtonDocked = true,
             floatingActionButtonPosition = FabPosition.Center,
             snackbarHost = { SnackbarHost(snackbarHostState) },
-        ) {
+        ) { paddingValues ->
             val onWishClicked: (WishWithTags) -> Unit = { wish ->
                 if (state.selectedIds.isEmpty()) {
                     openWishDetailed(wish)
@@ -187,7 +191,7 @@ fun MainScreen(
 
             LazyColumn(
                 state = lazyListState,
-                modifier = Modifier.padding(it)
+                modifier = Modifier.padding(paddingValues)
             ) {
 
                 itemsIndexed(
@@ -215,6 +219,22 @@ fun MainScreen(
                             .padding(top = cardsPadding, bottom = bottomPadding)
                     )
                 }
+            }
+
+            if (state.wishes.isEmpty() && !state.isLoading) {
+                val emptyMessage: String = when (val filter = state.wishesFilter) {
+                    is WishesFilter.All -> stringResource(id = R.string.empty_current_wishes_message)
+                    is WishesFilter.ByTag -> stringResource(id = R.string.empty_tagged_wishes_message, filter.tag.title)
+                    is WishesFilter.Completed -> stringResource(id = R.string.empty_done_wishes_message)
+                }
+                EmptyWishesPlaceholder(
+                    text = emptyMessage,
+                    modifier = Modifier.padding(paddingValues)
+                )
+            }
+
+            if (state.isLoading) {
+                Loader(modifier = Modifier.padding(paddingValues))
             }
 
             val systemUiController = rememberSystemUiController()

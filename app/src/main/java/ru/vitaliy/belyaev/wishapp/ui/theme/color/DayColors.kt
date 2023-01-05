@@ -18,4 +18,5 @@ object DayColors {
     val iconPrimaryColor = Color(0x7304121B)
     val bottomSheetBackgroundColor = Color(0xFFFFFFFF)
     val invertedIconColor = Color(0xFF000000)
+    val secondaryTextColor = Color(0x7304121B)
 }

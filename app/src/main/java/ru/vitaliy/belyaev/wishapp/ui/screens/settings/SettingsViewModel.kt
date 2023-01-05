@@ -49,4 +49,8 @@ class SettingsViewModel @Inject constructor(
     fun onRateAppItemClicked() {
         analyticsRepository.trackEvent(AnalyticsNames.Event.RATE_APP_CLICK)
     }
+
+    fun onShareAppItemClicked() {
+        analyticsRepository.trackEvent(AnalyticsNames.Event.SHARE_APP_CLICK)
+    }
 }

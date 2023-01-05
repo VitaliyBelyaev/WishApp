@@ -19,6 +19,7 @@ object AnalyticsNames {
         const val SELECT_APP_THEME = "select_app_theme"
         const val ABOUT_DATA_BACKUP_CLICK = "about_data_backup_click"
         const val RATE_APP_CLICK = "rate_app_click"
+        const val SHARE_APP_CLICK = "share_app_click"
         const val SOURCE_CODE_URL_CLICK = "source_code_url_click"
         const val TAG_CLICKED_FROM_EDIT_TAGS = "tag_clicked_from_edit_tags"
         const val DELETE_TAG_FROM_EDIT_TAGS = "delete_tag_from_edit_tags"

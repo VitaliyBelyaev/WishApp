@@ -11,3 +11,12 @@ fun createSendEmailIntent(to: String, subject: String, body: String): Intent {
         putExtra(Intent.EXTRA_TEXT, body)
     }
 }
+
+fun createSharePlainTextIntent(text: String): Intent {
+    val sendIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_TEXT, text)
+    }
+
+    return Intent.createChooser(sendIntent, null)
+}

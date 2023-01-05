@@ -18,4 +18,5 @@ object NightColors {
     val iconPrimaryColor = Color(0x99B4BEC5)
     val bottomSheetBackgroundColor = Color(0xFF2D3139)
     val invertedIconColor = Color(0xFFFFFFFF)
+    val secondaryTextColor = Color(0x99B4BEC5)
 }

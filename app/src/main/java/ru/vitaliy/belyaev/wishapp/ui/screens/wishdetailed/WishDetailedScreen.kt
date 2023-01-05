@@ -151,7 +151,7 @@ fun WishDetailedScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = Modifier.navigationBarsWithImePadding()
-    ) {
+    ) { paddingValues ->
         if (!wishItem.isPresent) {
             return@Scaffold
         }
@@ -164,7 +164,7 @@ fun WishDetailedScreen(
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(paddingValues)
         ) {
             val (contentRef, bottomPanelRef) = createRefs()
 

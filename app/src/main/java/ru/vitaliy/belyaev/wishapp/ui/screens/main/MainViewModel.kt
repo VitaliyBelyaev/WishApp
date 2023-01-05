@@ -77,7 +77,11 @@ class MainViewModel @Inject constructor(
                     }
                 }
                 .collect { wishes ->
-                    _uiState.value = uiState.value.copy(wishes = wishes, wishesFilter = wishesFilterFlow.value)
+                    _uiState.value = uiState.value.copy(
+                        wishes = wishes,
+                        wishesFilter = wishesFilterFlow.value,
+                        isLoading = false
+                    )
                     scrollInfo?.let {
                         _scrollInfoFlow.emit(it)
                         scrollInfo = null
