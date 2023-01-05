@@ -165,5 +165,7 @@ sqldelight {
     WishAppDb {
         packageName = "ru.vitaliy.belyaev.wishapp.data.database"
         dialect = "sqlite:3.24"
+        schemaOutputDirectory = file("src/main/sqldelight/databases")
+        verifyMigrations = true
     }
 }
