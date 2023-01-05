@@ -14,7 +14,6 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.privacypolicy.PrivacyPolic
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.EditTagsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
-import ru.vitaliy.belyaev.wishapp.ui.screens.test.TestScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.WishDetailedScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.WishTagsScreen
 
@@ -36,11 +35,6 @@ fun Navigation(onShareClick: (List<WishWithTags>) -> Unit) {
                 onSettingIconClicked = { navController.navigate(SettingsRoute.VALUE) },
                 onShareClick = onShareClick,
                 onEditTagClick = { navController.navigate(EditTagRoute.VALUE) }
-            )
-        }
-        composable(TestRoute.VALUE) {
-            TestScreen(
-                onBackPressed = { navController.popBackStack() },
             )
         }
         composable(WishDetailedRoute.VALUE) {
