@@ -47,7 +47,7 @@ class WishDetailedViewModel @Inject constructor(
             wishId = inputWishId.ifBlank {
                 val wish = createEmptyWish()
                 wishesRepository.insertWish(wish)
-                wish.id
+                wish.wishId
             }
 
             wishesRepository
@@ -108,9 +108,5 @@ class WishDetailedViewModel @Inject constructor(
 
     fun onLinkPreviewClick() {
         analyticsRepository.trackEvent(AnalyticsNames.Event.WISH_LINK_CLICK)
-    }
-
-    fun onCompleteWishButtonClicked() {
-        viewModelScope.cancel()
     }
 }

@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -120,6 +121,9 @@ fun WishTagsScreen(
                             }
                         }
                     )
+                    LaunchedEffect(Unit) {
+                        focusRequester.requestFocus()
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = handleBackPressed) {
@@ -130,10 +134,10 @@ fun WishTagsScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = Modifier.navigationBarsWithImePadding()
-    ) {
+    ) { paddingValues ->
         Divider()
 
-        LazyColumn(modifier = Modifier.padding(it)) {
+        LazyColumn(modifier = Modifier.padding(paddingValues)) {
             val showAddTagBlock = query.isNotBlank() && tagItems.none { it.tag.title == query }
             if (showAddTagBlock) {
                 item {

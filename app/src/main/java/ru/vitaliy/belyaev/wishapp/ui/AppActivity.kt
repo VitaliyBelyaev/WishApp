@@ -1,6 +1,5 @@
 package ru.vitaliy.belyaev.wishapp.ui
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -29,6 +28,7 @@ import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
+import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -44,18 +44,12 @@ class AppActivity : AppCompatActivity() {
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        setupSplashScreen()
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         viewModel.wishListToShareLiveData.observe(this) {
             val wishListAsFormattedText = generateFormattedWishList(it)
-            val sendIntent = Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, wishListAsFormattedText)
-            }
-
-            val shareIntent = Intent.createChooser(sendIntent, null)
-            startActivity(shareIntent)
+            startActivity(createSharePlainTextIntent(wishListAsFormattedText))
         }
 
         viewModel.requestReviewLiveData.observe(this) {
@@ -112,11 +106,5 @@ class AppActivity : AppCompatActivity() {
             }
         }
         return builder.toString()
-    }
-
-    private fun setupSplashScreen() {
-        installSplashScreen().apply {
-            setKeepOnScreenCondition { !viewModel.shouldHideSplash() }
-        }
     }
 }

@@ -7,9 +7,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import ru.vitaliy.belyaev.wishapp.data.database.GetAllWishesByTag
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.data.database.TagQueries
 import ru.vitaliy.belyaev.wishapp.data.database.Wish
@@ -35,10 +33,22 @@ class DatabaseRepository @Inject constructor(
     private val tagQueries: TagQueries = database.tagQueries
 
     // region WishesRepository
-    override suspend fun insertWish(wishWithTags: WishWithTags) {
+    override suspend fun insertWish(wish: Wish) {
         withContext(dispatcherProvider.io()) {
-            with(wishWithTags) {
-                wishQueries.insert(id, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp)
+            wishQueries.transaction {
+                val position = wishQueries.getWishesCountWithValidPosition().executeAsOne()
+                with(wish) {
+                    wishQueries.insert(
+                        wishId,
+                        title,
+                        link,
+                        comment,
+                        isCompleted,
+                        createdTimestamp,
+                        updatedTimestamp,
+                        position
+                    )
+                }
             }
         }
     }
@@ -67,11 +77,78 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun updateWishIsCompleted(newValue: Boolean, wishId: String) {
         withContext(dispatcherProvider.io()) {
-            wishQueries.updateIsCompleted(
-                isCompleted = newValue,
-                updatedTimestamp = System.currentTimeMillis(),
+            wishQueries.transaction {
+                wishQueries.updateIsCompleted(
+                    isCompleted = newValue,
+                    updatedTimestamp = System.currentTimeMillis(),
+                    wishId = wishId
+                )
+
+                if (newValue) {
+                    val wish = wishQueries.getById(wishId).executeAsOne()
+                    wishQueries.updatePositionsOnDelete(wish.position)
+                    wishQueries.updatePosition(-1L, wishId)
+                } else {
+                    val position = wishQueries.getWishesCountWithValidPosition().executeAsOne()
+                    wishQueries.updatePosition(position, wishId)
+                }
+            }
+        }
+    }
+
+    override suspend fun updatePosition(newValue: Long, wishId: String) {
+        withContext(dispatcherProvider.io()) {
+            wishQueries.updatePosition(
+                position = newValue,
                 wishId = wishId
             )
+        }
+    }
+
+    override suspend fun swapWishesPositions(
+        wish1Id: String,
+        wish1Position: Long,
+        wish2Id: String,
+        wish2Position: Long
+    ) {
+        withContext(dispatcherProvider.io()) {
+            wishQueries.transaction {
+                wishQueries.updatePosition(
+                    position = wish2Position,
+                    wishId = wish1Id
+                )
+                wishQueries.updatePosition(
+                    position = wish1Position,
+                    wishId = wish2Id
+                )
+            }
+        }
+    }
+
+    override suspend fun updatePositionsOnItemMove(
+        startIndex: Int,
+        endIndex: Int,
+        wishId: String,
+        isMoveDown: Boolean
+    ) {
+        withContext(dispatcherProvider.io()) {
+            wishQueries.transaction {
+                if (isMoveDown) {
+                    wishQueries.updatePositionsOnItemMoveDown(
+                        position = startIndex.toLong(),
+                        position_ = endIndex.toLong()
+                    )
+                } else {
+                    wishQueries.updatePositionsOnItemMoveUp(
+                        position = startIndex.toLong(),
+                        position_ = endIndex.toLong()
+                    )
+                }
+                wishQueries.updatePosition(
+                    position = endIndex.toLong(),
+                    wishId = wishId
+                )
+            }
         }
     }
 
@@ -84,7 +161,6 @@ class DatabaseRepository @Inject constructor(
             .getWishTags(id)
             .asFlow()
             .mapToList(dispatcherProvider.io())
-            .map { tagDtos -> tagDtos.map { Tag(it.tagId, it.title) } }
         return wishDtoFlow.combine(tagsFlow) { wishDto, tags ->
             wishDto.toWishWithTags(tags)
         }
@@ -98,50 +174,32 @@ class DatabaseRepository @Inject constructor(
             val tags: List<Tag> = wishTagRelationQueries
                 .getWishTags(id)
                 .executeAsList()
-                .map { Tag(it.tagId, it.title) }
             wishDto.toWishWithTags(tags)
         }
     }
 
     override fun observeAllWishes(): Flow<List<WishWithTags>> {
-        // Вот это работает в тестах, а когда делаю combine, то This job has not completed yet
-//        return wishQueries
-//            .getAll()
-//            .asFlow()
-//            .mapToList(dispatcherProvider.io())
-//            .map { wishesDto ->
-//                val wishesWithTags = mutableListOf<WishWithTags>()
-//                for (wishDto in wishesDto) {
-//                    wishesWithTags.add(wishDto.toWishWithTags(emptyList()))
-//                }
-//                wishesWithTags.toList()
-//            }
-
-        val wishesDtoFlow: Flow<List<Wish>> = wishQueries
+        val wishesFlow: Flow<List<Wish>> = wishQueries
             .getAll()
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
-        // We need this for reactive changes of tags in wish
+        // We need this for reactive changes of tags count in wish
         val wishTagRelationsFlow: Flow<List<WishTagRelation>> = wishTagRelationQueries
             .getAllRelations()
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
-        // We need this for reactive changes of tags
-        val tagFlow: Flow<List<Tag>> = tagQueries
-            .getAll()
-            .asFlow()
-            .mapToList(dispatcherProvider.io())
+        // We need this for reactive changes of tags content in wish
+        val tagsFlow: Flow<List<Tag>> = observeAllTags()
 
-        return combine(wishesDtoFlow, wishTagRelationsFlow, tagFlow) { wishesDto, _, _ ->
+        return combine(wishesFlow, wishTagRelationsFlow, tagsFlow) { wishes, _, _ ->
             val wishesWithTags = mutableListOf<WishWithTags>()
-            for (wishDto in wishesDto) {
+            for (wish in wishes) {
                 val tags: List<Tag> = wishTagRelationQueries
-                    .getWishTags(wishDto.wishId)
+                    .getWishTags(wish.wishId)
                     .executeAsList()
-                    .map { Tag(it.tagId, it.title) }
-                wishesWithTags.add(wishDto.toWishWithTags(tags))
+                wishesWithTags.add(wish.toWishWithTags(tags))
             }
             wishesWithTags.toList()
         }
@@ -156,39 +214,45 @@ class DatabaseRepository @Inject constructor(
                     val tags: List<Tag> = wishTagRelationQueries
                         .getWishTags(wishDto.wishId)
                         .executeAsList()
-                        .map { Tag(it.tagId, it.title) }
                     wishDto.toWishWithTags(tags)
                 }
         }
     }
 
     override fun observeWishesByTag(tagId: String): Flow<List<WishWithTags>> {
-        val wishesDtoFlow: Flow<List<GetAllWishesByTag>> = wishTagRelationQueries
+
+        val wishesByTagFlow: Flow<List<Wish>> = wishTagRelationQueries
             .getAllWishesByTag(tagId)
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
-        val wishTagRelationsFlow: Flow<List<WishTagRelation>> = wishTagRelationQueries
-            .getAllRelations()
-            .asFlow()
-            .mapToList(dispatcherProvider.io())
+        // We need this for reactive changes of tags content in wish
+        val tagsFlow: Flow<List<Tag>> = observeAllTags()
 
-        return wishesDtoFlow.combine(wishTagRelationsFlow) { wishesDto, _ ->
+        return combine(wishesByTagFlow, tagsFlow) { wishes, _ ->
             val wishesWithTags = mutableListOf<WishWithTags>()
-            for (wishDto in wishesDto) {
+            for (wish in wishes) {
                 val tags: List<Tag> = wishTagRelationQueries
-                    .getWishTags(wishDto.wishId_)
+                    .getWishTags(wish.wishId)
                     .executeAsList()
-                    .map { Tag(it.tagId, it.title) }
-                wishesWithTags.add(wishDto.toWishWithTags(tags))
+                wishesWithTags.add(wish.toWishWithTags(tags))
             }
-            wishesWithTags.toList()
+            wishesWithTags
         }
     }
 
     override suspend fun deleteWishesByIds(ids: List<String>) {
         withContext(dispatcherProvider.io()) {
-            wishQueries.deleteByIds(ids)
+            wishQueries.transaction {
+                for (id in ids) {
+                    val wishToDelete = wishQueries.getById(id).executeAsOne()
+                    if (wishToDelete.position != -1L) {
+                        wishQueries.updatePositionsOnDelete(wishToDelete.position)
+                    }
+                    wishQueries.deleteById(id)
+                }
+                wishTagRelationQueries.deleteByWishIds(ids)
+            }
         }
     }
 
@@ -237,13 +301,13 @@ class DatabaseRepository @Inject constructor(
             .getWishTags(wishId)
             .asFlow()
             .mapToList(dispatcherProvider.io())
-            .map { list ->
-                list.map { Tag(it.tagId_, it.title) }
-            }
     }
 
     override fun deleteTagsByIds(ids: List<String>) {
-        tagQueries.deleteByIds(ids)
+        tagQueries.transaction {
+            tagQueries.deleteByIds(ids)
+            wishTagRelationQueries.deleteByTagIds(ids)
+        }
     }
 
     override fun clearAllTags() {

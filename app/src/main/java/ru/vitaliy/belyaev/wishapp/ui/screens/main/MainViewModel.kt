@@ -4,12 +4,17 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import ru.vitaliy.belyaev.wishapp.BuildConfig
+import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
+import ru.vitaliy.belyaev.wishapp.data.database.Wish
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.tags.TagsRepository
@@ -18,6 +23,9 @@ import ru.vitaliy.belyaev.wishapp.domain.WishesInteractor
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.ReorderButtonState
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.ScrollInfo
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
 
 @ExperimentalCoroutinesApi
@@ -35,26 +43,65 @@ class MainViewModel @Inject constructor(
     private val _tags: MutableStateFlow<List<Tag>> = MutableStateFlow(emptyList())
     val tags: StateFlow<List<Tag>> = _tags.asStateFlow()
 
+    private val _showSnackFlow = MutableSharedFlow<Int>()
+    val showSnackFlow: SharedFlow<Int> = _showSnackFlow.asSharedFlow()
+
+    private val _scrollInfoFlow = MutableSharedFlow<ScrollInfo>()
+    val scrollInfoFlow: SharedFlow<ScrollInfo> = _scrollInfoFlow.asSharedFlow()
+
+    private val wishesFilterFlow = MutableStateFlow<WishesFilter>(WishesFilter.All)
+
     private val testWishes = createTestWishes()
     private var testWishIndex = 0
 
-    private var observeWishesJob: Job? = null
+    private var scrollInfo: ScrollInfo? = null
 
     init {
         analyticsRepository.trackEvent(AnalyticsNames.Event.SCREEN_VIEW) {
             param(AnalyticsNames.Param.SCREEN_NAME, "MainScreen")
         }
 
-        observeWishesJob = launchSafe {
-            wishesInteractor
-                .observeNotCompletedWishes()
-                .collect { _uiState.value = MainScreenState(wishes = it) }
+        launchSafe {
+            wishesFilterFlow
+                .flatMapLatest {
+                    when (it) {
+                        is WishesFilter.ByTag -> {
+                            wishesInteractor.observeNotCompletedWishesByTag(it.tag.tagId)
+                        }
+                        is WishesFilter.All -> {
+                            wishesInteractor.observeNotCompletedWishes()
+                        }
+                        is WishesFilter.Completed -> {
+                            wishesInteractor.observeCompletedWishes()
+                        }
+                    }
+                }
+                .collect { wishes ->
+                    _uiState.value = uiState.value.copy(
+                        wishes = wishes,
+                        wishesFilter = wishesFilterFlow.value,
+                        isLoading = false
+                    )
+                    scrollInfo?.let {
+                        _scrollInfoFlow.emit(it)
+                        scrollInfo = null
+                    }
+                }
         }
 
         launchSafe {
             tagsRepository
                 .observeAllTags()
-                .collect { _tags.value = it }
+                .collect { tags ->
+                    _tags.value = tags
+
+                    val currentWishesFilter = wishesFilterFlow.value
+                    if (currentWishesFilter is WishesFilter.ByTag) {
+                        tags.find { it.tagId == currentWishesFilter.tag.tagId }?.let {
+                            wishesFilterFlow.value = currentWishesFilter.copy(tag = it)
+                        }
+                    }
+                }
         }
 
 //        if (BuildConfig.DEBUG) {
@@ -70,6 +117,20 @@ class MainViewModel @Inject constructor(
 //        }
     }
 
+    fun onReorderIconClicked() {
+        val oldReorderButtonState = uiState.value.reorderButtonState as? ReorderButtonState.Visible ?: return
+        val newIsReorderEnabled = !oldReorderButtonState.isEnabled
+        val selectedIds = if (newIsReorderEnabled) {
+            emptyList()
+        } else {
+            uiState.value.selectedIds
+        }
+        _uiState.value = _uiState.value.copy(
+            reorderButtonState = oldReorderButtonState.copy(isEnabled = newIsReorderEnabled),
+            selectedIds = selectedIds
+        )
+    }
+
     fun onAddTestWishClicked() {
         if (testWishes.isEmpty()) {
             return
@@ -77,7 +138,7 @@ class MainViewModel @Inject constructor(
         launchSafe {
             val currentMillis = System.currentTimeMillis()
             val wish = testWishes[testWishIndex % testWishes.size].copy(
-                id = UUID.randomUUID().toString(),
+                wishId = UUID.randomUUID().toString(),
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis
             )
@@ -97,7 +158,9 @@ class MainViewModel @Inject constructor(
             analyticsRepository.trackEvent(AnalyticsNames.Event.DELETE_FROM_EDIT_MODE_CLICK) {
                 param(AnalyticsNames.Param.QUANTITY, selectedIds.size.toString())
             }
-            wishesRepository.deleteWishesByIds(selectedIds)
+            runCatching { wishesRepository.deleteWishesByIds(selectedIds) }
+                .onSuccess { _uiState.value = uiState.value.copy(selectedIds = emptyList()) }
+                .onFailure { _showSnackFlow.emit(R.string.delete_wishes_error_message) }
         }
     }
 
@@ -111,98 +174,121 @@ class MainViewModel @Inject constructor(
         analyticsRepository.trackEvent(AnalyticsNames.Event.WISH_LONG_PRESS)
         val oldState = _uiState.value
         val wishId = wish.id
-        val newState = if (oldState.selectedIds.isEmpty()) {
-            val selectedIds = listOf(wishId)
-            oldState.copy(selectedIds = selectedIds)
+        val selectedIds = if (oldState.selectedIds.isEmpty()) {
+            listOf(wishId)
         } else {
             val oldSelectedIds = oldState.selectedIds.toMutableList()
             val alreadySelected = oldSelectedIds.contains(wishId)
-            val selectedIds = if (alreadySelected) {
+            if (alreadySelected) {
                 oldSelectedIds - wishId
             } else {
                 oldSelectedIds + wishId
             }
-            oldState.copy(selectedIds = selectedIds)
         }
-        _uiState.value = newState
+        val oldReorderButtonState = uiState.value.reorderButtonState
+        val reorderButtonState = if (selectedIds.isNotEmpty() && oldReorderButtonState is ReorderButtonState.Visible) {
+            oldReorderButtonState.copy(isEnabled = false)
+        } else {
+            oldReorderButtonState
+        }
+        _uiState.value = oldState.copy(selectedIds = selectedIds, reorderButtonState = reorderButtonState)
+    }
+
+    fun onMoveWish(movedWish: WishWithTags, moveDirection: MoveDirection, scrollOffset: Int) {
+        val wish1Index = uiState.value.wishes.indexOf(movedWish).takeIf { it != -1 } ?: return
+        val wish2Index = when (moveDirection) {
+            MoveDirection.UP -> wish1Index - 1
+            MoveDirection.DOWN -> wish1Index + 1
+        }.takeIf { it in 0..uiState.value.wishes.lastIndex } ?: return
+        val wish2 = uiState.value.wishes[wish2Index]
+
+        launchSafe {
+            this.scrollInfo = ScrollInfo(wish2Index, scrollOffset)
+            wishesRepository.swapWishesPositions(
+                wish1Id = movedWish.id,
+                wish1Position = movedWish.position,
+                wish2Id = wish2.id,
+                wish2Position = wish2.position
+            )
+        }
     }
 
     fun onNavItemSelected(wishesFilter: WishesFilter) {
-        observeWishesJob?.cancel()
-        val filteredWishesFlow = when (wishesFilter) {
-            is WishesFilter.ByTag -> {
-                analyticsRepository.trackEvent(AnalyticsNames.Event.FILTER_BY_TAG_CLICK)
-                wishesInteractor.observeNotCompletedWishesByTag(wishesFilter.tag.tagId)
-            }
-            is WishesFilter.All -> {
-                wishesInteractor.observeNotCompletedWishes()
-            }
-            is WishesFilter.Completed -> {
-                wishesInteractor.observeCompletedWishes()
-            }
+        if (wishesFilter is WishesFilter.ByTag) {
+            analyticsRepository.trackEvent(AnalyticsNames.Event.FILTER_BY_TAG_CLICK)
         }
+        wishesFilterFlow.value = wishesFilter
 
-        observeWishesJob = launchSafe {
-            filteredWishesFlow
-                .collect { _uiState.value = MainScreenState(wishes = it, wishesFilter = wishesFilter) }
+        val oldReorderButtonState = uiState.value.reorderButtonState
+        val reorderButtonState = when (wishesFilter) {
+            is WishesFilter.All,
+            is WishesFilter.ByTag -> {
+                if (oldReorderButtonState is ReorderButtonState.Visible) {
+                    oldReorderButtonState
+                } else {
+                    ReorderButtonState.Visible(isEnabled = false)
+                }
+            }
+            is WishesFilter.Completed -> ReorderButtonState.Hidden
         }
+        _uiState.value = uiState.value.copy(reorderButtonState = reorderButtonState, selectedIds = emptyList())
     }
 
-    private fun createTestWishes(): List<WishWithTags> {
+    private fun createTestWishes(): List<Wish> {
         if (!BuildConfig.DEBUG) {
             return emptyList()
         }
         val currentMillis = System.currentTimeMillis()
         return listOf(
-            WishWithTags(
-                id = "1",
+            Wish(
+                wishId = "1",
                 title = "Шуруповерт",
                 link = "https://www.citilink.ru/product/drel-shurupovert-bosch-universaldrill-18v-akkum-patron-bystrozazhimnoi-1492081/?region_id=123062&gclid=CjwKCAiAm7OMBhAQEiwArvGi3Aom3wUbhHlBUu-9OPINzsyF9rM0Q2rBUgp1jFV68iT7IUaAoTA-1xoCzPcQAvD_BwE",
                 comment = "С кейсом, чтобы были головки разные и запасной аккумулятор",
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,
-                tags = emptyList()
+                position = 0
             ),
-            WishWithTags(
-                id = "2",
+            Wish(
+                wishId = "2",
                 title = "Поход в SPA",
                 link = "",
                 comment = "Побольше массажа",
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,
-                tags = emptyList()
+                position = 0
             ),
-            WishWithTags(
-                id = "3",
+            Wish(
+                wishId = "3",
                 title = "Робот пылесос",
                 link = "https://www.citilink.ru/product/pylesos-robot-xiaomi-mi-mop-p-chernyi-1393766/?region_id=123062&gclid=CjwKCAiAm7OMBhAQEiwArvGi3DS-H1fiWV65XGxNEcrSzE1PpsULu34hK2eZ1C235ZV3OHton6qXMBoCzrQQAvD_BwE",
                 comment = "Чтобы с шерстью справлялся и умел по неровнастям ездить",
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,
-                tags = emptyList()
+                position = 0
             ),
-            WishWithTags(
-                id = "4",
+            Wish(
+                wishId = "4",
                 title = "Халат",
                 link = "",
                 comment = "Цвет не яркий",
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,
-                tags = emptyList()
+                position = 0
             ),
-            WishWithTags(
-                id = "5",
+            Wish(
+                wishId = "5",
                 title = "Мультитул LEATHERMAN",
                 link = "https://ileatherman.ru/multitul-leatherman-wave-plus-832524-s-nejlonovym-chexlom",
                 comment = "",
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,
-                tags = emptyList()
+                position = 0
             )
         )
     }

@@ -42,6 +42,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.ThemeSettingBlo
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.entity.Backup
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.entity.SettingItem
 import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
+import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 import ru.vitaliy.belyaev.wishapp.utils.openGooglePlay
 
@@ -136,6 +137,14 @@ fun SettingsScreen(
                     onClick = {
                         viewModel.onRateAppItemClicked()
                         context.openGooglePlay()
+                    }
+                )
+                val shareAppText = stringResource(id = R.string.share_app_text)
+                SettingBlock(
+                    title = stringResource(R.string.share_app),
+                    onClick = {
+                        viewModel.onShareAppItemClicked()
+                        context.startActivity(createSharePlainTextIntent(shareAppText))
                     }
                 )
                 SettingBlock(

@@ -1,14 +1,12 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
@@ -44,7 +42,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
@@ -54,10 +51,14 @@ import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheet
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.EmptyWishesPlaceholder
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.Loader
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.MainScreenTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.TagsSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.WishItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
+import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
 import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 
@@ -83,20 +84,28 @@ fun MainScreen(
     }
     val state: MainScreenState by viewModel.uiState.collectAsState()
     val tags: List<Tag> by viewModel.tags.collectAsState()
-    val lazyListState: LazyListState = rememberLazyListState()
+
+    val lazyListState = rememberLazyListState()
     val openDeleteConfirmDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
 
     LaunchedEffect(key1 = Unit) {
         appViewModel.showSnackOnMainFlow.collect {
-            scope.launch {
-                snackbarHostState.showSnackbar(it)
-            }
+            snackbarHostState.showSnackbar(it)
         }
     }
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.uiState.first { it.wishes.isNotEmpty() }
-        appViewModel.onWishesLoaded()
+        viewModel.showSnackFlow.collect {
+            snackbarHostState.showSnackbar(context.getString(it))
+        }
+    }
+
+    LaunchedEffect(key1 = state) {
+        viewModel.scrollInfoFlow.collect {
+            lazyListState.scrollToItem(it.position, -it.offset)
+        }
     }
 
     WishAppBottomSheet(
@@ -126,10 +135,13 @@ fun MainScreen(
             },
             bottomBar = {
                 WishAppBottomBar(
+                    wishes = state.wishes,
                     wishesFilter = state.wishesFilter,
                     cutoutShape = fabShape,
                     onShareClick = { onShareClick(state.wishes) },
-                    onMenuClick = { scope.launch { modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded) } }
+                    onMenuClick = { scope.launch { modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded) } },
+                    reorderButtonState = state.reorderButtonState,
+                    onReorderClick = { viewModel.onReorderIconClicked() }
                 )
             },
             floatingActionButton = {
@@ -155,7 +167,7 @@ fun MainScreen(
             isFloatingActionButtonDocked = true,
             floatingActionButtonPosition = FabPosition.Center,
             snackbarHost = { SnackbarHost(snackbarHostState) },
-        ) {
+        ) { paddingValues ->
             val onWishClicked: (WishWithTags) -> Unit = { wish ->
                 if (state.selectedIds.isEmpty()) {
                     openWishDetailed(wish)
@@ -164,29 +176,65 @@ fun MainScreen(
                 }
             }
 
+            val onMoveItem: (WishWithTags, MoveDirection) -> Unit = { wishWithTags, moveDirection ->
+                val movedLazyListItemInfo =
+                    lazyListState.layoutInfo.visibleItemsInfo.find { info -> info.key == wishWithTags.id }
+
+                viewModel.onMoveWish(
+                    movedWish = wishWithTags,
+                    moveDirection = moveDirection,
+                    scrollOffset = movedLazyListItemInfo?.offset ?: 0
+                )
+            }
+
             val cardsPadding = 10.dp
 
             LazyColumn(
                 state = lazyListState,
-                modifier = Modifier.padding(it)
+                modifier = Modifier.padding(paddingValues)
             ) {
-                item {
-                    Spacer(modifier = Modifier.height(cardsPadding))
-                }
-                items(state.wishes) { wishItem ->
+
+                itemsIndexed(
+                    items = state.wishes,
+                    key = { _, wishItem -> wishItem.id })
+                { index, wishItem ->
+                    if (index == 0) {
+                        Spacer(modifier = Modifier.height(cardsPadding))
+                    }
                     val isSelected: Boolean = state.selectedIds.contains(wishItem.id)
+                    val bottomPadding = if (index == state.wishes.lastIndex) {
+                        36.dp
+                    } else {
+                        0.dp
+                    }
                     WishItemBlock(
                         wishItem = wishItem,
                         isSelected = isSelected,
-                        paddingValues = PaddingValues(horizontal = cardsPadding),
+                        horizontalPadding = cardsPadding,
                         onWishClicked = onWishClicked,
-                        onWishLongPress = { wish -> viewModel.onWishLongPress(wish) }
+                        onWishLongPress = { wish -> viewModel.onWishLongPress(wish) },
+                        state.reorderButtonState,
+                        onMoveItem = onMoveItem,
+                        modifier = Modifier
+                            .padding(top = cardsPadding, bottom = bottomPadding)
                     )
-                    Spacer(modifier = Modifier.height(cardsPadding))
                 }
-                item {
-                    Spacer(modifier = Modifier.height(84.dp))
+            }
+
+            if (state.wishes.isEmpty() && !state.isLoading) {
+                val emptyMessage: String = when (val filter = state.wishesFilter) {
+                    is WishesFilter.All -> stringResource(id = R.string.empty_current_wishes_message)
+                    is WishesFilter.ByTag -> stringResource(id = R.string.empty_tagged_wishes_message, filter.tag.title)
+                    is WishesFilter.Completed -> stringResource(id = R.string.empty_done_wishes_message)
                 }
+                EmptyWishesPlaceholder(
+                    text = emptyMessage,
+                    modifier = Modifier.padding(paddingValues)
+                )
+            }
+
+            if (state.isLoading) {
+                Loader(modifier = Modifier.padding(paddingValues))
             }
 
             val systemUiController = rememberSystemUiController()
