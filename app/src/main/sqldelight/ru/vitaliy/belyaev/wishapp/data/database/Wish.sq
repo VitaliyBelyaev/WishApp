@@ -7,7 +7,7 @@ CREATE TABLE Wish (
   isCompleted INTEGER AS Boolean DEFAULT 0 NOT NULL,
   createdTimestamp INTEGER NOT NULL,
   updatedTimestamp INTEGER NOT NULL,
-  position INTEGER NOT NULL
+  position INTEGER DEFAULT -1 NOT NULL
 );
 
 insert:
