@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="enter_title">Назва</string>
+    <string name="enter_link">Посилання</string>
+    <string name="enter_comment">Коментар</string>
+    <string name="without_title">Без назви</string>
+    <string name="wish_list_title">Ось мій список хотелок:</string>
+    <string name="select_all">Вибрати все</string>
+    <string name="settings">Налаштування</string>
+    <string name="theme">Тема</string>
+    <string name="feedback">Написати розробникам</string>
+    <string name="licenses">Ліцензії з відкритим кодом</string>
+    <string name="backup">Збереження даних</string>
+    <string name="privacy_policy">Політика конфіденційності</string>
+    <string name="about_app">Про додаток</string>
+    <string name="rate_app">Оцінити програму</string>
+    <string name="theme_title">Тема</string>
+    <string name="other">Інший</string>
+    <string name="app_description"><![CDATA[Це open-source додаток, код можна переглянути <a href=https://github.com/VitaliyBelyaev/WishApp">тут</a>]]></string>
+    <string name="app_version_pattern">Версія %s</string>
+    <string name="theme_system_title">Системна</string>
+    <string name="theme_system_description">Така сама як на пристрої</string>
+    <string name="theme_dark">Темна</string>
+    <string name="theme_light">Світла</string>
+    <string name="backup_description">Ваші дані автоматично зберігаються у обліковому записі Google.\n\nПісля переустановки програми ваші дані автоматично відновляться.\n\nДля того, щоб автоматичне збереження даних працювало, необхідно, щоб Резервне копіювання в налаштуваннях телефону було увімкнено.</string>
+    <string name="no_email_app_error">У вас на пристрої немає email програми</string>
+    <string name="feedback_subject_pattern">Зворотній зв\'язок. Програма %s</string>
+    <string name="enter_label_name">Введіть назву ярлика</string>
+    <string name="create_new_pattern">Створити \"%s\"</string>
+    <string name="all_wishes">Поточні хотелки</string>
+    <string name="edit_tags">Редагувати ярлики</string>
+    <string name="create_tag">Створити ярлик</string>
+    <string name="add_tag">Додати ярлик</string>
+    <string name="delete_tag">Видалити ярлики</string>
+    <string name="delete">Видалити</string>
+    <string name="cancel">Скасування</string>
+    <string name="delete_tag_title">Видалити ярлик?</string>
+    <string name="delete_tag_description">Ярлик буде видалено. Він зникне з усіх хотелок, причому самі хотелки збережеться.</string>
+    <string name="delete_wish_title">Видалити хотелку?</string>
+    <string name="delete_wishes_title">Видалити вибрані хотелки?</string>
+    <string name="fail_to_open_link">Не вдалося відкрити посилання</string>
+    <string name="open_link">Відкрити посилання</string>
+    <string name="wish_done">Зроблено</string>
+    <string name="wish_not_done">Не зроблено</string>
+    <string name="completed_wishes">Виконані хотелки</string>
+    <string name="wish_done_snack_message">Хотелка переміщена в виконані</string>
+    <string name="delete_wishes_error_message">При видаленні хотелок сталася помилка</string>
+    <string name="empty_current_wishes_message">Ви ще не додали жодної хотелки, натисніть на кнопку з плюсом нижче, щоб додати нову хотелку</string>
+    <string name="empty_done_wishes_message">Ви ще не виконали жодну хотелку</string>
+    <string name="empty_tagged_wishes_message">Ви ще не додали ярлик %s ні на одну хотелку</string>
+    <string name="share_app">Поділитися додатком</string>
+    <string name="share_app_text">Спробуй це додаток для зберігання своїх хотелок з можливістю ділитися ними через будь-месенджер\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
+</resources>
