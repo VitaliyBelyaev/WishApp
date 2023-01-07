@@ -10,7 +10,7 @@
     <string name="licenses">Open-source licenses</string>
     <string name="backup">Backup and restore</string>
     <string name="privacy_policy">Privacy policy</string>
-    <string name="about_app">About App</string>
+    <string name="about_app">About app</string>
     <string name="rate_app">Rate app</string>
     <string name="theme_title">Theme</string>
     <string name="other">Other</string>
@@ -29,7 +29,6 @@
     <string name="edit_tags">Edit labels</string>
     <string name="create_tag">Create label</string>
     <string name="add_tag">Add label</string>
-    <string name="delete_tag">Delete labels</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="delete_tag_title">Delete label?</string>

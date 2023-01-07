@@ -29,7 +29,6 @@
     <string name="edit_tags">Editar etiquetas</string>
     <string name="create_tag">Crear etiqueta</string>
     <string name="add_tag">Añadir etiqueta</string>
-    <string name="delete_tag">Eliminar etiquetas</string>
     <string name="delete">Borrar</string>
     <string name="cancel">Cancelar</string>
     <string name="delete_tag_title">¿Eliminar etiqueta?</string>
