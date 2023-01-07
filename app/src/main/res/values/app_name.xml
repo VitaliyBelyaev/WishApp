@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">WishApp</string>
+    <string name="debug_app_name" translatable="false">DEV WishApp</string>
 </resources>
