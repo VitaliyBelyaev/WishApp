@@ -43,4 +43,10 @@
     <string name="wish_not_done">Not done</string>
     <string name="completed_wishes">Done wishes</string>
     <string name="wish_done_snack_message">Wish moved to completed</string>
+    <string name="delete_wishes_error_message">An error occurred while deleting wishes</string>
+    <string name="empty_current_wishes_message">You have not added any wishes yet, click on the plus button below to add a new wish</string>
+    <string name="empty_done_wishes_message">You haven\'t completed any wishes yet</string>
+    <string name="empty_tagged_wishes_message">You haven\'t added label %s to any wish yet</string>
+    <string name="share_app">Share app</string>
+    <string name="share_app_text">Try this app for storing and sharing your wishes\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
 </resources>

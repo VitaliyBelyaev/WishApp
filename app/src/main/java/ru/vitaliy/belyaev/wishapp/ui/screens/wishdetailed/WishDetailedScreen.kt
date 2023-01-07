@@ -151,7 +151,7 @@ fun WishDetailedScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = Modifier.navigationBarsWithImePadding()
-    ) {
+    ) { paddingValues ->
         if (!wishItem.isPresent) {
             return@Scaffold
         }
@@ -164,6 +164,7 @@ fun WishDetailedScreen(
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues)
         ) {
             val (contentRef, bottomPanelRef) = createRefs()
 
@@ -195,7 +196,7 @@ fun WishDetailedScreen(
                     placeholder = {
                         Text(
                             text = stringResource(R.string.enter_title),
-                            style = MaterialTheme.typography.h6,
+                            style = MaterialTheme.typography.h5,
                         )
                     },
                     colors = TextFieldDefaults.textFieldColors(

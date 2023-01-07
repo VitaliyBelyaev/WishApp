@@ -10,5 +10,6 @@ data class WishWithTags(
     val isCompleted: Boolean,
     val createdTimestamp: Long,
     val updatedTimestamp: Long,
+    val position: Long,
     val tags: List<Tag>
 )

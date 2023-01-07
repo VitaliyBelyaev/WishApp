@@ -7,7 +7,7 @@ import java.io.IOException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -53,7 +53,7 @@ class DatabaseRepositoryTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun insert_one_wish() = runBlockingTest {
+    fun insert_one_wish() = runTest {
         val wish = WishWithTags(
             id = "1",
             title = "Шуруповерт",
@@ -74,7 +74,7 @@ class DatabaseRepositoryTest {
     }
 
     @Test
-    fun observe_wishes_change() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun observe_wishes_change() = runTest {
         populateDBWithWishes()
         populateDBWithTags()
         db.wishTagRelationQueries.insert("1", "1")

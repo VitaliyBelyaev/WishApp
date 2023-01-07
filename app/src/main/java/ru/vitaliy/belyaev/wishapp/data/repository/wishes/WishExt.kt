@@ -1,35 +1,26 @@
 package ru.vitaliy.belyaev.wishapp.data.repository.wishes
 
 import java.util.UUID
-import ru.vitaliy.belyaev.wishapp.data.database.GetAllWishesByTag
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.data.database.Wish
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 
-fun createEmptyWish(): WishWithTags {
+fun createEmptyWish(): Wish {
     val currentMillis = System.currentTimeMillis()
-    return WishWithTags(
-        id = UUID.randomUUID().toString(),
+    return Wish(
+        wishId = UUID.randomUUID().toString(),
         title = "",
         link = "",
         comment = "",
         isCompleted = false,
         createdTimestamp = currentMillis,
         updatedTimestamp = currentMillis,
-        tags = emptyList()
+        position = 0,
     )
 }
 
-fun WishWithTags.toWishDto(): Wish {
-    return Wish(id, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp)
-}
-
 fun Wish.toWishWithTags(tags: List<Tag>): WishWithTags {
-    return WishWithTags(wishId, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, tags)
-}
-
-fun GetAllWishesByTag.toWishWithTags(tags: List<Tag>): WishWithTags {
-    return WishWithTags(wishId, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, tags)
+    return WishWithTags(wishId, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, position, tags)
 }
 
 fun WishWithTags.isEmpty(): Boolean = title.isBlank() && link.isBlank() && comment.isBlank()

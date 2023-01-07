@@ -124,17 +124,19 @@ fun TagsSheetContent(
                     scope.launch { modalBottomSheetState.snapTo(ModalBottomSheetValue.Hidden) }
                 }
             )
-            NavMenuItemBlock(
-                icon = painterResource(R.drawable.ic_edit),
-                title = stringResource(R.string.edit_tags),
-                isSelected = false,
-                onClick = {
-                    scope.launch {
-                        modalBottomSheetState.snapTo(ModalBottomSheetValue.Hidden)
-                        onEditTagsClicked()
+            if (tags.isNotEmpty()) {
+                NavMenuItemBlock(
+                    icon = painterResource(R.drawable.ic_edit),
+                    title = stringResource(R.string.edit_tags),
+                    isSelected = false,
+                    onClick = {
+                        scope.launch {
+                            modalBottomSheetState.snapTo(ModalBottomSheetValue.Hidden)
+                            onEditTagsClicked()
+                        }
                     }
-                }
-            )
+                )
+            }
             Spacer(modifier = Modifier.height(10.dp))
         }
     }

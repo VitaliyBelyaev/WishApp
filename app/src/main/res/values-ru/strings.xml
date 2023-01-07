@@ -44,4 +44,10 @@
     <string name="wish_not_done">Не выполнена</string>
     <string name="completed_wishes">Выполненные хотелки</string>
     <string name="wish_done_snack_message">Хотелка перемещена в выполненные</string>
+    <string name="delete_wishes_error_message">При удалении хотелок произошла ошибка</string>
+    <string name="empty_current_wishes_message">Вы ещё не добавили ни одной хотелки, нажмите на кнопку с плюсом ниже, чтобы добавить новую хотелку</string>
+    <string name="empty_done_wishes_message">Вы ещё не выполнили ни одну хотелку</string>
+    <string name="empty_tagged_wishes_message">Вы ещё не добавили ярлык %s ни на одну хотелку</string>
+    <string name="share_app">Поделиться приложением</string>
+    <string name="share_app_text">Попробуй это приложения для хранения своих хотелок с возможностью делиться ими через любой мессенджер\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
 </resources>

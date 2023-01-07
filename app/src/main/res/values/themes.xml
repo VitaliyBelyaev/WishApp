@@ -3,10 +3,10 @@
 
     <style name="Theme.WishApp" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
 
-    <style name="Theme.WishApp.Splash" parent="Theme.WishApp">
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
-        <item name="android:windowBackground">@drawable/background_splash</item>
+    <style name="WishAppSplash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/primaryColor</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.WishApp</item>
     </style>
 
     <style name="LicensesTheme" parent="Theme.MaterialComponents.DayNight">

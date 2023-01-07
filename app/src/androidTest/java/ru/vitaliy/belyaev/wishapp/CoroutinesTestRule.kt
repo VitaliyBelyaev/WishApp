@@ -3,7 +3,8 @@ package ru.vitaliy.belyaev.wishapp
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.rules.TestWatcher
@@ -11,7 +12,7 @@ import org.junit.runner.Description
 import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
 
 @ExperimentalCoroutinesApi
-class CoroutineTestRule(val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()) : TestWatcher() {
+class CoroutineTestRule(val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()) : TestWatcher() {
 
     val testDispatcherProvider = object : DispatcherProvider {
         override fun default(): CoroutineDispatcher = testDispatcher
@@ -28,6 +29,5 @@ class CoroutineTestRule(val testDispatcher: TestCoroutineDispatcher = TestCorout
     override fun finished(description: Description?) {
         super.finished(description)
         Dispatchers.resetMain()
-        testDispatcher.cleanupTestCoroutines()
     }
 }
