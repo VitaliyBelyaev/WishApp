@@ -1,0 +1,51 @@
+<resources>
+    <string name="enter_title">Título</string>
+    <string name="enter_link">Enlace</string>
+    <string name="enter_comment">Comentario</string>
+    <string name="without_title">Intitulado</string>
+    <string name="wish_list_title">Esta es mi lista de deseos:</string>
+    <string name="select_all">Seleccionar todo</string>
+    <string name="settings">Ajustes</string>
+    <string name="feedback">Escribir a los desarrolladores</string>
+    <string name="licenses">Licencias de código abierto</string>
+    <string name="backup">Copia de seguridad y restaurar</string>
+    <string name="privacy_policy">Política de privacidad</string>
+    <string name="about_app">Acerca de la aplicación</string>
+    <string name="rate_app">Califica la aplicación</string>
+    <string name="theme_title">Tema</string>
+    <string name="other">Otro</string>
+    <string name="app_description"><![CDATA[Esta es una aplicación de código abierto, puede consultar el código <a href=https://github.com/VitaliyBelyaev/WishApp">aquí</a>]]></string>
+    <string name="app_version_pattern">Versión %s</string>
+    <string name="theme_system_title">Predeterminado del sistema</string>
+    <string name="theme_system_description">La misma que en el dispositivo</string>
+    <string name="theme_dark">Oscuro</string>
+    <string name="theme_light">Ligero</string>
+    <string name="backup_description">Sus datos se guardan automáticamente en su cuenta de Google.\n\nDespués de reinstalar la aplicación, sus datos se restaurarán automáticamente.\n\nPara que funcione la copia de seguridad automática de sus datos, debe habilitar Copia de seguridad en la configuración del teléfono.</string>
+    <string name="no_email_app_error">No tiene una aplicación de correo electrónico en su dispositivo</string>
+    <string name="feedback_subject_pattern">Realimentación. Aplicación %s</string>
+    <string name="enter_label_name">Introduce el nombre de la etiqueta</string>
+    <string name="create_new_pattern">Crear \"%s\"</string>
+    <string name="all_wishes">Deseos actuales</string>
+    <string name="edit_tags">Editar etiquetas</string>
+    <string name="create_tag">Crear etiqueta</string>
+    <string name="add_tag">Añadir etiqueta</string>
+    <string name="delete_tag">Eliminar etiquetas</string>
+    <string name="delete">Borrar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="delete_tag_title">¿Eliminar etiqueta?</string>
+    <string name="delete_tag_description">Borraremos esta etiqueta y la quitaremos de todos tus deseos. Tus deseos no serán eliminados.</string>
+    <string name="delete_wish_title">¿Eliminar deseo?</string>
+    <string name="delete_wishes_title">¿Eliminar los deseos seleccionados?</string>
+    <string name="fail_to_open_link">No se pudo abrir el enlace</string>
+    <string name="open_link">Enlace abierto</string>
+    <string name="wish_done">Hecho</string>
+    <string name="wish_not_done">No hecho</string>
+    <string name="completed_wishes">Deseos hechos</string>
+    <string name="wish_done_snack_message">Deseo movido a completado</string>
+    <string name="delete_wishes_error_message">Ocurrió un error al eliminar deseos</string>
+    <string name="empty_current_wishes_message">Aún no ha agregado ningún deseo, haga clic en el botón más a continuación para agregar un nuevo deseo</string>
+    <string name="empty_done_wishes_message">Aún no has completado ningún deseo</string>
+    <string name="empty_tagged_wishes_message">Aún no has añadido la etiqueta %s a ningún deseo</string>
+    <string name="share_app">Comparta la aplicación</string>
+    <string name="share_app_text">Pruebe esta aplicación para almacenar y compartir sus deseos y https://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
+</resources>
