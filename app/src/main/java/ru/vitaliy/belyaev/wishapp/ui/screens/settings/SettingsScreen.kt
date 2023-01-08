@@ -15,10 +15,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -39,8 +37,6 @@ import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.BackupSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.ThemeSettingBlock
-import ru.vitaliy.belyaev.wishapp.ui.screens.settings.entity.Backup
-import ru.vitaliy.belyaev.wishapp.ui.screens.settings.entity.SettingItem
 import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
@@ -58,19 +54,12 @@ fun SettingsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
-    val settingItem: MutableState<SettingItem> = remember { mutableStateOf(Backup) }
     val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
     val scrollState: ScrollState = rememberScrollState()
 
     WishAppBottomSheet(
         sheetState = modalBottomSheetState,
-        sheetContent = {
-            when (settingItem.value) {
-                is Backup -> BackupSheetContent(modalBottomSheetState)
-                else -> {
-                }
-            }
-        },
+        sheetContent = { BackupSheetContent(modalBottomSheetState) },
         modifier = Modifier.navigationBarsPadding()
     ) {
         Scaffold(
@@ -126,7 +115,6 @@ fun SettingsScreen(
                     title = stringResource(R.string.backup),
                     onClick = {
                         viewModel.onBackupAndRestoreItemClicked()
-                        settingItem.value = Backup
                         scope.launch {
                             modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
                         }

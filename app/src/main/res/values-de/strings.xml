@@ -1,0 +1,50 @@
+<resources>
+    <string name="enter_title">Titel</string>
+    <string name="enter_link">Link</string>
+    <string name="enter_comment">Kommentar</string>
+    <string name="without_title">Ohne Titel</string>
+    <string name="wish_list_title">Das ist meine Wunschliste:</string>
+    <string name="select_all">Wählen Sie Alle</string>
+    <string name="settings">Einstellungen</string>
+    <string name="feedback">Schreiben Sie an Entwickler</string>
+    <string name="licenses">Open-Source-Lizenzen</string>
+    <string name="backup">Sichern und Wiederherstellen</string>
+    <string name="privacy_policy">Datenschutz-Bestimmungen</string>
+    <string name="about_app">Über App</string>
+    <string name="rate_app">Bewertungs App</string>
+    <string name="theme_title">Thema</string>
+    <string name="other">Andere</string>
+    <string name="app_description"><![CDATA[Dies ist eine Open-Source-App, Sie können den Code <a href=https://github.com/VitaliyBelyaev/WishApp">hier</a> überprüfen]]></string>
+    <string name="app_version_pattern">Version %s</string>
+    <string name="theme_system_title">Systemstandard</string>
+    <string name="theme_system_description">Das gleiche wie auf dem Gerät</string>
+    <string name="theme_dark">Dunkel</string>
+    <string name="theme_light">Hell</string>
+    <string name="backup_description">Ihre Daten werden automatisch in Ihrem Google-Konto gespeichert.\n\nNach der Neuinstallation der Anwendung werden Ihre Daten automatisch wiederhergestellt.\n\nDamit die automatische Sicherung Ihrer Daten funktioniert, müssen Sie die Sicherung in den Telefoneinstellungen aktivieren.</string>
+    <string name="no_email_app_error">Sie haben keine E-Mail-Anwendung auf Ihrem Gerät</string>
+    <string name="feedback_subject_pattern">Rückmeldung. Anwendung %s</string>
+    <string name="enter_label_name">Labelnamen eingeben</string>
+    <string name="create_new_pattern">Erstellen \"%s\"</string>
+    <string name="all_wishes">Aktuelle Wünsche</string>
+    <string name="edit_tags">Etiketten bearbeiten</string>
+    <string name="create_tag">Etikett erstellen</string>
+    <string name="add_tag">Etikett hinzufügen</string>
+    <string name="delete">Löschen</string>
+    <string name="cancel">Absagen</string>
+    <string name="delete_tag_title">Etikett löschen?</string>
+    <string name="delete_tag_description">Wir löschen dieses Label und entfernen es aus allen Ihren Wünschen. Ihre Wünsche werden nicht gelöscht.</string>
+    <string name="delete_wish_title">Wunsch löschen?</string>
+    <string name="delete_wishes_title">Ausgewählte Wünsche löschen?</string>
+    <string name="fail_to_open_link">Link konnte nicht geöffnet werden</string>
+    <string name="open_link">Verbindung öffnen</string>
+    <string name="wish_done">Geschafft</string>
+    <string name="wish_not_done">Nicht durchgeführt</string>
+    <string name="completed_wishes">Erledigte Wünsche</string>
+    <string name="wish_done_snack_message">Wunsch wurde in abgeschlossen verschoben</string>
+    <string name="delete_wishes_error_message">Beim Löschen von Wünschen ist ein Fehler aufgetreten</string>
+    <string name="empty_current_wishes_message">Sie haben noch keine Wünsche hinzugefügt, klicken Sie unten auf die Plus-Schaltfläche, um einen neuen Wunsch hinzuzufügen</string>
+    <string name="empty_done_wishes_message">Du hast noch keine Wünsche abgeschlossen</string>
+    <string name="empty_tagged_wishes_message">Sie haben Label %s noch keinem Wunsch hinzugefügt</string>
+    <string name="share_app">App teilen</string>
+    <string name="share_app_text">Probieren Sie diese App zum Speichern und Teilen Ihrer Wünsche aus\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
+</resources>
