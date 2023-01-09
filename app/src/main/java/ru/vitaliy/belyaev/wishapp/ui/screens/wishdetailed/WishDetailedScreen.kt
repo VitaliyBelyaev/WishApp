@@ -30,6 +30,7 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -81,6 +82,7 @@ import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 import timber.log.Timber
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
@@ -271,9 +273,11 @@ fun WishDetailedScreen(
                             onLinkPreviewClick = onLinkPreviewClick,
                         )
                     }
+
                     is Loading -> {
                         LinkPreviewLoading(pd)
                     }
+
                     is NoData -> {
                         LinkPreview(
                             linkInfo = LinkInfo(title = stringResource(R.string.open_link)),
@@ -282,9 +286,11 @@ fun WishDetailedScreen(
                             onLinkPreviewClick = onLinkPreviewClick,
                         )
                     }
+
                     is None -> {
                         //nothing
                     }
+
                     else -> {
                         //nothing
                     }

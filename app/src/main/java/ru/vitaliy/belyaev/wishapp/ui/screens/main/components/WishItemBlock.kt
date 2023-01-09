@@ -14,10 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,7 +71,7 @@ fun WishItemBlock(
 
                 ThemedIcon(
                     painter = painterResource(R.drawable.ic_arrow_up_24),
-                    contentDescription = "Drag",
+                    contentDescription = "Move up",
                     modifier = Modifier
                         .requiredSize(36.dp)
 
@@ -82,9 +81,9 @@ fun WishItemBlock(
 
         Box(modifier = Modifier.weight(8f)) {
             val backgroundColor: Color = if (isSelected) {
-                MaterialTheme.colors.primary.copy(alpha = 0.4f)
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
             } else {
-                MaterialTheme.colors.background
+                MaterialTheme.colorScheme.background
             }
             val baseShape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius))
             val borderWidth = if (isSelected) {
@@ -116,7 +115,7 @@ fun WishItemBlock(
                     Text(
                         text = title,
                         color = titleColor,
-                        style = MaterialTheme.typography.h6.copy(
+                        style = MaterialTheme.typography.titleLarge.copy(
                             textDecoration = if (wishItem.isCompleted) TextDecoration.LineThrough else null
                         ),
                         maxLines = 2,
@@ -134,10 +133,9 @@ fun WishItemBlock(
                         }
                     )
                     if (wishItem.link.isNotBlank()) {
-                        Icon(
+                        ThemedIcon(
                             painterResource(R.drawable.ic_link),
                             contentDescription = "Link",
-                            tint = Color.Gray,
                             modifier = Modifier
                                 .size(20.dp)
                                 .constrainAs(linkIconRef) {
@@ -177,10 +175,9 @@ fun WishItemBlock(
             ) {
                 ThemedIcon(
                     painter = painterResource(R.drawable.ic_arrow_down_24),
-                    contentDescription = "Drag",
+                    contentDescription = "Move down",
                     modifier = Modifier
                         .requiredSize(36.dp)
-
                 )
             }
         }

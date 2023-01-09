@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.WishApp" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+    <style name="Theme.WishApp" parent="Theme.Material3.DayNight.NoActionBar" />
 
     <style name="WishAppSplash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/primaryColor</item>
@@ -9,14 +9,14 @@
         <item name="postSplashScreenTheme">@style/Theme.WishApp</item>
     </style>
 
-    <style name="LicensesTheme" parent="Theme.MaterialComponents.DayNight">
+    <style name="LicensesTheme" parent="Theme.Material3.DayNight">
         <item name="android:statusBarColor">@color/statusBarColor</item>
         <item name="android:windowLightStatusBar">@bool/is_day_theme</item>
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="toolbarStyle">@style/LicensesToolbarStyle</item>
     </style>
 
-    <style name="LicensesToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
+    <style name="LicensesToolbarStyle" parent="Widget.Material3.Toolbar">
         <item name="android:background">@color/statusBarColor</item>
     </style>
 </resources>

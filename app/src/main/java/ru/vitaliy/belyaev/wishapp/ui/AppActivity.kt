@@ -14,7 +14,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -27,7 +26,7 @@ import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
-import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
+import ru.vitaliy.belyaev.wishapp.ui.theme.material3.WishAppThemeMaterial3
 import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 
 @ExperimentalFoundationApi
@@ -70,16 +69,27 @@ class AppActivity : AppCompatActivity() {
 
         setContent {
             val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
-            WishAppTheme(selectedTheme = selectedTheme) {
-                ProvideWindowInsets {
-                    Surface(
-                        color = MaterialTheme.colors.background,
-                        modifier = Modifier.statusBarsPadding()
-                    ) {
-                        Navigation { viewModel.onShareWishListClicked(it) }
-                    }
+            WishAppThemeMaterial3(selectedTheme = selectedTheme) {
+//                ProvideWindowInsets {
+                Surface(
+                    color = MaterialTheme.colors.background,
+                    modifier = Modifier.statusBarsPadding()
+                ) {
+                    Navigation { viewModel.onShareWishListClicked(it) }
                 }
+//                }
             }
+
+//            WishAppTheme(selectedTheme = selectedTheme) {
+//                ProvideWindowInsets {
+//                    Surface(
+//                        color = MaterialTheme.colors.background,
+//                        modifier = Modifier.statusBarsPadding()
+//                    ) {
+//                        Navigation { viewModel.onShareWishListClicked(it) }
+//                    }
+//                }
+//            }
         }
     }
 

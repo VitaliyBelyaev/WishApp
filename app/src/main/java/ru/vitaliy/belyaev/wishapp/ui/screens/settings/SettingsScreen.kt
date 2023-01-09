@@ -84,10 +84,10 @@ fun SettingsScreen(
                 } else {
                     settingsScreenNavBarColor
                 }
-                systemUiController.setNavigationBarColor(
-                    color = navbarColor,
-                    darkIcons = useDarkIcons
-                )
+//                systemUiController.setNavigationBarColor(
+//                    color = navbarColor,
+//                    darkIcons = useDarkIcons
+//                )
             }
 
             Column(
