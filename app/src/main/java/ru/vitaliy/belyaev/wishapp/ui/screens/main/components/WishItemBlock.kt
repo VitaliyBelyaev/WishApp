@@ -38,7 +38,6 @@ import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.ReorderButtonState
-import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 
 @ExperimentalFoundationApi
 @Composable
@@ -96,7 +95,7 @@ fun WishItemBlock(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = backgroundColor, shape = baseShape)
-                    .border(borderWidth, localTheme.colors.iconPrimaryColor, baseShape)
+                    .border(borderWidth, MaterialTheme.colorScheme.onSurfaceVariant, baseShape)
                     .clip(baseShape)
                     .combinedClickable(
                         onLongClick = { onWishLongPress(wishItem) },

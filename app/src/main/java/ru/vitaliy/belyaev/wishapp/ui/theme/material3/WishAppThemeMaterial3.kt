@@ -52,10 +52,10 @@ fun WishAppThemeMaterial3(selectedTheme: Theme, content: @Composable () -> Unit)
         color = colorScheme.background,
         darkIcons = !isDark
     )
-//    systemUiController.setNavigationBarColor(
-//        color = MaterialTheme.colorScheme.background,
-//        darkIcons = !isDark
-//    )
+    systemUiController.setNavigationBarColor(
+        color = colorScheme.background,
+        darkIcons = !isDark
+    )
 
     CompositionLocalProvider(
         LocalWishAppTheme provides wishAppTheme

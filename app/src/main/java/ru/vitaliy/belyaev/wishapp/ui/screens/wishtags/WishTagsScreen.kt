@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -41,7 +42,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
-import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.ScrollAwareTopAppBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.AddTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.TagItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
@@ -78,7 +78,7 @@ fun WishTagsScreen(
 
     Scaffold(
         topBar = {
-            ScrollAwareTopAppBar(
+            TopAppBar(
                 title = {
                     TextField(
                         modifier = Modifier

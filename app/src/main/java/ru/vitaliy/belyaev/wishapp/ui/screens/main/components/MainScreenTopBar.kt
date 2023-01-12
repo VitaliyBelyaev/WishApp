@@ -24,8 +24,7 @@ fun MainScreenTopBar(
     wishesFilter: WishesFilter,
     onSettingIconClicked: () -> Unit,
     onDeleteSelectedClicked: () -> Unit,
-    isScrollInInitialState: (() -> Boolean),
-    topAppBarScrollBehavior: TopAppBarScrollBehavior,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
     viewModel: MainViewModel
 ) {
     if (selectedIds.isEmpty()) {
@@ -36,8 +35,7 @@ fun MainScreenTopBar(
         }
         WishAppTopBar(
             title = title,
-            isScrollInInitialState = isScrollInInitialState,
-            topAppBarScrollBehavior = topAppBarScrollBehavior,
+            scrollBehavior = scrollBehavior,
             actions = {
                 if (BuildConfig.DEBUG) {
                     IconButton(onClick = { viewModel.onAddTestWishClicked() }) {
@@ -61,8 +59,7 @@ fun MainScreenTopBar(
             onCloseEditModeClicked = { viewModel.onCloseEditModeClicked() },
             onDeleteSelectedClicked = onDeleteSelectedClicked,
             onSelectAllClicked = { viewModel.onSelectAllClicked() },
-            isScrollInInitialState = isScrollInInitialState,
-            topAppBarScrollBehavior = topAppBarScrollBehavior
+            scrollBehavior = scrollBehavior
         )
     }
 }

@@ -71,6 +71,7 @@ fun TagsSheetContent(
             ThemedIcon(
                 painter = painterResource(R.drawable.ic_close),
                 contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(32.dp)
             )
         }
@@ -150,7 +151,7 @@ fun NavMenuItemBlock(
     onClick: () -> Unit
 ) {
 
-    val bgColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.3f) else Color.Transparent
+    val bgColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else Color.Transparent
     val cornerRadius = 50.dp
     val shape = RoundedCornerShape(topEnd = cornerRadius, bottomEnd = cornerRadius)
     Row(
@@ -165,11 +166,13 @@ fun NavMenuItemBlock(
         ThemedIcon(
             painter = icon,
             contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(24.dp)
         )
         Text(
             text = title,
             maxLines = 1,
+            color = MaterialTheme.colorScheme.onSurface,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(start = 12.dp),
         )

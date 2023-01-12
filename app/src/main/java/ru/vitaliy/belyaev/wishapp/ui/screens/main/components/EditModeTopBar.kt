@@ -11,6 +11,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -21,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
-import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.ScrollAwareTopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,11 +30,10 @@ fun EditModeTopBar(
     onCloseEditModeClicked: () -> Unit,
     onDeleteSelectedClicked: () -> Unit,
     onSelectAllClicked: () -> Unit,
-    isScrollInInitialState: (() -> Boolean)? = null,
-    topAppBarScrollBehavior: TopAppBarScrollBehavior? = null
+    scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
     val expanded = remember { mutableStateOf(false) }
-    ScrollAwareTopAppBar(
+    TopAppBar(
         title = { Text(text = selectedCount.toString()) },
         navigationIcon = {
             IconButton(onClick = onCloseEditModeClicked) {
@@ -75,8 +74,7 @@ fun EditModeTopBar(
             }
 
         },
-        isScrollInInitialState = isScrollInInitialState,
-        topAppBarScrollBehavior = topAppBarScrollBehavior
+        scrollBehavior = scrollBehavior
     )
 }
 

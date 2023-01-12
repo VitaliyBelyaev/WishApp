@@ -6,6 +6,8 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -14,7 +16,6 @@ import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.ReorderButtonState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
-import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 
 @Composable
 fun WishAppBottomBar(
@@ -35,9 +36,9 @@ fun WishAppBottomBar(
         if (wishes.isNotEmpty() && reorderButtonState is ReorderButtonState.Visible) {
             IconButton(onClick = { onReorderClick() }) {
                 val tint = if (reorderButtonState.isEnabled) {
-                    localTheme.colors.invertedIconColor
+                    MaterialTheme.colorScheme.primary
                 } else {
-                    localTheme.colors.iconPrimaryColor
+                    LocalContentColor.current
                 }
                 ThemedIcon(
                     painter = painterResource(R.drawable.img_reorder_filled),

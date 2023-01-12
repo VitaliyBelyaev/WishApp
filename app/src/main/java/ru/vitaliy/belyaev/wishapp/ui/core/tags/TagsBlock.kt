@@ -6,8 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +22,6 @@ import com.google.accompanist.flowlayout.FlowRow
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
-import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 
 @Composable
 fun TagsBlock(
@@ -39,7 +38,7 @@ fun TagsBlock(
         modifier = modifier
     ) {
         val shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius))
-        val tagBgColor: Color = localTheme.colors.backgroundColorSecondary
+        val tagBgColor: Color = MaterialTheme.colorScheme.secondaryContainer
         val verticalPadding = (textSize.value * 3 / 4).dp
         val horizontalPadding = (textSize.value / 2).dp
 
@@ -50,7 +49,7 @@ fun TagsBlock(
                 modifier = Modifier
                     .border(
                         width = borderWidth,
-                        color = MaterialTheme.colors.primary,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         shape = shape
                     )
                     .clip(shape)

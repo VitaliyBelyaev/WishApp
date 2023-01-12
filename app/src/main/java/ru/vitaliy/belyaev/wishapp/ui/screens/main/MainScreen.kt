@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
@@ -35,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,7 +60,6 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
 import ru.vitaliy.belyaev.wishapp.ui.theme.material3.isLight
-import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @ExperimentalComposeUiApi
@@ -91,6 +88,7 @@ fun MainScreen(
     val openDeleteConfirmDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+    val systemUiController = rememberSystemUiController()
 
     LaunchedEffect(key1 = Unit) {
         appViewModel.showSnackOnMainFlow.collect {
@@ -110,6 +108,21 @@ fun MainScreen(
         }
     }
 
+    val useDarkIcons = MaterialTheme.colorScheme.isLight()
+    val mainScreenNavBarColor = MaterialTheme.colorScheme.background
+    val bottomSheetNavbarColor = MaterialTheme.colorScheme.surface
+    LaunchedEffect(key1 = modalBottomSheetState.targetValue) {
+        val navbarColor = if (modalBottomSheetState.targetValue != ModalBottomSheetValue.Hidden) {
+            bottomSheetNavbarColor
+        } else {
+            mainScreenNavBarColor
+        }
+//        systemUiController.setNavigationBarColor(
+//            color = navbarColor,
+//            darkIcons = useDarkIcons
+//        )
+    }
+
     WishAppBottomSheet(
         sheetState = modalBottomSheetState,
         sheetContent = {
@@ -123,7 +136,6 @@ fun MainScreen(
         },
         modifier = Modifier.navigationBarsPadding()
     ) {
-
         val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
         Scaffold(
             modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
@@ -133,8 +145,7 @@ fun MainScreen(
                     wishesFilter = state.wishesFilter,
                     onSettingIconClicked = onSettingIconClicked,
                     onDeleteSelectedClicked = { openDeleteConfirmDialog.value = true },
-                    isScrollInInitialState = { lazyListState.isScrollInInitialState() },
-                    topAppBarScrollBehavior = topAppBarScrollBehavior,
+                    scrollBehavior = topAppBarScrollBehavior,
                     viewModel = viewModel
                 )
             },
@@ -235,25 +246,8 @@ fun MainScreen(
                 Loader(modifier = Modifier.padding(paddingValues))
             }
 
-            val systemUiController = rememberSystemUiController()
-            val useDarkIcons = MaterialTheme.colorScheme.isLight()
-            val mainScreenNavBarColor = MaterialTheme.colorScheme.background
-            val bottomSheetNavbarColor = MaterialTheme.colorScheme.surface
-            LaunchedEffect(key1 = modalBottomSheetState.targetValue) {
-                val navbarColor = if (modalBottomSheetState.targetValue != ModalBottomSheetValue.Hidden) {
-                    bottomSheetNavbarColor
-                } else {
-                    mainScreenNavBarColor
-                }
-//                systemUiController.setNavigationBarColor(
-//                    color = navbarColor,
-//                    darkIcons = useDarkIcons
-//                )
-            }
-
             if (openDeleteConfirmDialog.value) {
                 AlertDialog(
-                    shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius)),
                     onDismissRequest = { openDeleteConfirmDialog.value = false },
                     title = { Text(stringResource(R.string.delete_wishes_title)) },
                     confirmButton = {

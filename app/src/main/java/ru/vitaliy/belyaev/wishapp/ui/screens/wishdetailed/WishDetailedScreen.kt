@@ -15,22 +15,21 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -78,8 +77,6 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.NoData
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
-import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
-import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -129,7 +126,6 @@ fun WishDetailedScreen(
                 "",
                 withBackIcon = true,
                 onBackPressed = handleBackPressed,
-                isScrollInInitialState = { scrollState.isScrollInInitialState() },
                 actions = {
                     IconButton(
                         onClick = {
@@ -188,7 +184,7 @@ fun WishDetailedScreen(
                         .fillMaxWidth()
                         .focusRequester(focusRequester),
                     value = title,
-                    textStyle = MaterialTheme.typography.h5.copy(
+                    textStyle = MaterialTheme.typography.headlineMedium.copy(
                         textDecoration = if (isCompleted) TextDecoration.LineThrough else null
                     ),
                     onValueChange = { newValue ->
@@ -198,11 +194,11 @@ fun WishDetailedScreen(
                     placeholder = {
                         Text(
                             text = stringResource(R.string.enter_title),
-                            style = MaterialTheme.typography.h5,
+                            style = MaterialTheme.typography.headlineMedium,
                         )
                     },
                     colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Color.Transparent,
+                        containerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                     ),
@@ -231,7 +227,7 @@ fun WishDetailedScreen(
                     },
                     placeholder = { Text(text = stringResource(R.string.enter_comment)) },
                     colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Color.Transparent,
+                        containerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                     ),
@@ -255,7 +251,7 @@ fun WishDetailedScreen(
                     },
                     placeholder = { Text(text = stringResource(R.string.enter_link)) },
                     colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Color.Transparent,
+                        containerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                     )
@@ -314,19 +310,15 @@ fun WishDetailedScreen(
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
-            val bottomPanelElevation = if (MaterialTheme.colors.isLight) {
-                AppBarDefaults.BottomAppBarElevation
-            } else {
-                0.dp
-            }
+
             val text = if (isCompleted) {
                 stringResource(R.string.wish_not_done)
             } else {
                 stringResource(R.string.wish_done)
             }
             Surface(
-                color = localTheme.colors.surfaceColor,
-                elevation = bottomPanelElevation,
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 3.dp,
                 modifier = Modifier
                     .constrainAs(bottomPanelRef) {
                         start.linkTo(parent.start)
@@ -355,8 +347,7 @@ fun WishDetailedScreen(
                     ) {
                         Text(
                             text = text,
-                            style = MaterialTheme.typography.button,
-                            color = MaterialTheme.colors.onSurface
+                            style = MaterialTheme.typography.labelLarge,
                         )
                     }
                 }
@@ -368,7 +359,6 @@ fun WishDetailedScreen(
     if (wishToDelete.isPresent) {
         AlertDialog(
             shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius)),
-            backgroundColor = localTheme.colors.bottomSheetBackgroundColor,
             onDismissRequest = { openDialog.value = Optional.empty() },
             title = { Text(stringResource(R.string.delete_wish_title)) },
             confirmButton = {
@@ -381,8 +371,7 @@ fun WishDetailedScreen(
                     }
                 ) {
                     Text(
-                        stringResource(R.string.delete),
-                        color = MaterialTheme.colors.onSurface
+                        stringResource(R.string.delete)
                     )
                 }
             },
@@ -392,7 +381,6 @@ fun WishDetailedScreen(
                 ) {
                     Text(
                         stringResource(R.string.cancel),
-                        color = MaterialTheme.colors.onSurface
                     )
                 }
             }

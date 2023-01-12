@@ -10,18 +10,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkInfo
@@ -46,7 +48,7 @@ fun LinkPreview(
             .padding(paddingValues)
             .border(
                 width = borderWidth,
-                color = MaterialTheme.colors.primary,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 shape = shape
             )
             .clip(shape)
@@ -57,12 +59,12 @@ fun LinkPreview(
 
         if (imageUrl.isNotBlank()) {
             Image(
-                painter = rememberImagePainter(
-                    data = linkInfo.imageUrl,
-                    builder = {
-                        placeholder(R.drawable.ic_image_24)
-                        error(R.drawable.ic_image_24)
-                    }
+                painter = rememberAsyncImagePainter(
+                    ImageRequest.Builder(LocalContext.current).data(data = linkInfo.imageUrl)
+                        .apply(block = fun ImageRequest.Builder.() {
+                            placeholder(R.drawable.ic_image_24)
+                            error(R.drawable.ic_image_24)
+                        }).build()
                 ),
                 contentDescription = null,
                 modifier = Modifier
@@ -79,7 +81,7 @@ fun LinkPreview(
 
         Text(
             text = linkInfo.title,
-            style = MaterialTheme.typography.body1,
+            style = MaterialTheme.typography.bodyLarge,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier

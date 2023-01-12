@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -17,7 +17,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.shimmer
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 
 @Composable
 fun LinkPreviewLoading(paddingValues: PaddingValues) {
@@ -32,12 +31,12 @@ fun LinkPreviewLoading(paddingValues: PaddingValues) {
             .padding(paddingValues)
             .border(
                 width = borderWidth,
-                color = MaterialTheme.colors.primary,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 shape = shape
             )
             .clip(shape)
             .shimmer()
-            .background(color = localTheme.colors.primaryColor)
+            .background(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
     )
 }
 
