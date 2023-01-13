@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -26,7 +25,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
@@ -39,7 +37,6 @@ import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.components.EditTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
 import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
-import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 
 @ExperimentalMaterial3Api
 @ExperimentalComposeUiApi
@@ -77,7 +74,6 @@ fun EditTagsScreen(
                 title = stringResource(R.string.edit_tags),
                 withBackIcon = true,
                 onBackPressed = handleBackPressed,
-                isScrollInInitialState = { lazyListState.isScrollInInitialState() }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -121,7 +117,6 @@ fun EditTagsScreen(
         val tagToDelete = openDialog.value
         if (tagToDelete.isPresent) {
             AlertDialog(
-                shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius)),
                 backgroundColor = localTheme.colors.bottomSheetBackgroundColor,
                 onDismissRequest = { openDialog.value = Optional.empty() },
                 title = { Text(stringResource(R.string.delete_tag_title)) },

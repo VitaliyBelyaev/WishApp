@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -80,11 +78,11 @@ fun WishItemBlock(
 
         Box(modifier = Modifier.weight(8f)) {
             val backgroundColor: Color = if (isSelected) {
-                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
             } else {
                 MaterialTheme.colorScheme.background
             }
-            val baseShape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius))
+            val baseShape = MaterialTheme.shapes.medium
             val borderWidth = if (isSelected) {
                 1.5.dp
             } else {
@@ -95,7 +93,7 @@ fun WishItemBlock(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = backgroundColor, shape = baseShape)
-                    .border(borderWidth, MaterialTheme.colorScheme.onSurfaceVariant, baseShape)
+                    .border(borderWidth, MaterialTheme.colorScheme.onBackground, baseShape)
                     .clip(baseShape)
                     .combinedClickable(
                         onLongClick = { onWishLongPress(wishItem) },

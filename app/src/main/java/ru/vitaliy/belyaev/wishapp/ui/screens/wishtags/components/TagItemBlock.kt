@@ -2,9 +2,10 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Checkbox
-import androidx.compose.material.CheckboxDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -16,7 +17,6 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
-import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 
 @Composable
 fun TagItemBlock(tagItem: TagItem, onClick: (TagItem) -> Unit) {
@@ -32,6 +32,7 @@ fun TagItemBlock(tagItem: TagItem, onClick: (TagItem) -> Unit) {
         ThemedIcon(
             painter = painterResource(R.drawable.ic_label),
             contentDescription = "Tag",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier
                 .constrainAs(iconRef) {
                     top.linkTo(parent.top, margin = verticalPadding)
@@ -49,9 +50,7 @@ fun TagItemBlock(tagItem: TagItem, onClick: (TagItem) -> Unit) {
                 end.linkTo(checkboxRef.start, margin = 8.dp)
             }
         )
-        val checkboxColors = CheckboxDefaults.colors(
-            checkedColor = localTheme.colors.primaryColor
-        )
+        val checkboxColors = CheckboxDefaults.colors()
 
         Checkbox(
             checked = tagItem.isSelected,
