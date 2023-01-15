@@ -37,7 +37,6 @@ import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
 import ru.vitaliy.belyaev.wishapp.utils.annotatedStringResource
 import ru.vitaliy.belyaev.wishapp.utils.createSendEmailIntent
-import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalMaterialApi
@@ -72,7 +71,6 @@ fun AboutAppScreen(
                 stringResource(R.string.about_app),
                 withBackIcon = true,
                 onBackPressed = onBackPressed,
-                isScrollInInitialState = { scrollState.isScrollInInitialState() }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },

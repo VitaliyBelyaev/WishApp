@@ -1,8 +1,10 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishtags
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
@@ -39,7 +41,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.navigationBarsWithImePadding
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.AddTagBlock
@@ -135,7 +136,7 @@ fun WishTagsScreen(
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        modifier = Modifier.navigationBarsWithImePadding()
+        contentWindowInsets = WindowInsets.Companion.safeDrawing
     ) { paddingValues ->
         Divider()
 

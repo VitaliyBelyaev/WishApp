@@ -30,7 +30,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -138,7 +138,6 @@ fun WishDetailedScreen(
         var title: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.title }) }
         var link: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.link }) }
         var comment: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.comment }) }
-        val focusRequester = remember { FocusRequester() }
         val isCompleted: Boolean = wishItem.toValueOfNull()?.wish?.isCompleted ?: false
 
         ConstraintLayout(
@@ -160,6 +159,7 @@ fun WishDetailedScreen(
                         height = Dimension.fillToConstraints
                     }
             ) {
+                val focusRequester = remember { FocusRequester() }
                 TextField(
                     modifier = Modifier
                         .padding(top = 8.dp)
@@ -188,10 +188,11 @@ fun WishDetailedScreen(
                         capitalization = KeyboardCapitalization.Sentences
                     )
                 )
-                LaunchedEffect(title) {
+                DisposableEffect(title) {
                     if (title.isBlank()) {
                         focusRequester.requestFocus()
                     }
+                    onDispose { }
                 }
 
                 TextField(

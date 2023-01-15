@@ -3,8 +3,8 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.main
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -134,7 +134,7 @@ fun MainScreen(
                 onEditTagsClicked = onEditTagClick
             )
         },
-        modifier = Modifier.navigationBarsPadding()
+        modifier = Modifier.safeDrawingPadding()
     ) {
         val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
         Scaffold(

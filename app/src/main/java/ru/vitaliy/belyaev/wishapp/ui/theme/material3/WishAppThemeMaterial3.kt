@@ -7,16 +7,13 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import okhttp3.internal.toHexString
 import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.ui.theme.DayWishAppTheme
 import ru.vitaliy.belyaev.wishapp.ui.theme.LocalWishAppTheme
 import ru.vitaliy.belyaev.wishapp.ui.theme.NightWishAppTheme
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
-import timber.log.Timber
 
 fun ColorScheme.isLight(): Boolean {
     return this == LightColors
@@ -47,7 +44,6 @@ fun WishAppThemeMaterial3(selectedTheme: Theme, content: @Composable () -> Unit)
 
     val systemUiController = rememberSystemUiController()
 
-    Timber.tag("RTRT").d("setStatusBarColor, ${colorScheme.background.toArgb().toHexString()}")
     systemUiController.setStatusBarColor(
         color = colorScheme.background,
         darkIcons = !isDark

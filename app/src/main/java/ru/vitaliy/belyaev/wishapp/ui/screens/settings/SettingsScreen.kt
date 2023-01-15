@@ -13,6 +13,7 @@ import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,9 +40,9 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.ThemeSettingBlock
 import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
-import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
 import ru.vitaliy.belyaev.wishapp.utils.openGooglePlay
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalMaterialApi
 @Composable
 fun SettingsScreen(
@@ -68,7 +69,6 @@ fun SettingsScreen(
                     stringResource(R.string.settings),
                     withBackIcon = true,
                     onBackPressed = onBackPressed,
-                    isScrollInInitialState = { scrollState.isScrollInInitialState() }
                 )
             },
             snackbarHost = { SnackbarHost(snackbarHostState) }
