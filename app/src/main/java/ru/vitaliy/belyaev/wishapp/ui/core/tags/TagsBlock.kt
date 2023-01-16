@@ -47,7 +47,7 @@ fun TagsBlock(
                 modifier = Modifier
                     .border(
                         width = borderWidth,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                         shape = shape
                     )
                     .clip(shape)

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="LicensesTheme" parent="Theme.Material3.DayNight">
+        <item name="android:statusBarColor">@color/status_bar_color_for_licenses</item>
+        <item name="android:windowLightStatusBar">@bool/is_day_theme</item>
+    </style>
+
+</resources>

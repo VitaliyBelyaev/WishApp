@@ -1,5 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui.theme.material3
 
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -33,8 +34,8 @@ fun WishAppThemeMaterial3(selectedTheme: Theme, content: @Composable () -> Unit)
         DayWishAppTheme
     }
 
-//    val isDynamicColorAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-    val isDynamicColorAvailable = false
+    val isDynamicColorAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+//    val isDynamicColorAvailable = false
     val colorScheme = when {
         isDynamicColorAvailable && isDark -> dynamicDarkColorScheme(LocalContext.current)
         isDynamicColorAvailable && !isDark -> dynamicLightColorScheme(LocalContext.current)
@@ -49,7 +50,7 @@ fun WishAppThemeMaterial3(selectedTheme: Theme, content: @Composable () -> Unit)
         darkIcons = !isDark
     )
     systemUiController.setNavigationBarColor(
-        color = colorScheme.background,
+        color = CommonColors.navBarColor(colorScheme),
         darkIcons = !isDark
     )
 

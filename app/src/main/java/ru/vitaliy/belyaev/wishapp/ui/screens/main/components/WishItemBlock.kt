@@ -78,22 +78,27 @@ fun WishItemBlock(
 
         Box(modifier = Modifier.weight(8f)) {
             val backgroundColor: Color = if (isSelected) {
-                MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)
             } else {
-                MaterialTheme.colorScheme.background
+                Color.Transparent
             }
             val baseShape = MaterialTheme.shapes.medium
             val borderWidth = if (isSelected) {
-                1.5.dp
+                2.5.dp
             } else {
                 1.dp
+            }
+            val borderColor = if (isSelected) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
             }
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = backgroundColor, shape = baseShape)
-                    .border(borderWidth, MaterialTheme.colorScheme.onBackground, baseShape)
+                    .border(borderWidth, borderColor, baseShape)
                     .clip(baseShape)
                     .combinedClickable(
                         onLongClick = { onWishLongPress(wishItem) },
@@ -103,9 +108,9 @@ fun WishItemBlock(
             ) {
 
                 val (title, titleColor) = if (wishItem.title.isNotBlank()) {
-                    wishItem.title to Color.Unspecified
+                    wishItem.title to MaterialTheme.colorScheme.onSurfaceVariant
                 } else {
-                    stringResource(R.string.without_title) to Color.Gray
+                    stringResource(R.string.without_title) to MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                 }
                 ConstraintLayout {
                     val (titleRef, linkIconRef) = createRefs()
@@ -113,7 +118,8 @@ fun WishItemBlock(
                         text = title,
                         color = titleColor,
                         style = MaterialTheme.typography.titleLarge.copy(
-                            textDecoration = if (wishItem.isCompleted) TextDecoration.LineThrough else null
+                            textDecoration = if (wishItem.isCompleted) TextDecoration.LineThrough else null,
+                            fontSize = 20.sp
                         ),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
@@ -149,6 +155,7 @@ fun WishItemBlock(
                     Text(
                         text = wishItem.comment,
                         modifier = Modifier.fillMaxWidth(),
+                        style = MaterialTheme.typography.bodyLarge,
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis
                     )

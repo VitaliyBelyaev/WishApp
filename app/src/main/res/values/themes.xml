@@ -4,19 +4,18 @@
     <style name="Theme.WishApp" parent="Theme.Material3.DayNight.NoActionBar" />
 
     <style name="WishAppSplash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/primaryColor</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenBackground">@color/splash_bg_color</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_icon</item>
         <item name="postSplashScreenTheme">@style/Theme.WishApp</item>
     </style>
 
-    <style name="LicensesTheme" parent="Theme.Material3.DayNight">
-        <item name="android:statusBarColor">@color/statusBarColor</item>
+    <style name="LicensesTheme" parent="Theme.MaterialComponents.DayNight">
+        <item name="android:statusBarColor">@color/status_bar_color_for_licenses</item>
         <item name="android:windowLightStatusBar">@bool/is_day_theme</item>
-        <item name="colorPrimary">@color/primaryColor</item>
         <item name="toolbarStyle">@style/LicensesToolbarStyle</item>
     </style>
 
-    <style name="LicensesToolbarStyle" parent="Widget.Material3.Toolbar">
-        <item name="android:background">@color/statusBarColor</item>
+    <style name="LicensesToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
+        <item name="android:background">@color/status_bar_color_for_licenses</item>
     </style>
 </resources>

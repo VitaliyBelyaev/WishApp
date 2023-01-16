@@ -2,8 +2,10 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -12,6 +14,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
@@ -22,6 +25,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -59,7 +63,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.WishItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
-import ru.vitaliy.belyaev.wishapp.ui.theme.material3.isLight
+import ru.vitaliy.belyaev.wishapp.ui.theme.material3.CommonColors
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @ExperimentalComposeUiApi
@@ -108,19 +112,17 @@ fun MainScreen(
         }
     }
 
-    val useDarkIcons = MaterialTheme.colorScheme.isLight()
-    val mainScreenNavBarColor = MaterialTheme.colorScheme.background
-    val bottomSheetNavbarColor = MaterialTheme.colorScheme.surface
-    LaunchedEffect(key1 = modalBottomSheetState.targetValue) {
+    val mainScreenNavBarColor =
+        MaterialTheme.colorScheme.surfaceColorAtElevation(BottomAppBarDefaults.ContainerElevation)
+    val bottomSheetNavbarColor = CommonColors.bottomSheetBgColor()
+
+    LaunchedEffect(key1 = Unit) {
         val navbarColor = if (modalBottomSheetState.targetValue != ModalBottomSheetValue.Hidden) {
             bottomSheetNavbarColor
         } else {
             mainScreenNavBarColor
         }
-//        systemUiController.setNavigationBarColor(
-//            color = navbarColor,
-//            darkIcons = useDarkIcons
-//        )
+        systemUiController.setNavigationBarColor(color = navbarColor)
     }
 
     WishAppBottomSheet(
@@ -139,6 +141,7 @@ fun MainScreen(
         val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
         Scaffold(
             modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
+            contentWindowInsets = WindowInsets.Companion.safeDrawing,
             topBar = {
                 MainScreenTopBar(
                     selectedIds = state.selectedIds,

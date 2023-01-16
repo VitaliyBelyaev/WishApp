@@ -48,7 +48,7 @@ fun LinkPreview(
             .padding(paddingValues)
             .border(
                 width = borderWidth,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                 shape = shape
             )
             .clip(shape)

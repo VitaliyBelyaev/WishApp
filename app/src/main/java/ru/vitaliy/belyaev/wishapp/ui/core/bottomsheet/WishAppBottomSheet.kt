@@ -8,13 +8,13 @@ import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import ru.vitaliy.belyaev.wishapp.ui.theme.material3.CommonColors
 
 @ExperimentalMaterialApi
 @Composable
@@ -24,7 +24,7 @@ fun WishAppBottomSheet(
     sheetState: ModalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden),
     sheetShape: Shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
     sheetElevation: Dp = 0.dp,
-    sheetBackgroundColor: Color = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
+    sheetBackgroundColor: Color = CommonColors.bottomSheetBgColor(),
     sheetContentColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     scrimColor: Color = Color.Black.copy(alpha = 0.5f),
     content: @Composable () -> Unit
