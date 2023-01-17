@@ -9,13 +9,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.core.webview.WebPageBlock
+import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalMaterialApi
@@ -26,6 +29,12 @@ fun PrivacyPolicyScreen(
 ) {
 
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val systemUiController = rememberSystemUiController()
+    val screenNavBarColor = CommonColors.navBarColor()
+    LaunchedEffect(key1 = Unit) {
+        systemUiController.setNavigationBarColor(color = screenNavBarColor)
+    }
 
     Scaffold(
         contentWindowInsets = WindowInsets.Companion.safeDrawing,
