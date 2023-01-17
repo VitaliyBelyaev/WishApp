@@ -271,11 +271,9 @@ fun WishDetailedScreen(
                             onLinkPreviewClick = onLinkPreviewClick,
                         )
                     }
-
                     is Loading -> {
                         LinkPreviewLoading(pd)
                     }
-
                     is NoData -> {
                         LinkPreview(
                             linkInfo = LinkInfo(title = stringResource(R.string.open_link)),
@@ -284,11 +282,9 @@ fun WishDetailedScreen(
                             onLinkPreviewClick = onLinkPreviewClick,
                         )
                     }
-
                     is None -> {
                         //nothing
                     }
-
                     else -> {
                         //nothing
                     }

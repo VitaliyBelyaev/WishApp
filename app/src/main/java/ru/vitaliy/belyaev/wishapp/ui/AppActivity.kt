@@ -62,23 +62,11 @@ class AppActivity : AppCompatActivity() {
                     }
                 }
         }
-
         setContent {
             val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
             WishAppTheme(selectedTheme = selectedTheme) {
                 Navigation { viewModel.onShareWishListClicked(it) }
             }
-
-//            WishAppTheme(selectedTheme = selectedTheme) {
-//                ProvideWindowInsets {
-//                    Surface(
-//                        color = MaterialTheme.colors.background,
-//                        modifier = Modifier.statusBarsPadding()
-//                    ) {
-//                        Navigation { viewModel.onShareWishListClicked(it) }
-//                    }
-//                }
-//            }
         }
     }
 
