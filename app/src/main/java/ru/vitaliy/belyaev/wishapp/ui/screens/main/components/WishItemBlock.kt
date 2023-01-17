@@ -67,11 +67,10 @@ fun WishItemBlock(
             ) {
 
                 ThemedIcon(
+                    modifier = Modifier.requiredSize(36.dp),
                     painter = painterResource(R.drawable.ic_arrow_up_24),
                     contentDescription = "Move up",
-                    modifier = Modifier
-                        .requiredSize(36.dp)
-
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -178,10 +177,10 @@ fun WishItemBlock(
                 modifier = Modifier.weight(2f)
             ) {
                 ThemedIcon(
+                    modifier = Modifier.requiredSize(36.dp),
                     painter = painterResource(R.drawable.ic_arrow_down_24),
                     contentDescription = "Move down",
-                    modifier = Modifier
-                        .requiredSize(36.dp)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

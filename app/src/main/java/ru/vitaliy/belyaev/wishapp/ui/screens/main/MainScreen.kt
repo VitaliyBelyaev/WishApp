@@ -60,6 +60,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
 import ru.vitaliy.belyaev.wishapp.ui.theme.material3.CommonColors
+import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @ExperimentalComposeUiApi
@@ -92,13 +93,13 @@ fun MainScreen(
 
     LaunchedEffect(key1 = Unit) {
         appViewModel.showSnackOnMainFlow.collect {
-            snackbarHostState.showSnackbar(it)
+            snackbarHostState.showDismissableSnackbar(it)
         }
     }
 
     LaunchedEffect(key1 = Unit) {
         viewModel.showSnackFlow.collect {
-            snackbarHostState.showSnackbar(context.getString(it))
+            snackbarHostState.showDismissableSnackbar(context.getString(it))
         }
     }
 

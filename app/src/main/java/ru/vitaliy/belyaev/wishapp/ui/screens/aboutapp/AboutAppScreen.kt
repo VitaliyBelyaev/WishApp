@@ -41,6 +41,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
 import ru.vitaliy.belyaev.wishapp.ui.theme.material3.CommonColors
 import ru.vitaliy.belyaev.wishapp.utils.annotatedStringResource
 import ru.vitaliy.belyaev.wishapp.utils.createSendEmailIntent
+import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalMaterialApi
@@ -64,7 +65,7 @@ fun AboutAppScreen(
             context.startActivity(intent)
         } catch (t: Throwable) {
             scope.launch {
-                snackbarHostState.showSnackbar(context.getString(R.string.no_email_app_error))
+                snackbarHostState.showDismissableSnackbar(context.getString(R.string.no_email_app_error))
             }
         }
     }

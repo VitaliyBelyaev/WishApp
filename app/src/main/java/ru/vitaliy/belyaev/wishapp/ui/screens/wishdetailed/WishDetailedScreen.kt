@@ -78,6 +78,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.NoData
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
+import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -117,7 +118,7 @@ fun WishDetailedScreen(
         } catch (error: Throwable) {
             Timber.e(error)
             scope.launch {
-                snackbarHostState.showSnackbar(context.getString(R.string.fail_to_open_link))
+                snackbarHostState.showDismissableSnackbar(context.getString(R.string.fail_to_open_link))
             }
         }
     }
