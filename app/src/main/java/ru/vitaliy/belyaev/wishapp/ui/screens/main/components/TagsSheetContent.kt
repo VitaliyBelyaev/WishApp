@@ -39,6 +39,7 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
+import ru.vitaliy.belyaev.wishapp.ui.theme.material3.CommonColors
 
 @ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
@@ -106,7 +107,7 @@ fun TagsSheetContent(
                 end.linkTo(parent.end)
             }
         ) {
-            Divider(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f))
+            Divider(color = CommonColors.dividerColor())
             NavMenuItemBlock(
                 icon = painterResource(R.drawable.ic_list_bulleted),
                 title = stringResource(R.string.all_wishes),

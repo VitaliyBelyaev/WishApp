@@ -12,7 +12,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,17 +35,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.AddTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.TagItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
+import ru.vitaliy.belyaev.wishapp.ui.theme.material3.CommonColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalComposeUiApi
@@ -66,6 +69,12 @@ fun WishTagsScreen(
 
     BackHandler { handleBackPressed() }
 
+    val systemUiController = rememberSystemUiController()
+    val screenNavBarColor = CommonColors.navBarColor()
+    LaunchedEffect(key1 = Unit) {
+        systemUiController.setNavigationBarColor(color = screenNavBarColor)
+    }
+
     val onAddTagRequested: () -> Unit = {
         val tagName = query
         if (tagName.isNotBlank()) {
@@ -77,7 +86,9 @@ fun WishTagsScreen(
         }
     }
 
+    val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
+        modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = {
@@ -132,13 +143,13 @@ fun WishTagsScreen(
                     IconButton(onClick = handleBackPressed) {
                         ThemedIcon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
+                scrollBehavior = topAppBarScrollBehavior
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         contentWindowInsets = WindowInsets.Companion.safeDrawing
     ) { paddingValues ->
-        Divider()
 
         LazyColumn(modifier = Modifier.padding(paddingValues)) {
             val showAddTagBlock = query.isNotBlank() && tagItems.none { it.tag.title == query }

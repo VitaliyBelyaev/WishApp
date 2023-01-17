@@ -124,7 +124,10 @@ fun AboutAppScreen(
                         }
                 }
             )
-            Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp))
+            Divider(
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                color = CommonColors.dividerColor()
+            )
             SettingBlock(
                 title = stringResource(R.string.feedback),
                 onClick = { onSendFeedbackClicked() }

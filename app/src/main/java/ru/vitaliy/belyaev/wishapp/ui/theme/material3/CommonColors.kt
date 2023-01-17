@@ -18,4 +18,9 @@ object CommonColors {
     fun navBarColor(colorScheme: ColorScheme? = null): Color {
         return colorScheme?.background ?: MaterialTheme.colorScheme.background
     }
+
+    @Composable
+    fun dividerColor(colorScheme: ColorScheme? = null): Color {
+        return MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+    }
 }
