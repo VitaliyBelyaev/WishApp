@@ -27,7 +27,7 @@ fun WishAppAnimatedNavHost(
     val visibilityThreshold: IntOffset = IntOffset.VisibilityThreshold
 
     // Оставил красивые анимации похожие на те что в телеге, не стал юзать пока, так как
-    // на девайсе жутко тормозило при возвращении на "тяжелые экраны"
+    // на девайсе жутко тормозило при возвращении на "тяжелые экраны", надо будет потестить
     val enter: (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition) = {
         slideIntoContainer(
             towards = AnimatedContentScope.SlideDirection.Left,
