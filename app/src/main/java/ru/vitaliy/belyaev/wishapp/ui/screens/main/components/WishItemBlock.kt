@@ -13,17 +13,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -39,7 +36,6 @@ import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.ReorderButtonState
-import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 
 @ExperimentalFoundationApi
 @Composable
@@ -71,33 +67,37 @@ fun WishItemBlock(
             ) {
 
                 ThemedIcon(
+                    modifier = Modifier.requiredSize(36.dp),
                     painter = painterResource(R.drawable.ic_arrow_up_24),
-                    contentDescription = "Drag",
-                    modifier = Modifier
-                        .requiredSize(36.dp)
-
+                    contentDescription = "Move up",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
 
         Box(modifier = Modifier.weight(8f)) {
             val backgroundColor: Color = if (isSelected) {
-                MaterialTheme.colors.primary.copy(alpha = 0.4f)
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)
             } else {
-                MaterialTheme.colors.background
+                Color.Transparent
             }
-            val baseShape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius))
+            val baseShape = MaterialTheme.shapes.medium
             val borderWidth = if (isSelected) {
-                1.5.dp
+                2.5.dp
             } else {
                 1.dp
+            }
+            val borderColor = if (isSelected) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
             }
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = backgroundColor, shape = baseShape)
-                    .border(borderWidth, localTheme.colors.iconPrimaryColor, baseShape)
+                    .border(borderWidth, borderColor, baseShape)
                     .clip(baseShape)
                     .combinedClickable(
                         onLongClick = { onWishLongPress(wishItem) },
@@ -107,17 +107,18 @@ fun WishItemBlock(
             ) {
 
                 val (title, titleColor) = if (wishItem.title.isNotBlank()) {
-                    wishItem.title to Color.Unspecified
+                    wishItem.title to MaterialTheme.colorScheme.onSurfaceVariant
                 } else {
-                    stringResource(R.string.without_title) to Color.Gray
+                    stringResource(R.string.without_title) to MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                 }
                 ConstraintLayout {
                     val (titleRef, linkIconRef) = createRefs()
                     Text(
                         text = title,
                         color = titleColor,
-                        style = MaterialTheme.typography.h6.copy(
-                            textDecoration = if (wishItem.isCompleted) TextDecoration.LineThrough else null
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            textDecoration = if (wishItem.isCompleted) TextDecoration.LineThrough else null,
+                            fontSize = 20.sp
                         ),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
@@ -134,10 +135,9 @@ fun WishItemBlock(
                         }
                     )
                     if (wishItem.link.isNotBlank()) {
-                        Icon(
+                        ThemedIcon(
                             painterResource(R.drawable.ic_link),
                             contentDescription = "Link",
-                            tint = Color.Gray,
                             modifier = Modifier
                                 .size(20.dp)
                                 .constrainAs(linkIconRef) {
@@ -154,6 +154,7 @@ fun WishItemBlock(
                     Text(
                         text = wishItem.comment,
                         modifier = Modifier.fillMaxWidth(),
+                        style = MaterialTheme.typography.bodyLarge,
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -176,11 +177,10 @@ fun WishItemBlock(
                 modifier = Modifier.weight(2f)
             ) {
                 ThemedIcon(
+                    modifier = Modifier.requiredSize(36.dp),
                     painter = painterResource(R.drawable.ic_arrow_down_24),
-                    contentDescription = "Drag",
-                    modifier = Modifier
-                        .requiredSize(36.dp)
-
+                    contentDescription = "Move down",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

@@ -6,16 +6,11 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import com.google.accompanist.insets.ProvideWindowInsets
-import com.google.accompanist.insets.statusBarsPadding
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.AndroidEntryPoint
@@ -71,15 +66,19 @@ class AppActivity : AppCompatActivity() {
         setContent {
             val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
             WishAppTheme(selectedTheme = selectedTheme) {
-                ProvideWindowInsets {
-                    Surface(
-                        color = MaterialTheme.colors.background,
-                        modifier = Modifier.statusBarsPadding()
-                    ) {
-                        Navigation { viewModel.onShareWishListClicked(it) }
-                    }
-                }
+                Navigation { viewModel.onShareWishListClicked(it) }
             }
+
+//            WishAppTheme(selectedTheme = selectedTheme) {
+//                ProvideWindowInsets {
+//                    Surface(
+//                        color = MaterialTheme.colors.background,
+//                        modifier = Modifier.statusBarsPadding()
+//                    ) {
+//                        Navigation { viewModel.onShareWishListClicked(it) }
+//                    }
+//                }
+//            }
         }
     }
 

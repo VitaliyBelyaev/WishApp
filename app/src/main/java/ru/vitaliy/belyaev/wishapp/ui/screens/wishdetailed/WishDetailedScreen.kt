@@ -7,30 +7,32 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -45,10 +47,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -58,7 +60,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.navigationBarsWithImePadding
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.util.Optional
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -70,17 +72,16 @@ import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreview
 import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreviewLoading
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
-import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Data
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkInfo
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.NoData
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
-import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
-import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
+import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 import timber.log.Timber
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
@@ -106,6 +107,8 @@ fun WishDetailedScreen(
     }
     val openDialog: MutableState<Optional<WishItem>> = remember { mutableStateOf(Optional.empty()) }
     val scrollState: ScrollState = rememberScrollState()
+    val systemUiController = rememberSystemUiController()
+    val bottomBarHeight = 56.dp
 
     BackHandler { handleBackPressed() }
 
@@ -116,41 +119,37 @@ fun WishDetailedScreen(
         } catch (error: Throwable) {
             Timber.e(error)
             scope.launch {
-                snackbarHostState.showSnackbar(context.getString(R.string.fail_to_open_link))
+                snackbarHostState.showDismissableSnackbar(context.getString(R.string.fail_to_open_link))
             }
         }
     }
 
+    val screenNavBarColor = MaterialTheme.colorScheme.surfaceColorAtElevation(BottomAppBarDefaults.ContainerElevation)
+    LaunchedEffect(key1 = Unit) {
+        systemUiController.setNavigationBarColor(
+            color = screenNavBarColor
+        )
+    }
+
+    val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
+        modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         topBar = {
-            WishAppTopBar(
-                "",
-                withBackIcon = true,
+            WishDetailedTopBar(
                 onBackPressed = handleBackPressed,
-                isScrollInInitialState = { scrollState.isScrollInInitialState() },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@IconButton
-                            onWishTagsClicked(wishId)
-                        }
-                    ) {
-                        ThemedIcon(
-                            painterResource(R.drawable.ic_label),
-                            contentDescription = "Open tags"
-                        )
-                    }
-                    IconButton(onClick = { openDialog.value = wishItem }) {
-                        ThemedIcon(
-                            Icons.Filled.Delete,
-                            contentDescription = "Delete wish"
-                        )
-                    }
-                }
+                wishItem = wishItem.toValueOfNull(),
+                onWishTagsClicked = onWishTagsClicked,
+                onDeleteClicked = { openDialog.value = wishItem },
+                scrollBehavior = topAppBarScrollBehavior
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        modifier = Modifier.navigationBarsWithImePadding()
+        snackbarHost = {
+            SnackbarHost(
+                modifier = Modifier.padding(bottom = bottomBarHeight),
+                hostState = snackbarHostState
+            )
+        },
+        contentWindowInsets = WindowInsets.Companion.safeDrawing,
     ) { paddingValues ->
         if (!wishItem.isPresent) {
             return@Scaffold
@@ -158,7 +157,6 @@ fun WishDetailedScreen(
         var title: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.title }) }
         var link: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.link }) }
         var comment: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.comment }) }
-        val focusRequester = remember { FocusRequester() }
         val isCompleted: Boolean = wishItem.toValueOfNull()?.wish?.isCompleted ?: false
 
         ConstraintLayout(
@@ -180,13 +178,14 @@ fun WishDetailedScreen(
                         height = Dimension.fillToConstraints
                     }
             ) {
+                val focusRequester = remember { FocusRequester() }
                 TextField(
                     modifier = Modifier
                         .padding(top = 8.dp)
                         .fillMaxWidth()
                         .focusRequester(focusRequester),
                     value = title,
-                    textStyle = MaterialTheme.typography.h5.copy(
+                    textStyle = MaterialTheme.typography.headlineMedium.copy(
                         textDecoration = if (isCompleted) TextDecoration.LineThrough else null
                     ),
                     onValueChange = { newValue ->
@@ -196,11 +195,11 @@ fun WishDetailedScreen(
                     placeholder = {
                         Text(
                             text = stringResource(R.string.enter_title),
-                            style = MaterialTheme.typography.h5,
+                            style = MaterialTheme.typography.headlineMedium,
                         )
                     },
                     colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Color.Transparent,
+                        containerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                     ),
@@ -208,10 +207,11 @@ fun WishDetailedScreen(
                         capitalization = KeyboardCapitalization.Sentences
                     )
                 )
-                LaunchedEffect(title) {
+                DisposableEffect(title) {
                     if (title.isBlank()) {
                         focusRequester.requestFocus()
                     }
+                    onDispose { }
                 }
 
                 TextField(
@@ -229,7 +229,7 @@ fun WishDetailedScreen(
                     },
                     placeholder = { Text(text = stringResource(R.string.enter_comment)) },
                     colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Color.Transparent,
+                        containerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                     ),
@@ -253,7 +253,7 @@ fun WishDetailedScreen(
                     },
                     placeholder = { Text(text = stringResource(R.string.enter_link)) },
                     colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Color.Transparent,
+                        containerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                     )
@@ -271,9 +271,11 @@ fun WishDetailedScreen(
                             onLinkPreviewClick = onLinkPreviewClick,
                         )
                     }
+
                     is Loading -> {
                         LinkPreviewLoading(pd)
                     }
+
                     is NoData -> {
                         LinkPreview(
                             linkInfo = LinkInfo(title = stringResource(R.string.open_link)),
@@ -282,9 +284,11 @@ fun WishDetailedScreen(
                             onLinkPreviewClick = onLinkPreviewClick,
                         )
                     }
+
                     is None -> {
                         //nothing
                     }
+
                     else -> {
                         //nothing
                     }
@@ -305,29 +309,24 @@ fun WishDetailedScreen(
                     },
                     modifier = Modifier.padding(start = 12.dp, end = 12.dp)
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(24.dp))
             }
 
-            val bottomPanelElevation = if (MaterialTheme.colors.isLight) {
-                AppBarDefaults.BottomAppBarElevation
-            } else {
-                0.dp
-            }
             val text = if (isCompleted) {
                 stringResource(R.string.wish_not_done)
             } else {
                 stringResource(R.string.wish_done)
             }
             Surface(
-                color = localTheme.colors.surfaceColor,
-                elevation = bottomPanelElevation,
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = BottomAppBarDefaults.ContainerElevation,
                 modifier = Modifier
                     .constrainAs(bottomPanelRef) {
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                         bottom.linkTo(parent.bottom)
                         width = Dimension.fillToConstraints
-                        height = Dimension.value(56.dp)
+                        height = Dimension.value(bottomBarHeight)
                     }
             ) {
                 Box {
@@ -345,12 +344,11 @@ fun WishDetailedScreen(
                         },
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
-                            .padding(end = 16.dp)
+                            .padding(end = 8.dp)
                     ) {
                         Text(
                             text = text,
-                            style = MaterialTheme.typography.button,
-                            color = MaterialTheme.colors.onSurface
+                            style = MaterialTheme.typography.labelLarge,
                         )
                     }
                 }
@@ -361,8 +359,6 @@ fun WishDetailedScreen(
     val wishToDelete = openDialog.value
     if (wishToDelete.isPresent) {
         AlertDialog(
-            shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius)),
-            backgroundColor = localTheme.colors.bottomSheetBackgroundColor,
             onDismissRequest = { openDialog.value = Optional.empty() },
             title = { Text(stringResource(R.string.delete_wish_title)) },
             confirmButton = {
@@ -375,8 +371,7 @@ fun WishDetailedScreen(
                     }
                 ) {
                     Text(
-                        stringResource(R.string.delete),
-                        color = MaterialTheme.colors.onSurface
+                        stringResource(R.string.delete)
                     )
                 }
             },
@@ -386,7 +381,6 @@ fun WishDetailedScreen(
                 ) {
                     Text(
                         stringResource(R.string.cancel),
-                        color = MaterialTheme.colors.onSurface
                     )
                 }
             }

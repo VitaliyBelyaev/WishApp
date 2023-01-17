@@ -37,9 +37,9 @@
     <string name="delete_wishes_title">Delete selected wishes?</string>
     <string name="fail_to_open_link">Failed to open link</string>
     <string name="open_link">Open link</string>
-    <string name="wish_done">Done</string>
-    <string name="wish_not_done">Not done</string>
-    <string name="completed_wishes">Done wishes</string>
+    <string name="wish_done">Move to completed</string>
+    <string name="wish_not_done">Move to current</string>
+    <string name="completed_wishes">Completed wishes</string>
     <string name="wish_done_snack_message">Wish moved to completed</string>
     <string name="delete_wishes_error_message">An error occurred while deleting wishes</string>
     <string name="empty_current_wishes_message">You have not added any wishes yet, click on the plus button below to add a new wish</string>

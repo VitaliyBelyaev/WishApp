@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,12 +20,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.Theme
-import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
+import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 
 @Composable
 fun ThemeSettingBlock(
@@ -66,8 +65,8 @@ fun ThemeSettingBlock(
             )
             Text(
                 text = stringResource(R.string.theme_system_description),
-                fontSize = 14.sp,
-                color = Color.Gray,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = basePadding, bottom = basePadding, end = basePadding)
@@ -103,12 +102,12 @@ fun ThemeSettingBlock(
                     .align(Alignment.CenterHorizontally)
                     .padding(start = basePadding, top = basePadding, end = basePadding, bottom = 8.dp)
             )
-            Icon(
-                painter = painterResource(R.drawable.ic_dark_mode),
-                contentDescription = "Dark mode",
+            ThemedIcon(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(start = basePadding, end = basePadding, bottom = basePadding)
+                    .padding(start = basePadding, end = basePadding, bottom = basePadding),
+                painter = painterResource(R.drawable.ic_dark_mode),
+                contentDescription = "Dark mode",
             )
         }
         Spacer(modifier = Modifier
@@ -142,12 +141,13 @@ fun ThemeSettingBlock(
                     .align(Alignment.CenterHorizontally)
                     .padding(start = basePadding, top = basePadding, end = basePadding, bottom = 8.dp)
             )
-            Icon(
-                painter = painterResource(R.drawable.ic_light_mode),
-                contentDescription = "Light mode",
+
+            ThemedIcon(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(start = basePadding, end = basePadding, bottom = basePadding)
+                    .padding(start = basePadding, end = basePadding, bottom = basePadding),
+                painter = painterResource(R.drawable.ic_light_mode),
+                contentDescription = "Light mode",
             )
         }
     }
@@ -158,14 +158,14 @@ private fun getBgColor(theme: Theme, selected: Theme): Color {
     return if (theme == selected) {
         Color.Transparent
     } else {
-        localTheme.colors.backgroundColorSecondary
+        MaterialTheme.colorScheme.secondaryContainer
     }
 }
 
 @Composable
 private fun getBorderColor(theme: Theme, selected: Theme): Color {
     return if (theme == selected) {
-        localTheme.colors.primaryColor
+        MaterialTheme.colorScheme.secondary
     } else {
         Color.Transparent
     }

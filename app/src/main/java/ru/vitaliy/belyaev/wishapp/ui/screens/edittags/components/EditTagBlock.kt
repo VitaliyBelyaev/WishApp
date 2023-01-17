@@ -3,15 +3,16 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.edittags.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Divider
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -37,6 +38,7 @@ import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalComposeUiApi
 @Composable
 fun EditTagBlock(
@@ -61,12 +63,14 @@ fun EditTagBlock(
         val (startIconRef, titleRef, endIconRef, topDividerRef, bottomDividerRef) = createRefs()
 
         val dividerColor: Color = if (isEditMode) {
-            MaterialTheme.colors.primary
+            MaterialTheme.colorScheme.secondary
         } else {
             Color.Transparent
         }
+        val dividerThickness = 1.5.dp
         Divider(
             color = dividerColor,
+            thickness = dividerThickness,
             modifier = Modifier
                 .constrainAs(topDividerRef) {
                     top.linkTo(parent.top)
@@ -76,6 +80,7 @@ fun EditTagBlock(
         )
         Divider(
             color = dividerColor,
+            thickness = dividerThickness,
             modifier = Modifier
                 .constrainAs(bottomDividerRef) {
                     bottom.linkTo(parent.bottom)
@@ -84,12 +89,7 @@ fun EditTagBlock(
                 }
         )
 
-        val focusRequester = remember { FocusRequester() }
         if (isEditMode) {
-            DisposableEffect(isEditMode) {
-                focusRequester.requestFocus()
-                onDispose { }
-            }
             IconButton(
                 onClick = { onRemoveClick(tag) },
                 modifier = Modifier
@@ -101,9 +101,11 @@ fun EditTagBlock(
             ) {
                 ThemedIcon(
                     painterResource(R.drawable.ic_delete),
-                    contentDescription = "Delete"
+                    contentDescription = "Delete",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+
             var textFieldValue: TextFieldValue by remember {
                 mutableStateOf(
                     TextFieldValue(
@@ -113,10 +115,11 @@ fun EditTagBlock(
                     )
                 )
             }
+
+            val focusRequester = remember { FocusRequester() }
             TextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(0.dp)
                     .focusRequester(focusRequester)
                     .constrainAs(titleRef) {
                         width = Dimension.fillToConstraints
@@ -127,7 +130,7 @@ fun EditTagBlock(
                     },
                 value = textFieldValue,
                 singleLine = true,
-                textStyle = MaterialTheme.typography.body1,
+                textStyle = MaterialTheme.typography.bodyLarge,
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Sentences,
                     imeAction = ImeAction.Done
@@ -139,19 +142,21 @@ fun EditTagBlock(
                 ),
                 onValueChange = { newValue -> textFieldValue = newValue },
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent,
+                    containerColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
-                )
+                ),
             )
-            val doneIconTint: Color = if (textFieldValue.text.isNotBlank()) {
-                MaterialTheme.colors.primary
-            } else {
-                MaterialTheme.colors.primary.copy(alpha = 0.5f)
+            DisposableEffect(key1 = Unit) {
+                focusRequester.requestFocus()
+                onDispose { }
             }
             IconButton(
                 onClick = { onEditDoneClick(textFieldValue.text, editTagItem.tag) },
                 enabled = textFieldValue.text.isNotBlank(),
+                colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = MaterialTheme.colorScheme.primary
+                ),
                 modifier = Modifier
                     .constrainAs(endIconRef) {
                         top.linkTo(parent.top)
@@ -161,14 +166,14 @@ fun EditTagBlock(
             ) {
                 ThemedIcon(
                     painterResource(R.drawable.ic_check),
-                    contentDescription = "Done",
-                    tint = doneIconTint,
+                    contentDescription = "Done"
                 )
             }
         } else {
             ThemedIcon(
                 painterResource(R.drawable.ic_label),
                 contentDescription = "Label",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
                     .constrainAs(startIconRef) {
                         top.linkTo(parent.top)
@@ -176,10 +181,10 @@ fun EditTagBlock(
                         start.linkTo(parent.start, margin = 16.dp)
                     }
             )
+
             Text(
                 text = tag.title,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.onBackground,
+                style = MaterialTheme.typography.bodyLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -191,6 +196,7 @@ fun EditTagBlock(
                         end.linkTo(endIconRef.start, margin = 16.dp)
                     }
             )
+
             IconButton(
                 onClick = { onClick(tag) },
                 modifier = Modifier
@@ -203,6 +209,7 @@ fun EditTagBlock(
                 ThemedIcon(
                     painterResource(R.drawable.ic_edit),
                     contentDescription = "Edit",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

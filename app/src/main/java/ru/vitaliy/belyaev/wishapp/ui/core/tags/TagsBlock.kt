@@ -5,15 +5,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.TextUnit
@@ -22,7 +20,6 @@ import com.google.accompanist.flowlayout.FlowRow
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
-import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
 
 @Composable
 fun TagsBlock(
@@ -38,8 +35,8 @@ fun TagsBlock(
         crossAxisSpacing = itemsSpacing,
         modifier = modifier
     ) {
-        val shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius))
-        val tagBgColor: Color = localTheme.colors.backgroundColorSecondary
+        val shape = MaterialTheme.shapes.small
+        val tagBgColor: Color = MaterialTheme.colorScheme.surfaceVariant
         val verticalPadding = (textSize.value * 3 / 4).dp
         val horizontalPadding = (textSize.value / 2).dp
 
@@ -50,7 +47,7 @@ fun TagsBlock(
                 modifier = Modifier
                     .border(
                         width = borderWidth,
-                        color = MaterialTheme.colors.primary,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                         shape = shape
                     )
                     .clip(shape)
@@ -65,8 +62,8 @@ fun TagsBlock(
                 ThemedIcon(
                     painter = painterResource(R.drawable.ic_add),
                     contentDescription = "Add label",
-                    modifier = Modifier
-                        .padding(end = 4.dp)
+                    modifier = Modifier.padding(end = 4.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = stringResource(R.string.add_tag),

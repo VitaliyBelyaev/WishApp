@@ -38,8 +38,8 @@
     <string name="delete_wishes_title">Видалити вибрані хотелки?</string>
     <string name="fail_to_open_link">Не вдалося відкрити посилання</string>
     <string name="open_link">Відкрити посилання</string>
-    <string name="wish_done">Зроблено</string>
-    <string name="wish_not_done">Не зроблено</string>
+    <string name="wish_done">Перемістити у виконані</string>
+    <string name="wish_not_done">Перемістити до поточних</string>
     <string name="completed_wishes">Виконані хотелки</string>
     <string name="wish_done_snack_message">Хотелка переміщена в виконані</string>
     <string name="delete_wishes_error_message">При видаленні хотелок сталася помилка</string>

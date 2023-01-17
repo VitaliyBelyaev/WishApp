@@ -2,26 +2,28 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.main
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FabPosition
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.FloatingActionButtonDefaults
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -32,14 +34,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -50,7 +51,6 @@ import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheet
-import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.EmptyWishesPlaceholder
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.Loader
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.MainScreenTopBar
@@ -59,9 +59,10 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.WishItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
-import ru.vitaliy.belyaev.wishapp.ui.theme.localTheme
-import ru.vitaliy.belyaev.wishapp.utils.isScrollInInitialState
+import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
+import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @ExperimentalComposeUiApi
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
@@ -77,7 +78,6 @@ fun MainScreen(
     appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    val fabShape = RoundedCornerShape(50)
     val scope = rememberCoroutineScope()
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden) { state ->
         return@rememberModalBottomSheetState state != ModalBottomSheetValue.HalfExpanded
@@ -89,16 +89,17 @@ fun MainScreen(
     val openDeleteConfirmDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+    val systemUiController = rememberSystemUiController()
 
     LaunchedEffect(key1 = Unit) {
         appViewModel.showSnackOnMainFlow.collect {
-            snackbarHostState.showSnackbar(it)
+            snackbarHostState.showDismissableSnackbar(it)
         }
     }
 
     LaunchedEffect(key1 = Unit) {
         viewModel.showSnackFlow.collect {
-            snackbarHostState.showSnackbar(context.getString(it))
+            snackbarHostState.showDismissableSnackbar(context.getString(it))
         }
     }
 
@@ -106,6 +107,19 @@ fun MainScreen(
         viewModel.scrollInfoFlow.collect {
             lazyListState.scrollToItem(it.position, -it.offset)
         }
+    }
+
+    val mainScreenNavBarColor =
+        MaterialTheme.colorScheme.surfaceColorAtElevation(BottomAppBarDefaults.ContainerElevation)
+    val bottomSheetNavbarColor = CommonColors.bottomSheetBgColor()
+
+    LaunchedEffect(key1 = Unit) {
+        val navbarColor = if (modalBottomSheetState.targetValue != ModalBottomSheetValue.Hidden) {
+            bottomSheetNavbarColor
+        } else {
+            mainScreenNavBarColor
+        }
+        systemUiController.setNavigationBarColor(color = navbarColor)
     }
 
     WishAppBottomSheet(
@@ -119,17 +133,19 @@ fun MainScreen(
                 onEditTagsClicked = onEditTagClick
             )
         },
-        modifier = Modifier.navigationBarsPadding()
+        modifier = Modifier.safeDrawingPadding()
     ) {
+        val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
         Scaffold(
+            modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
+            contentWindowInsets = WindowInsets.Companion.safeDrawing,
             topBar = {
-                MaterialTheme.colors.primary
                 MainScreenTopBar(
                     selectedIds = state.selectedIds,
                     wishesFilter = state.wishesFilter,
                     onSettingIconClicked = onSettingIconClicked,
                     onDeleteSelectedClicked = { openDeleteConfirmDialog.value = true },
-                    isScrollInInitialState = { lazyListState.isScrollInInitialState() },
+                    scrollBehavior = topAppBarScrollBehavior,
                     viewModel = viewModel
                 )
             },
@@ -137,35 +153,13 @@ fun MainScreen(
                 WishAppBottomBar(
                     wishes = state.wishes,
                     wishesFilter = state.wishesFilter,
-                    cutoutShape = fabShape,
                     onShareClick = { onShareClick(state.wishes) },
                     onMenuClick = { scope.launch { modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded) } },
                     reorderButtonState = state.reorderButtonState,
-                    onReorderClick = { viewModel.onReorderIconClicked() }
+                    onReorderClick = { viewModel.onReorderIconClicked() },
+                    onAddWishClicked = onAddWishClicked
                 )
             },
-            floatingActionButton = {
-                val elevation = if (MaterialTheme.colors.isLight) {
-                    FloatingActionButtonDefaults.elevation()
-                } else {
-                    FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp)
-                }
-                FloatingActionButton(
-                    onClick = { onAddWishClicked() },
-                    backgroundColor = MaterialTheme.colors.surface,
-                    shape = fabShape,
-                    elevation = elevation
-                ) {
-                    ThemedIcon(
-                        painter = painterResource(R.drawable.ic_add),
-                        contentDescription = "Add",
-                        tint = MaterialTheme.colors.primary,
-                        modifier = Modifier.size(36.dp)
-                    )
-                }
-            },
-            isFloatingActionButtonDocked = true,
-            floatingActionButtonPosition = FabPosition.Center,
             snackbarHost = { SnackbarHost(snackbarHostState) },
         ) { paddingValues ->
             val onWishClicked: (WishWithTags) -> Unit = { wish ->
@@ -191,7 +185,9 @@ fun MainScreen(
 
             LazyColumn(
                 state = lazyListState,
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .nestedScroll(connection = object : NestedScrollConnection {})
             ) {
 
                 itemsIndexed(
@@ -210,7 +206,7 @@ fun MainScreen(
                     WishItemBlock(
                         wishItem = wishItem,
                         isSelected = isSelected,
-                        horizontalPadding = cardsPadding,
+                        horizontalPadding = 12.dp,
                         onWishClicked = onWishClicked,
                         onWishLongPress = { wish -> viewModel.onWishLongPress(wish) },
                         state.reorderButtonState,
@@ -237,26 +233,8 @@ fun MainScreen(
                 Loader(modifier = Modifier.padding(paddingValues))
             }
 
-            val systemUiController = rememberSystemUiController()
-            val useDarkIcons = MaterialTheme.colors.isLight
-            val mainScreenNavBarColor = localTheme.colors.navigationBarColor
-            val bottomSheetNavbarColor = localTheme.colors.bottomSheetBackgroundColor
-            LaunchedEffect(key1 = modalBottomSheetState.targetValue) {
-                val navbarColor = if (modalBottomSheetState.targetValue != ModalBottomSheetValue.Hidden) {
-                    bottomSheetNavbarColor
-                } else {
-                    mainScreenNavBarColor
-                }
-                systemUiController.setNavigationBarColor(
-                    color = navbarColor,
-                    darkIcons = useDarkIcons
-                )
-            }
-
             if (openDeleteConfirmDialog.value) {
                 AlertDialog(
-                    shape = RoundedCornerShape(dimensionResource(R.dimen.base_corner_radius)),
-                    backgroundColor = localTheme.colors.bottomSheetBackgroundColor,
                     onDismissRequest = { openDeleteConfirmDialog.value = false },
                     title = { Text(stringResource(R.string.delete_wishes_title)) },
                     confirmButton = {
@@ -268,7 +246,6 @@ fun MainScreen(
                         ) {
                             Text(
                                 stringResource(R.string.delete),
-                                color = MaterialTheme.colors.onSurface
                             )
                         }
                     },
@@ -278,7 +255,6 @@ fun MainScreen(
                         ) {
                             Text(
                                 stringResource(R.string.cancel),
-                                color = MaterialTheme.colors.onSurface
                             )
                         }
                     }

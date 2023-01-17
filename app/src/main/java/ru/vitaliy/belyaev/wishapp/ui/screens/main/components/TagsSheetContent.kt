@@ -13,13 +13,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.Text
+import androidx.compose.material3.Divider
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -39,6 +39,7 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
+import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 
 @ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
@@ -71,6 +72,7 @@ fun TagsSheetContent(
             ThemedIcon(
                 painter = painterResource(R.drawable.ic_close),
                 contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(32.dp)
             )
         }
@@ -105,7 +107,7 @@ fun TagsSheetContent(
                 end.linkTo(parent.end)
             }
         ) {
-            Divider()
+            Divider(color = CommonColors.dividerColor())
             NavMenuItemBlock(
                 icon = painterResource(R.drawable.ic_list_bulleted),
                 title = stringResource(R.string.all_wishes),
@@ -150,7 +152,7 @@ fun NavMenuItemBlock(
     onClick: () -> Unit
 ) {
 
-    val bgColor = if (isSelected) MaterialTheme.colors.primary.copy(alpha = 0.3f) else Color.Transparent
+    val bgColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else Color.Transparent
     val cornerRadius = 50.dp
     val shape = RoundedCornerShape(topEnd = cornerRadius, bottomEnd = cornerRadius)
     Row(
@@ -165,11 +167,13 @@ fun NavMenuItemBlock(
         ThemedIcon(
             painter = icon,
             contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(24.dp)
         )
         Text(
             text = title,
             maxLines = 1,
+            color = MaterialTheme.colorScheme.onSurface,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(start = 12.dp),
         )

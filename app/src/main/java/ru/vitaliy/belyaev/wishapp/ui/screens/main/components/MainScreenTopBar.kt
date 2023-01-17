@@ -1,9 +1,11 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main.components
 
-import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,6 +16,7 @@ import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalCoroutinesApi
 @Composable
 fun MainScreenTopBar(
@@ -21,7 +24,7 @@ fun MainScreenTopBar(
     wishesFilter: WishesFilter,
     onSettingIconClicked: () -> Unit,
     onDeleteSelectedClicked: () -> Unit,
-    isScrollInInitialState: (() -> Boolean),
+    scrollBehavior: TopAppBarScrollBehavior? = null,
     viewModel: MainViewModel
 ) {
     if (selectedIds.isEmpty()) {
@@ -32,7 +35,7 @@ fun MainScreenTopBar(
         }
         WishAppTopBar(
             title = title,
-            isScrollInInitialState = isScrollInInitialState,
+            scrollBehavior = scrollBehavior,
             actions = {
                 if (BuildConfig.DEBUG) {
                     IconButton(onClick = { viewModel.onAddTestWishClicked() }) {
@@ -56,7 +59,7 @@ fun MainScreenTopBar(
             onCloseEditModeClicked = { viewModel.onCloseEditModeClicked() },
             onDeleteSelectedClicked = onDeleteSelectedClicked,
             onSelectAllClicked = { viewModel.onSelectAllClicked() },
-            isScrollInInitialState = isScrollInInitialState
+            scrollBehavior = scrollBehavior
         )
     }
 }
