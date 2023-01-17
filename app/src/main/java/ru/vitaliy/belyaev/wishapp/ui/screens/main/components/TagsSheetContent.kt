@@ -39,7 +39,7 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
-import ru.vitaliy.belyaev.wishapp.ui.theme.material3.CommonColors
+import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 
 @ExperimentalMaterialApi
 @ExperimentalCoroutinesApi

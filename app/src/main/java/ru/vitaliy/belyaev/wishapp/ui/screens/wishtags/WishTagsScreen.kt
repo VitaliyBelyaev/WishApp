@@ -48,7 +48,7 @@ import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.AddTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.TagItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
-import ru.vitaliy.belyaev.wishapp.ui.theme.material3.CommonColors
+import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalComposeUiApi

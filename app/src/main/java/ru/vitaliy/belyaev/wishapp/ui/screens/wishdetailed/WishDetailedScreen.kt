@@ -108,6 +108,7 @@ fun WishDetailedScreen(
     val openDialog: MutableState<Optional<WishItem>> = remember { mutableStateOf(Optional.empty()) }
     val scrollState: ScrollState = rememberScrollState()
     val systemUiController = rememberSystemUiController()
+    val bottomBarHeight = 56.dp
 
     BackHandler { handleBackPressed() }
 
@@ -142,7 +143,12 @@ fun WishDetailedScreen(
                 scrollBehavior = topAppBarScrollBehavior
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = {
+            SnackbarHost(
+                modifier = Modifier.padding(bottom = bottomBarHeight),
+                hostState = snackbarHostState
+            )
+        },
         contentWindowInsets = WindowInsets.Companion.safeDrawing,
     ) { paddingValues ->
         if (!wishItem.isPresent) {
@@ -320,7 +326,7 @@ fun WishDetailedScreen(
                         end.linkTo(parent.end)
                         bottom.linkTo(parent.bottom)
                         width = Dimension.fillToConstraints
-                        height = Dimension.value(56.dp)
+                        height = Dimension.value(bottomBarHeight)
                     }
             ) {
                 Box {

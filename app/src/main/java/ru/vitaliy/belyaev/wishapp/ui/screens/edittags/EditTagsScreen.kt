@@ -36,7 +36,7 @@ import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.components.EditTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
-import ru.vitaliy.belyaev.wishapp.ui.theme.material3.CommonColors
+import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 
 @ExperimentalMaterial3Api
 @ExperimentalComposeUiApi

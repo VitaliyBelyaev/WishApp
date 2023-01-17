@@ -38,7 +38,7 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.createAppFeedback
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
-import ru.vitaliy.belyaev.wishapp.ui.theme.material3.CommonColors
+import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 import ru.vitaliy.belyaev.wishapp.utils.annotatedStringResource
 import ru.vitaliy.belyaev.wishapp.utils.createSendEmailIntent
 import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar

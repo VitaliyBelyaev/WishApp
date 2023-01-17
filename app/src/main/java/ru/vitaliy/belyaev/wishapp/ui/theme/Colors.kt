@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.theme.material3
+package ru.vitaliy.belyaev.wishapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -6,15 +6,11 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import com.google.accompanist.insets.statusBarsPadding
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,7 +22,7 @@ import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
-import ru.vitaliy.belyaev.wishapp.ui.theme.material3.WishAppThemeMaterial3
+import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
 import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 
 @ExperimentalFoundationApi
@@ -69,15 +65,8 @@ class AppActivity : AppCompatActivity() {
 
         setContent {
             val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
-            WishAppThemeMaterial3(selectedTheme = selectedTheme) {
-//                ProvideWindowInsets {
-                Surface(
-                    color = MaterialTheme.colors.background,
-                    modifier = Modifier.statusBarsPadding()
-                ) {
-                    Navigation { viewModel.onShareWishListClicked(it) }
-                }
-//                }
+            WishAppTheme(selectedTheme = selectedTheme) {
+                Navigation { viewModel.onShareWishListClicked(it) }
             }
 
 //            WishAppTheme(selectedTheme = selectedTheme) {

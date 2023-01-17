@@ -40,7 +40,7 @@ import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.BackupSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.ThemeSettingBlock
-import ru.vitaliy.belyaev.wishapp.ui.theme.material3.CommonColors
+import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 import ru.vitaliy.belyaev.wishapp.utils.openGooglePlay
 

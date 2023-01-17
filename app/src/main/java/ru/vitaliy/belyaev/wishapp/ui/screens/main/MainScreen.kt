@@ -59,7 +59,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.WishItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
-import ru.vitaliy.belyaev.wishapp.ui.theme.material3.CommonColors
+import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
