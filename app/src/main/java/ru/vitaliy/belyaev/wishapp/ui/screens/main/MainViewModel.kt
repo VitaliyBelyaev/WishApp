@@ -293,6 +293,65 @@ class MainViewModel @Inject constructor(
         )
     }
 
+    private fun createEnTestWishes(): List<Wish> {
+        if (!BuildConfig.DEBUG) {
+            return emptyList()
+        }
+        val currentMillis = System.currentTimeMillis()
+        return listOf(
+            Wish(
+                wishId = "1",
+                title = "Macbook Pro 14″",
+                link = "https://www.apple.com/shop/buy-mac/macbook-pro/14-inch",
+                comment = "Space Gray with 32 Gb of RAM",
+                isCompleted = false,
+                createdTimestamp = currentMillis,
+                updatedTimestamp = currentMillis,
+                position = 0
+            ),
+            Wish(
+                wishId = "2",
+                title = "Garmin Forerunner 955",
+                link = "https://www.garmin.com/en-US/p/777655/pn/010-02638-11",
+                comment = "White",
+                isCompleted = false,
+                createdTimestamp = currentMillis,
+                updatedTimestamp = currentMillis,
+                position = 0
+            ),
+            Wish(
+                wishId = "3",
+                title = "Robotic Vacuum",
+                link = "",
+                comment = "iRobot or Shark",
+                isCompleted = false,
+                createdTimestamp = currentMillis,
+                updatedTimestamp = currentMillis,
+                position = 0
+            ),
+            Wish(
+                wishId = "4",
+                title = "Scarf",
+                link = "",
+                comment = "Warm, neutral shades",
+                isCompleted = false,
+                createdTimestamp = currentMillis,
+                updatedTimestamp = currentMillis,
+                position = 0
+            ),
+            Wish(
+                wishId = "5",
+                title = "LEATHERMAN Multitool",
+                link = "https://www.amazon.com/LEATHERMAN-Multitool-Replaceable-Spring-Action-Stainless/dp/B0B2V4N34X/ref=sr_1_2?keywords=LEATHERMAN&qid=1673963133&sr=8-2",
+                comment = "",
+                isCompleted = false,
+                createdTimestamp = currentMillis,
+                updatedTimestamp = currentMillis,
+                position = 0
+            )
+        )
+    }
+
     private fun createTestTags(): List<Tag> {
         val tagNames = listOf(
             "Power",
