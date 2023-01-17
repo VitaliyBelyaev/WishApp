@@ -37,9 +37,9 @@
     <string name="delete_wishes_title">Excluir desejos selecionados?</string>
     <string name="fail_to_open_link">Falha ao abrir o link</string>
     <string name="open_link">Link aberto</string>
-    <string name="wish_done">Realizado</string>
-    <string name="wish_not_done">Não realizado</string>
-    <string name="completed_wishes">Desejos realizados</string>
+    <string name="wish_done">Mover para concluído</string>
+    <string name="wish_not_done">Mover para atual</string>
+    <string name="completed_wishes">Desejos concluídos</string>
     <string name="wish_done_snack_message">Desejo movido para concluído</string>
     <string name="delete_wishes_error_message">Ocorreu um erro ao excluir os desejos</string>
     <string name="empty_current_wishes_message">Você ainda não adicionou nenhum desejo, clique no botão de adição abaixo para adicionar um novo desejo</string>

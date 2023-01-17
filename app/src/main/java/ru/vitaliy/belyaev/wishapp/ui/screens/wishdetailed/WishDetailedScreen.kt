@@ -337,7 +337,7 @@ fun WishDetailedScreen(
                         },
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
-                            .padding(end = 16.dp)
+                            .padding(end = 8.dp)
                     ) {
                         Text(
                             text = text,

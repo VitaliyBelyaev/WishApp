@@ -37,8 +37,8 @@
     <string name="delete_wishes_title">Supprimer les souhaits sélectionnés ?</string>
     <string name="fail_to_open_link">Impossible d\'ouvrir le lien</string>
     <string name="open_link">Ouvrir le lien</string>
-    <string name="wish_done">Fait</string>
-    <string name="wish_not_done">Pas fait</string>
+    <string name="wish_done">Passer à Terminé</string>
+    <string name="wish_not_done">Passer au actuels</string>
     <string name="completed_wishes">Souhaits réalisés</string>
     <string name="wish_done_snack_message">Souhait déplacé vers terminé</string>
     <string name="delete_wishes_error_message">Une erreur s\'est produite lors de la suppression des souhaits</string>

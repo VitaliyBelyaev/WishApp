@@ -16,8 +16,6 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -39,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,7 +51,6 @@ import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheet
-import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.EmptyWishesPlaceholder
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.Loader
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.MainScreenTopBar
@@ -159,23 +155,10 @@ fun MainScreen(
                     onShareClick = { onShareClick(state.wishes) },
                     onMenuClick = { scope.launch { modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded) } },
                     reorderButtonState = state.reorderButtonState,
-                    onReorderClick = { viewModel.onReorderIconClicked() }
+                    onReorderClick = { viewModel.onReorderIconClicked() },
+                    onAddWishClicked = onAddWishClicked
                 )
             },
-            floatingActionButton = {
-                ExtendedFloatingActionButton(
-                    expanded = false,
-                    text = { Text(stringResource(R.string.share_app)) },
-                    icon = {
-                        ThemedIcon(
-                            painter = painterResource(R.drawable.ic_add),
-                            contentDescription = "Add",
-                        )
-                    },
-                    onClick = { onAddWishClicked() },
-                )
-            },
-            floatingActionButtonPosition = FabPosition.End,
             snackbarHost = { SnackbarHost(snackbarHostState) },
         ) { paddingValues ->
             val onWishClicked: (WishWithTags) -> Unit = { wish ->
@@ -222,7 +205,7 @@ fun MainScreen(
                     WishItemBlock(
                         wishItem = wishItem,
                         isSelected = isSelected,
-                        horizontalPadding = cardsPadding,
+                        horizontalPadding = 12.dp,
                         onWishClicked = onWishClicked,
                         onWishLongPress = { wish -> viewModel.onWishLongPress(wish) },
                         state.reorderButtonState,
