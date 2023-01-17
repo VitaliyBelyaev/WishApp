@@ -106,7 +106,7 @@ fun TagsSheetContent(
                 end.linkTo(parent.end)
             }
         ) {
-            Divider()
+            Divider(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f))
             NavMenuItemBlock(
                 icon = painterResource(R.drawable.ic_list_bulleted),
                 title = stringResource(R.string.all_wishes),
