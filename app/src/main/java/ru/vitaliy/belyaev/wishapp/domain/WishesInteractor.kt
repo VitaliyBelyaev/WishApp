@@ -28,4 +28,8 @@ class WishesInteractor @Inject constructor(
             .observeWishesByTag(tagId)
             .map { wishes -> wishes.filter { !it.isEmpty() && !it.isCompleted } }
     }
+
+    fun observeWishesCount(isCompleted: Boolean): Flow<Long> {
+        return wishesRepository.observeWishesCount(isCompleted = isCompleted)
+    }
 }

@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
@@ -36,7 +37,7 @@ import androidx.constraintlayout.compose.Dimension
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.data.database.Tag
+import ru.vitaliy.belyaev.wishapp.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
@@ -46,8 +47,10 @@ import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 @Composable
 fun TagsSheetContent(
     modalBottomSheetState: ModalBottomSheetState,
-    tags: List<Tag>,
+    tagsWithWishCount: List<TagWithWishCount>,
     wishesFilter: WishesFilter,
+    currentWishesCount: Long,
+    completedWishesCount: Long,
     onNavItemSelected: (WishesFilter) -> Unit,
     onEditTagsClicked: () -> Unit
 ) {
@@ -86,11 +89,13 @@ fun TagsSheetContent(
                 end.linkTo(parent.end)
             }
         ) {
-            items(tags) { tag ->
+            items(tagsWithWishCount) { tagWithWishCount ->
+                val tag = tagWithWishCount.tag
                 val isTagSelected = wishesFilter is WishesFilter.ByTag && wishesFilter.tag.tagId == tag.tagId
                 NavMenuItemBlock(
                     icon = painterResource(R.drawable.ic_label),
                     title = tag.title,
+                    count = tagWithWishCount.wishesCount,
                     isSelected = isTagSelected,
                     onClick = {
                         onNavItemSelected(WishesFilter.ByTag(tag))
@@ -111,6 +116,7 @@ fun TagsSheetContent(
             NavMenuItemBlock(
                 icon = painterResource(R.drawable.ic_list_bulleted),
                 title = stringResource(R.string.all_wishes),
+                count = currentWishesCount,
                 isSelected = wishesFilter is WishesFilter.All,
                 onClick = {
                     onNavItemSelected(WishesFilter.All)
@@ -120,13 +126,14 @@ fun TagsSheetContent(
             NavMenuItemBlock(
                 icon = painterResource(R.drawable.ic_check),
                 title = stringResource(R.string.completed_wishes),
+                count = completedWishesCount,
                 isSelected = wishesFilter is WishesFilter.Completed,
                 onClick = {
                     onNavItemSelected(WishesFilter.Completed)
                     scope.launch { modalBottomSheetState.snapTo(ModalBottomSheetValue.Hidden) }
                 }
             )
-            if (tags.isNotEmpty()) {
+            if (tagsWithWishCount.isNotEmpty()) {
                 NavMenuItemBlock(
                     icon = painterResource(R.drawable.ic_edit),
                     title = stringResource(R.string.edit_tags),
@@ -148,6 +155,7 @@ fun TagsSheetContent(
 fun NavMenuItemBlock(
     icon: Painter,
     title: String,
+    count: Long = 0,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -159,9 +167,10 @@ fun NavMenuItemBlock(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(end = 16.dp)
+            .padding(end = 8.dp)
             .background(color = bgColor, shape = shape)
+            .clip(shape)
+            .clickable { onClick() }
             .padding(16.dp)
     ) {
         ThemedIcon(
@@ -177,6 +186,19 @@ fun NavMenuItemBlock(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(start = 12.dp),
         )
+
+        Spacer(Modifier.weight(1f, true))
+
+        if (count > 0) {
+            Text(
+                modifier = Modifier.padding(end = 4.dp),
+                text = count.toString(),
+                maxLines = 1,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
     }
 }
 
@@ -184,9 +206,10 @@ fun NavMenuItemBlock(
 @Composable
 fun NavMenuItemBlockPreview() {
     NavMenuItemBlock(
-        painterResource(R.drawable.ic_label),
-        "Tags",
-        false,
+        icon = painterResource(R.drawable.ic_label),
+        title = "Tags",
+        count = 1,
+        isSelected = false,
         {}
     )
 }
