@@ -7,10 +7,11 @@ You can also group your wishes with labels and share wishes by the label.
 
 Wishes and labels stored in SQLite database through SQLDelight. Data persists after reinstall and switching to another device by Android backup mechanism.
 
-Fully written with Jetpack Compose.
+Fully written with Jetpack Compose with Material You(Material 3) theming and dynamic colors support for Android 12 and higher.
 
 Tech stack:
 - Jetpack Compose
+- Material You
 - MVVM (Android ViewModel)
 - Jetpack Navigation for Compose
 - Hilt
