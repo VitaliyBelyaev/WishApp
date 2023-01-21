@@ -68,6 +68,11 @@ SELECT count(*)
 FROM Wish
 WHERE position != -1;
 
+getWishesCount:
+SELECT count(*)
+FROM Wish
+WHERE isCompleted = ?;
+
 deleteByIds:
 DELETE FROM Wish
 WHERE wishId IN ?;

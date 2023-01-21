@@ -20,6 +20,7 @@ import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.tags.TagsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.domain.WishesInteractor
+import ru.vitaliy.belyaev.wishapp.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
@@ -40,8 +41,14 @@ class MainViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<MainScreenState> = MutableStateFlow(MainScreenState())
     val uiState: StateFlow<MainScreenState> = _uiState.asStateFlow()
 
-    private val _tags: MutableStateFlow<List<Tag>> = MutableStateFlow(emptyList())
-    val tags: StateFlow<List<Tag>> = _tags.asStateFlow()
+    private val _tagsWithWishCount: MutableStateFlow<List<TagWithWishCount>> = MutableStateFlow(emptyList())
+    val tagsWithWishCount: StateFlow<List<TagWithWishCount>> = _tagsWithWishCount.asStateFlow()
+
+    private val _currentWishesCount: MutableStateFlow<Long> = MutableStateFlow(-1)
+    val currentWishesCount: StateFlow<Long> = _currentWishesCount.asStateFlow()
+
+    private val _completedWishesCount: MutableStateFlow<Long> = MutableStateFlow(-1)
+    val completedWishesCount: StateFlow<Long> = _completedWishesCount.asStateFlow()
 
     private val _showSnackFlow = MutableSharedFlow<Int>()
     val showSnackFlow: SharedFlow<Int> = _showSnackFlow.asSharedFlow()
@@ -91,17 +98,32 @@ class MainViewModel @Inject constructor(
 
         launchSafe {
             tagsRepository
-                .observeAllTags()
-                .collect { tags ->
-                    _tags.value = tags
+                .observeAllTagsWithWishesCount()
+                .collect { tagsWithWishesCount ->
+                    _tagsWithWishCount.value = tagsWithWishesCount
 
                     val currentWishesFilter = wishesFilterFlow.value
                     if (currentWishesFilter is WishesFilter.ByTag) {
-                        tags.find { it.tagId == currentWishesFilter.tag.tagId }?.let {
-                            wishesFilterFlow.value = currentWishesFilter.copy(tag = it)
-                        }
+                        tagsWithWishesCount
+                            .map { it.tag }
+                            .find { it.tagId == currentWishesFilter.tag.tagId }
+                            ?.let {
+                                wishesFilterFlow.value = currentWishesFilter.copy(tag = it)
+                            }
                     }
                 }
+        }
+
+        launchSafe {
+            wishesInteractor
+                .observeWishesCount(isCompleted = false)
+                .collect { _currentWishesCount.value = it }
+        }
+
+        launchSafe {
+            wishesInteractor
+                .observeWishesCount(isCompleted = true)
+                .collect { _completedWishesCount.value = it }
         }
 
 //        if (BuildConfig.DEBUG) {

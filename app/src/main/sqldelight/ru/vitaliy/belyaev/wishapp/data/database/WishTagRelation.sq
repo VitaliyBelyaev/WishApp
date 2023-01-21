@@ -16,6 +16,13 @@ getAllRelations:
 SELECT *
 FROM WishTagRelation;
 
+getRelationsWithCurrentWishes:
+SELECT relation.tagId, relation.wishId
+FROM WishTagRelation relation
+JOIN Wish wish
+ON wish.wishId = relation.wishId
+WHERE wish.isCompleted = 0;
+
 getAllWishesByTag:
 SELECT wish.wishId, wish.title, wish.link, wish.comment, wish.isCompleted, wish.createdTimestamp, wish.updatedTimestamp, wish.position
 FROM Wish wish

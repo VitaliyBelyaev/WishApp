@@ -45,7 +45,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.data.database.Tag
+import ru.vitaliy.belyaev.wishapp.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
@@ -83,7 +83,9 @@ fun MainScreen(
         return@rememberModalBottomSheetState state != ModalBottomSheetValue.HalfExpanded
     }
     val state: MainScreenState by viewModel.uiState.collectAsState()
-    val tags: List<Tag> by viewModel.tags.collectAsState()
+    val tagsWithWishCount: List<TagWithWishCount> by viewModel.tagsWithWishCount.collectAsState()
+    val currentWishesCount: Long by viewModel.currentWishesCount.collectAsState()
+    val competedWishesCount: Long by viewModel.completedWishesCount.collectAsState()
 
     val lazyListState = rememberLazyListState()
     val openDeleteConfirmDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
@@ -127,8 +129,10 @@ fun MainScreen(
         sheetContent = {
             TagsSheetContent(
                 modalBottomSheetState = modalBottomSheetState,
-                tags = tags,
+                tagsWithWishCount = tagsWithWishCount,
                 wishesFilter = state.wishesFilter,
+                currentWishesCount = currentWishesCount,
+                completedWishesCount = competedWishesCount,
                 onNavItemSelected = { viewModel.onNavItemSelected(it) },
                 onEditTagsClicked = onEditTagClick
             )

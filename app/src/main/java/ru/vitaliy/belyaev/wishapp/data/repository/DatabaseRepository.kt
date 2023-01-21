@@ -19,6 +19,7 @@ import ru.vitaliy.belyaev.wishapp.data.repository.tags.TagsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.wishes.WishesRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.wishes.toWishWithTags
 import ru.vitaliy.belyaev.wishapp.data.repository.wishtagrelation.WishTagRelationRepository
+import ru.vitaliy.belyaev.wishapp.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
 
@@ -219,6 +220,19 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    override fun observeWishesCount(isCompleted: Boolean): Flow<Long> {
+        return wishQueries
+            .getWishesCount(isCompleted)
+            .asFlow()
+            .mapToOne(dispatcherProvider.io())
+    }
+
+    override suspend fun getWishesCount(isCompleted: Boolean): Long {
+        return wishQueries
+            .getWishesCount(isCompleted)
+            .executeAsOne()
+    }
+
     override fun observeWishesByTag(tagId: String): Flow<List<WishWithTags>> {
 
         val wishesByTagFlow: Flow<List<Wish>> = wishTagRelationQueries
@@ -301,6 +315,25 @@ class DatabaseRepository @Inject constructor(
             .getWishTags(wishId)
             .asFlow()
             .mapToList(dispatcherProvider.io())
+    }
+
+    override fun observeAllTagsWithWishesCount(): Flow<List<TagWithWishCount>> {
+
+        val tagsFlow: Flow<List<Tag>> = observeAllTags()
+
+        val relationsWithCurrentWishesFlow = wishTagRelationQueries
+            .getRelationsWithCurrentWishes()
+            .asFlow()
+            .mapToList(dispatcherProvider.io())
+
+        return combine(tagsFlow, relationsWithCurrentWishesFlow) { tags, relationsCountWithCurrentWishes ->
+            val tagsWithWishCount = mutableListOf<TagWithWishCount>()
+            for (tag in tags) {
+                val wishesCount = relationsCountWithCurrentWishes.count { it.tagId == tag.tagId }
+                tagsWithWishCount.add(TagWithWishCount(tag, wishesCount.toLong()))
+            }
+            tagsWithWishCount.toList()
+        }
     }
 
     override fun deleteTagsByIds(ids: List<String>) {
