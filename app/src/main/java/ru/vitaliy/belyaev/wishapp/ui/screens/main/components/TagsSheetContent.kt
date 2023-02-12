@@ -37,7 +37,7 @@ import androidx.constraintlayout.compose.Dimension
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.entity.TagWithWishCount
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
@@ -91,7 +91,7 @@ fun TagsSheetContent(
         ) {
             items(tagsWithWishCount) { tagWithWishCount ->
                 val tag = tagWithWishCount.tag
-                val isTagSelected = wishesFilter is WishesFilter.ByTag && wishesFilter.tag.tagId == tag.tagId
+                val isTagSelected = wishesFilter is WishesFilter.ByTag && wishesFilter.tag.id == tag.id
                 NavMenuItemBlock(
                     icon = painterResource(R.drawable.ic_label),
                     title = tag.title,

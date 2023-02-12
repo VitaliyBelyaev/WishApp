@@ -4,7 +4,6 @@ plugins {
     kotlin("kapt")
     id("kotlin-parcelize")
     id("dagger.hilt.android.plugin")
-    id("com.squareup.sqldelight")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("com.google.firebase.firebase-perf")
@@ -76,6 +75,8 @@ android {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.0")
 
+    implementation(project(":shared"))
+
     // Android X common
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
@@ -116,13 +117,10 @@ dependencies {
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-perf-ktx")
 
-    // Hilt
+    // DI
+    implementation("io.insert-koin:koin-androidx-compose:${libs.versions.koinCompose.get()}")
     implementation("com.google.dagger:hilt-android:${libs.versions.hilt.get()}")
     kapt("com.google.dagger:hilt-android-compiler:${libs.versions.hilt.get()}")
-
-    // Database
-    implementation("com.squareup.sqldelight:android-driver:${libs.versions.sqlDelight.get()}")
-    implementation("com.squareup.sqldelight:coroutines-extensions-jvm:${libs.versions.sqlDelight.get()}")
 
     // Okhttp
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.9.1"))
@@ -162,13 +160,4 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
-}
-
-sqldelight {
-    database("WishAppDb") {
-        packageName = "ru.vitaliy.belyaev.wishapp.data.database"
-        dialect = "sqlite:3.24"
-        schemaOutputDirectory = file("src/main/sqldelight/databases")
-        verifyMigrations = true
-    }
 }

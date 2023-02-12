@@ -32,7 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.util.Optional
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.data.database.Tag
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.components.EditTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
@@ -47,7 +47,7 @@ fun EditTagsScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val editTagItems: List<EditTagItem> by viewModel.uiState.collectAsState()
-    val openDialog: MutableState<Optional<Tag>> = remember { mutableStateOf(Optional.empty()) }
+    val openDialog: MutableState<Optional<TagEntity>> = remember { mutableStateOf(Optional.empty()) }
     val lazyListState: LazyListState = rememberLazyListState()
 
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -66,13 +66,13 @@ fun EditTagsScreen(
         )
     }
 
-    val onTagClick: (Tag) -> Unit = {
+    val onTagClick: (TagEntity) -> Unit = {
         viewModel.onTagClicked(it)
     }
-    val onEditDoneClick: (String, Tag) -> Unit = { newTitle, tag ->
+    val onEditDoneClick: (String, TagEntity) -> Unit = { newTitle, tag ->
         viewModel.onEditTagDoneClicked(newTitle, tag)
     }
-    val onRemoveClick: (Tag) -> Unit = {
+    val onRemoveClick: (TagEntity) -> Unit = {
         openDialog.value = Optional.of(it)
     }
 

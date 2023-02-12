@@ -2,18 +2,16 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wishtags
 
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import ru.vitaliy.belyaev.wishapp.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
-import ru.vitaliy.belyaev.wishapp.data.repository.tags.TagsRepository
-import ru.vitaliy.belyaev.wishapp.data.repository.wishtagrelation.WishTagRelationRepository
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishTagRelationRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.toTagItem
@@ -56,9 +54,8 @@ class WishTagsViewModel @Inject constructor(
     fun onAddTagClicked(tagName: String) {
         analyticsRepository.trackEvent(AnalyticsNames.Event.ADD_NEW_TAG)
         launchSafe {
-            val tagId = UUID.randomUUID().toString()
+            val tagId = tagsRepository.insertTag(tagName)
             recentlyAddedTagIds.add(0, tagId)
-            tagsRepository.insertTag(Tag(tagId, tagName.trim()))
             wishTagRelationRepository.insertWishTagRelation(wishId, tagId)
             dataStoreRepository.incrementPositiveActionsCount()
         }
@@ -73,9 +70,9 @@ class WishTagsViewModel @Inject constructor(
         launchSafe {
             val newIsSelected = !tagItem.isSelected
             if (newIsSelected) {
-                wishTagRelationRepository.insertWishTagRelation(wishId, tagItem.tag.tagId)
+                wishTagRelationRepository.insertWishTagRelation(wishId, tagItem.tag.id)
             } else {
-                wishTagRelationRepository.deleteWishTagRelation(wishId, tagItem.tag.tagId)
+                wishTagRelationRepository.deleteWishTagRelation(wishId, tagItem.tag.id)
             }
         }
     }
@@ -89,10 +86,10 @@ class WishTagsViewModel @Inject constructor(
             }
         }
 
-        val withoutRecentlyAdded = filteredByQuery.filter { it.tag.tagId !in recentlyAddedTagIds }
+        val withoutRecentlyAdded = filteredByQuery.filter { it.tag.id !in recentlyAddedTagIds }
         val result = mutableListOf<TagItem>().apply {
             for (tagId in recentlyAddedTagIds) {
-                val tagItem = filteredByQuery.find { it.tag.tagId == tagId }
+                val tagItem = filteredByQuery.find { it.tag.id == tagId }
                 tagItem?.let { add(tagItem) }
             }
             addAll(withoutRecentlyAdded)

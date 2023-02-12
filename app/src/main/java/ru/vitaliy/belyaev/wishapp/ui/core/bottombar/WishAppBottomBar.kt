@@ -14,14 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.ReorderButtonState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
 
 @Composable
 fun WishAppBottomBar(
-    wishes: List<WishWithTags>,
+    wishes: List<WishEntity>,
     wishesFilter: WishesFilter,
     onShareClick: () -> Unit,
     onMenuClick: () -> Unit,

@@ -1,13 +1,13 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main.entity
 
-import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 
 data class WishItem(
-    val wish: WishWithTags,
+    val wish: WishEntity,
     val linkPreviewState: LinkPreviewState
 )
 
-fun WishWithTags.toDefaultWishItem(): WishItem {
+fun WishEntity.toDefaultWishItem(): WishItem {
     return if (link.isNotBlank()) {
         WishItem(this, Loading)
     } else {
@@ -15,7 +15,7 @@ fun WishWithTags.toDefaultWishItem(): WishItem {
     }
 }
 
-fun WishWithTags.toWishItem(linkPreviewState: LinkPreviewState): WishItem =
+fun WishEntity.toWishItem(linkPreviewState: LinkPreviewState): WishItem =
     WishItem(this, linkPreviewState)
 
 

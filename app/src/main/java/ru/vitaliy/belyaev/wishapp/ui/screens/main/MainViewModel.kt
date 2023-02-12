@@ -13,21 +13,20 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.data.database.Tag
-import ru.vitaliy.belyaev.wishapp.data.database.Wish
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.data.repository.tags.TagsRepository
-import ru.vitaliy.belyaev.wishapp.data.repository.wishes.WishesRepository
-import ru.vitaliy.belyaev.wishapp.domain.WishesInteractor
-import ru.vitaliy.belyaev.wishapp.entity.TagWithWishCount
-import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.ReorderButtonState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.ScrollInfo
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
+import timber.log.Timber
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
@@ -35,7 +34,6 @@ class MainViewModel @Inject constructor(
     private val wishesRepository: WishesRepository,
     private val tagsRepository: TagsRepository,
     private val analyticsRepository: AnalyticsRepository,
-    private val wishesInteractor: WishesInteractor
 ) : BaseViewModel() {
 
     private val _uiState: MutableStateFlow<MainScreenState> = MutableStateFlow(MainScreenState())
@@ -68,33 +66,7 @@ class MainViewModel @Inject constructor(
             param(AnalyticsNames.Param.SCREEN_NAME, "MainScreen")
         }
 
-        launchSafe {
-            wishesFilterFlow
-                .flatMapLatest {
-                    when (it) {
-                        is WishesFilter.ByTag -> {
-                            wishesInteractor.observeNotCompletedWishesByTag(it.tag.tagId)
-                        }
-                        is WishesFilter.All -> {
-                            wishesInteractor.observeNotCompletedWishes()
-                        }
-                        is WishesFilter.Completed -> {
-                            wishesInteractor.observeCompletedWishes()
-                        }
-                    }
-                }
-                .collect { wishes ->
-                    _uiState.value = uiState.value.copy(
-                        wishes = wishes,
-                        wishesFilter = wishesFilterFlow.value,
-                        isLoading = false
-                    )
-                    scrollInfo?.let {
-                        _scrollInfoFlow.emit(it)
-                        scrollInfo = null
-                    }
-                }
-        }
+        launchObservingWishes()
 
         launchSafe {
             tagsRepository
@@ -106,7 +78,7 @@ class MainViewModel @Inject constructor(
                     if (currentWishesFilter is WishesFilter.ByTag) {
                         tagsWithWishesCount
                             .map { it.tag }
-                            .find { it.tagId == currentWishesFilter.tag.tagId }
+                            .find { it.id == currentWishesFilter.tag.id }
                             ?.let {
                                 wishesFilterFlow.value = currentWishesFilter.copy(tag = it)
                             }
@@ -115,13 +87,13 @@ class MainViewModel @Inject constructor(
         }
 
         launchSafe {
-            wishesInteractor
+            wishesRepository
                 .observeWishesCount(isCompleted = false)
                 .collect { _currentWishesCount.value = it }
         }
 
         launchSafe {
-            wishesInteractor
+            wishesRepository
                 .observeWishesCount(isCompleted = true)
                 .collect { _completedWishesCount.value = it }
         }
@@ -160,7 +132,7 @@ class MainViewModel @Inject constructor(
         launchSafe {
             val currentMillis = System.currentTimeMillis()
             val wish = testWishes[testWishIndex % testWishes.size].copy(
-                wishId = UUID.randomUUID().toString(),
+                id = UUID.randomUUID().toString(),
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis
             )
@@ -192,7 +164,7 @@ class MainViewModel @Inject constructor(
         _uiState.value = uiState.value.copy(selectedIds = selectedIds)
     }
 
-    fun onWishLongPress(wish: WishWithTags) {
+    fun onWishLongPress(wish: WishEntity) {
         analyticsRepository.trackEvent(AnalyticsNames.Event.WISH_LONG_PRESS)
         val oldState = _uiState.value
         val wishId = wish.id
@@ -216,7 +188,7 @@ class MainViewModel @Inject constructor(
         _uiState.value = oldState.copy(selectedIds = selectedIds, reorderButtonState = reorderButtonState)
     }
 
-    fun onMoveWish(movedWish: WishWithTags, moveDirection: MoveDirection, scrollOffset: Int) {
+    fun onMoveWish(movedWish: WishEntity, moveDirection: MoveDirection, scrollOffset: Int) {
         val wish1Index = uiState.value.wishes.indexOf(movedWish).takeIf { it != -1 } ?: return
         val wish2Index = when (moveDirection) {
             MoveDirection.UP -> wish1Index - 1
@@ -256,14 +228,50 @@ class MainViewModel @Inject constructor(
         _uiState.value = uiState.value.copy(reorderButtonState = reorderButtonState, selectedIds = emptyList())
     }
 
-    private fun createTestWishes(): List<Wish> {
+    private fun launchObservingWishes() {
+        launchSafe {
+            runCatching {
+                wishesFilterFlow
+                    .flatMapLatest {
+                        when (it) {
+                            is WishesFilter.ByTag -> {
+                                wishesRepository.observeWishesByTag(it.tag.id)
+                            }
+                            is WishesFilter.All -> {
+                                wishesRepository.observeAllWishes(isCompleted = false)
+                            }
+                            is WishesFilter.Completed -> {
+                                wishesRepository.observeAllWishes(isCompleted = true)
+                            }
+                        }
+                    }
+                    .collect { wishes ->
+                        _uiState.value = uiState.value.copy(
+                            wishes = wishes,
+                            wishesFilter = wishesFilterFlow.value,
+                            isLoading = false
+                        )
+                        scrollInfo?.let {
+                            _scrollInfoFlow.emit(it)
+                            scrollInfo = null
+                        }
+                    }
+            }.onFailure {
+                Timber.e(it)
+                wishesFilterFlow.value = WishesFilter.All
+                launchObservingWishes()
+            }
+        }
+    }
+
+    private fun createTestWishes(): List<WishEntity> {
         if (!BuildConfig.DEBUG) {
             return emptyList()
         }
         val currentMillis = System.currentTimeMillis()
         return listOf(
-            Wish(
-                wishId = "1",
+            WishEntity(
+                id = "1",
                 title = "Шуруповерт",
                 link = "https://www.citilink.ru/product/drel-shurupovert-bosch-universaldrill-18v-akkum-patron-bystrozazhimnoi-1492081/?region_id=123062&gclid=CjwKCAiAm7OMBhAQEiwArvGi3Aom3wUbhHlBUu-9OPINzsyF9rM0Q2rBUgp1jFV68iT7IUaAoTA-1xoCzPcQAvD_BwE",
                 comment = "С кейсом, чтобы были головки разные и запасной аккумулятор",
@@ -272,8 +280,8 @@ class MainViewModel @Inject constructor(
                 updatedTimestamp = currentMillis,
                 position = 0
             ),
-            Wish(
-                wishId = "2",
+            WishEntity(
+                id = "2",
                 title = "Поход в SPA",
                 link = "",
                 comment = "Побольше массажа",
@@ -282,8 +290,8 @@ class MainViewModel @Inject constructor(
                 updatedTimestamp = currentMillis,
                 position = 0
             ),
-            Wish(
-                wishId = "3",
+            WishEntity(
+                id = "3",
                 title = "Робот пылесос",
                 link = "https://www.citilink.ru/product/pylesos-robot-xiaomi-mi-mop-p-chernyi-1393766/?region_id=123062&gclid=CjwKCAiAm7OMBhAQEiwArvGi3DS-H1fiWV65XGxNEcrSzE1PpsULu34hK2eZ1C235ZV3OHton6qXMBoCzrQQAvD_BwE",
                 comment = "Чтобы с шерстью справлялся и умел по неровнастям ездить",
@@ -292,8 +300,8 @@ class MainViewModel @Inject constructor(
                 updatedTimestamp = currentMillis,
                 position = 0
             ),
-            Wish(
-                wishId = "4",
+            WishEntity(
+                id = "4",
                 title = "Халат",
                 link = "",
                 comment = "Цвет не яркий",
@@ -302,8 +310,8 @@ class MainViewModel @Inject constructor(
                 updatedTimestamp = currentMillis,
                 position = 0
             ),
-            Wish(
-                wishId = "5",
+            WishEntity(
+                id = "5",
                 title = "Мультитул LEATHERMAN",
                 link = "https://ileatherman.ru/multitul-leatherman-wave-plus-832524-s-nejlonovym-chexlom",
                 comment = "",
@@ -315,14 +323,14 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    private fun createEnTestWishes(): List<Wish> {
+    private fun createEnTestWishes(): List<WishEntity> {
         if (!BuildConfig.DEBUG) {
             return emptyList()
         }
         val currentMillis = System.currentTimeMillis()
         return listOf(
-            Wish(
-                wishId = "1",
+            WishEntity(
+                id = "1",
                 title = "Macbook Pro 14″",
                 link = "https://www.apple.com/shop/buy-mac/macbook-pro/14-inch",
                 comment = "Space Gray with 32 Gb of RAM",
@@ -331,8 +339,8 @@ class MainViewModel @Inject constructor(
                 updatedTimestamp = currentMillis,
                 position = 0
             ),
-            Wish(
-                wishId = "2",
+            WishEntity(
+                id = "2",
                 title = "Garmin Forerunner 955",
                 link = "https://www.garmin.com/en-US/p/777655/pn/010-02638-11",
                 comment = "White",
@@ -341,8 +349,8 @@ class MainViewModel @Inject constructor(
                 updatedTimestamp = currentMillis,
                 position = 0
             ),
-            Wish(
-                wishId = "3",
+            WishEntity(
+                id = "3",
                 title = "Robotic Vacuum",
                 link = "",
                 comment = "iRobot or Shark",
@@ -351,8 +359,8 @@ class MainViewModel @Inject constructor(
                 updatedTimestamp = currentMillis,
                 position = 0
             ),
-            Wish(
-                wishId = "4",
+            WishEntity(
+                id = "4",
                 title = "Scarf",
                 link = "",
                 comment = "Warm, neutral shades",
@@ -361,8 +369,8 @@ class MainViewModel @Inject constructor(
                 updatedTimestamp = currentMillis,
                 position = 0
             ),
-            Wish(
-                wishId = "5",
+            WishEntity(
+                id = "5",
                 title = "LEATHERMAN Multitool",
                 link = "https://www.amazon.com/LEATHERMAN-Multitool-Replaceable-Spring-Action-Stainless/dp/B0B2V4N34X/ref=sr_1_2?keywords=LEATHERMAN&qid=1673963133&sr=8-2",
                 comment = "",
@@ -374,7 +382,7 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    private fun createTestTags(): List<Tag> {
+    private fun createTestTags(): List<TagEntity> {
         val tagNames = listOf(
             "Power",
             "Internet",
@@ -390,10 +398,10 @@ class MainViewModel @Inject constructor(
             "Birthday",
             "Insurance"
         )
-        val tags = mutableListOf<Tag>()
+        val tags = mutableListOf<TagEntity>()
 
         tagNames.forEach {
-            val tag = Tag(UUID.randomUUID().toString(), it)
+            val tag = TagEntity(UUID.randomUUID().toString(), it)
             tags.add(tag)
         }
         return tags

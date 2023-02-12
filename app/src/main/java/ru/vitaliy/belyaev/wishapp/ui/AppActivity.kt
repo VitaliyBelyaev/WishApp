@@ -20,8 +20,8 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.entity.Theme
-import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
 import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 
@@ -70,7 +70,7 @@ class AppActivity : AppCompatActivity() {
         }
     }
 
-    private fun generateFormattedWishList(wishes: List<WishWithTags>): String {
+    private fun generateFormattedWishList(wishes: List<WishEntity>): String {
         val builder = StringBuilder().apply {
             append(getString(R.string.wish_list_title))
             append("\n\n")

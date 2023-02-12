@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
@@ -40,13 +40,13 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.ReorderButtonState
 @ExperimentalFoundationApi
 @Composable
 fun WishItemBlock(
-    wishItem: WishWithTags,
+    wishItem: WishEntity,
     isSelected: Boolean,
     horizontalPadding: Dp,
-    onWishClicked: (WishWithTags) -> Unit,
-    onWishLongPress: (WishWithTags) -> Unit,
+    onWishClicked: (WishEntity) -> Unit,
+    onWishLongPress: (WishEntity) -> Unit,
     reorderButtonState: ReorderButtonState,
-    onMoveItem: (WishWithTags, MoveDirection) -> Unit,
+    onMoveItem: (WishEntity, MoveDirection) -> Unit,
     modifier: Modifier = Modifier
 ) {
 

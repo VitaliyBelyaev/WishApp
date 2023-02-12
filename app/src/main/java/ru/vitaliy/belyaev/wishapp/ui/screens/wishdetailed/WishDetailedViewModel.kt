@@ -10,12 +10,12 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.data.repository.wishes.WishesRepository
-import ru.vitaliy.belyaev.wishapp.data.repository.wishes.createEmptyWish
 import ru.vitaliy.belyaev.wishapp.domain.GetLinkPreviewInteractor
-import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.createEmptyWish
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkPreviewState
 import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
@@ -47,7 +47,7 @@ class WishDetailedViewModel @Inject constructor(
             wishId = inputWishId.ifBlank {
                 val wish = createEmptyWish()
                 wishesRepository.insertWish(wish)
-                wish.wishId
+                wish.id
             }
 
             wishesRepository
@@ -65,7 +65,7 @@ class WishDetailedViewModel @Inject constructor(
         }
     }
 
-    private suspend fun tryLoadLinkPreview(link: String, wish: WishWithTags) {
+    private suspend fun tryLoadLinkPreview(link: String, wish: WishEntity) {
         if (link.isBlank()) {
             cachedLinkPreviewState = None
             val wishItem = wish.toWishItem(cachedLinkPreviewState)

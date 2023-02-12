@@ -9,7 +9,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.AboutAppScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.privacypolicy.PrivacyPolicyScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.EditTagsScreen
@@ -24,7 +24,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.WishTagsScreen
 @ExperimentalCoroutinesApi
 @ExperimentalMaterialApi
 @Composable
-fun Navigation(onShareClick: (List<WishWithTags>) -> Unit) {
+fun Navigation(onShareClick: (List<WishEntity>) -> Unit) {
     val navController = rememberAnimatedNavController()
     WishAppAnimatedNavHost(
         navController = navController,

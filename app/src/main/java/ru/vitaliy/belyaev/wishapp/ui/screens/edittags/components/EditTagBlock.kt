@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.data.database.Tag
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
 
@@ -43,9 +43,9 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
 @Composable
 fun EditTagBlock(
     editTagItem: EditTagItem,
-    onClick: (Tag) -> Unit,
-    onRemoveClick: (Tag) -> Unit,
-    onEditDoneClick: (String, Tag) -> Unit,
+    onClick: (TagEntity) -> Unit,
+    onRemoveClick: (TagEntity) -> Unit,
+    onEditDoneClick: (String, TagEntity) -> Unit,
 ) {
     val isEditMode = editTagItem.isEditMode
     val tag = editTagItem.tag

@@ -45,8 +45,8 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.entity.TagWithWishCount
-import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
@@ -69,10 +69,10 @@ import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 @ExperimentalCoroutinesApi
 @Composable
 fun MainScreen(
-    openWishDetailed: (WishWithTags) -> Unit,
+    openWishDetailed: (WishEntity) -> Unit,
     onAddWishClicked: () -> Unit,
     onSettingIconClicked: () -> Unit,
-    onShareClick: (List<WishWithTags>) -> Unit,
+    onShareClick: (List<WishEntity>) -> Unit,
     onEditTagClick: () -> Unit,
     viewModel: MainViewModel = hiltViewModel(),
     appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
@@ -166,7 +166,7 @@ fun MainScreen(
             },
             snackbarHost = { SnackbarHost(snackbarHostState) },
         ) { paddingValues ->
-            val onWishClicked: (WishWithTags) -> Unit = { wish ->
+            val onWishClicked: (WishEntity) -> Unit = { wish ->
                 if (state.selectedIds.isEmpty()) {
                     openWishDetailed(wish)
                 } else {
@@ -174,12 +174,12 @@ fun MainScreen(
                 }
             }
 
-            val onMoveItem: (WishWithTags, MoveDirection) -> Unit = { wishWithTags, moveDirection ->
+            val onMoveItem: (WishEntity, MoveDirection) -> Unit = { WishEntity, moveDirection ->
                 val movedLazyListItemInfo =
-                    lazyListState.layoutInfo.visibleItemsInfo.find { info -> info.key == wishWithTags.id }
+                    lazyListState.layoutInfo.visibleItemsInfo.find { info -> info.key == WishEntity.id }
 
                 viewModel.onMoveWish(
-                    movedWish = wishWithTags,
+                    movedWish = WishEntity,
                     moveDirection = moveDirection,
                     scrollOffset = movedLazyListItemInfo?.offset ?: 0
                 )

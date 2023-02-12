@@ -1,7 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.main.entity
 
 import androidx.annotation.StringRes
-import ru.vitaliy.belyaev.wishapp.data.database.Tag
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 
 class AllTagsMenuItem(
     @StringRes val titleRes: Int,
@@ -9,6 +9,6 @@ class AllTagsMenuItem(
 )
 
 class TagMenuItem(
-    val tag: Tag,
+    val tag: TagEntity,
     val isSelected: Boolean
 )
