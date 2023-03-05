@@ -6,12 +6,16 @@
 //
 
 import SwiftUI
+import shared
 
 @main
 struct WishApp: App {
+    
+    let sdk = WishAppSdk(databaseDriveFactory: DatabaseDriverFactory())
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(sdk: sdk)
         }
     }
 }

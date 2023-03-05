@@ -9,14 +9,34 @@ import SwiftUI
 import shared
 
 struct ContentView: View {
+    
+    @StateObject private var viewModel: MainViewModel
+    
+    init(sdk: WishAppSdk? = nil) {
+        let viewModel = MainViewModel(sdk: sdk)
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
+    
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        
+        NavigationView {
+            List(viewModel.wishes) { wish in
+                VStack {
+                    Text(wish.title)
+                        .font(.title)
+                    Text(wish.comment)
+                    Text(wish.link)
+                }
+            }
+            .navigationTitle("Wishapp")
+            .toolbar {
+                Button("Add wish"){
+                    viewModel.onAddWishClicked()
+                }
+            }
         }
-        .padding()
+
     }
 }
 
@@ -24,4 +44,8 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
+}
+
+extension WishEntity : Identifiable {
+    
 }
