@@ -7,20 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		ED6DB19829B4F21F00A11CA3 /* WishAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6DB19729B4F21F00A11CA3 /* WishAppApp.swift */; };
+		ED6DB19829B4F21F00A11CA3 /* WishApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6DB19729B4F21F00A11CA3 /* WishApp.swift */; };
 		ED6DB19A29B4F21F00A11CA3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6DB19929B4F21F00A11CA3 /* ContentView.swift */; };
 		ED6DB19C29B4F21F00A11CA3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED6DB19B29B4F21F00A11CA3 /* Assets.xcassets */; };
 		ED6DB19F29B4F21F00A11CA3 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED6DB19E29B4F21F00A11CA3 /* Preview Assets.xcassets */; };
-		ED6DB1A629B4F39600A11CA3 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = ED6DB1A529B4F39600A11CA3 /* .gitignore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		ED6DB19429B4F21F00A11CA3 /* WishApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WishApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		ED6DB19729B4F21F00A11CA3 /* WishAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishAppApp.swift; sourceTree = "<group>"; };
+		ED6DB19729B4F21F00A11CA3 /* WishApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishApp.swift; sourceTree = "<group>"; };
 		ED6DB19929B4F21F00A11CA3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		ED6DB19B29B4F21F00A11CA3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ED6DB19E29B4F21F00A11CA3 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		ED6DB1A529B4F39600A11CA3 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,7 +35,6 @@
 		ED6DB18B29B4F21E00A11CA3 = {
 			isa = PBXGroup;
 			children = (
-				ED6DB1A529B4F39600A11CA3 /* .gitignore */,
 				ED6DB19629B4F21F00A11CA3 /* WishApp */,
 				ED6DB19529B4F21F00A11CA3 /* Products */,
 			);
@@ -54,7 +51,7 @@
 		ED6DB19629B4F21F00A11CA3 /* WishApp */ = {
 			isa = PBXGroup;
 			children = (
-				ED6DB19729B4F21F00A11CA3 /* WishAppApp.swift */,
+				ED6DB19729B4F21F00A11CA3 /* WishApp.swift */,
 				ED6DB19929B4F21F00A11CA3 /* ContentView.swift */,
 				ED6DB19B29B4F21F00A11CA3 /* Assets.xcassets */,
 				ED6DB19D29B4F21F00A11CA3 /* Preview Content */,
@@ -129,7 +126,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED6DB19F29B4F21F00A11CA3 /* Preview Assets.xcassets in Resources */,
-				ED6DB1A629B4F39600A11CA3 /* .gitignore in Resources */,
 				ED6DB19C29B4F21F00A11CA3 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -142,7 +138,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED6DB19A29B4F21F00A11CA3 /* ContentView.swift in Sources */,
-				ED6DB19829B4F21F00A11CA3 /* WishAppApp.swift in Sources */,
+				ED6DB19829B4F21F00A11CA3 /* WishApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
