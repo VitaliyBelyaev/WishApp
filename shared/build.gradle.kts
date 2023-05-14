@@ -1,12 +1,38 @@
 plugins {
-    kotlin("multiplatform")
     id("com.android.library")
+    kotlin("multiplatform")
+    kotlin("native.cocoapods")
     id("com.squareup.sqldelight")
+    id("com.rickclephas.kmp.nativecoroutines")
+    id("com.google.devtools.ksp")
+}
+
+kotlin.sourceSets.all {
+    // For KMP-NativeCoroutines https://github.com/rickclephas/KMP-NativeCoroutines#kotlin
+    languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
 }
 
 kotlin {
-    android()
+    cocoapods {
 
+        version = "1.0"
+        summary = "WishApp"
+        homepage = ""
+        ios.deploymentTarget = "13.5"
+
+        pod("KMPNativeCoroutinesAsync") {
+            version = "~> ${libs.versions.nativeCoroutines.get()}"
+        }
+
+        framework {
+            // Required properties
+            // Framework name configuration. Use this property instead of deprecated 'frameworkName'
+            baseName = "WishAppFramework"
+            isStatic = true
+        }
+    }
+
+    android()
     listOf(
         iosX64(),
         iosArm64(),
@@ -92,3 +118,38 @@ sqldelight {
         verifyMigrations = true
     }
 }
+//
+//configurations.configureEach {
+//    val wishappSharedAttr = Attribute.of("WishAppSharedAttr", String::class.java)
+////    println("confirugration: $this")
+////    error("fnejfneunf")
+//    print("configurations: $name")
+//    if (name.startsWith("metadata")) {
+//        return@configureEach
+//    }
+//    if (name.endsWith("ApiElements") || name.endsWith("RuntimeElements")) {
+//        val targetName = name.removeSuffix("ApiElements")
+//            .removeSuffix("RuntimeElements")
+//            .removeSuffix("CInterop")
+//            .replace("Ir", "Legacy")
+//        val target = kotlin.targets.getByName(targetName)
+//        val engine = target.attributes.getAttribute(wishappSharedAttr)
+//        attributes {
+//            engine?.let { attribute(wishappSharedAttr, it) }
+//        }
+//    }
+//}
+
+//val wishappSharedAttr = Attribute.of("WishAppSharedAttr", String::class.java)
+//
+//configurations.named(":shared:podDebugFrameworkIosArm64").configure {
+//    attributes {
+//        attribute(wishappSharedAttr, "pod-debug")
+//    }
+//}
+//
+//configurations.named(":shared:debugFrameworkIosArm64").configure {
+//    attributes {
+//        attribute(wishappSharedAttr, "debug")
+//    }
+//}

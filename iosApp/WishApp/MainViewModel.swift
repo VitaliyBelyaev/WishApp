@@ -24,6 +24,7 @@ final class MainViewModel: ObservableObject {
     
     init(sdk: WishAppSdk?) {
         self.sdk = sdk
+        self.updateWishes()
     }
     
     func onAddWishClicked() {

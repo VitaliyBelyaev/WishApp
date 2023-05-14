@@ -9,27 +9,49 @@ pluginManagement {
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            version("compose", "1.3.3")
-            version("kotlin", "1.7.21")
-            version("kotlinCoroutines", "1.6.4")
-            version("kotlinDateTime", "0.4.0")
-            version("sqlDelight", "1.5.4")
-            version("hilt", "2.44.2")
-            version("accompanist", "0.28.0")
-            version("androidGradle", "7.3.0")
-            version("koinCompose", "3.4.1")
-            version("napier", "2.6.1")
-            version("uuid", "0.6.0")
+            from(files("libs.versions.toml"))
         }
     }
 
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     repositories {
         google()
         mavenCentral()
+        gradlePluginPortal()
         maven(url = "https://jitpack.io")
         maven(url = "https://www.jetbrains.com/intellij-repository/releases")
         maven(url = "https://jetbrains.bintray.com/intellij-third-party-dependencies")
+
+        // workaround for https://youtrack.jetbrains.com/issue/KT-51379
+        exclusiveContent {
+            forRepository {
+                ivy("https://download.jetbrains.com/kotlin/native/builds") {
+                    name = "Kotlin Native"
+                    patternLayout {
+
+                        // example download URLs:
+                        // https://download.jetbrains.com/kotlin/native/builds/releases/1.7.20/linux-x86_64/kotlin-native-prebuilt-linux-x86_64-1.7.20.tar.gz
+                        // https://download.jetbrains.com/kotlin/native/builds/releases/1.7.20/windows-x86_64/kotlin-native-prebuilt-windows-x86_64-1.7.20.zip
+                        // https://download.jetbrains.com/kotlin/native/builds/releases/1.7.20/macos-x86_64/kotlin-native-prebuilt-macos-x86_64-1.7.20.tar.gz
+                        listOf(
+                            "macos-x86_64",
+                            "macos-aarch64",
+                            "osx-x86_64",
+                            "osx-aarch64",
+                            "linux-x86_64",
+                            "windows-x86_64",
+                        ).forEach { os ->
+                            listOf("dev", "releases").forEach { stage ->
+                                artifact("$stage/[revision]/$os/[artifact]-[revision].[ext]")
+                            }
+                        }
+                    }
+                    metadataSources { artifact() }
+                }
+            }
+            filter { includeModuleByRegex(".*", ".*kotlin-native-prebuilt.*") }
+        }
+
     }
 }
 

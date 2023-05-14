@@ -17,7 +17,6 @@ struct ContentView: View {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
     
-    
     var body: some View {
         
         NavigationView {

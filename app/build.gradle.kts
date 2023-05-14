@@ -150,9 +150,10 @@ dependencies {
     testImplementation("org.mockito:mockito-core:3.11.2")
     testImplementation("org.mockito:mockito-inline:3.11.2")
     testImplementation("com.squareup.sqldelight:sqlite-driver:${libs.versions.sqlDelight.get()}")
-    testImplementation("org.xerial:sqlite-jdbc:3.8.10.2") {
-        // Override the version of sqlite used by sqlite-driver to match Android API 23
-        isForce = true
+    testImplementation("org.xerial:sqlite-jdbc") {
+        version {
+            strictly("3.8.10.2")
+        }
     }
 
     // Instrumentation
