@@ -36,7 +36,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.0-alpha02"
+        kotlinCompilerExtensionVersion = "1.4.7"
     }
     packagingOptions {
         resources {
@@ -149,12 +149,6 @@ dependencies {
     // Mockito
     testImplementation("org.mockito:mockito-core:3.11.2")
     testImplementation("org.mockito:mockito-inline:3.11.2")
-    testImplementation("com.squareup.sqldelight:sqlite-driver:${libs.versions.sqlDelight.get()}")
-    testImplementation("org.xerial:sqlite-jdbc") {
-        version {
-            strictly("3.8.10.2")
-        }
-    }
 
     // Instrumentation
     androidTestImplementation("androidx.test:runner:1.5.2")

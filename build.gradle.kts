@@ -9,7 +9,7 @@ plugins {
     id("com.google.gms.google-services").version("4.3.14").apply(false)
     id("com.google.firebase.crashlytics").version("2.9.2").apply(false)
     id("com.google.firebase.firebase-perf").version("1.4.2").apply(false)
-    id("com.google.devtools.ksp").version("1.8.21-1.0.11").apply(false)
+    id("com.google.devtools.ksp").version(libs.versions.ksp.get()).apply(false)
     id("com.rickclephas.kmp.nativecoroutines").version(libs.versions.nativeCoroutines.get()).apply(false)
 }
 

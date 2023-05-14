@@ -9,7 +9,7 @@ Pod::Spec.new do |spec|
     spec.vendored_frameworks      = 'build/cocoapods/framework/WishAppFramework.framework'
     spec.libraries                = 'c++'
     spec.ios.deployment_target = '13.5'
-    spec.dependency 'KMPNativeCoroutinesAsync', '~> 1.0.0-ALPHA-4'
+                
                 
     spec.pod_target_xcconfig = {
         'KOTLIN_PROJECT_PATH' => ':shared',

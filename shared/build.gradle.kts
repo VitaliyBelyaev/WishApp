@@ -12,27 +12,22 @@ kotlin.sourceSets.all {
     languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
 }
 
-kotlin {
-    cocoapods {
-
-        version = "1.0"
-        summary = "WishApp"
-        homepage = ""
-        ios.deploymentTarget = "13.5"
-
-        pod("KMPNativeCoroutinesAsync") {
-            version = "~> ${libs.versions.nativeCoroutines.get()}"
-        }
-
-        framework {
-            // Required properties
-            // Framework name configuration. Use this property instead of deprecated 'frameworkName'
-            baseName = "WishAppFramework"
-            isStatic = true
-        }
+android {
+    namespace = "ru.vitaliy.belyaev.wishapp.shared"
+    compileSdk = 33
+    defaultConfig {
+        minSdk = 23
+        targetSdk = 33
     }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+}
 
+kotlin {
     android()
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -40,6 +35,24 @@ kotlin {
     ).forEach {
         it.binaries.framework {
             baseName = "shared"
+        }
+    }
+    cocoapods {
+
+        version = "1.0"
+        summary = "WishApp"
+        homepage = ""
+        ios.deploymentTarget = "13.5"
+
+//        pod("KMPNativeCoroutinesAsync") {
+//            version = "~> ${libs.versions.nativeCoroutines.get()}"
+//        }
+
+        framework {
+            // Required properties
+            // Framework name configuration. Use this property instead of deprecated 'frameworkName'
+            baseName = "WishAppFramework"
+            isStatic = true
         }
     }
 
@@ -101,15 +114,6 @@ kotlin {
     }
 }
 
-android {
-    namespace = "ru.vitaliy.belyaev.wishapp.shared"
-    compileSdk = 33
-    defaultConfig {
-        minSdk = 23
-        targetSdk = 33
-    }
-}
-
 sqldelight {
     database("WishAppDb") {
         packageName = "ru.vitaliy.belyaev.wishapp.shared.data.database"
@@ -118,38 +122,3 @@ sqldelight {
         verifyMigrations = true
     }
 }
-//
-//configurations.configureEach {
-//    val wishappSharedAttr = Attribute.of("WishAppSharedAttr", String::class.java)
-////    println("confirugration: $this")
-////    error("fnejfneunf")
-//    print("configurations: $name")
-//    if (name.startsWith("metadata")) {
-//        return@configureEach
-//    }
-//    if (name.endsWith("ApiElements") || name.endsWith("RuntimeElements")) {
-//        val targetName = name.removeSuffix("ApiElements")
-//            .removeSuffix("RuntimeElements")
-//            .removeSuffix("CInterop")
-//            .replace("Ir", "Legacy")
-//        val target = kotlin.targets.getByName(targetName)
-//        val engine = target.attributes.getAttribute(wishappSharedAttr)
-//        attributes {
-//            engine?.let { attribute(wishappSharedAttr, it) }
-//        }
-//    }
-//}
-
-//val wishappSharedAttr = Attribute.of("WishAppSharedAttr", String::class.java)
-//
-//configurations.named(":shared:podDebugFrameworkIosArm64").configure {
-//    attributes {
-//        attribute(wishappSharedAttr, "pod-debug")
-//    }
-//}
-//
-//configurations.named(":shared:debugFrameworkIosArm64").configure {
-//    attributes {
-//        attribute(wishappSharedAttr, "debug")
-//    }
-//}
