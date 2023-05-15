@@ -1,19 +1,19 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'shared'
     spec.version                  = '1.0'
-    spec.homepage                 = ''
+    spec.homepage                 = 'https://github.com/VitaliyBelyaev/WishApp'
     spec.source                   = { :http=> ''}
     spec.authors                  = ''
     spec.license                  = ''
     spec.summary                  = 'WishApp'
-    spec.vendored_frameworks      = 'build/cocoapods/framework/WishAppFramework.framework'
+    spec.vendored_frameworks      = 'build/cocoapods/framework/shared.framework'
     spec.libraries                = 'c++'
     spec.ios.deployment_target = '13.5'
-                
+    spec.dependency 'KMPNativeCoroutinesAsync', '~> 1.0.0-ALPHA-4'
                 
     spec.pod_target_xcconfig = {
         'KOTLIN_PROJECT_PATH' => ':shared',
-        'PRODUCT_MODULE_NAME' => 'WishAppFramework',
+        'PRODUCT_MODULE_NAME' => 'shared',
     }
                 
     spec.script_phases = [

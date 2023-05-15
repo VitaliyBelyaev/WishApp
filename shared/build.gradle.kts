@@ -41,18 +41,13 @@ kotlin {
 
         version = "1.0"
         summary = "WishApp"
-        homepage = ""
+        homepage = "https://github.com/VitaliyBelyaev/WishApp"
         ios.deploymentTarget = "13.5"
 
-//        pod("KMPNativeCoroutinesAsync") {
-//            version = "~> ${libs.versions.nativeCoroutines.get()}"
-//        }
+        podfile = project.file("../iosApp/Podfile")
 
-        framework {
-            // Required properties
-            // Framework name configuration. Use this property instead of deprecated 'frameworkName'
-            baseName = "WishAppFramework"
-            isStatic = true
+        pod("KMPNativeCoroutinesAsync") {
+            version = "~> ${libs.versions.nativeCoroutines.get()}"
         }
     }
 
