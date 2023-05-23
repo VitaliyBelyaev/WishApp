@@ -18,19 +18,17 @@ object DatabaseRepositoryModule {
     @Provides
     fun provideWishesRepositoryRepository(
         wishAppSdk: WishAppSdk
-    ): WishesRepository = wishAppSdk.wishesRepository
+    ): WishesRepository = wishAppSdk.databaseRepository
 
     @Singleton
     @Provides
     fun provideTagsRepositoryRepository(
         wishAppSdk: WishAppSdk
-    ): TagsRepository = wishAppSdk.tagsRepository
+    ): TagsRepository = wishAppSdk.databaseRepository
 
     @Singleton
     @Provides
     fun provideWishTagRelationRepository(
         wishAppSdk: WishAppSdk
-    ): WishTagRelationRepository {
-        return wishAppSdk.wishTagRelationRepository
-    }
+    ): WishTagRelationRepository = wishAppSdk.databaseRepository
 }

@@ -1,6 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.shared.data.repository
 
 import com.benasher44.uuid.uuid4
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.squareup.sqldelight.runtime.coroutines.mapToOne
@@ -36,6 +37,7 @@ class DatabaseRepository(
     private val tagQueries: TagQueries = database.tagQueries
 
     // region WishesRepository
+    @NativeCoroutines
     override suspend fun insertWish(wish: WishEntity) {
         withContext(dispatcherProvider.io()) {
             wishQueries.transaction {
@@ -191,6 +193,7 @@ class DatabaseRepository(
         }
     }
 
+    @NativeCoroutines
     override fun observeAllWishes(isCompleted: Boolean): Flow<List<WishEntity>> {
         val wishesFlow: Flow<List<Wish>> = wishQueries
             .getAll(isCompleted)

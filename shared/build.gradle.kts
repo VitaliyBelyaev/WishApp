@@ -20,8 +20,8 @@ android {
         targetSdk = 33
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 
@@ -40,13 +40,13 @@ kotlin {
     cocoapods {
 
         version = "1.0"
-        summary = "WishApp"
+        summary = "WishAppSdk"
         homepage = "https://github.com/VitaliyBelyaev/WishApp"
         ios.deploymentTarget = "13.5"
 
         podfile = project.file("../iosApp/Podfile")
 
-        pod("KMPNativeCoroutinesAsync") {
+        pod("KMPNativeCoroutinesCombine") {
             version = "~> ${libs.versions.nativeCoroutines.get()}"
         }
     }
@@ -106,6 +106,10 @@ kotlin {
             iosArm64Test.dependsOn(this)
             iosSimulatorArm64Test.dependsOn(this)
         }
+    }
+
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions.jvmTarget = "11"
     }
 }
 

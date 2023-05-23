@@ -1,7 +1,7 @@
 [versions]
 androidGradle = "7.4.0"
-kotlin = "1.8.0"
-kotlinCoroutines = "1.6.4"
+kotlin = "1.8.21"
+kotlinCoroutines = "1.7.0"
 kotlinDateTime = "0.4.0"
 ksp = "1.8.21-1.0.11"
 
@@ -12,4 +12,4 @@ accompanist = "0.28.0"
 koinCompose = "3.4.1"
 napier = "2.6.1"
 uuid = "0.6.0"
-nativeCoroutines = "1.0.0-ALPHA-4"
+nativeCoroutines = "1.0.0-ALPHA-9"

@@ -1,10 +1,12 @@
 package ru.vitaliy.belyaev.wishapp.shared.domain.repository
 
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.flow.Flow
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 
 interface WishesRepository {
 
+    @NativeCoroutines
     suspend fun insertWish(wish: WishEntity)
 
     suspend fun updateWishTitle(newValue: String, wishId: String)
@@ -24,6 +26,7 @@ interface WishesRepository {
     fun observeWishById(id: String): Flow<WishEntity>
     suspend fun getWishById(id: String): WishEntity
 
+    @NativeCoroutines
     fun observeAllWishes(isCompleted: Boolean): Flow<List<WishEntity>>
     suspend fun getAllWishes(isCompleted: Boolean): List<WishEntity>
 
