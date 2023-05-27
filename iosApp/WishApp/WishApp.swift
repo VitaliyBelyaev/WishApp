@@ -15,7 +15,7 @@ struct WishApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(sdk: sdk)
+            MainView(sdk: sdk)
         }
     }
 }

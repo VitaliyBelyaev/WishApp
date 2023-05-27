@@ -1,22 +1,33 @@
 package ru.vitaliy.belyaev.wishapp.shared.domain.repository
 
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.flow.Flow
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
 
 interface TagsRepository {
 
-    fun insertTag(title: String): String
+    @NativeCoroutines
+    suspend fun insertTag(title: String): String
 
-    fun updateTagTitle(title: String, tagId: String)
+    @NativeCoroutines
+    suspend fun updateTagTitle(title: String, tagId: String)
 
+    @NativeCoroutines
     suspend fun getAllTags(): List<TagEntity>
+
+    @NativeCoroutines
     fun observeAllTags(): Flow<List<TagEntity>>
+
+    @NativeCoroutines
     fun observeTagsByWishId(wishId: String): Flow<List<TagEntity>>
 
+    @NativeCoroutines
     fun observeAllTagsWithWishesCount(): Flow<List<TagWithWishCount>>
 
-    fun deleteTagsByIds(ids: List<String>)
+    @NativeCoroutines
+    suspend fun deleteTagsByIds(ids: List<String>)
 
-    fun clearAllTags()
+    @NativeCoroutines
+    suspend fun clearAllTags()
 }

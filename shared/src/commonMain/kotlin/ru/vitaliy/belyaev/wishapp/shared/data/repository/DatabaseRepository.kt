@@ -58,6 +58,7 @@ class DatabaseRepository(
         }
     }
 
+    @NativeCoroutines
     override suspend fun updateWishTitle(newValue: String, wishId: String) {
         withContext(dispatcherProvider.io()) {
             wishQueries.updateTitle(
@@ -68,6 +69,7 @@ class DatabaseRepository(
         }
     }
 
+    @NativeCoroutines
     override suspend fun updateWishLink(newValue: String, wishId: String) {
         withContext(dispatcherProvider.io()) {
             wishQueries.updateLink(
@@ -78,6 +80,7 @@ class DatabaseRepository(
         }
     }
 
+    @NativeCoroutines
     override suspend fun updateWishComment(newValue: String, wishId: String) {
         withContext(dispatcherProvider.io()) {
             wishQueries.updateComment(
@@ -88,6 +91,7 @@ class DatabaseRepository(
         }
     }
 
+    @NativeCoroutines
     override suspend fun updateWishIsCompleted(newValue: Boolean, wishId: String) {
         withContext(dispatcherProvider.io()) {
             wishQueries.transaction {
@@ -109,6 +113,7 @@ class DatabaseRepository(
         }
     }
 
+    @NativeCoroutines
     override suspend fun updatePosition(newValue: Long, wishId: String) {
         withContext(dispatcherProvider.io()) {
             wishQueries.updatePosition(
@@ -118,6 +123,7 @@ class DatabaseRepository(
         }
     }
 
+    @NativeCoroutines
     override suspend fun swapWishesPositions(
         wish1Id: String,
         wish1Position: Long,
@@ -138,6 +144,7 @@ class DatabaseRepository(
         }
     }
 
+    @NativeCoroutines
     override suspend fun updatePositionsOnItemMove(
         startIndex: Int,
         endIndex: Int,
@@ -165,6 +172,7 @@ class DatabaseRepository(
         }
     }
 
+    @NativeCoroutines
     override fun observeWishById(id: String): Flow<WishEntity> {
         val wishDtoFlow: Flow<Wish> = wishQueries
             .getById(id)
@@ -180,6 +188,7 @@ class DatabaseRepository(
         }
     }
 
+    @NativeCoroutines
     override suspend fun getWishById(id: String): WishEntity {
         return withContext(dispatcherProvider.io()) {
             val wishDto: Wish = wishQueries
@@ -219,6 +228,7 @@ class DatabaseRepository(
         }
     }
 
+    @NativeCoroutines
     override suspend fun getAllWishes(isCompleted: Boolean): List<WishEntity> {
         return withContext(dispatcherProvider.io()) {
             wishQueries
@@ -233,6 +243,7 @@ class DatabaseRepository(
         }
     }
 
+    @NativeCoroutines
     override fun observeWishesCount(isCompleted: Boolean): Flow<Long> {
         return wishQueries
             .getWishesCount(isCompleted)
@@ -240,12 +251,14 @@ class DatabaseRepository(
             .mapToOne(dispatcherProvider.io())
     }
 
+    @NativeCoroutines
     override suspend fun getWishesCount(isCompleted: Boolean): Long {
         return wishQueries
             .getWishesCount(isCompleted)
             .executeAsOne()
     }
 
+    @NativeCoroutines
     override fun observeWishesByTag(tagId: String): Flow<List<WishEntity>> {
 
         val wishesByTagFlow: Flow<List<Wish>> = wishTagRelationQueries
@@ -266,6 +279,7 @@ class DatabaseRepository(
         }
     }
 
+    @NativeCoroutines
     override suspend fun deleteWishesByIds(ids: List<String>) {
         withContext(dispatcherProvider.io()) {
             wishQueries.transaction {
@@ -281,33 +295,41 @@ class DatabaseRepository(
         }
     }
 
-    override fun clearAllWishes() {
+    @NativeCoroutines
+    override suspend fun clearAllWishes() {
         wishQueries.clear()
     }
     // end region WishesRepository
 
     // region WishTagRelationRepository
-    override fun insertWishTagRelation(wishId: String, tagId: String) {
+
+    @NativeCoroutines
+    override suspend fun insertWishTagRelation(wishId: String, tagId: String) {
         wishTagRelationQueries.insert(wishId, tagId)
     }
 
-    override fun deleteWishTagRelation(wishId: String, tagId: String) {
+    @NativeCoroutines
+    override suspend fun deleteWishTagRelation(wishId: String, tagId: String) {
         wishTagRelationQueries.delete(wishId, tagId)
     }
 
     // end region WishTagRelationRepository
 
     // region TagsRepository
-    override fun insertTag(title: String): String {
+
+    @NativeCoroutines
+    override suspend fun insertTag(title: String): String {
         val tagId = uuid4().toString()
         tagQueries.insert(tagId, title)
         return tagId
     }
 
-    override fun updateTagTitle(title: String, tagId: String) {
+    @NativeCoroutines
+    override suspend fun updateTagTitle(title: String, tagId: String) {
         tagQueries.updateTitle(title, tagId)
     }
 
+    @NativeCoroutines
     override suspend fun getAllTags(): List<TagEntity> {
         return withContext(dispatcherProvider.io()) {
             tagQueries
@@ -316,6 +338,7 @@ class DatabaseRepository(
         }
     }
 
+    @NativeCoroutines
     override fun observeAllTags(): Flow<List<TagEntity>> {
         return tagQueries
             .getAll(TagMapper::mapToDomain)
@@ -323,6 +346,7 @@ class DatabaseRepository(
             .mapToList(dispatcherProvider.io())
     }
 
+    @NativeCoroutines
     override fun observeTagsByWishId(wishId: String): Flow<List<TagEntity>> {
         return wishTagRelationQueries
             .getWishTags(wishId, TagMapper::mapToDomain)
@@ -330,6 +354,7 @@ class DatabaseRepository(
             .mapToList(dispatcherProvider.io())
     }
 
+    @NativeCoroutines
     override fun observeAllTagsWithWishesCount(): Flow<List<TagWithWishCount>> {
 
         val tagsFlow: Flow<List<TagEntity>> = observeAllTags()
@@ -349,14 +374,16 @@ class DatabaseRepository(
         }
     }
 
-    override fun deleteTagsByIds(ids: List<String>) {
+    @NativeCoroutines
+    override suspend fun deleteTagsByIds(ids: List<String>) {
         tagQueries.transaction {
             tagQueries.deleteByIds(ids)
             wishTagRelationQueries.deleteByTagIds(ids)
         }
     }
 
-    override fun clearAllTags() {
+    @NativeCoroutines
+    override suspend fun clearAllTags() {
         tagQueries.clear()
     }
 
