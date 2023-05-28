@@ -16,7 +16,10 @@ import ru.vitaliy.belyaev.wishapp.R
 
 @ExperimentalMaterialApi
 @Composable
-fun BackupSheetContent(modalBottomSheetState: ModalBottomSheetState) {
+fun BackupSheetContent(
+    modalBottomSheetState: ModalBottomSheetState,
+    modifier: Modifier
+) {
 
     val scope = rememberCoroutineScope()
 
@@ -27,6 +30,6 @@ fun BackupSheetContent(modalBottomSheetState: ModalBottomSheetState) {
     Text(
         text = stringResource(R.string.backup_description),
         color = MaterialTheme.colorScheme.onSurface,
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 24.dp)
+        modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 24.dp)
     )
 }

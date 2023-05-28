@@ -134,10 +134,10 @@ fun MainScreen(
                 currentWishesCount = currentWishesCount,
                 completedWishesCount = competedWishesCount,
                 onNavItemSelected = { viewModel.onNavItemSelected(it) },
-                onEditTagsClicked = onEditTagClick
+                onEditTagsClicked = onEditTagClick,
+                modifier = Modifier.safeDrawingPadding()
             )
         },
-        modifier = Modifier.safeDrawingPadding()
     ) {
         val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
         Scaffold(

@@ -73,8 +73,12 @@ fun SettingsScreen(
 
     WishAppBottomSheet(
         sheetState = modalBottomSheetState,
-        sheetContent = { BackupSheetContent(modalBottomSheetState) },
-        modifier = Modifier.safeDrawingPadding()
+        sheetContent = {
+            BackupSheetContent(
+                modalBottomSheetState = modalBottomSheetState,
+                modifier = Modifier.safeDrawingPadding()
+            )
+        },
     ) {
         val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
         Scaffold(

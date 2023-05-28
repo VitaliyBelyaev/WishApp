@@ -52,7 +52,8 @@ fun TagsSheetContent(
     currentWishesCount: Long,
     completedWishesCount: Long,
     onNavItemSelected: (WishesFilter) -> Unit,
-    onEditTagsClicked: () -> Unit
+    onEditTagsClicked: () -> Unit,
+    modifier: Modifier
 ) {
 
     val scope = rememberCoroutineScope()
@@ -61,7 +62,7 @@ fun TagsSheetContent(
         scope.launch { modalBottomSheetState.hide() }
     }
 
-    ConstraintLayout {
+    ConstraintLayout(modifier = modifier) {
         val (closeButtonRef, scrollableRef, staticRef) = createRefs()
 
         IconButton(
