@@ -29,8 +29,28 @@ struct WishListView: View {
         }
         .navigationTitle(viewModel.title)
         .toolbar {
-            Button("Add wish"){
-                viewModel.onAddWishClicked()
+            ToolbarItem(placement: .primaryAction) {
+                Button("+wish"){
+                    viewModel.onAddWishClicked()
+                }
+            }
+            
+            ToolbarItem(placement: .primaryAction) {
+                NavigationLink(destination: WishListView(sdk: nil, mode: .All)) {
+                    Image(systemName: "gearshape")
+                }
+            }
+            
+            ToolbarItemGroup(placement: .bottomBar) {
+                Button{
+                    // share
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                }
+                
+                NavigationLink(destination: WishListView(sdk: nil, mode: .Completed)) {
+                    Image(systemName: "square.and.pencil")
+                }
             }
         }
     }

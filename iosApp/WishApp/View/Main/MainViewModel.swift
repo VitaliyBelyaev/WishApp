@@ -15,18 +15,17 @@ final class MainViewModel: ObservableObject {
     
     private let sdk: WishAppSdk?
     
-    private var dbRepository: DatabaseRepository {
+    private var dbRepository: DatabaseRepository? {
         get {
-            guard let sdk else { fatalError() }
-            return sdk.databaseRepository
+            return sdk?.databaseRepository
         }
     }
     
     private var subscriptions: [AnyCancellable] = []
+        
+    @Published var state: MainViewState = MainViewState(commonItems: [], tagItems: [])
     
-    @Published var items: [MainItem] = []
-    
-    init(sdk: WishAppSdk?) {
+    init(sdk: WishAppSdk? = nil) {
         self.sdk = sdk
         self.subscribeOnMainItems()
     }
@@ -37,7 +36,11 @@ final class MainViewModel: ObservableObject {
         let randNumber = Int.random(in: 0..<1000)
         let wish = WishEntity(id: NSUUID().uuidString, title: "Test wish \(randNumber)", link: "Some link", comment: "Some commmment", isCompleted: false, createdTimestamp: timestamp, updatedTimestamp: timestamp, position: 0, tags: [])
         
-    
+        
+        guard let dbRepository = dbRepository else {
+            return
+        }
+        
         createFuture(for: dbRepository.insertWish(wish: wish))
             .subscribe(on: DispatchQueue.global())
             .sinkSilently()
@@ -45,6 +48,10 @@ final class MainViewModel: ObservableObject {
     }
     
     func onAddTagClicked(){
+        guard let dbRepository = dbRepository else {
+            return
+        }
+        
         createFuture(for: dbRepository.insertTag(title: "Tag title \(Int.random(in: 0..<1000))"))
             .subscribe(on: DispatchQueue.global())
             .sinkSilently()
@@ -52,6 +59,11 @@ final class MainViewModel: ObservableObject {
     }
     
     private func subscribeOnMainItems(){
+        
+        guard let dbRepository = dbRepository else {
+            return
+        }
+        
         let all = createPublisher(for: dbRepository.observeWishesCount(isCompleted: false))
         let completed = createPublisher(for: dbRepository.observeWishesCount(isCompleted: true))
         let tags = createPublisher(for: dbRepository.observeAllTagsWithWishesCount())
@@ -59,23 +71,20 @@ final class MainViewModel: ObservableObject {
         Publishers.CombineLatest3(all, completed, tags)
             .subscribe(on: DispatchQueue.global())
             .map { allCount, completedCount, tags in
-                let tagMainItems = tags.map{ tag in
-                    MainItem.WishTag(tag.tag, Int(tag.wishesCount))
-                }
-                let items = [
-                    MainItem.AllWishes(Int(truncating: allCount)),
-                    MainItem.CompletedWishes(Int(truncating: completedCount)),
-                    MainItem.Settings
+                let commonItems = [
+                    CommonMainItem(type: .All, title: "All wishes", count: Int(truncating: allCount)),
+                    CommonMainItem(type: .Completed, title: "Completed wishes", count: Int(truncating: completedCount))
                 ]
-                
-                print("items:\(items)")
-                return items + tagMainItems
+                let tagItems = tags.map { tag in
+                    WishTagMainItem(tag: tag.tag, count: Int(tag.wishesCount))
+                }
+                return MainViewState(commonItems: commonItems, tagItems: tagItems)
             }
             .catch { error in
-                Just(Array())
+                Just(MainViewState(commonItems: [], tagItems: []))
             }
             .receive(on: DispatchQueue.main)
-            .assign(to: \.items, on: self)
+            .assign(to: \.state, on: self)
             .store(in: &subscriptions)
     }
 }

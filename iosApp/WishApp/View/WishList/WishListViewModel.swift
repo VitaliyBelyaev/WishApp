@@ -17,10 +17,9 @@ final class WishListViewModel: ObservableObject {
     
     private let mode: WishListMode
     
-    private var dbRepository: DatabaseRepository {
+    private var dbRepository: DatabaseRepository? {
         get {
-            guard let sdk else { fatalError() }
-            return sdk.databaseRepository
+            return sdk?.databaseRepository
         }
     }
     
@@ -53,6 +52,10 @@ final class WishListViewModel: ObservableObject {
         let wish = WishEntity(id: NSUUID().uuidString, title: "Test wish \(randNumber)", link: "Some link", comment: "Some commmment", isCompleted: false, createdTimestamp: timestamp, updatedTimestamp: timestamp, position: 0, tags: [])
         
     
+        
+        guard let dbRepository = dbRepository else {
+            return
+        }
         createFuture(for: dbRepository.insertWish(wish: wish))
             .subscribe(on: DispatchQueue.global())
             .sinkSilently()
@@ -61,6 +64,9 @@ final class WishListViewModel: ObservableObject {
     
     
     private func collectWishes() {
+        guard let dbRepository = dbRepository else {
+            return
+        }
         createPublisher(for: dbRepository.observeAllWishes(isCompleted: false))
             .subscribe(on: DispatchQueue.global())
             .retry(3)
