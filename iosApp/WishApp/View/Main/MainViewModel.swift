@@ -72,8 +72,8 @@ final class MainViewModel: ObservableObject {
             .subscribe(on: DispatchQueue.global())
             .map { allCount, completedCount, tags in
                 let commonItems = [
-                    CommonMainItem(type: .All, title: "All wishes", count: Int(truncating: allCount)),
-                    CommonMainItem(type: .Completed, title: "Completed wishes", count: Int(truncating: completedCount))
+                    CommonMainItem(type: .All, count: Int(truncating: allCount)),
+                    CommonMainItem(type: .Completed, count: Int(truncating: completedCount))
                 ]
                 let tagItems = tags.map { tag in
                     WishTagMainItem(tag: tag.tag, count: Int(tag.wishesCount))

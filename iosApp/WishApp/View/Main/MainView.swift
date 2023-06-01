@@ -29,11 +29,15 @@ struct MainView: View {
     var body: some View {
         NavigationStack() {
             List {
-                
                 ForEach(viewModel.state.commonItems, id: \.self) { item in
                     NavigationLink(value: item) {
                         HStack{
-                            Text(item.title)
+                            switch item.type {
+                            case .All:
+                                Text("Main.all")
+                            case .Completed:
+                                Text("Main.completed")
+                            }
                             Spacer()
                             Text("\(item.count)")
                         }
@@ -51,12 +55,16 @@ struct MainView: View {
                         }
                     }
                 } header: {
-                    Text("Tags")
+                    Text("Main.tags")
+                        .font(.title3)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+
                 }
-                
+                .textCase(nil)
             }
             .listStyle(.sidebar)
-            .navigationTitle("Wishapp")
+            .navigationTitle("Main.title")
             .toolbar {
                
                 ToolbarItem(placement: .primaryAction) {
@@ -104,11 +112,11 @@ struct MainView: View {
         private static func getPreviewState() -> MainViewState {
             return MainViewState(
                 commonItems: [
-                    CommonMainItem(type:.All, title: "All", count: 13),
-                    CommonMainItem(type:.Completed, title: "Completed", count: 2),
+                    CommonMainItem(type:.All, count: 13),
+                    CommonMainItem(type:.Completed, count: 2),
                 ],
                 tagItems: getTags().map { tag in
-                    WishTagMainItem(tag: tag, count: Int.random(in: 0...10))
+                    WishTagMainItem(tag: tag, count: 13)
                 }
             )
         }

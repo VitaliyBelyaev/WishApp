@@ -1,0 +1,11 @@
+/* 
+  Localizable.strings
+  WishApp
+
+  Created by Vitaliy on 01.06.2023.
+  
+*/
+"Main.title" = "Хотелки";
+"Main.all" = "Все";
+"Main.completed" = "Выполенные";
+"Main.tags" = "Теги";

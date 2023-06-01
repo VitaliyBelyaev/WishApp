@@ -7,10 +7,10 @@
 
 import Foundation
 import shared
+import SwiftUI
 
 struct CommonMainItem : Hashable {
     let type: CommonItemType
-    let title: String
     let count: Int
 }
 
