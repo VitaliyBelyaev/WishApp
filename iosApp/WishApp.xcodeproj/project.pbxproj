@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		DBBCD02E2D8F4C219DBA6628 /* Pods_WishApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE82C3BFCB066E79A9355667 /* Pods_WishApp.framework */; };
 		ED232D4C2A1F85B000C51DB7 /* WishEntityExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED232D4B2A1F85B000C51DB7 /* WishEntityExt.swift */; };
+		ED2555BC2A2A34A700678E7C /* TagItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2555BB2A2A34A700678E7C /* TagItemView.swift */; };
+		ED2555BF2A2A3B0F00678E7C /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = ED2555C12A2A3B0F00678E7C /* Localizable.stringsdict */; };
 		ED3973C62A28F27A00DB0896 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED3973C82A28F27A00DB0896 /* Localizable.strings */; };
 		ED3973CC2A28F33C00DB0896 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED3973CE2A28F33C00DB0896 /* InfoPlist.strings */; };
 		ED6DB19829B4F21F00A11CA3 /* WishApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6DB19729B4F21F00A11CA3 /* WishApp.swift */; };
@@ -30,6 +32,9 @@
 		2571903193AD706D91A31376 /* Pods-WishApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WishApp.release.xcconfig"; path = "Target Support Files/Pods-WishApp/Pods-WishApp.release.xcconfig"; sourceTree = "<group>"; };
 		CE82C3BFCB066E79A9355667 /* Pods_WishApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WishApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED232D4B2A1F85B000C51DB7 /* WishEntityExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishEntityExt.swift; sourceTree = "<group>"; };
+		ED2555BB2A2A34A700678E7C /* TagItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagItemView.swift; sourceTree = "<group>"; };
+		ED2555C02A2A3B0F00678E7C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		ED2555C22A2A3B1200678E7C /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ru; path = ru.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		ED3973C72A28F27A00DB0896 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		ED3973C92A28F28600DB0896 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		ED3973CD2A28F33C00DB0896 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -78,12 +83,21 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		ED2555BA2A2A348700678E7C /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				ED2555BB2A2A34A700678E7C /* TagItemView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		ED3973BD2A28F06000DB0896 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 				ED6DB19B29B4F21F00A11CA3 /* Assets.xcassets */,
 				ED3973C82A28F27A00DB0896 /* Localizable.strings */,
 				ED3973CE2A28F33C00DB0896 /* InfoPlist.strings */,
+				ED2555C12A2A3B0F00678E7C /* Localizable.stringsdict */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -141,6 +155,7 @@
 		ED6EFA332A2248FA00CC1B13 /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				ED2555BA2A2A348700678E7C /* Components */,
 				ED6EFA482A2256B200CC1B13 /* Entity */,
 				ED6EFA3A2A22495200CC1B13 /* MainView.swift */,
 				ED6EFA402A2249B000CC1B13 /* MainViewModel.swift */,
@@ -262,6 +277,7 @@
 				ED6DB19F29B4F21F00A11CA3 /* Preview Assets.xcassets in Resources */,
 				ED3973CC2A28F33C00DB0896 /* InfoPlist.strings in Resources */,
 				ED3973C62A28F27A00DB0896 /* Localizable.strings in Resources */,
+				ED2555BF2A2A3B0F00678E7C /* Localizable.stringsdict in Resources */,
 				ED6DB19C29B4F21F00A11CA3 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -321,6 +337,7 @@
 				EDB776EE2A27AC9D0087EA06 /* MainViewState.swift in Sources */,
 				ED6EFA4C2A225A7400CC1B13 /* WishListMode.swift in Sources */,
 				ED6DB19829B4F21F00A11CA3 /* WishApp.swift in Sources */,
+				ED2555BC2A2A34A700678E7C /* TagItemView.swift in Sources */,
 				ED6DB1AB29B503B800A11CA3 /* Utils.swift in Sources */,
 				ED6EFA472A224B8700CC1B13 /* NavigationModel.swift in Sources */,
 				ED6EFA3F2A22498700CC1B13 /* WishListViewModel.swift in Sources */,
@@ -332,6 +349,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		ED2555C12A2A3B0F00678E7C /* Localizable.stringsdict */ = {
+			isa = PBXVariantGroup;
+			children = (
+				ED2555C02A2A3B0F00678E7C /* en */,
+				ED2555C22A2A3B1200678E7C /* ru */,
+			);
+			name = Localizable.stringsdict;
+			sourceTree = "<group>";
+		};
 		ED3973C82A28F27A00DB0896 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (

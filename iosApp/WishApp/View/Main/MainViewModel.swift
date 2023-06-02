@@ -30,6 +30,14 @@ final class MainViewModel: ObservableObject {
         self.subscribeOnMainItems()
     }
     
+    func onRenameTagClicked(tag: TagEntity) {
+        
+    }
+    
+    func onDeleteTagClicked(tag: TagEntity) {
+        
+    }
+    
     func onAddWishClicked(){
         let timestamp = Date.currentTimeStamp
         

@@ -13,6 +13,8 @@ struct MainView: View {
     private let sdk: WishAppSdk?
     @StateObject private var viewModel: MainViewModel
     
+    @State private var isDeleteTagConfirmationVisible = false
+    
     init(sdk: WishAppSdk? = nil, previewViewModel: MainViewModel? = nil) {
         
         let viewModel: MainViewModel
@@ -47,12 +49,22 @@ struct MainView: View {
                 Section {
                     ForEach(viewModel.state.tagItems, id: \.self) { item in
                         NavigationLink(value: item) {
-                            HStack{
-                                Text("\(item.tag.title)")
-                                Spacer()
-                                Text("\(item.count)")
+                            TagItemView(
+                                item: item,
+                                onRenameClicked: { tag in
+                                    viewModel.onRenameTagClicked(tag: tag)
+                                },
+                                onDeleteClicked: { tag in
+                                    isDeleteTagConfirmationVisible = true
+                                }
+                            )
+                            .confirmationDialog("Main.deleteTag", isPresented: $isDeleteTagConfirmationVisible) {
+                                Button("Main.deleteTag", role: .destructive) {
+                                    viewModel.onDeleteTagClicked(tag: item.tag)
+                                }
                             }
                         }
+                        
                     }
                 } header: {
                     Text("Main.tags")
@@ -97,6 +109,22 @@ struct MainView: View {
             .navigationDestination(for: WishTagMainItem.self) { item in
                 WishListView(sdk: sdk, mode: .ByTag(item.tag))
             }
+        }
+    }
+    
+    func ContextMenuContent(item: WishTagMainItem) -> some View {
+        return VStack {
+            Button {
+                viewModel.onRenameTagClicked(tag: item.tag)
+            } label: {
+                Label("Main.renameTag", systemImage: "pencil")
+            }
+//            Button {
+//                viewModel.onDeleteTagClicked(tag: item.tag)
+//            } label: {
+//                Label("Main.deleteTag", systemImage: "trash")
+//            }
+            
         }
     }
     
