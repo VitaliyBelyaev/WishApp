@@ -11,4 +11,3 @@
 "Main.tags" = "Теги";
 "Main.renameTag" = "Переименовать тег";
 "Main.deleteTag" = "Удалить тег";
-"Main.deleteTagConfirmTitle %@ %lld" = "%@ используется для %lld wishes";

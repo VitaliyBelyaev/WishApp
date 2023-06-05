@@ -34,11 +34,19 @@ final class MainViewModel: ObservableObject {
         
     }
     
-    func onDeleteTagClicked(tag: TagEntity) {
+    func onDeleteTagClicked(tag: TagEntity) {  
+        guard let dbRepository = dbRepository else {
+            return
+        }
+        
+        createFuture(for: dbRepository.deleteTagsByIds(ids: [tag.id]))
+            .subscribe(on: DispatchQueue.global())
+            .sinkSilently()
+            .store(in: &subscriptions)
         
     }
     
-    func onAddWishClicked(){
+    func onAddWishClicked() {
         let timestamp = Date.currentTimeStamp
         
         let randNumber = Int.random(in: 0..<1000)
@@ -55,7 +63,7 @@ final class MainViewModel: ObservableObject {
             .store(in: &subscriptions)
     }
     
-    func onAddTagClicked(){
+    func onAddTagClicked() {
         guard let dbRepository = dbRepository else {
             return
         }
@@ -66,8 +74,7 @@ final class MainViewModel: ObservableObject {
             .store(in: &subscriptions)
     }
     
-    private func subscribeOnMainItems(){
-        
+    private func subscribeOnMainItems() {
         guard let dbRepository = dbRepository else {
             return
         }

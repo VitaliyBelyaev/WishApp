@@ -11,5 +11,3 @@
 "Main.tags" = "Tags";
 "Main.renameTag" = "Rename tag";
 "Main.deleteTag" = "Delete tag";
-"Main.deleteTagConfirmTitle %@ %lld" = "%@ is used for %lld wishes";
-

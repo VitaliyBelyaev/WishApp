@@ -13,11 +13,17 @@ struct TagItemView: View {
     let item: WishTagMainItem
     let onRenameClicked: (TagEntity) -> Void
     let onDeleteClicked: (TagEntity) -> Void
+    let confirmTitle: String
+    
+    @State private var isDeleteTagConfirmationVisible = false
     
     init(item: WishTagMainItem, onRenameClicked: @escaping (TagEntity) -> Void = {_ in}, onDeleteClicked: @escaping (TagEntity) -> Void = {_ in}) {
         self.item = item
         self.onRenameClicked = onRenameClicked
         self.onDeleteClicked = onDeleteClicked
+        
+        let stringFormat = NSLocalizedString("Tag %@ and %d wishes", comment: "")
+        self.confirmTitle = String.localizedStringWithFormat(stringFormat, item.tag.title, item.count)
     }
     
     var body: some View {
@@ -33,9 +39,14 @@ struct TagItemView: View {
                 Label("Main.renameTag", systemImage: "pencil")
             }
             Button(role: .destructive) {
-                onDeleteClicked(item.tag)
+               isDeleteTagConfirmationVisible = true
             } label: {
                 Label("Main.deleteTag", systemImage: "trash")
+            }
+        }
+        .confirmationDialog(confirmTitle, isPresented: $isDeleteTagConfirmationVisible, titleVisibility: .visible) {
+            Button("Main.deleteTag", role: .destructive) {
+                onDeleteClicked(item.tag)
             }
         }
     }
