@@ -49,8 +49,8 @@ struct MainView: View {
                         NavigationLink(value: item) {
                             TagItemView(
                                 item: item,
-                                onRenameClicked: { tag in
-                                    viewModel.onRenameTagClicked(tag: tag)
+                                onRenameConfirmed: { tag, newTitle in
+                                    viewModel.onRenameTagConfirmed(tag: tag, newTitle: newTitle)
                                 },
                                 onDeleteClicked: { tag in
                                     viewModel.onDeleteTagClicked(tag: tag)

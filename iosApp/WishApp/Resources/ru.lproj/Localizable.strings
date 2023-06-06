@@ -11,3 +11,5 @@
 "Main.tags" = "Теги";
 "Main.renameTag" = "Переименовать тег";
 "Main.deleteTag" = "Удалить тег";
+"Main.cancel" = "Отмена";
+"Main.done" = "Готово";

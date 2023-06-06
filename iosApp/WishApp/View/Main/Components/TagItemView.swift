@@ -7,20 +7,26 @@
 
 import SwiftUI
 import shared
+import Introspect
 
 struct TagItemView: View {
     
     let item: WishTagMainItem
-    let onRenameClicked: (TagEntity) -> Void
+    let onRenameConfirmed: (TagEntity, String) -> Void
     let onDeleteClicked: (TagEntity) -> Void
     let confirmTitle: String
     
-    @State private var isDeleteTagConfirmationVisible = false
+    @State private var isDeleteTagConfirmationPresented = false
+    @State private var isRenameTagPopoverPresented = false
+    @State private var tagTitle: String = ""
+    @State private var becomeFirstResponder = true
     
-    init(item: WishTagMainItem, onRenameClicked: @escaping (TagEntity) -> Void = {_ in}, onDeleteClicked: @escaping (TagEntity) -> Void = {_ in}) {
+    init(item: WishTagMainItem, onRenameConfirmed: @escaping (TagEntity, String) -> Void = {_,_ in}, onDeleteClicked: @escaping (TagEntity) -> Void = {_ in}) {
         self.item = item
-        self.onRenameClicked = onRenameClicked
+        self.onRenameConfirmed = onRenameConfirmed
         self.onDeleteClicked = onDeleteClicked
+        self.tagTitle = item.tag.title
+        
         
         let stringFormat = NSLocalizedString("Tag %@ and %d wishes", comment: "")
         self.confirmTitle = String.localizedStringWithFormat(stringFormat, item.tag.title, item.count)
@@ -34,19 +40,55 @@ struct TagItemView: View {
         }
         .contextMenu {
             Button {
-                onRenameClicked(item.tag)
+                isRenameTagPopoverPresented = true
             } label: {
                 Label("Main.renameTag", systemImage: "pencil")
             }
             Button(role: .destructive) {
-               isDeleteTagConfirmationVisible = true
+               isDeleteTagConfirmationPresented = true
             } label: {
                 Label("Main.deleteTag", systemImage: "trash")
             }
         }
-        .confirmationDialog(confirmTitle, isPresented: $isDeleteTagConfirmationVisible, titleVisibility: .visible) {
+        .confirmationDialog(confirmTitle, isPresented: $isDeleteTagConfirmationPresented, titleVisibility: .visible) {
             Button("Main.deleteTag", role: .destructive) {
                 onDeleteClicked(item.tag)
+            }
+        }
+        .popover(isPresented: $isRenameTagPopoverPresented) {
+            ZStack {
+                Color(.systemGray6)
+                VStack(alignment: .leading) {
+                    HStack {
+                        Button("Main.cancel") {
+                            isRenameTagPopoverPresented = false
+                        }
+                        Spacer()
+                        Text("Main.renameTag")
+                            .font(.headline)
+                            .lineLimit(1)
+                        Spacer()
+                        Button("Main.done") {
+                            isRenameTagPopoverPresented = false
+                            onRenameConfirmed(item.tag, tagTitle)
+                        }
+                        .font(.headline)
+                        .disabled(tagTitle.isEmpty)
+                    }.padding()
+                    
+                    Form {
+                        TextField("", text: $tagTitle)
+                            .introspectTextField { textField in
+                                if self.becomeFirstResponder {
+                                    textField.becomeFirstResponder()
+                                    self.becomeFirstResponder = false
+                                }
+                            }
+                            .onAppear {
+                                UITextField.appearance().clearButtonMode = .whileEditing
+                            }
+                    }
+                }
             }
         }
     }

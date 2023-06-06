@@ -49,6 +49,9 @@ kotlin {
         pod("KMPNativeCoroutinesCombine") {
             version = "~> ${libs.versions.nativeCoroutines.get()}"
         }
+        pod("Introspect") {
+            version = "~> ${libs.versions.iosIntrospect.get()}"
+        }
     }
 
     sourceSets {

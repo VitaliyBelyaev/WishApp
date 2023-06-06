@@ -9,6 +9,7 @@ Pod::Spec.new do |spec|
     spec.vendored_frameworks      = 'build/cocoapods/framework/shared.framework'
     spec.libraries                = 'c++'
     spec.ios.deployment_target = '13.5'
+    spec.dependency 'Introspect', '~> 0.6.0'
     spec.dependency 'KMPNativeCoroutinesCombine', '~> 1.0.0-ALPHA-9'
                 
     spec.pod_target_xcconfig = {

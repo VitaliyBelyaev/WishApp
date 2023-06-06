@@ -30,8 +30,19 @@ final class MainViewModel: ObservableObject {
         self.subscribeOnMainItems()
     }
     
-    func onRenameTagClicked(tag: TagEntity) {
+    func onRenameTagConfirmed(tag: TagEntity, newTitle: String) {
+        if(tag.title == newTitle) {
+            return
+        }
         
+        guard let dbRepository = dbRepository else {
+            return
+        }
+        
+        createFuture(for: dbRepository.updateTagTitle(title: newTitle, tagId: tag.id))
+            .subscribe(on: DispatchQueue.global())
+            .sinkSilently()
+            .store(in: &subscriptions)
     }
     
     func onDeleteTagClicked(tag: TagEntity) {  
