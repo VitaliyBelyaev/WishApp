@@ -11,6 +11,8 @@
 		ED232D4C2A1F85B000C51DB7 /* WishEntityExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED232D4B2A1F85B000C51DB7 /* WishEntityExt.swift */; };
 		ED2555BC2A2A34A700678E7C /* TagItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2555BB2A2A34A700678E7C /* TagItemView.swift */; };
 		ED2555BF2A2A3B0F00678E7C /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = ED2555C12A2A3B0F00678E7C /* Localizable.stringsdict */; };
+		ED3194612A30CAA90070CDE4 /* WishDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3194602A30CAA90070CDE4 /* WishDetailedView.swift */; };
+		ED3194632A30CADC0070CDE4 /* WishDetailedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3194622A30CADC0070CDE4 /* WishDetailedViewModel.swift */; };
 		ED3973C62A28F27A00DB0896 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED3973C82A28F27A00DB0896 /* Localizable.strings */; };
 		ED3973CC2A28F33C00DB0896 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED3973CE2A28F33C00DB0896 /* InfoPlist.strings */; };
 		ED6DB19829B4F21F00A11CA3 /* WishApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6DB19729B4F21F00A11CA3 /* WishApp.swift */; };
@@ -35,6 +37,8 @@
 		ED2555BB2A2A34A700678E7C /* TagItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagItemView.swift; sourceTree = "<group>"; };
 		ED2555C02A2A3B0F00678E7C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		ED2555C22A2A3B1200678E7C /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ru; path = ru.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		ED3194602A30CAA90070CDE4 /* WishDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishDetailedView.swift; sourceTree = "<group>"; };
+		ED3194622A30CADC0070CDE4 /* WishDetailedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishDetailedViewModel.swift; sourceTree = "<group>"; };
 		ED3973C72A28F27A00DB0896 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		ED3973C92A28F28600DB0896 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		ED3973CD2A28F33C00DB0896 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -91,6 +95,15 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		ED31945F2A30CA8D0070CDE4 /* WishDetailed */ = {
+			isa = PBXGroup;
+			children = (
+				ED3194602A30CAA90070CDE4 /* WishDetailedView.swift */,
+				ED3194622A30CADC0070CDE4 /* WishDetailedViewModel.swift */,
+			);
+			path = WishDetailed;
+			sourceTree = "<group>";
+		};
 		ED3973BD2A28F06000DB0896 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -145,6 +158,7 @@
 		ED6EFA312A2248E300CC1B13 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				ED31945F2A30CA8D0070CDE4 /* WishDetailed */,
 				ED6EFA452A224B7400CC1B13 /* Navigation */,
 				ED6EFA352A22491000CC1B13 /* WishList */,
 				ED6EFA332A2248FA00CC1B13 /* Main */,
@@ -331,6 +345,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED3194612A30CAA90070CDE4 /* WishDetailedView.swift in Sources */,
 				ED6EFA3D2A22495F00CC1B13 /* WishListView.swift in Sources */,
 				ED6EFA4A2A2256D200CC1B13 /* MainItem.swift in Sources */,
 				ED6EFA3B2A22495200CC1B13 /* MainView.swift in Sources */,
@@ -343,6 +358,7 @@
 				ED6EFA3F2A22498700CC1B13 /* WishListViewModel.swift in Sources */,
 				ED232D4C2A1F85B000C51DB7 /* WishEntityExt.swift in Sources */,
 				ED6EFA412A2249B000CC1B13 /* MainViewModel.swift in Sources */,
+				ED3194632A30CADC0070CDE4 /* WishDetailedViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

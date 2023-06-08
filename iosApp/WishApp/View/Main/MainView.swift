@@ -85,7 +85,7 @@ struct MainView: View {
                 
                 ToolbarItemGroup(placement: .bottomBar) {
                     Spacer()
-                    NavigationLink(destination: WishListView(sdk: sdk, mode: .All)) {
+                    NavigationLink(destination: WishDetailedView(sdk: sdk)) {
                         Image(systemName: "square.and.pencil")
                     }
                 }

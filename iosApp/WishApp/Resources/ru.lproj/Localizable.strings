@@ -13,3 +13,5 @@
 "Main.deleteTag" = "Удалить тег";
 "Main.cancel" = "Отмена";
 "Main.done" = "Готово";
+"delete %@" = "Удалить %@?";
+"delete" = "Удалить";

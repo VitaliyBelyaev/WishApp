@@ -45,7 +45,7 @@ struct TagItemView: View {
                 Label("Main.renameTag", systemImage: "pencil")
             }
             Button(role: .destructive) {
-               isDeleteTagConfirmationPresented = true
+                isDeleteTagConfirmationPresented = true
             } label: {
                 Label("Main.deleteTag", systemImage: "trash")
             }
@@ -55,41 +55,42 @@ struct TagItemView: View {
                 onDeleteClicked(item.tag)
             }
         }
-        .popover(isPresented: $isRenameTagPopoverPresented) {
-            ZStack {
-                Color(.systemGray6)
-                VStack(alignment: .leading) {
-                    HStack {
-                        Button("Main.cancel") {
-                            isRenameTagPopoverPresented = false
+        .sheet(isPresented: $isRenameTagPopoverPresented) {
+            RenameTagView()
+        }
+    }
+    
+    @ViewBuilder func RenameTagView() -> some View {
+        NavigationStack {
+            Form {
+                TextField("", text: $tagTitle)
+                    .introspectTextField { textField in
+                        if self.becomeFirstResponder {
+                            textField.becomeFirstResponder()
+                            self.becomeFirstResponder = false
                         }
-                        Spacer()
-                        Text("Main.renameTag")
-                            .font(.headline)
-                            .lineLimit(1)
-                        Spacer()
-                        Button("Main.done") {
-                            isRenameTagPopoverPresented = false
-                            onRenameConfirmed(item.tag, tagTitle)
-                        }
-                        .font(.headline)
-                        .disabled(tagTitle.isEmpty)
-                    }.padding()
-                    
-                    Form {
-                        TextField("", text: $tagTitle)
-                            .introspectTextField { textField in
-                                if self.becomeFirstResponder {
-                                    textField.becomeFirstResponder()
-                                    self.becomeFirstResponder = false
-                                }
-                            }
-                            .onAppear {
-                                UITextField.appearance().clearButtonMode = .whileEditing
-                            }
+                    }
+                    .onAppear {
+                        UITextField.appearance().clearButtonMode = .whileEditing
+                    }
+            }.toolbar {
+                ToolbarItem(placement: .cancellationAction){
+                    Button("Main.cancel") {
+                        isRenameTagPopoverPresented = false
                     }
                 }
+                
+                ToolbarItem(placement: .primaryAction){
+                    Button("Main.done") {
+                        isRenameTagPopoverPresented = false
+                        onRenameConfirmed(item.tag, tagTitle)
+                    }
+                    .font(.headline)
+                    .disabled(tagTitle.isEmpty)
+                }
             }
+            .navigationTitle("Main.renameTag")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

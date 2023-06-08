@@ -13,3 +13,5 @@
 "Main.deleteTag" = "Delete tag";
 "Main.cancel" = "Cancel";
 "Main.done" = "Done";
+"delete %@" = "Delete %@?";
+"delete" = "Delete";
