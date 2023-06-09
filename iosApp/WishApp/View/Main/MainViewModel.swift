@@ -61,7 +61,7 @@ final class MainViewModel: ObservableObject {
         let timestamp = Date.currentTimeStamp
         
         let randNumber = Int.random(in: 0..<1000)
-        let wish = WishEntity(id: NSUUID().uuidString, title: "Test wish \(randNumber)", link: "Some link", comment: "Some commmment", isCompleted: false, createdTimestamp: timestamp, updatedTimestamp: timestamp, position: 0, tags: [])
+        let wish = WishEntity(id: NSUUID().uuidString, title: "Test wish \(randNumber)", link: "Some link", links: [], comment: "Some commmment", isCompleted: false, createdTimestamp: timestamp, updatedTimestamp: timestamp, position: 0, tags: [])
         
         
         guard let dbRepository = dbRepository else {

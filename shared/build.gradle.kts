@@ -72,6 +72,9 @@ kotlin {
 
                 // Logging
                 implementation("io.github.aakira:napier:${libs.versions.napier.get()}")
+
+                // Tests
+                implementation(kotlin("test"))
             }
         }
         val commonTest by getting {
