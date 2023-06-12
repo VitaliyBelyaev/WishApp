@@ -13,37 +13,33 @@ import KMPNativeCoroutinesCombine
 @MainActor
 final class WishListViewModel: ObservableObject {
     
-    private let sdk: WishAppSdk?
-    
-    private let mode: WishListMode
+    private let sdk: WishAppSdk = WishAppSdkDiHelper().wishAppSdk
     
     private var dbRepository: DatabaseRepository? {
         get {
-            return sdk?.databaseRepository
+            return sdk.databaseRepository
         }
     }
     
     private var subscriptions: [AnyCancellable] = []
     
+    @Published private var mode: WishListMode = WishListMode.Empty
+    
     @Published var wishes: [WishEntity] = []
     
     @Published var title: String = ""
     
-    init(sdk: WishAppSdk?, mode: WishListMode) {
-        self.sdk = sdk
-        self.mode = mode
-        self.collectWishes()
+    init(mode: WishListMode) {
+        let d = Date()
+        let df = DateFormatter()
+        df.dateFormat = "y-MM-dd H:mm:ss.SSSS"
+        let dateString = df.string(from: d)
         
-        switch mode {
-        case .All:
-            self.title = "All"
-        case .Completed:
-            self.title = "Completed"
-        case let .ByTag(tag):
-            self.title =  tag.title
-        }
+        print("\(dateString) WishListViewModel init, mode: \(mode)")
+        self.mode = mode
+        updateTitle(mode: mode)
+        self.collectWishes()
     }
-    
     
     func onAddWishClicked() {
         let timestamp = Date.currentTimeStamp
@@ -67,16 +63,50 @@ final class WishListViewModel: ObservableObject {
         guard let dbRepository = dbRepository else {
             return
         }
-        createPublisher(for: dbRepository.observeAllWishes(isCompleted: false))
+        
+        $mode
+            .flatMap { mode in
+                switch mode {
+                case .All:
+                    return createPublisher(for: dbRepository.observeAllWishes(isCompleted: false))
+                case .Completed:
+                    return createPublisher(for: dbRepository.observeAllWishes(isCompleted: true))
+                case let .ByTag(tag):
+                    return createPublisher(for: dbRepository.observeWishesByTag(tagId: tag.id))
+                case .Empty:
+                    return createPublisher(for: dbRepository.observeAllWishes(isCompleted: true))
+                }
+            }
             .subscribe(on: DispatchQueue.global())
             .retry(3)
             .catch { error in
-                Just([])
+                Just(Array<WishEntity>())
             }
             .receive(on: DispatchQueue.main)
             .assign(to: \.wishes, on: self)
             .store(in: &subscriptions)
+//        createPublisher(for: dbRepository.observeAllWishes(isCompleted: false))
+//            .subscribe(on: DispatchQueue.global())
+//            .retry(3)
+//            .catch { error in
+//                Just([])
+//            }
+//            .receive(on: DispatchQueue.main)
+//            .assign(to: \.wishes, on: self)
+//            .store(in: &subscriptions)
+    }
+    
+    private func updateTitle(mode: WishListMode) {
+        switch mode {
+        case .All:
+            self.title = "All"
+        case .Completed:
+            self.title = "Completed"
+        case let .ByTag(tag):
+            self.title =  tag.title
+        case .Empty:
+            self.title = ""
+        }
     }
 }
-
 

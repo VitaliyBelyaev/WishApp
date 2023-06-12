@@ -14,30 +14,36 @@ import KMPNativeCoroutinesCombine
 @MainActor
 final class WishDetailedViewModel: ObservableObject {
     
-    private let sdk: WishAppSdk?
+    @Published var wish: WishEntity = WishEntityKt.createEmptyWish()
+    @Published var title: String = ""
+    @Published var comment: String = ""
+    
+    private let sdk: WishAppSdk = WishAppSdkDiHelper().wishAppSdk
     
     private var dbRepository: DatabaseRepository? {
         get {
-            return sdk?.databaseRepository
+            return sdk.databaseRepository
         }
     }
     
     private var subscriptions: [AnyCancellable] = []
-    
-    private var wishId: String
-    
     private let linksAdapter = LinksAdapter()
-    
-    @Published var wish: WishEntity = WishEntityKt.createEmptyWish()
-    
-    init(sdk: WishAppSdk? = nil, wishId: String? = nil) {
-        self.sdk = sdk
-        if let wishId = wishId {
-            self.wishId = wishId
-            observeWish(wishId: wishId)
+    private var wishId: String
+   
+    init(wishId: String? = nil) {
+        let d = Date()
+        let df = DateFormatter()
+        df.dateFormat = "y-MM-dd H:mm:ss.SSSS"
+        let dateString = df.string(from: d)
+        
+        print("\(dateString) WishDetailedViewModel init, wishId: \(wishId ?? "nil")")
+        if let wishIdNotNull = wishId {
+            self.wishId = wishIdNotNull
+            observeWish(wishId: wishIdNotNull)
         } else {
             let wish = WishEntityKt.createEmptyWish()
             self.wishId = wish.id
+            self.wish = wish
             insertWishAndObserve(wish: wish)
         }
     }
@@ -60,10 +66,14 @@ final class WishDetailedViewModel: ObservableObject {
             return
         }
         
-//        createFuture(for: dbRepository.updateWishTitle(newValue: newTitle, wishId: wishId))
-//            .subscribe(on: DispatchQueue.global())
-//            .sinkSilently()
-//            .store(in: &subscriptions)
+        if(newTitle == wish.title) {
+            return
+        }
+        
+        createFuture(for: dbRepository.updateWishTitle(newValue: newTitle, wishId: wishId))
+            .subscribe(on: DispatchQueue.global())
+            .sinkSilently()
+            .store(in: &subscriptions)
     }
     
     func onCommentChanged(to newComment: String) {
@@ -71,10 +81,14 @@ final class WishDetailedViewModel: ObservableObject {
             return
         }
         
-//        createFuture(for: dbRepository.updateWishComment(newValue: newComment, wishId: wishId))
-//            .subscribe(on: DispatchQueue.global())
-//            .sinkSilently()
-//            .store(in: &subscriptions)
+        if(newComment == wish.comment) {
+            return
+        }
+        
+        createFuture(for: dbRepository.updateWishComment(newValue: newComment, wishId: wishId))
+            .subscribe(on: DispatchQueue.global())
+            .sinkSilently()
+            .store(in: &subscriptions)
     }
 
     private func insertWishAndObserve(wish: WishEntity) {
@@ -84,9 +98,16 @@ final class WishDetailedViewModel: ObservableObject {
         
         createFuture(for: dbRepository.insertWish(wish: wish))
             .subscribe(on: DispatchQueue.global())
+            .catch { error in
+                print("Error: \(error) in insert wish")
+                return Just(KotlinUnit())
+            }
             .sink(receiveCompletion: { [weak self] completion in
+                print("Completeion: \(completion) in insert wish")
                 self?.observeWish(wishId: wish.id)
-            }, receiveValue: {_ in})
+            }, receiveValue: {value in
+                print("Value: \(value) in insert wish")
+            })
             .store(in: &subscriptions)
     }
     
@@ -98,10 +119,15 @@ final class WishDetailedViewModel: ObservableObject {
         createPublisher(for: dbRepository.observeWishById(id: wishId))
             .subscribe(on: DispatchQueue.global())
             .catch { error in
-                Just(WishEntityKt.createEmptyWish())
+                print("Error: \(error) in observeWish")
+                return Just(WishEntityKt.createEmptyWish())
             }
             .receive(on: DispatchQueue.main)
-            .assign(to: \.wish, on: self)
+            .sink { [weak self] wish in
+                self?.wish = wish
+                self?.title = wish.title
+                self?.comment = wish.comment
+            }
             .store(in: &subscriptions)
     }
 }

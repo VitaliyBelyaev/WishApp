@@ -13,20 +13,25 @@ import KMPNativeCoroutinesCombine
 @MainActor
 final class MainViewModel: ObservableObject {
     
-    private let sdk: WishAppSdk?
+    private let sdk: WishAppSdk = WishAppSdkDiHelper().wishAppSdk
     
     private var dbRepository: DatabaseRepository? {
         get {
-            return sdk?.databaseRepository
+            return sdk.databaseRepository
         }
     }
     
     private var subscriptions: [AnyCancellable] = []
         
     @Published var state: MainViewState = MainViewState(commonItems: [], tagItems: [])
-    
-    init(sdk: WishAppSdk? = nil) {
-        self.sdk = sdk
+     
+    init() {
+        let d = Date()
+        let df = DateFormatter()
+        df.dateFormat = "y-MM-dd H:mm:ss.SSSS"
+        let dateString = df.string(from: d)
+        
+        print("\(dateString) MainViewModel init")
         self.subscribeOnMainItems()
     }
     
@@ -110,7 +115,11 @@ final class MainViewModel: ObservableObject {
                 Just(MainViewState(commonItems: [], tagItems: []))
             }
             .receive(on: DispatchQueue.main)
-            .assign(to: \.state, on: self)
+            .sink { [weak self] state in
+                print("New state: \(state)")
+                self?.state = state
+            }
+//            .assign(to: \.state, on: self)
             .store(in: &subscriptions)
     }
 }

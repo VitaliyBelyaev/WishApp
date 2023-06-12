@@ -10,19 +10,17 @@ import shared
 
 struct WishListView: View {
     
-    private let sdk: WishAppSdk?
     @StateObject private var viewModel: WishListViewModel
+    @State private var isSettingsPresented: Bool = false
     
-    init(sdk: WishAppSdk? = nil, mode: WishListMode) {
-        self.sdk = sdk
-        let viewModel = WishListViewModel(sdk: sdk, mode: mode)
-        _viewModel = StateObject(wrappedValue: viewModel)
+    init(mode: WishListMode) {
+        print("WishListView init")
+        _viewModel = StateObject.init(wrappedValue: { WishListViewModel(mode: mode) }())
     }
     
     var body: some View {
-        
         List {
-            ForEach(viewModel.wishes, id: \.self) { wish in
+            ForEach(viewModel.wishes, id: \.id) { wish in
                 NavigationLink(value: wish) {
                     VStack(alignment: .leading) {
                         Text(wish.title).font(.title)
@@ -33,6 +31,7 @@ struct WishListView: View {
             }
         }
         .navigationTitle(viewModel.title)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button("+wish"){
@@ -41,44 +40,38 @@ struct WishListView: View {
             }
             
             ToolbarItem(placement: .primaryAction) {
-                NavigationLink(value: Destitation.Settings) {
+                Button {
+                    isSettingsPresented = true
+                } label: {
                     Image(systemName: "gearshape")
                 }
             }
             
             ToolbarItemGroup(placement: .bottomBar) {
-                NavigationLink(value: Destitation.Share) {
+                Button {
+                    
+                } label: {
                     Image(systemName: "square.and.arrow.up")
                 }
                 
-                NavigationLink(value: Destitation.NewWish) {
+                NavigationLink(destination: WishDetailedView(wishId: nil)) {
                     Image(systemName: "square.and.pencil")
                 }
             }
         }
         .navigationDestination(for: WishEntity.self) { wish in
-            WishDetailedView(sdk: sdk, wishId: wish.id)
+            WishDetailedView(wishId: wish.id)
         }
-        .navigationDestination(for: Destitation.self) { dest in
-            switch dest {
-            case .NewWish:
-                WishDetailedView(sdk: sdk)
-            case .Settings:
-                WishListView(sdk:sdk, mode: .All)
-            case .Share:
-                WishListView(sdk:sdk, mode: .All)
+        .sheet(isPresented: $isSettingsPresented) {
+            SettingsView {
+                isSettingsPresented = false
             }
         }
-    }
-    
-    enum Destitation {
-        case NewWish
-        case Settings
-        case Share
     }
 }
 
 struct WishListView_Previews: PreviewProvider {
+    
     static var previews: some View {
         WishListView(mode: .All)
     }

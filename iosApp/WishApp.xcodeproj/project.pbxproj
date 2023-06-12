@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		DBBCD02E2D8F4C219DBA6628 /* Pods_WishApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE82C3BFCB066E79A9355667 /* Pods_WishApp.framework */; };
 		ED17508A2A338DF600665949 /* BindingExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1750892A338DF600665949 /* BindingExtension.swift */; };
+		ED17508D2A35BFD900665949 /* WishAppSdkFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED17508C2A35BFD900665949 /* WishAppSdkFactory.swift */; };
+		ED1750902A373F1000665949 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED17508F2A373F1000665949 /* SettingsView.swift */; };
+		ED1750922A37452900665949 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1750912A37452900665949 /* MainContentView.swift */; };
 		ED232D4C2A1F85B000C51DB7 /* WishEntityExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED232D4B2A1F85B000C51DB7 /* WishEntityExt.swift */; };
 		ED2555BC2A2A34A700678E7C /* TagItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2555BB2A2A34A700678E7C /* TagItemView.swift */; };
 		ED2555BF2A2A3B0F00678E7C /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = ED2555C12A2A3B0F00678E7C /* Localizable.stringsdict */; };
@@ -35,6 +38,9 @@
 		2571903193AD706D91A31376 /* Pods-WishApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WishApp.release.xcconfig"; path = "Target Support Files/Pods-WishApp/Pods-WishApp.release.xcconfig"; sourceTree = "<group>"; };
 		CE82C3BFCB066E79A9355667 /* Pods_WishApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WishApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED1750892A338DF600665949 /* BindingExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindingExtension.swift; sourceTree = "<group>"; };
+		ED17508C2A35BFD900665949 /* WishAppSdkFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishAppSdkFactory.swift; sourceTree = "<group>"; };
+		ED17508F2A373F1000665949 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		ED1750912A37452900665949 /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
 		ED232D4B2A1F85B000C51DB7 /* WishEntityExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishEntityExt.swift; sourceTree = "<group>"; };
 		ED2555BB2A2A34A700678E7C /* TagItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagItemView.swift; sourceTree = "<group>"; };
 		ED2555C02A2A3B0F00678E7C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
@@ -89,10 +95,27 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		ED17508B2A35BFC300665949 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				ED17508C2A35BFD900665949 /* WishAppSdkFactory.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		ED17508E2A373EFE00665949 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				ED17508F2A373F1000665949 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 		ED2555BA2A2A348700678E7C /* Components */ = {
 			isa = PBXGroup;
 			children = (
 				ED2555BB2A2A34A700678E7C /* TagItemView.swift */,
+				ED1750912A37452900665949 /* MainContentView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -138,6 +161,7 @@
 		ED6DB19629B4F21F00A11CA3 /* WishApp */ = {
 			isa = PBXGroup;
 			children = (
+				ED17508B2A35BFC300665949 /* Data */,
 				ED3973BD2A28F06000DB0896 /* Resources */,
 				ED6EFA422A2249E000CC1B13 /* Utils */,
 				ED6EFA362A22491C00CC1B13 /* Domain */,
@@ -160,6 +184,7 @@
 		ED6EFA312A2248E300CC1B13 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				ED17508E2A373EFE00665949 /* Settings */,
 				ED31945F2A30CA8D0070CDE4 /* WishDetailed */,
 				ED6EFA452A224B7400CC1B13 /* Navigation */,
 				ED6EFA352A22491000CC1B13 /* WishList */,
@@ -353,9 +378,12 @@
 				ED6EFA3D2A22495F00CC1B13 /* WishListView.swift in Sources */,
 				ED6EFA4A2A2256D200CC1B13 /* MainItem.swift in Sources */,
 				ED6EFA3B2A22495200CC1B13 /* MainView.swift in Sources */,
+				ED1750922A37452900665949 /* MainContentView.swift in Sources */,
+				ED1750902A373F1000665949 /* SettingsView.swift in Sources */,
 				EDB776EE2A27AC9D0087EA06 /* MainViewState.swift in Sources */,
 				ED6EFA4C2A225A7400CC1B13 /* WishListMode.swift in Sources */,
 				ED6DB19829B4F21F00A11CA3 /* WishApp.swift in Sources */,
+				ED17508D2A35BFD900665949 /* WishAppSdkFactory.swift in Sources */,
 				ED2555BC2A2A34A700678E7C /* TagItemView.swift in Sources */,
 				ED6DB1AB29B503B800A11CA3 /* Utils.swift in Sources */,
 				ED6EFA472A224B8700CC1B13 /* NavigationModel.swift in Sources */,

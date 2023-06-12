@@ -70,6 +70,9 @@ kotlin {
                 // UUID
                 implementation("com.benasher44:uuid:${libs.versions.uuid.get()}")
 
+                // DI
+                implementation("io.insert-koin:koin-core:${libs.versions.koin.get()}")
+
                 // Logging
                 implementation("io.github.aakira:napier:${libs.versions.napier.get()}")
 
