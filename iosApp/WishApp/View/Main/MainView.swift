@@ -14,7 +14,6 @@ struct MainView: View {
     @State private var isSettingsPresented: Bool = false
     
     init() {
-        print("MainView init")
         _viewModel = StateObject(wrappedValue: { MainViewModel() }())
     }
     

@@ -17,6 +17,9 @@ final class WishDetailedViewModel: ObservableObject {
     @Published var wish: WishEntity = WishEntityKt.createEmptyWish()
     @Published var title: String = ""
     @Published var comment: String = ""
+    @Published var link: String = ""
+    
+    @Published var isAddLinkButtonEnabled: Bool = false
     
     private let sdk: WishAppSdk = WishAppSdkDiHelper().wishAppSdk
     private var dbRepository: DatabaseRepository {
@@ -39,6 +42,8 @@ final class WishDetailedViewModel: ObservableObject {
             self.wish = wish
             insertWishAndObserve(wish: wish)
         }
+        
+        self.observeLink()
     }
     
     func onNewLinkAddClicked(link: String) {
@@ -102,5 +107,23 @@ final class WishDetailedViewModel: ObservableObject {
                 self?.comment = wish.comment
             }
             .store(in: &subscriptions)
+    }
+    
+    private func observeLink() {
+        $link
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] link in
+                if let self = self {
+                    self.isAddLinkButtonEnabled = self.isLinkValid(link: link)
+                }
+            }
+            .store(in: &subscriptions)
+    }
+    
+    func isLinkValid(link: String) -> Bool {
+        if let url = NSURL(string: link) {
+            return UIApplication.shared.canOpenURL(url as URL)
+        }
+        return false
     }
 }

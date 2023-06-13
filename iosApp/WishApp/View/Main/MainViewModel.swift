@@ -25,12 +25,6 @@ final class MainViewModel: ObservableObject {
     @Published var state: MainViewState = MainViewState(commonItems: [], tagItems: [])
      
     init() {
-        let d = Date()
-        let df = DateFormatter()
-        df.dateFormat = "y-MM-dd H:mm:ss.SSSS"
-        let dateString = df.string(from: d)
-        
-        print("\(dateString) MainViewModel init")
         self.subscribeOnMainItems()
     }
     

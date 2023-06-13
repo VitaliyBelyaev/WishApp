@@ -14,7 +14,6 @@ struct WishListView: View {
     @State private var isSettingsPresented: Bool = false
     
     init(mode: WishListMode) {
-        print("WishListView init")
         _viewModel = StateObject.init(wrappedValue: { WishListViewModel(mode: mode) }())
     }
     

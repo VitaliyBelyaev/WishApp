@@ -7,13 +7,13 @@
 
 import SwiftUI
 import shared
+import Combine
 
 struct WishDetailedView: View {
     
     @EnvironmentObject private var appViewModel: AppViewModel
     @StateObject private var viewModel: WishDetailedViewModel
     @State private var isDeleteWishConfirmationPresented = false
-    @State private var link = ""
     
     init(wishId: String?) {
         _viewModel = StateObject.init(wrappedValue: { WishDetailedViewModel(wishId: wishId) }())
@@ -45,18 +45,18 @@ struct WishDetailedView: View {
                 
                 Section {
                     HStack {
-                        TextField("",text: $link)
+                        TextField("",text: $viewModel.link)
                             .lineLimit(1)
                             .keyboardType(.URL)
                             .textContentType(.URL)
                         Spacer()
                         Button {
-                            viewModel.onNewLinkAddClicked(link: link)
-                            link = ""
+                            viewModel.onNewLinkAddClicked(link: viewModel.link)
+                            viewModel.link = ""
                         } label: {
                             Image(systemName: "plus.app")
                         }
-                        .disabled(link.isEmpty)
+                        .disabled(!viewModel.isAddLinkButtonEnabled)
                     }
                     
                     ForEach(viewModel.wish.links.reversed(), id: \.self) { link in
