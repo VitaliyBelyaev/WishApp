@@ -10,22 +10,18 @@ import shared
 
 struct WishDetailedView: View {
     
+    @EnvironmentObject private var appViewModel: AppViewModel
     @StateObject private var viewModel: WishDetailedViewModel
     @State private var isDeleteWishConfirmationPresented = false
     @State private var link = ""
     
     init(wishId: String?) {
-        let d = Date()
-        let df = DateFormatter()
-        df.dateFormat = "y-MM-dd H:mm:ss.SSSS"
-        let dateString = df.string(from: d)
-        
-        print("\(dateString) WishDetailedView init")
         _viewModel = StateObject.init(wrappedValue: { WishDetailedViewModel(wishId: wishId) }())
     }
     
     
     var body: some View {
+        
         VStack(alignment: .leading) {
             Form {
                 Section {

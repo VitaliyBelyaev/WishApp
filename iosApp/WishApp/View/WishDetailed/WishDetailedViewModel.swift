@@ -19,8 +19,7 @@ final class WishDetailedViewModel: ObservableObject {
     @Published var comment: String = ""
     
     private let sdk: WishAppSdk = WishAppSdkDiHelper().wishAppSdk
-    
-    private var dbRepository: DatabaseRepository? {
+    private var dbRepository: DatabaseRepository {
         get {
             return sdk.databaseRepository
         }
@@ -31,12 +30,6 @@ final class WishDetailedViewModel: ObservableObject {
     private var wishId: String
    
     init(wishId: String? = nil) {
-        let d = Date()
-        let df = DateFormatter()
-        df.dateFormat = "y-MM-dd H:mm:ss.SSSS"
-        let dateString = df.string(from: d)
-        
-        print("\(dateString) WishDetailedViewModel init, wishId: \(wishId ?? "nil")")
         if let wishIdNotNull = wishId {
             self.wishId = wishIdNotNull
             observeWish(wishId: wishIdNotNull)
@@ -49,10 +42,6 @@ final class WishDetailedViewModel: ObservableObject {
     }
     
     func onNewLinkAddClicked(link: String) {
-        guard let dbRepository = dbRepository else {
-            return
-        }
-        
         let newLinkAccumulatedString = linksAdapter.addLinkAndGetAccumulatedString(link: link, currentLinks: wish.links)
         
         createFuture(for: dbRepository.updateWishLink(newValue: newLinkAccumulatedString, wishId: wishId))
@@ -62,10 +51,6 @@ final class WishDetailedViewModel: ObservableObject {
     }
     
     func onTitleChanged(to newTitle: String) {
-        guard let dbRepository = dbRepository else {
-            return
-        }
-        
         if(newTitle == wish.title) {
             return
         }
@@ -77,10 +62,6 @@ final class WishDetailedViewModel: ObservableObject {
     }
     
     func onCommentChanged(to newComment: String) {
-        guard let dbRepository = dbRepository else {
-            return
-        }
-        
         if(newComment == wish.comment) {
             return
         }
@@ -92,10 +73,6 @@ final class WishDetailedViewModel: ObservableObject {
     }
 
     private func insertWishAndObserve(wish: WishEntity) {
-        guard let dbRepository = dbRepository else {
-            return
-        }
-        
         createFuture(for: dbRepository.insertWish(wish: wish))
             .subscribe(on: DispatchQueue.global())
             .catch { error in
@@ -112,10 +89,6 @@ final class WishDetailedViewModel: ObservableObject {
     }
     
     private func observeWish(wishId: String) {
-        guard let dbRepository = dbRepository else {
-            return
-        }
-        
         createPublisher(for: dbRepository.observeWishById(id: wishId))
             .subscribe(on: DispatchQueue.global())
             .catch { error in

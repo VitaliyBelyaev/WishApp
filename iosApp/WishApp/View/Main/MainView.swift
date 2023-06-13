@@ -40,30 +40,7 @@ struct MainView: View {
 
 struct MainView_Previews: PreviewProvider {
     
-    //    static var viewModel = MainViewModel()
-    
     static var previews: some View {
-        //        viewModel.state = getPreviewState()
-        return MainView()
+        MainView()
     }
-    
-    //    private static func getPreviewState() -> MainViewState {
-    //        return MainViewState(
-    //            commonItems: [
-    //                CommonMainItem(type:.All, count: 13),
-    //                CommonMainItem(type:.Completed, count: 2),
-    //            ],
-    //            tagItems: getTags().map { tag in
-    //                WishTagMainItem(tag: tag, count: 13)
-    //            }
-    //        )
-    //    }
-    //
-    //    private static func getTags() -> [TagEntity] {
-    //        var tags = [TagEntity]()
-    //        for i in 0...15 {
-    //            tags.append(TagEntity(id: String(i), title: "Tag \(i)"))
-    //        }
-    //        return tags
-    //    }
 }

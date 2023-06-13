@@ -14,8 +14,7 @@ import KMPNativeCoroutinesCombine
 final class MainViewModel: ObservableObject {
     
     private let sdk: WishAppSdk = WishAppSdkDiHelper().wishAppSdk
-    
-    private var dbRepository: DatabaseRepository? {
+    private var dbRepository: DatabaseRepository {
         get {
             return sdk.databaseRepository
         }
@@ -40,21 +39,13 @@ final class MainViewModel: ObservableObject {
             return
         }
         
-        guard let dbRepository = dbRepository else {
-            return
-        }
-        
         createFuture(for: dbRepository.updateTagTitle(title: newTitle, tagId: tag.id))
             .subscribe(on: DispatchQueue.global())
             .sinkSilently()
             .store(in: &subscriptions)
     }
     
-    func onDeleteTagClicked(tag: TagEntity) {  
-        guard let dbRepository = dbRepository else {
-            return
-        }
-        
+    func onDeleteTagClicked(tag: TagEntity) {
         createFuture(for: dbRepository.deleteTagsByIds(ids: [tag.id]))
             .subscribe(on: DispatchQueue.global())
             .sinkSilently()
@@ -68,11 +59,6 @@ final class MainViewModel: ObservableObject {
         let randNumber = Int.random(in: 0..<1000)
         let wish = WishEntity(id: NSUUID().uuidString, title: "Test wish \(randNumber)", link: "Some link", links: [], comment: "Some commmment", isCompleted: false, createdTimestamp: timestamp, updatedTimestamp: timestamp, position: 0, tags: [])
         
-        
-        guard let dbRepository = dbRepository else {
-            return
-        }
-        
         createFuture(for: dbRepository.insertWish(wish: wish))
             .subscribe(on: DispatchQueue.global())
             .sinkSilently()
@@ -80,10 +66,6 @@ final class MainViewModel: ObservableObject {
     }
     
     func onAddTagClicked() {
-        guard let dbRepository = dbRepository else {
-            return
-        }
-        
         createFuture(for: dbRepository.insertTag(title: "Tag title \(Int.random(in: 0..<1000))"))
             .subscribe(on: DispatchQueue.global())
             .sinkSilently()
@@ -91,10 +73,6 @@ final class MainViewModel: ObservableObject {
     }
     
     private func subscribeOnMainItems() {
-        guard let dbRepository = dbRepository else {
-            return
-        }
-        
         let all = createPublisher(for: dbRepository.observeWishesCount(isCompleted: false))
         let completed = createPublisher(for: dbRepository.observeWishesCount(isCompleted: true))
         let tags = createPublisher(for: dbRepository.observeAllTagsWithWishesCount())
@@ -115,11 +93,7 @@ final class MainViewModel: ObservableObject {
                 Just(MainViewState(commonItems: [], tagItems: []))
             }
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] state in
-                print("New state: \(state)")
-                self?.state = state
-            }
-//            .assign(to: \.state, on: self)
+            .assign(to: \.state, on: self)
             .store(in: &subscriptions)
     }
 }

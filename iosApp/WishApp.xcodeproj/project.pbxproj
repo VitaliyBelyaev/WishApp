@@ -12,6 +12,8 @@
 		ED17508D2A35BFD900665949 /* WishAppSdkFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED17508C2A35BFD900665949 /* WishAppSdkFactory.swift */; };
 		ED1750902A373F1000665949 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED17508F2A373F1000665949 /* SettingsView.swift */; };
 		ED1750922A37452900665949 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1750912A37452900665949 /* MainContentView.swift */; };
+		ED1750952A38C97C00665949 /* WishListContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1750942A38C97C00665949 /* WishListContentView.swift */; };
+		ED17509A2A38D09B00665949 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1750992A38D09B00665949 /* AppViewModel.swift */; };
 		ED232D4C2A1F85B000C51DB7 /* WishEntityExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED232D4B2A1F85B000C51DB7 /* WishEntityExt.swift */; };
 		ED2555BC2A2A34A700678E7C /* TagItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2555BB2A2A34A700678E7C /* TagItemView.swift */; };
 		ED2555BF2A2A3B0F00678E7C /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = ED2555C12A2A3B0F00678E7C /* Localizable.stringsdict */; };
@@ -41,6 +43,8 @@
 		ED17508C2A35BFD900665949 /* WishAppSdkFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishAppSdkFactory.swift; sourceTree = "<group>"; };
 		ED17508F2A373F1000665949 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		ED1750912A37452900665949 /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
+		ED1750942A38C97C00665949 /* WishListContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishListContentView.swift; sourceTree = "<group>"; };
+		ED1750992A38D09B00665949 /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
 		ED232D4B2A1F85B000C51DB7 /* WishEntityExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishEntityExt.swift; sourceTree = "<group>"; };
 		ED2555BB2A2A34A700678E7C /* TagItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagItemView.swift; sourceTree = "<group>"; };
 		ED2555C02A2A3B0F00678E7C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
@@ -111,6 +115,14 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
+		ED1750932A38C95C00665949 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				ED1750942A38C97C00665949 /* WishListContentView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		ED2555BA2A2A348700678E7C /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -167,6 +179,7 @@
 				ED6EFA362A22491C00CC1B13 /* Domain */,
 				ED6EFA312A2248E300CC1B13 /* View */,
 				ED6DB19729B4F21F00A11CA3 /* WishApp.swift */,
+				ED1750992A38D09B00665949 /* AppViewModel.swift */,
 				ED6DB1AA29B503B800A11CA3 /* Utils.swift */,
 				ED6DB19D29B4F21F00A11CA3 /* Preview Content */,
 			);
@@ -207,6 +220,7 @@
 		ED6EFA352A22491000CC1B13 /* WishList */ = {
 			isa = PBXGroup;
 			children = (
+				ED1750932A38C95C00665949 /* Components */,
 				ED6EFA3C2A22495F00CC1B13 /* WishListView.swift */,
 				ED6EFA3E2A22498700CC1B13 /* WishListViewModel.swift */,
 				ED6EFA4B2A225A7400CC1B13 /* WishListMode.swift */,
@@ -375,6 +389,7 @@
 			files = (
 				ED17508A2A338DF600665949 /* BindingExtension.swift in Sources */,
 				ED3194612A30CAA90070CDE4 /* WishDetailedView.swift in Sources */,
+				ED1750952A38C97C00665949 /* WishListContentView.swift in Sources */,
 				ED6EFA3D2A22495F00CC1B13 /* WishListView.swift in Sources */,
 				ED6EFA4A2A2256D200CC1B13 /* MainItem.swift in Sources */,
 				ED6EFA3B2A22495200CC1B13 /* MainView.swift in Sources */,
@@ -382,6 +397,7 @@
 				ED1750902A373F1000665949 /* SettingsView.swift in Sources */,
 				EDB776EE2A27AC9D0087EA06 /* MainViewState.swift in Sources */,
 				ED6EFA4C2A225A7400CC1B13 /* WishListMode.swift in Sources */,
+				ED17509A2A38D09B00665949 /* AppViewModel.swift in Sources */,
 				ED6DB19829B4F21F00A11CA3 /* WishApp.swift in Sources */,
 				ED17508D2A35BFD900665949 /* WishAppSdkFactory.swift in Sources */,
 				ED2555BC2A2A34A700678E7C /* TagItemView.swift in Sources */,

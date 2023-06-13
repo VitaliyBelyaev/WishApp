@@ -67,4 +67,17 @@ class LinksAdapterTest {
         // THEN
         assertEquals(expected, actual)
     }
+
+    @Test
+    fun getLinksListFromEmptyString() {
+        // GIVEN
+        val linksString = ""
+        val expected = emptyList<String>()
+
+        // WHEN
+        val actual = LinksAdapter.getLinksListFromString(linksString)
+
+        // THEN
+        assertEquals(expected, actual)
+    }
 }

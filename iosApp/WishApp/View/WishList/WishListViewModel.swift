@@ -14,8 +14,7 @@ import KMPNativeCoroutinesCombine
 final class WishListViewModel: ObservableObject {
     
     private let sdk: WishAppSdk = WishAppSdkDiHelper().wishAppSdk
-    
-    private var dbRepository: DatabaseRepository? {
+    private var dbRepository: DatabaseRepository {
         get {
             return sdk.databaseRepository
         }
@@ -30,12 +29,6 @@ final class WishListViewModel: ObservableObject {
     @Published var title: String = ""
     
     init(mode: WishListMode) {
-        let d = Date()
-        let df = DateFormatter()
-        df.dateFormat = "y-MM-dd H:mm:ss.SSSS"
-        let dateString = df.string(from: d)
-        
-        print("\(dateString) WishListViewModel init, mode: \(mode)")
         self.mode = mode
         updateTitle(mode: mode)
         self.collectWishes()
@@ -47,11 +40,6 @@ final class WishListViewModel: ObservableObject {
         let randNumber = Int.random(in: 0..<1000)
         let wish = WishEntity(id: NSUUID().uuidString, title: "Test wish \(randNumber)", link: "Some link", links:["Some link"], comment: "Some commmment", isCompleted: false, createdTimestamp: timestamp, updatedTimestamp: timestamp, position: 0, tags: [])
         
-    
-        
-        guard let dbRepository = dbRepository else {
-            return
-        }
         createFuture(for: dbRepository.insertWish(wish: wish))
             .subscribe(on: DispatchQueue.global())
             .sinkSilently()
@@ -60,9 +48,7 @@ final class WishListViewModel: ObservableObject {
     
     
     private func collectWishes() {
-        guard let dbRepository = dbRepository else {
-            return
-        }
+        let dbRepository = dbRepository
         
         $mode
             .flatMap { mode in
@@ -85,15 +71,6 @@ final class WishListViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .assign(to: \.wishes, on: self)
             .store(in: &subscriptions)
-//        createPublisher(for: dbRepository.observeAllWishes(isCompleted: false))
-//            .subscribe(on: DispatchQueue.global())
-//            .retry(3)
-//            .catch { error in
-//                Just([])
-//            }
-//            .receive(on: DispatchQueue.main)
-//            .assign(to: \.wishes, on: self)
-//            .store(in: &subscriptions)
     }
     
     private func updateTitle(mode: WishListMode) {

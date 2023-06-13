@@ -13,13 +13,19 @@ struct WishApp: App {
     
     //    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
+    @StateObject private var appViewModel: AppViewModel
+    
     init() {
         KoinKt.doInitKoin()
+        
+        _appViewModel = StateObject(wrappedValue: { AppViewModel() }())
     }
+    
     
     var body: some Scene {
         WindowGroup {
             MainView()
+                .environmentObject(appViewModel)
         }
     }
 }

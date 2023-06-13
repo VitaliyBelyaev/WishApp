@@ -17,6 +17,10 @@ object LinksAdapter {
     }
 
     fun getLinksListFromString(linksString: String): List<String> {
-        return linksString.split(LINKS_SEPARATOR)
+        return if (linksString.isBlank()) {
+            emptyList()
+        } else {
+            linksString.split(LINKS_SEPARATOR)
+        }
     }
 }
