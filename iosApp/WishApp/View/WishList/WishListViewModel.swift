@@ -32,6 +32,7 @@ final class WishListViewModel: ObservableObject {
     
     init(mode: WishListMode) {
         self.mode = mode
+        self.updateTitle(mode: mode)
         self.collectTagIfNeeded(mode: mode)
         self.collectWishes()
     }
