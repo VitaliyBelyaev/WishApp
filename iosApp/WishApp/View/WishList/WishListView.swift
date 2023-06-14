@@ -10,6 +10,7 @@ import shared
 
 struct WishListView: View {
     
+    @EnvironmentObject private var navigationModel: NavigationModel
     @StateObject private var viewModel: WishListViewModel
     @State private var isSettingsPresented: Bool = false
     
@@ -21,12 +22,12 @@ struct WishListView: View {
         WishListContentView(
             wishes: viewModel.wishes,
             title: viewModel.title,
-            onSettingsClicked: { isSettingsPresented = true },
+            onSettingsClicked: { navigationModel.isSettingPresented = true },
             onAddTestWishClicked: { viewModel.onAddWishClicked() }
         )
-        .sheet(isPresented: $isSettingsPresented) {
+        .sheet(isPresented: $navigationModel.isSettingPresented) {
             SettingsView {
-                isSettingsPresented = false
+                navigationModel.isSettingPresented = false
             }
         }
     }

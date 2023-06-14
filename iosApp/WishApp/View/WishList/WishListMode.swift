@@ -8,9 +8,9 @@
 import Foundation
 import shared
 
-enum WishListMode {
+enum WishListMode: Codable, Hashable {
     case All
     case Completed
-    case ByTag(TagEntity)
+    case ByTag(String)
     case Empty
 }

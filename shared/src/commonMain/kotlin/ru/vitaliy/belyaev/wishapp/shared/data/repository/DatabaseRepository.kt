@@ -330,6 +330,15 @@ class DatabaseRepository(
     }
 
     @NativeCoroutines
+    override suspend fun getTagById(id: String): TagEntity {
+        return withContext(dispatcherProvider.io()) {
+            tagQueries
+                .getById(id, TagMapper::mapToDomain)
+                .executeAsOne()
+        }
+    }
+
+    @NativeCoroutines
     override suspend fun getAllTags(): List<TagEntity> {
         return withContext(dispatcherProvider.io()) {
             tagQueries

@@ -14,7 +14,7 @@ import KMPNativeCoroutinesCombine
 final class AppViewModel: ObservableObject {
     
     private let sdk: WishAppSdk = WishAppSdkDiHelper().wishAppSdk
-    private var dbRepository: DatabaseRepository? {
+    private var dbRepository: DatabaseRepository {
         get {
             return sdk.databaseRepository
         }
@@ -25,5 +25,28 @@ final class AppViewModel: ObservableObject {
    
     func deleteWish(id: String) {
 
+    }
+    
+    func onNewWishDetailedScreenExit() {
+        createFuture(for: dbRepository.getAllWishes(isCompleted: false))
+            .subscribe(on: DispatchQueue.global())
+            .catch { error in
+                Just([])
+            }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] wishes in
+                self?.deleteEmptyWishes(wishes: wishes)
+            }
+            .store(in: &subscriptions)
+    }
+    
+    private func deleteEmptyWishes(wishes: [WishEntity]) {
+        let emptyWishesIds = wishes.filter{ wish in WishEntityKt.isWishEmpty(wish: wish) }.map { $0.id }
+        if !emptyWishesIds.isEmpty {
+            createFuture(for: dbRepository.deleteWishesByIds(ids: emptyWishesIds))
+                .subscribe(on: DispatchQueue.global())
+                .sinkSilently()
+                .store(in: &subscriptions)
+        }
     }
 }

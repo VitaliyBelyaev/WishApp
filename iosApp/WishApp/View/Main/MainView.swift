@@ -10,6 +10,7 @@ import shared
 
 struct MainView: View {
     
+    @EnvironmentObject private var navigationModel: NavigationModel
     @StateObject private var viewModel: MainViewModel
     @State private var isSettingsPresented: Bool = false
     
@@ -18,20 +19,23 @@ struct MainView: View {
     }
     
     var body: some View {
-        MainContentView(
-            state: viewModel.state,
-            onRenameTagConfirmed: { tag, newTitle in
-                viewModel.onRenameTagConfirmed(tag: tag, newTitle: newTitle)
-                
-            },
-            onDeleteTagClicked: { tag in
-                viewModel.onDeleteTagClicked(tag: tag)
-            },
-            onSettingsClicked: { isSettingsPresented = true }
-        )
-        .sheet(isPresented: $isSettingsPresented) {
+        NavigationStack(path: $navigationModel.mainPath) {
+            MainContentView(
+                state: viewModel.state,
+                onRenameTagConfirmed: { tag, newTitle in
+                    viewModel.onRenameTagConfirmed(tag: tag, newTitle: newTitle)
+                    
+                },
+                onDeleteTagClicked: { tag in
+                    viewModel.onDeleteTagClicked(tag: tag)
+                },
+                onSettingsClicked: { navigationModel.isSettingPresented = true },
+                onAddTestTagClicked: { viewModel.onAddTagClicked() }
+            )
+        }
+        .sheet(isPresented: $navigationModel.isSettingPresented) {
             SettingsView {
-                isSettingsPresented = false
+                navigationModel.isSettingPresented = false
             }
         }
     }

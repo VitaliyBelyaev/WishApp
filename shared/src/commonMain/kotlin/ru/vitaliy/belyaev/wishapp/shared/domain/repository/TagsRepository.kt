@@ -14,6 +14,9 @@ interface TagsRepository {
     suspend fun updateTagTitle(title: String, tagId: String)
 
     @NativeCoroutines
+    suspend fun getTagById(id: String): TagEntity
+
+    @NativeCoroutines
     suspend fun getAllTags(): List<TagEntity>
 
     @NativeCoroutines

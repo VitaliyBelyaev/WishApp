@@ -24,13 +24,15 @@ final class WishListViewModel: ObservableObject {
     
     @Published private var mode: WishListMode = WishListMode.Empty
     
+    @Published private var tag: TagEntity = TagEntity(id: "", title: "")
+    
     @Published var wishes: [WishEntity] = []
     
     @Published var title: String = ""
     
     init(mode: WishListMode) {
         self.mode = mode
-        updateTitle(mode: mode)
+        self.collectTagIfNeeded(mode: mode)
         self.collectWishes()
     }
     
@@ -57,8 +59,8 @@ final class WishListViewModel: ObservableObject {
                     return createPublisher(for: dbRepository.observeAllWishes(isCompleted: false))
                 case .Completed:
                     return createPublisher(for: dbRepository.observeAllWishes(isCompleted: true))
-                case let .ByTag(tag):
-                    return createPublisher(for: dbRepository.observeWishesByTag(tagId: tag.id))
+                case let .ByTag(tagId):
+                    return createPublisher(for: dbRepository.observeWishesByTag(tagId: tagId))
                 case .Empty:
                     return createPublisher(for: dbRepository.observeAllWishes(isCompleted: true))
                 }
@@ -79,11 +81,39 @@ final class WishListViewModel: ObservableObject {
             self.title = "All"
         case .Completed:
             self.title = "Completed"
-        case let .ByTag(tag):
-            self.title =  tag.title
+        case .ByTag(_):
+            self.title =  ""
         case .Empty:
             self.title = ""
         }
+    }
+    
+    private func collectTagIfNeeded(mode: WishListMode) {
+        let id: String?
+
+        switch mode {
+        case let .ByTag(tagId):
+            id = tagId
+        default:
+            id = nil
+        }
+        if let id = id {
+            collectTag(id: id)
+        }
+    }
+    
+    private func collectTag(id: String) {
+        createFuture(for: dbRepository.getTagById(id: id))
+            .subscribe(on: DispatchQueue.global())
+            .catch { error in
+                Just(TagEntity(id: "", title: ""))
+            }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] tag in
+                self?.tag = tag
+                self?.title = tag.title
+            }
+            .store(in: &subscriptions)
     }
 }
 

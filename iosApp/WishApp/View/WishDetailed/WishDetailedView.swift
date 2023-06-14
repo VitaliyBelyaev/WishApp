@@ -12,6 +12,7 @@ import Combine
 struct WishDetailedView: View {
     
     @EnvironmentObject private var appViewModel: AppViewModel
+    @EnvironmentObject private var navigationModel: NavigationModel
     @StateObject private var viewModel: WishDetailedViewModel
     @State private var isDeleteWishConfirmationPresented = false
     

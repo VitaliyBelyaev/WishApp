@@ -30,8 +30,9 @@
 		ED6EFA3F2A22498700CC1B13 /* WishListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6EFA3E2A22498700CC1B13 /* WishListViewModel.swift */; };
 		ED6EFA412A2249B000CC1B13 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6EFA402A2249B000CC1B13 /* MainViewModel.swift */; };
 		ED6EFA472A224B8700CC1B13 /* NavigationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6EFA462A224B8700CC1B13 /* NavigationModel.swift */; };
-		ED6EFA4A2A2256D200CC1B13 /* MainItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6EFA492A2256D200CC1B13 /* MainItem.swift */; };
+		ED6EFA4A2A2256D200CC1B13 /* MainItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6EFA492A2256D200CC1B13 /* MainItems.swift */; };
 		ED6EFA4C2A225A7400CC1B13 /* WishListMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6EFA4B2A225A7400CC1B13 /* WishListMode.swift */; };
+		EDAE5D1B2A3A05FD0072EB31 /* MainNavSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAE5D1A2A3A05FD0072EB31 /* MainNavSegment.swift */; };
 		EDB776EE2A27AC9D0087EA06 /* MainViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDB776ED2A27AC9D0087EA06 /* MainViewState.swift */; };
 /* End PBXBuildFile section */
 
@@ -65,8 +66,9 @@
 		ED6EFA3E2A22498700CC1B13 /* WishListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishListViewModel.swift; sourceTree = "<group>"; };
 		ED6EFA402A2249B000CC1B13 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
 		ED6EFA462A224B8700CC1B13 /* NavigationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationModel.swift; sourceTree = "<group>"; };
-		ED6EFA492A2256D200CC1B13 /* MainItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainItem.swift; sourceTree = "<group>"; };
+		ED6EFA492A2256D200CC1B13 /* MainItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainItems.swift; sourceTree = "<group>"; };
 		ED6EFA4B2A225A7400CC1B13 /* WishListMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishListMode.swift; sourceTree = "<group>"; };
+		EDAE5D1A2A3A05FD0072EB31 /* MainNavSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainNavSegment.swift; sourceTree = "<group>"; };
 		EDB776ED2A27AC9D0087EA06 /* MainViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -256,6 +258,7 @@
 			isa = PBXGroup;
 			children = (
 				ED6EFA462A224B8700CC1B13 /* NavigationModel.swift */,
+				EDAE5D1A2A3A05FD0072EB31 /* MainNavSegment.swift */,
 			);
 			path = Navigation;
 			sourceTree = "<group>";
@@ -263,7 +266,7 @@
 		ED6EFA482A2256B200CC1B13 /* Entity */ = {
 			isa = PBXGroup;
 			children = (
-				ED6EFA492A2256D200CC1B13 /* MainItem.swift */,
+				ED6EFA492A2256D200CC1B13 /* MainItems.swift */,
 				EDB776ED2A27AC9D0087EA06 /* MainViewState.swift */,
 			);
 			path = Entity;
@@ -391,7 +394,7 @@
 				ED3194612A30CAA90070CDE4 /* WishDetailedView.swift in Sources */,
 				ED1750952A38C97C00665949 /* WishListContentView.swift in Sources */,
 				ED6EFA3D2A22495F00CC1B13 /* WishListView.swift in Sources */,
-				ED6EFA4A2A2256D200CC1B13 /* MainItem.swift in Sources */,
+				ED6EFA4A2A2256D200CC1B13 /* MainItems.swift in Sources */,
 				ED6EFA3B2A22495200CC1B13 /* MainView.swift in Sources */,
 				ED1750922A37452900665949 /* MainContentView.swift in Sources */,
 				ED1750902A373F1000665949 /* SettingsView.swift in Sources */,
@@ -400,6 +403,7 @@
 				ED17509A2A38D09B00665949 /* AppViewModel.swift in Sources */,
 				ED6DB19829B4F21F00A11CA3 /* WishApp.swift in Sources */,
 				ED17508D2A35BFD900665949 /* WishAppSdkFactory.swift in Sources */,
+				EDAE5D1B2A3A05FD0072EB31 /* MainNavSegment.swift in Sources */,
 				ED2555BC2A2A34A700678E7C /* TagItemView.swift in Sources */,
 				ED6DB1AB29B503B800A11CA3 /* Utils.swift in Sources */,
 				ED6EFA472A224B8700CC1B13 /* NavigationModel.swift in Sources */,

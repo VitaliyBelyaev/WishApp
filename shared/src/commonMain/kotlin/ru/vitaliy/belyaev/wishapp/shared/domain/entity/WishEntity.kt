@@ -34,3 +34,6 @@ fun createEmptyWish(): WishEntity {
 }
 
 fun WishEntity.isEmpty(): Boolean = title.isBlank() && link.isBlank() && comment.isBlank()
+
+// For iOS, as Kotlin extension functions are not supported in Swift
+fun isWishEmpty(wish: WishEntity): Boolean = wish.isEmpty()

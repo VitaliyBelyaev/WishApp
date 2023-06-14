@@ -19,7 +19,7 @@ struct WishListContentView: View {
     var body: some View {
         List {
             ForEach(wishes, id: \.id) { wish in
-                NavigationLink(value: wish) {
+                NavigationLink(value: MainNavSegment.createFromWishId(id: wish.id)) {
                     VStack(alignment: .leading) {
                         Text(wish.title).font(.title)
                         Text(wish.comment)
@@ -52,13 +52,10 @@ struct WishListContentView: View {
                     Image(systemName: "square.and.arrow.up")
                 }
                 
-                NavigationLink(destination: WishDetailedView(wishId: nil)) {
+                NavigationLink(value: MainNavSegment.createFromWishId(id: nil)) {
                     Image(systemName: "square.and.pencil")
                 }
             }
-        }
-        .navigationDestination(for: WishEntity.self) { wish in
-            WishDetailedView(wishId: wish.id)
         }
     }
 }
