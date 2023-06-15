@@ -24,7 +24,10 @@ final class AppViewModel: ObservableObject {
     
    
     func deleteWish(id: String) {
-
+        createFuture(for: dbRepository.deleteWishesByIds(ids: [id]))
+            .subscribe(on: DispatchQueue.global())
+            .sinkSilently()
+            .store(in: &subscriptions)
     }
     
     func onNewWishDetailedScreenExit() {

@@ -12,10 +12,10 @@ import Combine
 @main
 struct WishApp: App {
     
-    @AppStorage("navigationData") var navigationData: Data?
+    @AppStorage("navigationData") private var navigationData: Data?
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var navigationModel = NavigationModel()
     @StateObject private var appViewModel: AppViewModel
-    @Environment(\.scenePhase) private var scenePhase
     
     private var subscriptions: [AnyCancellable] = []
     
@@ -31,16 +31,6 @@ struct WishApp: App {
             MainView()
                 .environmentObject(appViewModel)
                 .environmentObject(navigationModel)
-                .task {
-                    if let jsonData = navigationData {
-                        navigationModel.jsonData = jsonData
-                    }
-                }
-                .onChange(of: scenePhase) { phase in
-                    if phase == .background {
-                        navigationData = navigationModel.jsonData
-                    }
-                }
                 .onChange(of: navigationModel.mainPath) { [oldMainPath = navigationModel.mainPath] newMainPath in
                     let isOldPathContainsNewWishDetailed = oldMainPath.contains(where: { segment in
                         switch segment {
@@ -68,6 +58,20 @@ struct WishApp: App {
                         appViewModel.onNewWishDetailedScreenExit()
                     }
                 }
+                .task {
+                    if let jsonData = navigationData {
+                        navigationModel.jsonData = jsonData
+                    }
+                    for await _ in navigationModel.objectWillChangeSequence {
+                        print("persist")
+                        navigationData = navigationModel.jsonData
+                    }
+                }
+//                .onChange(of: scenePhase) { phase in
+//                    if phase == .inactive {
+//                        navigationData = navigationModel.jsonData
+//                    }
+//                }
         }
     }
 }

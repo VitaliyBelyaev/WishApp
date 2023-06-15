@@ -33,6 +33,8 @@
 		ED6EFA4A2A2256D200CC1B13 /* MainItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6EFA492A2256D200CC1B13 /* MainItems.swift */; };
 		ED6EFA4C2A225A7400CC1B13 /* WishListMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6EFA4B2A225A7400CC1B13 /* WishListMode.swift */; };
 		EDAE5D1B2A3A05FD0072EB31 /* MainNavSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAE5D1A2A3A05FD0072EB31 /* MainNavSegment.swift */; };
+		EDAE5D1D2A3B50F20072EB31 /* CommonItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAE5D1C2A3B50F20072EB31 /* CommonItemView.swift */; };
+		EDAE5D1F2A3B5AE50072EB31 /* SectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAE5D1E2A3B5AE50072EB31 /* SectionHeaderView.swift */; };
 		EDB776EE2A27AC9D0087EA06 /* MainViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDB776ED2A27AC9D0087EA06 /* MainViewState.swift */; };
 /* End PBXBuildFile section */
 
@@ -69,6 +71,8 @@
 		ED6EFA492A2256D200CC1B13 /* MainItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainItems.swift; sourceTree = "<group>"; };
 		ED6EFA4B2A225A7400CC1B13 /* WishListMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishListMode.swift; sourceTree = "<group>"; };
 		EDAE5D1A2A3A05FD0072EB31 /* MainNavSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainNavSegment.swift; sourceTree = "<group>"; };
+		EDAE5D1C2A3B50F20072EB31 /* CommonItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonItemView.swift; sourceTree = "<group>"; };
+		EDAE5D1E2A3B5AE50072EB31 /* SectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeaderView.swift; sourceTree = "<group>"; };
 		EDB776ED2A27AC9D0087EA06 /* MainViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -130,6 +134,8 @@
 			children = (
 				ED2555BB2A2A34A700678E7C /* TagItemView.swift */,
 				ED1750912A37452900665949 /* MainContentView.swift */,
+				EDAE5D1C2A3B50F20072EB31 /* CommonItemView.swift */,
+				EDAE5D1E2A3B5AE50072EB31 /* SectionHeaderView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -399,6 +405,7 @@
 				ED1750922A37452900665949 /* MainContentView.swift in Sources */,
 				ED1750902A373F1000665949 /* SettingsView.swift in Sources */,
 				EDB776EE2A27AC9D0087EA06 /* MainViewState.swift in Sources */,
+				EDAE5D1F2A3B5AE50072EB31 /* SectionHeaderView.swift in Sources */,
 				ED6EFA4C2A225A7400CC1B13 /* WishListMode.swift in Sources */,
 				ED17509A2A38D09B00665949 /* AppViewModel.swift in Sources */,
 				ED6DB19829B4F21F00A11CA3 /* WishApp.swift in Sources */,
@@ -406,6 +413,7 @@
 				EDAE5D1B2A3A05FD0072EB31 /* MainNavSegment.swift in Sources */,
 				ED2555BC2A2A34A700678E7C /* TagItemView.swift in Sources */,
 				ED6DB1AB29B503B800A11CA3 /* Utils.swift in Sources */,
+				EDAE5D1D2A3B50F20072EB31 /* CommonItemView.swift in Sources */,
 				ED6EFA472A224B8700CC1B13 /* NavigationModel.swift in Sources */,
 				ED6EFA3F2A22498700CC1B13 /* WishListViewModel.swift in Sources */,
 				ED232D4C2A1F85B000C51DB7 /* WishEntityExt.swift in Sources */,

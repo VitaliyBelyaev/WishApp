@@ -9,6 +9,7 @@ import Foundation
 import shared
 import Combine
 import KMPNativeCoroutinesCombine
+import SwiftUI
 
 @MainActor
 final class WishListViewModel: ObservableObject {
@@ -28,7 +29,7 @@ final class WishListViewModel: ObservableObject {
     
     @Published var wishes: [WishEntity] = []
     
-    @Published var title: String = ""
+    @Published var title: LocalizedStringKey = ""
     
     init(mode: WishListMode) {
         self.mode = mode
@@ -79,9 +80,9 @@ final class WishListViewModel: ObservableObject {
     private func updateTitle(mode: WishListMode) {
         switch mode {
         case .All:
-            self.title = "All"
+            self.title = LocalizedStringKey("WishList.all")
         case .Completed:
-            self.title = "Completed"
+            self.title = LocalizedStringKey("WishList.completed")
         case .ByTag(_):
             self.title =  ""
         case .Empty:
@@ -112,7 +113,7 @@ final class WishListViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] tag in
                 self?.tag = tag
-                self?.title = tag.title
+                self?.title = LocalizedStringKey(tag.title)
             }
             .store(in: &subscriptions)
     }

@@ -76,6 +76,12 @@ final class WishDetailedViewModel: ObservableObject {
             .sinkSilently()
             .store(in: &subscriptions)
     }
+    
+    func onDeleteWish() {
+        subscriptions.forEach { subscription in
+            subscription.cancel()
+        }
+    }
 
     private func insertWishAndObserve(wish: WishEntity) {
         createFuture(for: dbRepository.insertWish(wish: wish))

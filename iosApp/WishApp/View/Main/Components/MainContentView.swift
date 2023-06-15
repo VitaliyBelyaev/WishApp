@@ -14,53 +14,42 @@ struct MainContentView: View {
     let onRenameTagConfirmed: (TagEntity, String) -> ()
     let onDeleteTagClicked: (TagEntity) -> ()
     let onSettingsClicked: () -> ()
+    @State var isTagsSectionExpanded = true
+    
     
     let onAddTestTagClicked: () -> ()
     
-    
     var body: some View {
         List {
-            ForEach(state.commonItems, id: \.self) { item in
-                NavigationLink(value: MainNavSegment.createFromCommonMainItem(item: item)) {
-                    HStack {
-                        switch item.type {
-                        case .All:
-                            Text("Main.all")
-                        case .Completed:
-                            Text("Main.completed")
-                        }
-                        Spacer()
-                        Text("\(item.count)")
+            Section {
+                ForEach(state.commonItems, id: \.self) { item in
+                    NavigationLink(value: MainNavSegment.createFromCommonMainItem(item: item)) {
+                        CommonItemView(item: item)
                     }
                 }
-                
-                
             }
             
             Section {
-                ForEach(state.tagItems, id: \.tag.id) { item in
-                    NavigationLink(value: MainNavSegment.createFromWishTagMainItem(item: item)) {
-                        TagItemView(
-                            item: item,
-                            onRenameConfirmed: { tag, newTitle in
-                                onRenameTagConfirmed(tag, newTitle)
-                            },
-                            onDeleteClicked: { tag in
-                                onDeleteTagClicked(tag)
-                            }
-                        )
+                if(isTagsSectionExpanded) {
+                    ForEach(state.tagItems, id: \.tag.id) { item in
+                        NavigationLink(value: MainNavSegment.createFromWishTagMainItem(item: item)) {
+                            TagItemView(
+                                item: item,
+                                onRenameConfirmed: { tag, newTitle in
+                                    onRenameTagConfirmed(tag, newTitle)
+                                },
+                                onDeleteClicked: { tag in
+                                    onDeleteTagClicked(tag)
+                                }
+                            )
+                        }
                     }
                 }
             } header: {
-                Text("Main.tags")
-                    .font(.title3)
-                    .fontWeight(.medium)
-                    .foregroundColor(.primary)
-                
+                SectionHeaderView(title: LocalizedStringKey("Main.tags"), isOn: $isTagsSectionExpanded)
             }
-            .textCase(nil)
         }
-        .listStyle(.sidebar)
+        .listStyle(.automatic)
         .navigationTitle("Main.title")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -99,7 +88,7 @@ struct MainContentView: View {
 
 struct MainContentView_Previews: PreviewProvider {
     
-    private static var state = MainViewState(
+    @State private static var state = MainViewState(
         commonItems: [CommonMainItem(type: .All, count: 13),
                       CommonMainItem(type: .Completed, count: 3)
                      ],

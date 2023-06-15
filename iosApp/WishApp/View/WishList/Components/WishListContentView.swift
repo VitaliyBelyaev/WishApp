@@ -11,7 +11,7 @@ import shared
 struct WishListContentView: View {
     
     let wishes: [WishEntity]
-    let title: String
+    let title: LocalizedStringKey
     let onSettingsClicked: () -> ()
     
     let onAddTestWishClicked: () -> ()

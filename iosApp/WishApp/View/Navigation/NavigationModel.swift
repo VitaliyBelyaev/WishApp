@@ -45,6 +45,21 @@ final class NavigationModel: ObservableObject, Codable {
             .buffer(size: 1, prefetch: .byRequest, whenFull: .dropOldest)
             .values
     }
+    
+    
+    func goToRoot() {
+        mainPath.removeAll()
+        settingsPath.removeLast(settingsPath.count)
+        isSettingPresented = false
+    }
+    
+    func popMainPath() {
+        mainPath.removeLast()
+    }
+    
+    func popSettingsPath() {
+        settingsPath.removeLast()
+    }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)

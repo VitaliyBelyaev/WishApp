@@ -15,3 +15,6 @@
 "Main.done" = "Готово";
 "delete %@" = "Удалить %@?";
 "delete" = "Удалить";
+
+"WishList.all" = "Все";
+"WishList.completed" = "Выполненные";

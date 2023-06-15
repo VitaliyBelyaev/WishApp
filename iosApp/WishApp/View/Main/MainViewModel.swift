@@ -21,9 +21,9 @@ final class MainViewModel: ObservableObject {
     }
     
     private var subscriptions: [AnyCancellable] = []
-        
+    
     @Published var state: MainViewState = MainViewState(commonItems: [], tagItems: [])
-     
+    
     init() {
         self.subscribeOnMainItems()
     }

@@ -13,7 +13,6 @@ enum MainNavSegment: Codable, Hashable {
     case WishDetailed(String?)
 }
 
-
 extension MainNavSegment {
     
     static func createFromCommonMainItem(item: CommonMainItem) -> MainNavSegment {

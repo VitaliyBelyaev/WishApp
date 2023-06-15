@@ -22,7 +22,6 @@ struct WishDetailedView: View {
     
     
     var body: some View {
-        
         VStack(alignment: .leading) {
             Form {
                 Section {
@@ -80,10 +79,11 @@ struct WishDetailedView: View {
                 } label: {
                     Label("delete", systemImage: "trash")
                 }
-                .confirmationDialog("delete Ipad", isPresented: $isDeleteWishConfirmationPresented, titleVisibility: .visible) {
-                    
+                .confirmationDialog("delete \(viewModel.title)", isPresented: $isDeleteWishConfirmationPresented, titleVisibility: .visible) {
                     Button("delete", role: .destructive) {
-                        
+                        viewModel.onDeleteWish()
+                        appViewModel.deleteWish(id: viewModel.wish.id)
+                        navigationModel.popMainPath()
                     }
                 }
             }
@@ -96,7 +96,7 @@ struct WishDetailedView: View {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
 //                NavigationLink(destination: WishListView(mode: .Completed)) {
-//                    Image(systemName: "tag")
+                    Image(systemName: "tag")
 //                }
             }
         }
