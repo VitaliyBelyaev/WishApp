@@ -18,6 +18,7 @@ final class WishDetailedViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var comment: String = ""
     @Published var link: String = ""
+    @Published var linksInfos: [LinkInfo] = []
     
     @Published var isAddLinkButtonEnabled: Bool = false
     
@@ -48,6 +49,15 @@ final class WishDetailedViewModel: ObservableObject {
     
     func onNewLinkAddClicked(link: String) {
         let newLinkAccumulatedString = linksAdapter.addLinkAndGetAccumulatedString(link: link, currentLinks: wish.links)
+        
+        createFuture(for: dbRepository.updateWishLink(newValue: newLinkAccumulatedString, wishId: wishId))
+            .subscribe(on: DispatchQueue.global())
+            .sinkSilently()
+            .store(in: &subscriptions)
+    }
+    
+    func onDeleteLinkConfirmed(link: String) {
+        let newLinkAccumulatedString = linksAdapter.removeLinkAndGetAccumulatedString(link: link, currentLinks: wish.links)
         
         createFuture(for: dbRepository.updateWishLink(newValue: newLinkAccumulatedString, wishId: wishId))
             .subscribe(on: DispatchQueue.global())
@@ -108,11 +118,21 @@ final class WishDetailedViewModel: ObservableObject {
             }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] wish in
-                self?.wish = wish
-                self?.title = wish.title
-                self?.comment = wish.comment
+                if let self = self {
+                    self.wish = wish
+                    self.title = wish.title
+                    self.comment = wish.comment
+                    self.linksInfos = self.getLinksInfos(links: wish.links)
+                }
             }
             .store(in: &subscriptions)
+    }
+    
+    private func getLinksInfos(links: [String]) -> [LinkInfo] {
+        links.map { link in
+            let title = URL(string: link)?.host ?? link
+            return LinkInfo(title: title, link: link)
+        }
     }
     
     private func observeLink() {

@@ -15,6 +15,7 @@ struct WishDetailedView: View {
     @EnvironmentObject private var navigationModel: NavigationModel
     @StateObject private var viewModel: WishDetailedViewModel
     @State private var isDeleteWishConfirmationPresented = false
+    @State private var isUpdateWishTagsSheetPresented = false
     
     init(wishId: String?) {
         _viewModel = StateObject.init(wrappedValue: { WishDetailedViewModel(wishId: wishId) }())
@@ -29,9 +30,9 @@ struct WishDetailedView: View {
                         .font(.title2)
                         .lineLimit(5)
                         .onChange(of: viewModel.title) { viewModel.onTitleChanged(to: $0) }
-                      
+                    
                 } header: {
-                    Text("Title")
+                    Text("WishDetailed.title")
                 }
                 
                 Section {
@@ -39,8 +40,8 @@ struct WishDetailedView: View {
                         .lineLimit(5)
                         .onChange(of: viewModel.comment) { viewModel.onCommentChanged(to: $0) }
                 } header: {
-                    Text("Comment")
-
+                    Text("WishDetailed.comment")
+                    
                 }
                 
                 Section {
@@ -59,13 +60,15 @@ struct WishDetailedView: View {
                         .disabled(!viewModel.isAddLinkButtonEnabled)
                     }
                     
-                    ForEach(viewModel.wish.links.reversed(), id: \.self) { link in
-//                        let mdLink = "[\(link)](\(link))"
-                        Text(.init(link))
+                    ForEach(viewModel.linksInfos.reversed(), id: \.self) { linkInfo in
+                        LinkView(
+                            linkInfo: linkInfo,
+                            onDeleteConfirmed: { viewModel.onDeleteLinkConfirmed(link: $0) }
+                        )
                     }
                     
                 } header: {
-                    Text("Links")
+                    Text("WishDetailed.links")
                 }
             }
         }
@@ -89,22 +92,32 @@ struct WishDetailedView: View {
             }
             ToolbarItemGroup(placement: .bottomBar) {
                 Spacer()
-//                NavigationLink(destination: { WishListView(mode: .All) }) {
+                Button {
+                    isUpdateWishTagsSheetPresented = true
+                } label: {
                     Image(systemName: "tag")
-//                }
+                }
             }
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
-//                NavigationLink(destination: WishListView(mode: .Completed)) {
+                Button {
+                    isUpdateWishTagsSheetPresented = true
+                } label: {
                     Image(systemName: "tag")
-//                }
+                }
             }
+        }
+        .sheet(isPresented: $isUpdateWishTagsSheetPresented) {
+            UpdateWishTagsView(
+                wishId: viewModel.wish.id,
+                onCloseClicked: {isUpdateWishTagsSheetPresented = false }
+            )
         }
     }
 }
 
 struct WishDetailedView_Previews: PreviewProvider {
-        
+    
     static var previews: some View {
         WishDetailedView(wishId: nil)
     }

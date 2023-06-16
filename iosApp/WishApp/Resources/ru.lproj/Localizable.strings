@@ -5,6 +5,9 @@
   Created by Vitaliy on 01.06.2023.
   
 */
+"delete %@" = "Удалить %@?";
+"delete" = "Удалить";
+
 "Main.title" = "Хотелки";
 "Main.all" = "Все";
 "Main.completed" = "Выполенные";
@@ -13,8 +16,10 @@
 "Main.deleteTag" = "Удалить тег";
 "Main.cancel" = "Отмена";
 "Main.done" = "Готово";
-"delete %@" = "Удалить %@?";
-"delete" = "Удалить";
 
 "WishList.all" = "Все";
 "WishList.completed" = "Выполненные";
+
+"WishDetailed.title" = "Название";
+"WishDetailed.comment" = "Комментарий";
+"WishDetailed.links" = "Ссылки";
