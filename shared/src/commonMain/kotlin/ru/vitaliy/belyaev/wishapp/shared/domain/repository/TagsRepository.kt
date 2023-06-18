@@ -23,6 +23,9 @@ interface TagsRepository {
     fun observeAllTags(): Flow<List<TagEntity>>
 
     @NativeCoroutines
+    suspend fun getTagsByWishId(wishId: String): List<TagEntity>
+
+    @NativeCoroutines
     fun observeTagsByWishId(wishId: String): Flow<List<TagEntity>>
 
     @NativeCoroutines

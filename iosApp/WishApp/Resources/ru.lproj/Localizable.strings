@@ -7,6 +7,8 @@
 */
 "delete %@" = "Удалить %@?";
 "delete" = "Удалить";
+"close" = "Закрыть";
+"done" = "Готово";
 
 "Main.title" = "Хотелки";
 "Main.all" = "Все";
@@ -23,3 +25,4 @@
 "WishDetailed.title" = "Название";
 "WishDetailed.comment" = "Комментарий";
 "WishDetailed.links" = "Ссылки";
+"WishDetailed.tags" = "Теги";

@@ -29,7 +29,7 @@ struct SectionHeaderView: View {
                 }
             } label: {
                 Image(systemName: "chevron.down")
-                
+                    .fontWeight(.medium)
                     .rotationEffect(.degrees(rotaitionDegrees))
             }
             .onChange(of: isOn) { isOn in

@@ -97,14 +97,12 @@ final class WishDetailedViewModel: ObservableObject {
         createFuture(for: dbRepository.insertWish(wish: wish))
             .subscribe(on: DispatchQueue.global())
             .catch { error in
-                print("Error: \(error) in insert wish")
                 return Just(KotlinUnit())
             }
             .sink(receiveCompletion: { [weak self] completion in
-                print("Completeion: \(completion) in insert wish")
                 self?.observeWish(wishId: wish.id)
-            }, receiveValue: {value in
-                print("Value: \(value) in insert wish")
+            }, receiveValue: { value in
+                
             })
             .store(in: &subscriptions)
     }
@@ -113,7 +111,6 @@ final class WishDetailedViewModel: ObservableObject {
         createPublisher(for: dbRepository.observeWishById(id: wishId))
             .subscribe(on: DispatchQueue.global())
             .catch { error in
-                print("Error: \(error) in observeWish")
                 return Just(WishEntityKt.createEmptyWish())
             }
             .receive(on: DispatchQueue.main)

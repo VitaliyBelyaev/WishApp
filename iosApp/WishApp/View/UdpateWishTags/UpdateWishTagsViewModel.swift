@@ -14,10 +14,8 @@ import KMPNativeCoroutinesCombine
 @MainActor
 final class UpdateWishTagsViewModel: ObservableObject {
     
-    
     @Published var query: String = ""
     @Published var state: ScreenState = ScreenState(createItem: nil, tagItems: [])
-    
     
     private let sdk: WishAppSdk = WishAppSdkDiHelper().wishAppSdk
     private var dbRepository: DatabaseRepository {
@@ -29,7 +27,7 @@ final class UpdateWishTagsViewModel: ObservableObject {
     private var subscriptions: [AnyCancellable] = []
     private var wishId: String
     
-    private var recentlyAddedTagsIds: [String] = []
+    @Published private var recentlyAddedTagsIds: [String] = []
     
     init(wishId: String) {
         self.wishId = wishId
@@ -50,58 +48,78 @@ final class UpdateWishTagsViewModel: ObservableObject {
                 .store(in: &subscriptions)
         }
     }
-    
+        
     func onCreateTagClicked(title: String) {
         query = ""
         
+        let dbRepository = dbRepository
+        let wishId = wishId
+        
         createFuture(for: dbRepository.insertTag(title: title))
+            .flatMap { tagId -> Publishers.Map<AnyPublisher<KotlinUnit, Error>, String> in
+                return createFuture(for: dbRepository.insertWishTagRelation(wishId: wishId, tagId: tagId))
+                    .map { _ in
+                        return tagId
+                    }
+            }
             .subscribe(on: DispatchQueue.global())
             .catch { error in
                 Just("")
             }
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] tagId in
                 guard let self = self else { return }
                 guard !tagId.isEmpty else { return }
-                
+    
                 recentlyAddedTagsIds.insert(tagId, at: 0)
-                addWishTagRelation(tagId: tagId, wishId: wishId)
             }
             .store(in: &subscriptions)
     }
     
-    private func addWishTagRelation(tagId: String, wishId: String) {
-        createFuture(for: dbRepository.insertWishTagRelation(wishId: wishId, tagId: tagId))
-            .subscribe(on: DispatchQueue.global())
-            .sinkSilently()
-            .store(in: &subscriptions)
-    }
     
     private func observeState() {
-        let allTags = createPublisher(for: dbRepository.observeAllTags())
-            .catch{ error in
-                Just([])
-            }
-        let wishTags = createPublisher(for: dbRepository.observeTagsByWishId(wishId: wishId))
-            .catch{ error in
+        let allTagsPublisher = createPublisher(for: dbRepository.observeAllTags())
+            .catch { error in
                 Just([])
             }
         
-        Publishers.CombineLatest3(allTags, wishTags, $query)
+        let wishTagsPublisher = createPublisher(for: dbRepository.observeTagsByWishId(wishId: wishId))
+            .catch { error in
+                Just([])
+            }
+        
+        let wishTagsFuture = createFuture(for: dbRepository.getTagsByWishId(wishId: wishId))
+            .catch { error in
+                Just([])
+            }
+
+        let queryPub = $query
+            .debounce(for: .milliseconds(200), scheduler: RunLoop.main)
+        
+        Publishers.CombineLatest4(allTagsPublisher, wishTagsPublisher, queryPub, $recentlyAddedTagsIds)
             .subscribe(on: DispatchQueue.global())
-            .map { [weak self] allTags, wishTags, query in
-                if let self = self {
-                    return self.createState(allTags: allTags, wishTags: wishTags, query: query)
-                } else{
-                    return ScreenState(createItem: nil, tagItems: [])
-                }
+            .flatMap { [weak self] allTags, wishTags, query, recentlyAddedTagsIds ->  Publishers.Map<Publishers.Catch<AnyPublisher<[TagEntity], Error>, Just<[TagEntity]>>, ScreenState> in
+                
+                return wishTagsFuture
+                    .map { wishTags in
+                        if let self = self {
+                            return self.createState(allTags: allTags, wishTags: wishTags, query: query, recentlyAddedTagsIds: recentlyAddedTagsIds)
+                        } else{
+                            return ScreenState(createItem: nil, tagItems: [])
+                        }
+                    }
             }
             .receive(on: DispatchQueue.main)
             .assign(to: \.state, on: self)
             .store(in: &subscriptions)
     }
     
-    
-    private func createState(allTags: [TagEntity], wishTags: [TagEntity], query: String) -> ScreenState {
+    private func createState(
+        allTags: [TagEntity],
+        wishTags: [TagEntity],
+        query: String,
+        recentlyAddedTagsIds: [String]
+    ) -> ScreenState {
         let allTagItemsFilteredByQuery: [TagItem] = filterTagItemsByQuery(
             tagItems: createTagItems(allTags: allTags, wishTags: wishTags),
             query: query
@@ -113,7 +131,7 @@ final class UpdateWishTagsViewModel: ObservableObject {
             }
         }
         
-        var recentlyAdded: [TagItem] = getRecentlyAddedTagItems(tagItems: allTagItemsFilteredByQuery, recentlyAddedTagsIds: recentlyAddedTagsIds)
+        let recentlyAdded: [TagItem] = getRecentlyAddedTagItems(tagItems: allTagItemsFilteredByQuery, recentlyAddedTagsIds: recentlyAddedTagsIds)
         
         var resultTagItems = [TagItem]()
         resultTagItems.append(contentsOf: recentlyAdded)

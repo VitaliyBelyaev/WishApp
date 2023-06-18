@@ -7,6 +7,8 @@
 */
 "delete %@" = "Delete %@?";
 "delete" = "Delete";
+"close" = "Close";
+"done" = "Done";
 
 "Main.title" = "Wishapp";
 "Main.all" = "All";
@@ -23,3 +25,4 @@
 "WishDetailed.title" = "Title";
 "WishDetailed.comment" = "Comment";
 "WishDetailed.links" = "Links";
+"WishDetailed.tags" = "Tags";

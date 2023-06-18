@@ -7,6 +7,7 @@
 
 import SwiftUI
 import shared
+import SwiftUIFlowLayout
 
 struct WishListContentView: View {
     
@@ -24,8 +25,26 @@ struct WishListContentView: View {
                         Text(wish.title).font(.title)
                         Text(wish.comment)
                         Text(wish.link)
+                        FlowLayout(mode: .scrollable, items: wish.tags, itemSpacing: 4) { tag in
+                            let isOn: Binding<Bool> = Binding(
+                                get: {return true },
+                                set: {value, tr in  }
+                            )
+
+                            Toggle(isOn: isOn) {
+                                Text(tag.title).font(.caption)
+                                    .padding(0)
+                                    
+                            }
+                            .toggleStyle(.button)
+                            .buttonStyle(.bordered)
+                            .foregroundColor(isOn.wrappedValue ? .primary.opacity(0.8) : .gray)
+                        }
                     }
                 }
+                
+    
+                
             }
         }
         .navigationTitle(title)

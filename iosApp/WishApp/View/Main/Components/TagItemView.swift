@@ -33,7 +33,7 @@ struct TagItemView: View {
     }
     
     var body: some View {
-        HStack{
+        HStack {
             Text("\(item.tag.title)")
             Spacer()
             Text("\(item.count)")

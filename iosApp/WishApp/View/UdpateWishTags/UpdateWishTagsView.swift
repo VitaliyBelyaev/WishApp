@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftUIFlowLayout
 
 struct UpdateWishTagsView: View {
     
@@ -20,79 +21,67 @@ struct UpdateWishTagsView: View {
     
     var body: some View {
         NavigationStack {
-            
-            //            VStack {
-            //                TextField("", text: $viewModel.query)
-            //                    .textFieldStyle(.roundedBorder)
-            //                    .padding()
             List {
-                
-                
-                
                 if let createItem = viewModel.state.createItem {
-                    HStack {
-                        Image(systemName: "plus")
-                        Text("Create \(createItem.title)")
-                    }
-                    .onTapGesture {
+                    Button {
                         viewModel.onCreateTagClicked(title: createItem.title)
+                    } label: {
+                        HStack {
+                            Image(systemName: "plus")
+                                .foregroundColor(.accentColor)
+                            Text("Create \"\(createItem.title)\"")
+                            Spacer()
+                        }
                     }
                 }
                 
-                ForEach(viewModel.state.tagItems, id: \.self) { tagItem in
-                    var isOn: Binding<Bool> = Binding(
-                        get: {return tagItem.isSelected },
-                        set: {value, tr in viewModel.onTagSelectedChanged(tagItem: tagItem) }
-                    )
-                    
-                    Toggle(isOn: isOn) {
-                        Text(tagItem.tag.title)
+                let tagItems = viewModel.state.tagItems
+                
+                if !tagItems.isEmpty {
+                    FlowLayout(mode: .scrollable, items: tagItems, itemSpacing: 4) { tagItem in
+                        let isOn: Binding<Bool> = Binding(
+                            get: {return tagItem.isSelected },
+                            set: {value, tr in viewModel.onTagSelectedChanged(tagItem: tagItem) }
+                        )
+                        
+                        Toggle(isOn: isOn) {
+                            Text(tagItem.tag.title)
+                        }
+                        .toggleStyle(.button)
+                        .buttonStyle(.bordered)
+                        .foregroundColor(isOn.wrappedValue ? .primary.opacity(0.8) : .gray)
                     }
-                    .toggleStyle(iOSCheckboxToggleStyle())
-                    //                        .onChange(of: $isOn.wrappedValue) {
-                    //
-                    //                        }
-                    
                 }
             }
-            .listStyle(.inset)
-            //            }
+            .listStyle(.grouped)
             .navigationTitle("")
             .toolbar {
-                ToolbarItem(placement: .cancellationAction){
-                    Button("Close") {
+                ToolbarItem(placement: .primaryAction){
+                    Button("done") {
                         onCloseClicked()
                     }
                 }
-                
             }
-            .searchable(text: $viewModel.query)
-            
-            
+            .searchable(text: $viewModel.query, placement: .toolbar)
         }
-        
     }
 }
 
 struct iOSCheckboxToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
-        // 1
-        Button(action: {
-
-            // 2
+        Button {
             configuration.isOn.toggle()
-
-        }, label: {
+        } label: {
             HStack {
-                // 3
                 configuration.label
                 Spacer()
                 
                 let color = configuration.isOn ? Color.accentColor : Color.secondary
                 Image(systemName: configuration.isOn ? "checkmark.circle.fill" : "circle")
                     .foregroundColor(color)
+                    .font(.system(size: 20, weight: .regular))
             }
-        })
+        }
     }
 }
 

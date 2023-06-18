@@ -63,7 +63,6 @@ struct WishApp: App {
                         navigationModel.jsonData = jsonData
                     }
                     for await _ in navigationModel.objectWillChangeSequence {
-                        print("persist")
                         navigationData = navigationModel.jsonData
                     }
                 }

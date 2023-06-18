@@ -52,6 +52,9 @@ kotlin {
         pod("Introspect") {
             version = "~> ${libs.versions.iosIntrospect.get()}"
         }
+        pod("SwiftUIFlowLayout") {
+            version = "~> 1.0.5"
+        }
     }
 
     sourceSets {

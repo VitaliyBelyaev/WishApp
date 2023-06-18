@@ -356,6 +356,15 @@ class DatabaseRepository(
     }
 
     @NativeCoroutines
+    override suspend fun getTagsByWishId(wishId: String): List<TagEntity> {
+        return withContext(dispatcherProvider.io()) {
+            wishTagRelationQueries
+                .getWishTags(wishId, TagMapper::mapToDomain)
+                .executeAsList()
+        }
+    }
+
+    @NativeCoroutines
     override fun observeTagsByWishId(wishId: String): Flow<List<TagEntity>> {
         return wishTagRelationQueries
             .getWishTags(wishId, TagMapper::mapToDomain)

@@ -8,6 +8,7 @@
 import SwiftUI
 import shared
 import Combine
+import SwiftUIFlowLayout
 
 struct WishDetailedView: View {
     
@@ -28,7 +29,7 @@ struct WishDetailedView: View {
                 Section {
                     TextField("", text: $viewModel.title, axis: .vertical)
                         .font(.title2)
-                        .lineLimit(5)
+                        .lineLimit(4)
                         .onChange(of: viewModel.title) { viewModel.onTitleChanged(to: $0) }
                     
                 } header: {
@@ -37,7 +38,7 @@ struct WishDetailedView: View {
                 
                 Section {
                     TextField("",text: $viewModel.comment, axis: .vertical)
-                        .lineLimit(5)
+                        .lineLimit(7)
                         .onChange(of: viewModel.comment) { viewModel.onCommentChanged(to: $0) }
                 } header: {
                     Text("WishDetailed.comment")
@@ -70,6 +71,36 @@ struct WishDetailedView: View {
                 } header: {
                     Text("WishDetailed.links")
                 }
+                
+                
+                
+                if !viewModel.wish.tags.isEmpty {
+                    Section {
+                        FlowLayout(mode: .scrollable, items: viewModel.wish.tags, itemSpacing: 4) { tag in
+                            
+                            let isOn: Binding<Bool> = Binding(
+                                get: {return true },
+                                set: {value, tr in
+                                    if !value {
+                                        isUpdateWishTagsSheetPresented = true
+                                    }
+                                }
+                            )
+                            
+                            Toggle(isOn: isOn) {
+                                Text(tag.title)
+                            }
+                            .toggleStyle(.button)
+                            .buttonStyle(.bordered)
+                            .foregroundColor(isOn.wrappedValue ? .primary.opacity(0.8) : .gray)
+                        }
+                    } header: {
+                        Text("WishDetailed.tags")
+                    }
+                }
+                
+                
+                
             }
         }
         .scrollDismissesKeyboard(.interactively)

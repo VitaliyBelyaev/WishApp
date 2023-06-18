@@ -18,7 +18,7 @@ struct SettingsView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction){
-                    Button("Close") {
+                    Button("close") {
                         onCloseClicked()
                     }
                 }
