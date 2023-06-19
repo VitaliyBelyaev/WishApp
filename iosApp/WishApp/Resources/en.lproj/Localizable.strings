@@ -9,6 +9,7 @@
 "delete" = "Delete";
 "close" = "Close";
 "done" = "Done";
+"shareTitle" = "This is my wish list:";
 
 "Main.title" = "Wishapp";
 "Main.all" = "All";
@@ -26,3 +27,10 @@
 "WishDetailed.comment" = "Comment";
 "WishDetailed.links" = "Links";
 "WishDetailed.tags" = "Tags";
+"WishDetailed.addTags" = "Add tags";
+"WishDetailed.markDone" = "Done";
+"WishDetailed.markUndone" = "Undone";
+"WishDetailed.markDoneShort" = "Done";
+"WishDetailed.markUndoneShort" = "Undone";
+
+"UpdateWishTags.prompt" = "Start typing to add tag";

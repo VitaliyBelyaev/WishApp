@@ -9,6 +9,7 @@
 "delete" = "Удалить";
 "close" = "Закрыть";
 "done" = "Готово";
+"shareTitle" = "Вот мой список хотелок:";
 
 "Main.title" = "Хотелки";
 "Main.all" = "Все";
@@ -26,3 +27,11 @@
 "WishDetailed.comment" = "Комментарий";
 "WishDetailed.links" = "Ссылки";
 "WishDetailed.tags" = "Теги";
+"WishDetailed.addTags" = "Добавить теги";
+"WishDetailed.markDone" = "Переместить в выполенные";
+"WishDetailed.markUndone" = "Переместить в текущие";
+"WishDetailed.markDoneShort" = "Выполнена";
+"WishDetailed.markUndoneShort" = "Не выполнена";
+
+
+"UpdateWishTags.prompt" = "Введите название, чтобы создать тег";

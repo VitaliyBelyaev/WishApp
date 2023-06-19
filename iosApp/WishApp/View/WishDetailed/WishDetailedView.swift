@@ -22,7 +22,6 @@ struct WishDetailedView: View {
         _viewModel = StateObject.init(wrappedValue: { WishDetailedViewModel(wishId: wishId) }())
     }
     
-    
     var body: some View {
         VStack(alignment: .leading) {
             Form {
@@ -30,8 +29,8 @@ struct WishDetailedView: View {
                     TextField("", text: $viewModel.title, axis: .vertical)
                         .font(.title2)
                         .lineLimit(4)
+                        .strikethrough(viewModel.wish.isCompleted)
                         .onChange(of: viewModel.title) { viewModel.onTitleChanged(to: $0) }
-                    
                 } header: {
                     Text("WishDetailed.title")
                 }
@@ -72,10 +71,17 @@ struct WishDetailedView: View {
                     Text("WishDetailed.links")
                 }
                 
-                
-                
-                if !viewModel.wish.tags.isEmpty {
-                    Section {
+                Section {
+                    Button {
+                        isUpdateWishTagsSheetPresented = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "plus")
+                            Text("WishDetailed.addTags")
+                        }
+                    }
+                    
+                    if !viewModel.wish.tags.isEmpty {
                         FlowLayout(mode: .scrollable, items: viewModel.wish.tags, itemSpacing: 4) { tag in
                             
                             let isOn: Binding<Bool> = Binding(
@@ -94,13 +100,10 @@ struct WishDetailedView: View {
                             .buttonStyle(.bordered)
                             .foregroundColor(isOn.wrappedValue ? .primary.opacity(0.8) : .gray)
                         }
-                    } header: {
-                        Text("WishDetailed.tags")
                     }
+                } header: {
+                    Text("WishDetailed.tags")
                 }
-                
-                
-                
             }
         }
         .scrollDismissesKeyboard(.interactively)
@@ -108,6 +111,20 @@ struct WishDetailedView: View {
         .navigationTitle("")
         .toolbar {
             ToolbarItemGroup(placement: .secondaryAction) {
+                Button {
+                    appViewModel.onWishCompletnessChangeButtonClicked(
+                        wishId: viewModel.wish.id,
+                        newIsCompleted: !viewModel.wish.isCompleted
+                    )
+                    navigationModel.popMainPath()
+                } label: {
+                    if viewModel.wish.isCompleted {
+                        Label("WishDetailed.markUndone", systemImage: "arrow.uturn.backward")
+                    } else {
+                        Label("WishDetailed.markDone", systemImage: "checkmark")
+                    }
+                }
+                
                 Button(role: .destructive) {
                     isDeleteWishConfirmationPresented = true
                 } label: {

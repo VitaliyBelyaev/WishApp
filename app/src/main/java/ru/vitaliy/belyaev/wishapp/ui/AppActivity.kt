@@ -21,7 +21,7 @@ import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
-import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.ShareWishListTextGenerator
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
 import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 
@@ -43,7 +43,10 @@ class AppActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         viewModel.wishListToShareLiveData.observe(this) {
-            val wishListAsFormattedText = generateFormattedWishList(it)
+            val wishListAsFormattedText = ShareWishListTextGenerator.generateFormattedWishListText(
+                title = getString(R.string.wish_list_title),
+                wishes = it
+            )
             startActivity(createSharePlainTextIntent(wishListAsFormattedText))
         }
 
@@ -68,30 +71,5 @@ class AppActivity : AppCompatActivity() {
                 Navigation { viewModel.onShareWishListClicked(it) }
             }
         }
-    }
-
-    private fun generateFormattedWishList(wishes: List<WishEntity>): String {
-        val builder = StringBuilder().apply {
-            append(getString(R.string.wish_list_title))
-            append("\n\n")
-        }
-
-        wishes.forEachIndexed { index, wish ->
-            val number = index + 1
-            builder.append("$number. ${wish.title}\n")
-            if (wish.comment.isNotBlank()) {
-                builder.append("\n")
-                builder.append("${wish.comment}\n")
-            }
-            if (wish.link.isNotBlank()) {
-                builder.append("\n")
-                builder.append("${wish.link}\n")
-            }
-            if (index != wishes.lastIndex) {
-                builder.append("_____________")
-                builder.append("\n\n")
-            }
-        }
-        return builder.toString()
     }
 }

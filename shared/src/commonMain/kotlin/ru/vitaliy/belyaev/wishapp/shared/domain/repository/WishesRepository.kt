@@ -33,6 +33,13 @@ interface WishesRepository {
     )
 
     @NativeCoroutines
+    suspend fun swapMovedWishPositionWithPassedWishes(
+        wishId: String,
+        wishPosition: Long,
+        passedWishes: List<WishEntity>,
+    )
+
+    @NativeCoroutines
     suspend fun updatePositionsOnItemMove(startIndex: Int, endIndex: Int, wishId: String, isMoveDown: Boolean)
 
     @NativeCoroutines

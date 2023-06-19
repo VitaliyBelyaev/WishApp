@@ -22,6 +22,13 @@ final class AppViewModel: ObservableObject {
     
     private var subscriptions: [AnyCancellable] = []
     
+    
+    func onWishCompletnessChangeButtonClicked(wishId: String, newIsCompleted: Bool) {
+        createFuture(for: dbRepository.updateWishIsCompleted(newValue: newIsCompleted, wishId: wishId))
+            .subscribe(on: DispatchQueue.global())
+            .sinkSilently()
+            .store(in: &subscriptions)
+    }
    
     func deleteWish(id: String) {
         createFuture(for: dbRepository.deleteWishesByIds(ids: [id]))

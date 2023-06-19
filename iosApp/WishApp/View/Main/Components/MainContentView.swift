@@ -49,11 +49,11 @@ struct MainContentView: View {
                 SectionHeaderView(title: LocalizedStringKey("Main.tags"), isOn: $isTagsSectionExpanded)
             }
         }
+        .environment(\.defaultMinListRowHeight, 48)
         .listStyle(.automatic)
         .navigationTitle("Main.title")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            
             ToolbarItem(placement: .primaryAction) {
                 Button("+tag"){
                     onAddTestTagClicked()

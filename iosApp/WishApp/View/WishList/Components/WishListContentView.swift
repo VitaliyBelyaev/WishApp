@@ -11,41 +11,43 @@ import SwiftUIFlowLayout
 
 struct WishListContentView: View {
     
+    let mode: WishListMode
     let wishes: [WishEntity]
     let title: LocalizedStringKey
+    let shareText: String
+    
     let onSettingsClicked: () -> ()
+    let onWishTagClicked: (String) -> ()
+    let onDeleteWishConfirmed: (String) -> ()
+    let onWishCompletnessChanged: (String, Bool) -> ()
+    let onMove: (IndexSet, Int) -> ()
+    @State private var isDeleteWishConfirmationPresented = false
     
     let onAddTestWishClicked: () -> ()
+    
+    private var onMovePerform : ((IndexSet, Int) -> ())? {
+        get {
+            if mode != WishListMode.Completed {
+               return onMove
+            } else {
+                return nil
+            }
+        }
+    }
     
     var body: some View {
         List {
             ForEach(wishes, id: \.id) { wish in
                 NavigationLink(value: MainNavSegment.createFromWishId(id: wish.id)) {
-                    VStack(alignment: .leading) {
-                        Text(wish.title).font(.title)
-                        Text(wish.comment)
-                        Text(wish.link)
-                        FlowLayout(mode: .scrollable, items: wish.tags, itemSpacing: 4) { tag in
-                            let isOn: Binding<Bool> = Binding(
-                                get: {return true },
-                                set: {value, tr in  }
-                            )
-
-                            Toggle(isOn: isOn) {
-                                Text(tag.title).font(.caption)
-                                    .padding(0)
-                                    
-                            }
-                            .toggleStyle(.button)
-                            .buttonStyle(.bordered)
-                            .foregroundColor(isOn.wrappedValue ? .primary.opacity(0.8) : .gray)
-                        }
-                    }
+                    WishItemView(
+                        wish: wish,
+                        onWishTagClicked: onWishTagClicked,
+                        onDeleteWishConfirmed: onDeleteWishConfirmed,
+                        onWishCompletnessChanged: onWishCompletnessChanged
+                    )
                 }
-                
-    
-                
             }
+            .onMove(perform: onMovePerform)
         }
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
@@ -56,18 +58,14 @@ struct WishListContentView: View {
                 }
             }
             
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    onSettingsClicked()
-                } label: {
-                    Image(systemName: "gearshape")
+            if mode != WishListMode.Completed {
+                ToolbarItem(placement: .primaryAction) {
+                    EditButton()
                 }
             }
-            
+           
             ToolbarItemGroup(placement: .bottomBar) {
-                Button {
-                    
-                } label: {
+                ShareLink(item: shareText) {
                     Image(systemName: "square.and.arrow.up")
                 }
                 
@@ -92,9 +90,15 @@ struct WishListContentView_Previews: PreviewProvider {
         
         NavigationStack {
             WishListContentView(
+                mode: WishListMode.All,
                 wishes: wishes,
                 title: "All",
+                shareText: "",
                 onSettingsClicked: {},
+                onWishTagClicked: {_ in },
+                onDeleteWishConfirmed: {_ in },
+                onWishCompletnessChanged: {_,_ in },
+                onMove: {_,_ in },
                 onAddTestWishClicked: {}
             )
         }

@@ -145,6 +145,29 @@ class DatabaseRepository(
     }
 
     @NativeCoroutines
+    override suspend fun swapMovedWishPositionWithPassedWishes(
+        wishId: String,
+        wishPosition: Long,
+        passedWishes: List<WishEntity>
+    ) {
+        withContext(dispatcherProvider.io()) {
+            wishQueries.transaction {
+                passedWishes.forEachIndexed { index, passedWish ->
+                    val prevPassedWishPosition = passedWishes.getOrNull(index - 1)?.position ?: wishPosition
+                    wishQueries.updatePosition(
+                        position = passedWish.position,
+                        wishId = wishId
+                    )
+                    wishQueries.updatePosition(
+                        position = prevPassedWishPosition,
+                        wishId = passedWish.id
+                    )
+                }
+            }
+        }
+    }
+
+    @NativeCoroutines
     override suspend fun updatePositionsOnItemMove(
         startIndex: Int,
         endIndex: Int,

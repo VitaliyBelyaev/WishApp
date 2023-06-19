@@ -21,7 +21,7 @@ struct CommonItemView: View {
             }
             Spacer()
             Text("\(item.count)")
-        }
+        }.padding(.vertical, 2)
     }
 }
 

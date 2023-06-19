@@ -14,6 +14,12 @@ import SwiftUI
 @MainActor
 final class WishListViewModel: ObservableObject {
     
+    @Published private var mode: WishListMode = WishListMode.Empty
+    @Published private var tag: TagEntity = TagEntity(id: "", title: "")
+    @Published var wishes: [WishEntity] = []
+    @Published var title: LocalizedStringKey = ""
+    @Published var shareText: String = ""
+    
     private let sdk: WishAppSdk = WishAppSdkDiHelper().wishAppSdk
     private var dbRepository: DatabaseRepository {
         get {
@@ -23,13 +29,9 @@ final class WishListViewModel: ObservableObject {
     
     private var subscriptions: [AnyCancellable] = []
     
-    @Published private var mode: WishListMode = WishListMode.Empty
+    private let shareTextGenerator = ShareWishListTextGenerator()
     
-    @Published private var tag: TagEntity = TagEntity(id: "", title: "")
-    
-    @Published var wishes: [WishEntity] = []
-    
-    @Published var title: LocalizedStringKey = ""
+    private var generateShareTextTask: Task<Void, Never>? = nil
     
     init(mode: WishListMode) {
         self.mode = mode
@@ -38,11 +40,15 @@ final class WishListViewModel: ObservableObject {
         self.collectWishes()
     }
     
+    deinit {
+        generateShareTextTask?.cancel()
+    }
+    
     func onAddWishClicked() {
         let timestamp = Date.currentTimeStamp
         
         let randNumber = Int.random(in: 0..<1000)
-        let wish = WishEntity(id: NSUUID().uuidString, title: "Test wish \(randNumber)", link: "Some link", links:["Some link"], comment: "Some commmment", isCompleted: false, createdTimestamp: timestamp, updatedTimestamp: timestamp, position: 0, tags: [])
+        let wish = WishEntity(id: NSUUID().uuidString, title: "Test wish \(randNumber)", link: "https://www.google.com/", links:["https://www.google.com/"], comment: "Some commmment", isCompleted: false, createdTimestamp: timestamp, updatedTimestamp: timestamp, position: 0, tags: [])
         
         createFuture(for: dbRepository.insertWish(wish: wish))
             .subscribe(on: DispatchQueue.global())
@@ -50,9 +56,55 @@ final class WishListViewModel: ObservableObject {
             .store(in: &subscriptions)
     }
     
+    func onDeleteWishConfirmed(wishId: String) {
+        createFuture(for: dbRepository.deleteWishesByIds(ids: [wishId]))
+            .subscribe(on: DispatchQueue.global())
+            .sinkSilently()
+            .store(in: &subscriptions)
+    }
+    
+    
+    func onMove(_ indexSet: IndexSet,_ beforeIndex: Int) {
+        
+        guard let movedWishIndex = indexSet.first else { return }
+        
+        if movedWishIndex > wishes.count {
+            return
+        }
+        let movedWish = wishes[movedWishIndex]
+        
+        var passedWishes = [WishEntity]()
+        
+        // Move down
+        if beforeIndex > movedWishIndex {
+            
+            let startIndexOfPassedWishes = movedWishIndex + 1
+            let endIndexOfPassedWishes = beforeIndex - 1
+            for i in startIndexOfPassedWishes...endIndexOfPassedWishes {
+                passedWishes.append(wishes[i])
+            }
+        } else { // Move up
+            let startIndexOfPassedWishes = beforeIndex
+            let endIndexOfPassedWishes = movedWishIndex - 1
+            for i in startIndexOfPassedWishes...endIndexOfPassedWishes {
+                passedWishes.insert(wishes[i], at: 0)
+            }
+        }
+        
+        createFuture(for: dbRepository.swapMovedWishPositionWithPassedWishes(
+            wishId: movedWish.id,
+            wishPosition: movedWish.position,
+            passedWishes: passedWishes)
+        )
+        .subscribe(on: DispatchQueue.global())
+        .sinkSilently()
+        .store(in: &subscriptions)
+        
+    }
     
     private func collectWishes() {
         let dbRepository = dbRepository
+        
         
         $mode
             .flatMap { mode in
@@ -73,8 +125,25 @@ final class WishListViewModel: ObservableObject {
                 Just(Array<WishEntity>())
             }
             .receive(on: DispatchQueue.main)
-            .assign(to: \.wishes, on: self)
+            .sink { [weak self] wishes in
+                guard let self = self else { return }
+                self.wishes = wishes
+                self.updateShareText(wishes: wishes)
+            }
             .store(in: &subscriptions)
+    }
+    
+    private func updateShareText(wishes: [ WishEntity]) {
+        generateShareTextTask?.cancel()
+        generateShareTextTask = Task.init {
+            let text = await getShareText(wishes: wishes, generator: shareTextGenerator)
+            shareText = text
+        }
+    }
+        
+    func getShareText(wishes: [WishEntity], generator: ShareWishListTextGenerator) async -> String {
+        let title = NSLocalizedString("shareTitle", comment: "")
+        return shareTextGenerator.generateFormattedWishListText(title: title, wishes: wishes)
     }
     
     private func updateTitle(mode: WishListMode) {
@@ -92,7 +161,7 @@ final class WishListViewModel: ObservableObject {
     
     private func collectTagIfNeeded(mode: WishListMode) {
         let id: String?
-
+        
         switch mode {
         case let .ByTag(tagId):
             id = tagId

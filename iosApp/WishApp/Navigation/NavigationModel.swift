@@ -46,8 +46,11 @@ final class NavigationModel: ObservableObject, Codable {
             .values
     }
     
+    func navigateToWishDetailed(wishId: String) {
+        mainPath.append(MainNavSegment.WishDetailed(wishId))
+    }
     
-    func goToRoot() {
+    func popToRoot() {
         mainPath.removeAll()
         settingsPath.removeLast(settingsPath.count)
         isSettingPresented = false
