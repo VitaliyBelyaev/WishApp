@@ -80,7 +80,7 @@ struct WishItemView: View {
             } label: {
                 Label(title, systemImage: image)
             }
-            .tint(wish.isCompleted ? Color.init(.systemGray3) : Color.init(.green))
+            .tint(wish.isCompleted ? Color.init(.systemGray2) : Color.init(.systemGreen))
         }
         .confirmationDialog("delete \(wish.title)", isPresented: $isDeleteWishConfirmationPresented, titleVisibility: .visible) {
             Button("delete", role: .destructive) {

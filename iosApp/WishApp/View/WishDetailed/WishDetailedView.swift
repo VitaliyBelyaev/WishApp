@@ -41,15 +41,12 @@ struct WishDetailedView: View {
                         .onChange(of: viewModel.comment) { viewModel.onCommentChanged(to: $0) }
                 } header: {
                     Text("WishDetailed.comment")
-                    
                 }
                 
                 Section {
                     HStack {
                         TextField("",text: $viewModel.link)
                             .lineLimit(1)
-                            .keyboardType(.URL)
-                            .textContentType(.URL)
                         Spacer()
                         Button {
                             viewModel.onNewLinkAddClicked(link: viewModel.link)
