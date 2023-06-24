@@ -32,6 +32,11 @@
 		ED70B67F2A408D7D00E6786B /* WishItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED70B67E2A408D7D00E6786B /* WishItemView.swift */; };
 		ED70B6812A41E27500E6786B /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED70B6802A41E27500E6786B /* DateExtension.swift */; };
 		ED70B6832A41E2A300E6786B /* PublisherExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED70B6822A41E2A300E6786B /* PublisherExtension.swift */; };
+		ED70B6862A433D3600E6786B /* BackupAndRestoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED70B6852A433D3600E6786B /* BackupAndRestoreView.swift */; };
+		ED70B68C2A44977900E6786B /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED70B68B2A44977900E6786B /* BundleExtension.swift */; };
+		ED9CAD9B2A470E320079D814 /* SettingsItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9CAD9A2A470E320079D814 /* SettingsItemView.swift */; };
+		ED9CAD9D2A4720CE0079D814 /* NavigationLinkExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9CAD9C2A4720CE0079D814 /* NavigationLinkExtension.swift */; };
+		ED9CAD9F2A4721610079D814 /* MailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9CAD9E2A4721610079D814 /* MailView.swift */; };
 		EDAE5D1B2A3A05FD0072EB31 /* MainNavSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAE5D1A2A3A05FD0072EB31 /* MainNavSegment.swift */; };
 		EDAE5D1D2A3B50F20072EB31 /* CommonItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAE5D1C2A3B50F20072EB31 /* CommonItemView.swift */; };
 		EDAE5D1F2A3B5AE50072EB31 /* SectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAE5D1E2A3B5AE50072EB31 /* SectionHeaderView.swift */; };
@@ -75,6 +80,11 @@
 		ED70B67E2A408D7D00E6786B /* WishItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishItemView.swift; sourceTree = "<group>"; };
 		ED70B6802A41E27500E6786B /* DateExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
 		ED70B6822A41E2A300E6786B /* PublisherExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublisherExtension.swift; sourceTree = "<group>"; };
+		ED70B6852A433D3600E6786B /* BackupAndRestoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAndRestoreView.swift; sourceTree = "<group>"; };
+		ED70B68B2A44977900E6786B /* BundleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtension.swift; sourceTree = "<group>"; };
+		ED9CAD9A2A470E320079D814 /* SettingsItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsItemView.swift; sourceTree = "<group>"; };
+		ED9CAD9C2A4720CE0079D814 /* NavigationLinkExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationLinkExtension.swift; sourceTree = "<group>"; };
+		ED9CAD9E2A4721610079D814 /* MailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailView.swift; sourceTree = "<group>"; };
 		EDAE5D1A2A3A05FD0072EB31 /* MainNavSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainNavSegment.swift; sourceTree = "<group>"; };
 		EDAE5D1C2A3B50F20072EB31 /* CommonItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonItemView.swift; sourceTree = "<group>"; };
 		EDAE5D1E2A3B5AE50072EB31 /* SectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeaderView.swift; sourceTree = "<group>"; };
@@ -118,6 +128,7 @@
 		ED17508E2A373EFE00665949 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				ED70B6842A433D0100E6786B /* Components */,
 				ED17508F2A373F1000665949 /* SettingsView.swift */,
 			);
 			path = Settings;
@@ -261,6 +272,8 @@
 			children = (
 				ED70B6802A41E27500E6786B /* DateExtension.swift */,
 				ED70B6822A41E2A300E6786B /* PublisherExtension.swift */,
+				ED70B68B2A44977900E6786B /* BundleExtension.swift */,
+				ED9CAD9C2A4720CE0079D814 /* NavigationLinkExtension.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -281,6 +294,16 @@
 				EDB776ED2A27AC9D0087EA06 /* MainViewState.swift */,
 			);
 			path = Entity;
+			sourceTree = "<group>";
+		};
+		ED70B6842A433D0100E6786B /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				ED70B6852A433D3600E6786B /* BackupAndRestoreView.swift */,
+				ED9CAD9A2A470E320079D814 /* SettingsItemView.swift */,
+				ED9CAD9E2A4721610079D814 /* MailView.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 		EDC203072A3C61EB0076EAD0 /* Entity */ = {
@@ -439,8 +462,10 @@
 				ED1750952A38C97C00665949 /* WishListContentView.swift in Sources */,
 				ED6EFA3D2A22495F00CC1B13 /* WishListView.swift in Sources */,
 				ED6EFA4A2A2256D200CC1B13 /* MainItems.swift in Sources */,
+				ED9CAD9D2A4720CE0079D814 /* NavigationLinkExtension.swift in Sources */,
 				ED6EFA3B2A22495200CC1B13 /* MainView.swift in Sources */,
 				ED1750922A37452900665949 /* MainContentView.swift in Sources */,
+				ED70B68C2A44977900E6786B /* BundleExtension.swift in Sources */,
 				ED1750902A373F1000665949 /* SettingsView.swift in Sources */,
 				EDB776EE2A27AC9D0087EA06 /* MainViewState.swift in Sources */,
 				ED70B67F2A408D7D00E6786B /* WishItemView.swift in Sources */,
@@ -448,11 +473,14 @@
 				ED6EFA4C2A225A7400CC1B13 /* WishListMode.swift in Sources */,
 				EDC203152A3C94760076EAD0 /* UpdateWishTagsView.swift in Sources */,
 				EDC203092A3C61FC0076EAD0 /* LinkInfo.swift in Sources */,
+				ED9CAD9B2A470E320079D814 /* SettingsItemView.swift in Sources */,
 				ED17509A2A38D09B00665949 /* AppViewModel.swift in Sources */,
 				ED70B6812A41E27500E6786B /* DateExtension.swift in Sources */,
+				ED9CAD9F2A4721610079D814 /* MailView.swift in Sources */,
 				ED6DB19829B4F21F00A11CA3 /* WishApp.swift in Sources */,
 				EDAE5D1B2A3A05FD0072EB31 /* MainNavSegment.swift in Sources */,
 				EDC203132A3C94540076EAD0 /* UpdateWishTagsViewModel.swift in Sources */,
+				ED70B6862A433D3600E6786B /* BackupAndRestoreView.swift in Sources */,
 				ED2555BC2A2A34A700678E7C /* TagItemView.swift in Sources */,
 				EDAE5D1D2A3B50F20072EB31 /* CommonItemView.swift in Sources */,
 				ED6EFA472A224B8700CC1B13 /* NavigationModel.swift in Sources */,
@@ -549,7 +577,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -604,7 +632,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -639,7 +667,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vitaliy.belyaev.WishApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -661,6 +689,7 @@
 				DEVELOPMENT_TEAM = 7K525734CM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -672,7 +701,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vitaliy.belyaev.WishApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

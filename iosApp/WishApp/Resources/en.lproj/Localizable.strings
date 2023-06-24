@@ -34,3 +34,14 @@
 "WishDetailed.markUndoneShort" = "Undone";
 
 "UpdateWishTags.prompt" = "Start typing to add tag";
+
+"Settings.title" = "Settings";
+"Settings.backup" = "Data backup and restore";
+"Settings.theme" = "App theme";
+"Settings.writeToSupport" = "Write to us";
+"Settings.rateUs" = "Rate us on the App Store";
+"Settings.aboutApp" = "About App";
+"Settings.description" = "This is an open-source app, you can check code [here](https://github.com/VitaliyBelyaev/WishApp)";
+"Settings.appVersion %@" = "Wishapp %@";
+
+

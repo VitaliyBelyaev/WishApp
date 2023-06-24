@@ -33,5 +33,13 @@
 "WishDetailed.markDoneShort" = "Выполнена";
 "WishDetailed.markUndoneShort" = "Не выполнена";
 
-
 "UpdateWishTags.prompt" = "Введите название, чтобы создать тег";
+
+"Settings.title" = "Настройки";
+"Settings.backup" = "Сохранение данных";
+"Settings.theme" = "Тема приложения";
+"Settings.writeToSupport" = "Написать нам";
+"Settings.rateUs" = "Оцените нас в App Store";
+"Settings.aboutApp" = "О приложении";
+"Settings.description" = "Это приложение с открытым исходным кодом, код можно посмотреть [здесь](https://github.com/VitaliyBelyaev/WishApp)";
+"Settings.appVersion %@" = "Хотелки %@";
