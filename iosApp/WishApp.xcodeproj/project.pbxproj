@@ -34,6 +34,7 @@
 		ED70B6832A41E2A300E6786B /* PublisherExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED70B6822A41E2A300E6786B /* PublisherExtension.swift */; };
 		ED70B6862A433D3600E6786B /* BackupAndRestoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED70B6852A433D3600E6786B /* BackupAndRestoreView.swift */; };
 		ED70B68C2A44977900E6786B /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED70B68B2A44977900E6786B /* BundleExtension.swift */; };
+		ED7102D92A49E5F500E24E3D /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7102D82A49E5F500E24E3D /* UIDeviceExtension.swift */; };
 		ED9CAD9B2A470E320079D814 /* SettingsItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9CAD9A2A470E320079D814 /* SettingsItemView.swift */; };
 		ED9CAD9D2A4720CE0079D814 /* NavigationLinkExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9CAD9C2A4720CE0079D814 /* NavigationLinkExtension.swift */; };
 		ED9CAD9F2A4721610079D814 /* MailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9CAD9E2A4721610079D814 /* MailView.swift */; };
@@ -82,6 +83,7 @@
 		ED70B6822A41E2A300E6786B /* PublisherExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublisherExtension.swift; sourceTree = "<group>"; };
 		ED70B6852A433D3600E6786B /* BackupAndRestoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAndRestoreView.swift; sourceTree = "<group>"; };
 		ED70B68B2A44977900E6786B /* BundleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtension.swift; sourceTree = "<group>"; };
+		ED7102D82A49E5F500E24E3D /* UIDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
 		ED9CAD9A2A470E320079D814 /* SettingsItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsItemView.swift; sourceTree = "<group>"; };
 		ED9CAD9C2A4720CE0079D814 /* NavigationLinkExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationLinkExtension.swift; sourceTree = "<group>"; };
 		ED9CAD9E2A4721610079D814 /* MailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailView.swift; sourceTree = "<group>"; };
@@ -274,6 +276,7 @@
 				ED70B6822A41E2A300E6786B /* PublisherExtension.swift */,
 				ED70B68B2A44977900E6786B /* BundleExtension.swift */,
 				ED9CAD9C2A4720CE0079D814 /* NavigationLinkExtension.swift */,
+				ED7102D82A49E5F500E24E3D /* UIDeviceExtension.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -483,6 +486,7 @@
 				ED70B6862A433D3600E6786B /* BackupAndRestoreView.swift in Sources */,
 				ED2555BC2A2A34A700678E7C /* TagItemView.swift in Sources */,
 				EDAE5D1D2A3B50F20072EB31 /* CommonItemView.swift in Sources */,
+				ED7102D92A49E5F500E24E3D /* UIDeviceExtension.swift in Sources */,
 				ED6EFA472A224B8700CC1B13 /* NavigationModel.swift in Sources */,
 				ED6EFA3F2A22498700CC1B13 /* WishListViewModel.swift in Sources */,
 				EDC516162A3CA5200090D951 /* ScreenState.swift in Sources */,
@@ -651,7 +655,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"WishApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 7K525734CM;
 				ENABLE_PREVIEWS = YES;
@@ -684,12 +688,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"WishApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 7K525734CM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

@@ -16,23 +16,21 @@ struct SettingsView: View {
     
     var body: some View {
         NavigationStack {
-            
-            
             List {
-                
-                Section {
-                    NavigationLink(destination: BackupAndRestoreView()) {
-                        Text("Settings.backup")
-                    }
-                }
-                
+//                Section {
+//                    NavigationLink(destination: BackupAndRestoreView()) {
+//                        Text("Settings.backup")
+//                    }
+//                }
                 Section {
                     SettingsItemView(title: "Settings.writeToSupport") {
                         isWriteEmailPresented = true
                     }
                     .disabled(!MFMailComposeViewController.canSendMail())
                     .sheet(isPresented: $isWriteEmailPresented) {
-                        MailView(content: "\n\n App version: \(Bundle.main.appVersionPretty)", to: "vitaliy.belyaev.wishapp@gmail.com", subject: "Feedback")
+                        MailView(content: getDebugInfoForFeedbackEmail(),
+                                 to: "vitaliy.belyaev.wishapp@gmail.com",
+                                 subject: "Feedback")
                     }
                     
                     SettingsItemView(title: "Settings.rateUs") {
@@ -58,6 +56,7 @@ struct SettingsView: View {
                 }.textCase(nil)
                 
             }
+            .environment(\.defaultMinListRowHeight, 48)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction){
                     Button("close") {
@@ -68,6 +67,14 @@ struct SettingsView: View {
             .navigationTitle("Settings.title")
             .navigationBarTitleDisplayMode(.large)
         }
+    }
+    
+    private func getDebugInfoForFeedbackEmail() -> String {
+        let device = UIDevice()
+        let appVersionPart = "App version: \(Bundle.main.appVersionPretty)"
+        let osPart = "OS: \(device.systemName) \(device.systemVersion)"
+        let devicePart = "Device: \(UIDevice.deviceModelCodeString)"
+        return "\n\n\(appVersionPart)\n\(osPart)\n\(devicePart)"
     }
 }
 
