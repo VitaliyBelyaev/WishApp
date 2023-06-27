@@ -17,11 +17,6 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
-//                Section {
-//                    NavigationLink(destination: BackupAndRestoreView()) {
-//                        Text("Settings.backup")
-//                    }
-//                }
                 Section {
                     SettingsItemView(title: "Settings.writeToSupport") {
                         isWriteEmailPresented = true

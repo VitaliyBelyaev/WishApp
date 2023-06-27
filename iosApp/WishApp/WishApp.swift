@@ -34,22 +34,30 @@ struct WishApp: App {
                 .onChange(of: navigationModel.mainPath) { [oldMainPath = navigationModel.mainPath] newMainPath in
                     let isOldPathContainsNewWishDetailed = oldMainPath.contains(where: { segment in
                         switch segment {
-                        case .WishDetailed(nil):
+                        case .WishDetailed(.none, .some(_)):
+                            return true
+                        case .WishDetailed(.some(_), .some(_)):
+                            return false
+                        case .WishDetailed(.some(_), .none):
+                            return false
+                        case .WishDetailed(.none, .none):
                             return true
                         case .WishList(_):
-                            return false
-                        case .WishDetailed(.some(_)):
                             return false
                         }
                     })
                     
                     let isNewPathContainsNewWishDetailed = newMainPath.contains(where: { segment in
                         switch segment {
-                        case .WishDetailed(nil):
+                        case .WishDetailed(.none, .some(_)):
+                            return true
+                        case .WishDetailed(.some(_), .some(_)):
+                            return false
+                        case .WishDetailed(.some(_), .none):
+                            return false
+                        case .WishDetailed(.none, .none):
                             return true
                         case .WishList(_):
-                            return false
-                        case .WishDetailed(.some(_)):
                             return false
                         }
                     })

@@ -28,8 +28,23 @@ struct WishListContentView: View {
     private var onMovePerform : ((IndexSet, Int) -> ())? {
         get {
             if mode != WishListMode.Completed {
-               return onMove
+                return onMove
             } else {
+                return nil
+            }
+        }
+    }
+    
+    private var tagId: String? {
+        get {
+            switch mode {
+            case .All:
+                return nil
+            case .Completed:
+                return nil
+            case .ByTag(let id):
+                return id
+            case .Empty:
                 return nil
             }
         }
@@ -38,7 +53,7 @@ struct WishListContentView: View {
     var body: some View {
         List {
             ForEach(wishes, id: \.id) { wish in
-                NavigationLink(value: MainNavSegment.createFromWishId(id: wish.id)) {
+                NavigationLink(value: MainNavSegment.createFromWishId(id: wish.id, tagId: nil)) {
                     WishItemView(
                         wish: wish,
                         onWishTagClicked: onWishTagClicked,
@@ -58,19 +73,26 @@ struct WishListContentView: View {
                 }
             }
             
-            if mode != WishListMode.Completed {
+            if mode != WishListMode.Completed && !wishes.isEmpty {
                 ToolbarItem(placement: .primaryAction) {
                     EditButton()
                 }
             }
-           
+            
             ToolbarItemGroup(placement: .bottomBar) {
-                ShareLink(item: shareText) {
-                    Image(systemName: "square.and.arrow.up")
+                if mode != WishListMode.Completed && !wishes.isEmpty {
+                    ShareLink(item: shareText) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
                 }
                 
-                NavigationLink(value: MainNavSegment.createFromWishId(id: nil)) {
-                    Image(systemName: "square.and.pencil")
+                Spacer()
+                
+                if mode != WishListMode.Completed {
+                    
+                    NavigationLink(value: MainNavSegment.createFromWishId(id: nil, tagId: self.tagId)) {
+                        Image(systemName: "square.and.pencil")
+                    }
                 }
             }
         }

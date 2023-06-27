@@ -18,8 +18,8 @@ struct WishDetailedView: View {
     @State private var isDeleteWishConfirmationPresented = false
     @State private var isUpdateWishTagsSheetPresented = false
     
-    init(wishId: String?) {
-        _viewModel = StateObject.init(wrappedValue: { WishDetailedViewModel(wishId: wishId) }())
+    init(wishId: String?, tagId: String?) {
+        _viewModel = StateObject.init(wrappedValue: { WishDetailedViewModel(wishId: wishId, tagId: tagId) }())
     }
     
     var body: some View {
@@ -164,6 +164,6 @@ struct WishDetailedView: View {
 struct WishDetailedView_Previews: PreviewProvider {
     
     static var previews: some View {
-        WishDetailedView(wishId: nil)
+        WishDetailedView(wishId: nil, tagId: nil)
     }
 }

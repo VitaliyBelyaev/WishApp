@@ -70,7 +70,7 @@ struct MainContentView: View {
             
             ToolbarItemGroup(placement: .bottomBar) {
                 Spacer()
-                NavigationLink(value: MainNavSegment.createFromWishId(id: nil)) {
+                NavigationLink(value: MainNavSegment.createFromWishId(id: nil, tagId: nil)) {
                     Image(systemName: "square.and.pencil")
                 }
             }
@@ -79,8 +79,8 @@ struct MainContentView: View {
             switch segment {
             case let .WishList(mode):
                 WishListView(mode: mode)
-            case let .WishDetailed(wishId):
-                WishDetailedView(wishId: wishId)
+            case let .WishDetailed(wishId, tagId):
+                WishDetailedView(wishId: wishId, tagId: tagId)
             }
         }
     }

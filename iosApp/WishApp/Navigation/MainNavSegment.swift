@@ -10,7 +10,7 @@ import Foundation
 
 enum MainNavSegment: Codable, Hashable {
     case WishList(WishListMode)
-    case WishDetailed(String?)
+    case WishDetailed(String?, String?)
 }
 
 extension MainNavSegment {
@@ -28,8 +28,8 @@ extension MainNavSegment {
         return MainNavSegment.WishList(.ByTag(item.tag.id))
     }
     
-    static func createFromWishId(id: String?) -> MainNavSegment {
-        return MainNavSegment.WishDetailed(id)
+    static func createFromWishId(id: String?, tagId: String?) -> MainNavSegment {
+        return MainNavSegment.WishDetailed(id, tagId)
     }
 }
 

@@ -32,8 +32,11 @@ final class WishDetailedViewModel: ObservableObject {
     private var subscriptions: [AnyCancellable] = []
     private let linksAdapter = LinksAdapter()
     private var wishId: String
+    private var tagId: String?
    
-    init(wishId: String? = nil) {
+    init(wishId: String?, tagId: String?) {
+        self.tagId = tagId
+        
         if let wishIdNotNull = wishId {
             self.wishId = wishIdNotNull
             observeWish(wishId: wishIdNotNull)
@@ -108,6 +111,10 @@ final class WishDetailedViewModel: ObservableObject {
     }
     
     private func observeWish(wishId: String) {
+        if let tagId = tagId {
+            addTagToWish(wishId: wishId, tagId: tagId)
+        }
+        
         createPublisher(for: dbRepository.observeWishById(id: wishId))
             .subscribe(on: DispatchQueue.global())
             .catch { error in
@@ -122,6 +129,13 @@ final class WishDetailedViewModel: ObservableObject {
                     self.linksInfos = self.getLinksInfos(links: wish.links)
                 }
             }
+            .store(in: &subscriptions)
+    }
+    
+    private func addTagToWish(wishId: String, tagId: String) {
+        createFuture(for: dbRepository.insertWishTagRelation(wishId: wishId, tagId: tagId))
+            .subscribe(on: DispatchQueue.global())
+            .sinkSilently()
             .store(in: &subscriptions)
     }
     

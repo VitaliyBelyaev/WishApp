@@ -47,7 +47,7 @@ final class NavigationModel: ObservableObject, Codable {
     }
     
     func navigateToWishDetailed(wishId: String) {
-        mainPath.append(MainNavSegment.WishDetailed(wishId))
+        mainPath.append(MainNavSegment.createFromWishId(id: wishId, tagId: nil))
     }
     
     func popToRoot() {
