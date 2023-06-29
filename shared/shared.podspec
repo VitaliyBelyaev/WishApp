@@ -8,7 +8,7 @@ Pod::Spec.new do |spec|
     spec.summary                  = 'WishAppSdk'
     spec.vendored_frameworks      = 'build/cocoapods/framework/shared.framework'
     spec.libraries                = 'c++'
-    spec.ios.deployment_target = '13.5'
+    spec.ios.deployment_target = '16.0'
     spec.dependency 'Introspect', '~> 0.6.0'
     spec.dependency 'KMPNativeCoroutinesCombine', '~> 1.0.0-ALPHA-9'
     spec.dependency 'SwiftUIFlowLayout', '~> 1.0.5'

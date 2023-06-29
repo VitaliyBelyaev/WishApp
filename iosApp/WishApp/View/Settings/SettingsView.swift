@@ -36,6 +36,12 @@ struct SettingsView: View {
                     }
                 }
                 
+                Section {
+                    NavigationLink(destination: PrivacyPolicyView()) {
+                        Text("Settings.policy")
+                    }
+                }
+                
                 Section{
                     Text("Settings.description")
                         .font(.body)

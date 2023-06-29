@@ -43,3 +43,4 @@
 "Settings.aboutApp" = "О приложении";
 "Settings.description" = "Это приложение с открытым исходным кодом, код можно посмотреть [здесь](https://github.com/VitaliyBelyaev/WishApp)";
 "Settings.appVersion %@" = "Хотелки %@";
+"Settings.policy" = "Политика конфиденциальности";

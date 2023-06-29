@@ -35,6 +35,11 @@
 		ED70B6862A433D3600E6786B /* BackupAndRestoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED70B6852A433D3600E6786B /* BackupAndRestoreView.swift */; };
 		ED70B68C2A44977900E6786B /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED70B68B2A44977900E6786B /* BundleExtension.swift */; };
 		ED7102D92A49E5F500E24E3D /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7102D82A49E5F500E24E3D /* UIDeviceExtension.swift */; };
+		ED7914192A4C951A00E7FF0C /* PrivacyPolicyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7914182A4C951A00E7FF0C /* PrivacyPolicyView.swift */; };
+		ED79141C2A4C95EE00E7FF0C /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED79141B2A4C95EE00E7FF0C /* WebView.swift */; };
+		ED7914222A4DDA9400E7FF0C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED7914212A4DDA9400E7FF0C /* GoogleService-Info.plist */; };
+		ED7914262A4DE7DA00E7FF0C /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = ED7914252A4DE7DA00E7FF0C /* FirebaseAnalytics */; };
+		ED7914282A4DE7DA00E7FF0C /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = ED7914272A4DE7DA00E7FF0C /* FirebaseCrashlytics */; };
 		ED9CAD9B2A470E320079D814 /* SettingsItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9CAD9A2A470E320079D814 /* SettingsItemView.swift */; };
 		ED9CAD9D2A4720CE0079D814 /* NavigationLinkExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9CAD9C2A4720CE0079D814 /* NavigationLinkExtension.swift */; };
 		ED9CAD9F2A4721610079D814 /* MailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9CAD9E2A4721610079D814 /* MailView.swift */; };
@@ -84,6 +89,9 @@
 		ED70B6852A433D3600E6786B /* BackupAndRestoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAndRestoreView.swift; sourceTree = "<group>"; };
 		ED70B68B2A44977900E6786B /* BundleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtension.swift; sourceTree = "<group>"; };
 		ED7102D82A49E5F500E24E3D /* UIDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
+		ED7914182A4C951A00E7FF0C /* PrivacyPolicyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyView.swift; sourceTree = "<group>"; };
+		ED79141B2A4C95EE00E7FF0C /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
+		ED7914212A4DDA9400E7FF0C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ED9CAD9A2A470E320079D814 /* SettingsItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsItemView.swift; sourceTree = "<group>"; };
 		ED9CAD9C2A4720CE0079D814 /* NavigationLinkExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationLinkExtension.swift; sourceTree = "<group>"; };
 		ED9CAD9E2A4721610079D814 /* MailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailView.swift; sourceTree = "<group>"; };
@@ -103,6 +111,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED7914282A4DE7DA00E7FF0C /* FirebaseCrashlytics in Frameworks */,
+				ED7914262A4DE7DA00E7FF0C /* FirebaseAnalytics in Frameworks */,
 				DBBCD02E2D8F4C219DBA6628 /* Pods_WishApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -206,6 +216,7 @@
 				ED6EFA312A2248E300CC1B13 /* View */,
 				ED6DB19729B4F21F00A11CA3 /* WishApp.swift */,
 				ED1750992A38D09B00665949 /* AppViewModel.swift */,
+				ED7914212A4DDA9400E7FF0C /* GoogleService-Info.plist */,
 				ED6DB19D29B4F21F00A11CA3 /* Preview Content */,
 			);
 			path = WishApp;
@@ -222,6 +233,7 @@
 		ED6EFA312A2248E300CC1B13 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				ED79141A2A4C95DE00E7FF0C /* Common */,
 				EDC2030D2A3C8D070076EAD0 /* UdpateWishTags */,
 				ED17508E2A373EFE00665949 /* Settings */,
 				ED31945F2A30CA8D0070CDE4 /* WishDetailed */,
@@ -305,8 +317,17 @@
 				ED70B6852A433D3600E6786B /* BackupAndRestoreView.swift */,
 				ED9CAD9A2A470E320079D814 /* SettingsItemView.swift */,
 				ED9CAD9E2A4721610079D814 /* MailView.swift */,
+				ED7914182A4C951A00E7FF0C /* PrivacyPolicyView.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		ED79141A2A4C95DE00E7FF0C /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				ED79141B2A4C95EE00E7FF0C /* WebView.swift */,
+			);
+			path = Common;
 			sourceTree = "<group>";
 		};
 		EDC203072A3C61EB0076EAD0 /* Entity */ = {
@@ -355,12 +376,17 @@
 				ED6DB19129B4F21F00A11CA3 /* Frameworks */,
 				ED6DB19229B4F21F00A11CA3 /* Resources */,
 				1BD4AE511C359344A2D059D9 /* [CP] Embed Pods Frameworks */,
+				ED7914232A4DE07F00E7FF0C /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = WishApp;
+			packageProductDependencies = (
+				ED7914252A4DE7DA00E7FF0C /* FirebaseAnalytics */,
+				ED7914272A4DE7DA00E7FF0C /* FirebaseCrashlytics */,
+			);
 			productName = WishApp;
 			productReference = ED6DB19429B4F21F00A11CA3 /* WishApp.app */;
 			productType = "com.apple.product-type.application";
@@ -390,6 +416,9 @@
 				Base,
 			);
 			mainGroup = ED6DB18B29B4F21E00A11CA3;
+			packageReferences = (
+				ED7914242A4DE7DA00E7FF0C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = ED6DB19529B4F21F00A11CA3 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -409,6 +438,7 @@
 				ED3973C62A28F27A00DB0896 /* Localizable.strings in Resources */,
 				ED2555BF2A2A3B0F00678E7C /* Localizable.stringsdict in Resources */,
 				ED6DB19C29B4F21F00A11CA3 /* Assets.xcassets in Resources */,
+				ED7914222A4DDA9400E7FF0C /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -454,6 +484,25 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		ED7914232A4DE07F00E7FF0C /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -469,6 +518,7 @@
 				ED6EFA3B2A22495200CC1B13 /* MainView.swift in Sources */,
 				ED1750922A37452900665949 /* MainContentView.swift in Sources */,
 				ED70B68C2A44977900E6786B /* BundleExtension.swift in Sources */,
+				ED7914192A4C951A00E7FF0C /* PrivacyPolicyView.swift in Sources */,
 				ED1750902A373F1000665949 /* SettingsView.swift in Sources */,
 				EDB776EE2A27AC9D0087EA06 /* MainViewState.swift in Sources */,
 				ED70B67F2A408D7D00E6786B /* WishItemView.swift in Sources */,
@@ -493,6 +543,7 @@
 				ED232D4C2A1F85B000C51DB7 /* WishEntityExt.swift in Sources */,
 				ED6EFA412A2249B000CC1B13 /* MainViewModel.swift in Sources */,
 				ED3194632A30CADC0070CDE4 /* WishDetailedViewModel.swift in Sources */,
+				ED79141C2A4C95EE00E7FF0C /* WebView.swift in Sources */,
 				ED70B6832A41E2A300E6786B /* PublisherExtension.swift in Sources */,
 				EDC2030C2A3C6A640076EAD0 /* LinkView.swift in Sources */,
 			);
@@ -656,6 +707,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"WishApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 7K525734CM;
 				ENABLE_PREVIEWS = YES;
@@ -735,6 +787,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		ED7914242A4DE7DA00E7FF0C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = exactVersion;
+				version = 10.11.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		ED7914252A4DE7DA00E7FF0C /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED7914242A4DE7DA00E7FF0C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		ED7914272A4DE7DA00E7FF0C /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED7914242A4DE7DA00E7FF0C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = ED6DB18C29B4F21E00A11CA3 /* Project object */;
 }

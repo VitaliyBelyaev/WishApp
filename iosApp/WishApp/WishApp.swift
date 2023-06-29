@@ -8,9 +8,20 @@
 import SwiftUI
 import shared
 import Combine
+import FirebaseCore
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        KoinKt.doInitKoin()
+        FirebaseApp.configure()
+        return true
+    }
+}
 
 @main
 struct WishApp: App {
+    
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     @AppStorage("navigationData") private var navigationData: Data?
     @Environment(\.scenePhase) private var scenePhase
@@ -20,8 +31,6 @@ struct WishApp: App {
     private var subscriptions: [AnyCancellable] = []
     
     init() {
-        KoinKt.doInitKoin()
-        
         _appViewModel = StateObject(wrappedValue: { AppViewModel() }())
     }
     
@@ -74,11 +83,13 @@ struct WishApp: App {
                         navigationData = navigationModel.jsonData
                     }
                 }
-//                .onChange(of: scenePhase) { phase in
-//                    if phase == .inactive {
-//                        navigationData = navigationModel.jsonData
-//                    }
-//                }
+            //                .onChange(of: scenePhase) { phase in
+            //                    if phase == .inactive {
+            //                        navigationData = navigationModel.jsonData
+            //                    }
+            //                }
         }
     }
 }
+
+

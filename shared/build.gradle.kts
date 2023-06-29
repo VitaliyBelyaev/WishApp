@@ -42,7 +42,7 @@ kotlin {
         version = "1.0"
         summary = "WishAppSdk"
         homepage = "https://github.com/VitaliyBelyaev/WishApp"
-        ios.deploymentTarget = "13.5"
+        ios.deploymentTarget = "16.0"
 
         podfile = project.file("../iosApp/Podfile")
 

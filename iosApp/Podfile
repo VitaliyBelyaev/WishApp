@@ -1,6 +1,6 @@
 source 'https://cdn.cocoapods.org'
 
-platform :ios, '13.5'
+platform :ios, '16.0'
 
 target 'WishApp' do
   # Comment the next line if you don't want to use dynamic frameworks
