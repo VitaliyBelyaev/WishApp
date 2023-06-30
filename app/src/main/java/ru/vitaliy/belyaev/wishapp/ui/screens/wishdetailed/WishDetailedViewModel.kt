@@ -102,7 +102,7 @@ class WishDetailedViewModel @Inject constructor(
     }
 
     fun onDeleteWishClicked() {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.DELETE_TAG_FROM_WISH_DETAILED)
+        analyticsRepository.trackEvent(AnalyticsNames.Event.DELETE_WISH_FROM_WISH_DETAILED)
         viewModelScope.cancel()
     }
 

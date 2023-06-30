@@ -93,7 +93,7 @@ class AppActivityViewModel @Inject constructor(
     }
 
     fun onShareWishListClicked(wishes: List<WishEntity>) {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.SHARE) {
+        analyticsRepository.trackEvent(AnalyticsNames.Event.SHARE_CLICK) {
             param(AnalyticsNames.Param.QUANTITY, wishes.size.toString())
         }
         wishListToShareLiveData.postValue(wishes)

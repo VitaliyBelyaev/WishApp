@@ -32,6 +32,9 @@ struct MainView: View {
                 onSettingsClicked: { navigationModel.isSettingPresented = true },
                 onAddTestTagClicked: { viewModel.onAddTagClicked() }
             )
+            .onAppear {
+                WishAppAnalytcis.logEvent(name: "MainScreen")
+            }
         }
         .sheet(isPresented: $navigationModel.isSettingPresented) {
             SettingsView {

@@ -9,11 +9,17 @@ import SwiftUI
 import shared
 import Combine
 import FirebaseCore
+import Amplitude
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         KoinKt.doInitKoin()
         FirebaseApp.configure()
+        
+        if let amplitudeApiKey = ProcessInfo.processInfo.environment["AMPLITUDE_API_KEY"] {
+            Amplitude.instance().initializeApiKey(amplitudeApiKey)
+        }
+        
         return true
     }
 }

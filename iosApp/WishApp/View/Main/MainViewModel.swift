@@ -10,6 +10,7 @@ import shared
 import Combine
 import KMPNativeCoroutinesCombine
 import FirebaseAnalytics
+import Amplitude
 
 @MainActor
 final class MainViewModel: ObservableObject {
@@ -27,8 +28,6 @@ final class MainViewModel: ObservableObject {
     
     init() {
         self.subscribeOnMainItems()
-        Analytics.logEvent("Main_screen", parameters: nil)
-        
     }
     
     func onRenameTagConfirmed(tag: TagEntity, newTitle: String) {
