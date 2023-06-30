@@ -6,11 +6,14 @@
 //
 
 import SwiftUI
+import shared
 
 struct PrivacyPolicyView: View {
     
+    let privacyPolicyUrl = PrivacyPolicy.shared.url
+    
     var body: some View {
-        WebView(url: URL(string: "https://vitaliybelyaev.github.io/"))
+        WebView(url: URL(string: privacyPolicyUrl))
             .navigationTitle("Settings.policy")
             .navigationBarTitleDisplayMode(.inline)
     }

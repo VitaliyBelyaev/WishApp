@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.shared.utils.PrivacyPolicy
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.core.webview.WebPageBlock
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
@@ -49,7 +50,7 @@ fun PrivacyPolicyScreen(
     ) { pd ->
         WebPageBlock(
             modifier = Modifier.padding(pd),
-            urlToRender = "https://vitaliybelyaev.github.io/",
+            urlToRender = PrivacyPolicy.url,
         )
     }
 }
