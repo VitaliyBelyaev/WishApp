@@ -40,10 +40,8 @@ struct WishListView: View {
             onMove: { indexSet, beforeIndex in viewModel.onMove(indexSet, beforeIndex) },
             onAddTestWishClicked: { viewModel.onAddWishClicked() }
         )
-        .sheet(isPresented: $navigationModel.isSettingPresented) {
-            SettingsView {
-                navigationModel.isSettingPresented = false
-            }
+        .onAppear {
+            WishAppAnalytcis.logEvent(WishListScreenShowEvent())
         }
     }
 }

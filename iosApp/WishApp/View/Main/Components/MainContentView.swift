@@ -94,7 +94,9 @@ struct MainContentView_Previews: PreviewProvider {
                      ],
         tagItems: [ WishTagMainItem(tag: TagEntity(id: "1", title: "Birthday"), count: 3),
                     WishTagMainItem(tag: TagEntity(id: "2", title: "Техника"), count: 5),
-                  ]
+                  ],
+        currentCount: 13,
+        completedCount: 3
     )
     
     static var previews: some View {

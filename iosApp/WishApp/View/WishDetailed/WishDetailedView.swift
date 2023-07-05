@@ -157,6 +157,12 @@ struct WishDetailedView: View {
                 wishId: viewModel.wish.id,
                 onCloseClicked: {isUpdateWishTagsSheetPresented = false }
             )
+            .onAppear {
+                WishAppAnalytcis.logEvent(UpdateWishTagsScreenShowEvent())
+            }
+        }
+        .onAppear {
+            WishAppAnalytcis.logEvent(WishDetailedScreenShowEvent())
         }
     }
 }

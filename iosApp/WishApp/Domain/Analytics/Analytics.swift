@@ -19,4 +19,9 @@ class WishAppAnalytcis {
         amplitude.logEvent(name, withEventProperties: params)
         firebase.logEvent(name, parameters: params)
     }
+    
+    static func logEvent(_ event: AnalyticsEvent) {
+        amplitude.logEvent(event.name, withEventProperties: event.params)
+        firebase.logEvent(event.name, parameters: event.params)
+    }
 }

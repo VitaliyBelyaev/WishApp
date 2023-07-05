@@ -14,6 +14,8 @@
 		ED17509A2A38D09B00665949 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1750992A38D09B00665949 /* AppViewModel.swift */; };
 		ED21B4B52A4F292000E2A989 /* Amplitude in Frameworks */ = {isa = PBXBuildFile; productRef = ED21B4B42A4F292000E2A989 /* Amplitude */; };
 		ED21B4B82A4F2D0500E2A989 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED21B4B72A4F2D0500E2A989 /* Analytics.swift */; };
+		ED21B4BC2A55DEF100E2A989 /* AnalyticsEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED21B4BB2A55DEF100E2A989 /* AnalyticsEvent.swift */; };
+		ED21B4BE2A55DF6900E2A989 /* WishAppAnalyticsEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED21B4BD2A55DF6900E2A989 /* WishAppAnalyticsEvents.swift */; };
 		ED232D4C2A1F85B000C51DB7 /* WishEntityExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED232D4B2A1F85B000C51DB7 /* WishEntityExt.swift */; };
 		ED2555BC2A2A34A700678E7C /* TagItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2555BB2A2A34A700678E7C /* TagItemView.swift */; };
 		ED2555BF2A2A3B0F00678E7C /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = ED2555C12A2A3B0F00678E7C /* Localizable.stringsdict */; };
@@ -65,6 +67,8 @@
 		ED1750942A38C97C00665949 /* WishListContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishListContentView.swift; sourceTree = "<group>"; };
 		ED1750992A38D09B00665949 /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
 		ED21B4B72A4F2D0500E2A989 /* Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analytics.swift; sourceTree = "<group>"; };
+		ED21B4BB2A55DEF100E2A989 /* AnalyticsEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEvent.swift; sourceTree = "<group>"; };
+		ED21B4BD2A55DF6900E2A989 /* WishAppAnalyticsEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishAppAnalyticsEvents.swift; sourceTree = "<group>"; };
 		ED232D4B2A1F85B000C51DB7 /* WishEntityExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishEntityExt.swift; sourceTree = "<group>"; };
 		ED2555BB2A2A34A700678E7C /* TagItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagItemView.swift; sourceTree = "<group>"; };
 		ED2555C02A2A3B0F00678E7C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
@@ -163,6 +167,8 @@
 			isa = PBXGroup;
 			children = (
 				ED21B4B72A4F2D0500E2A989 /* Analytics.swift */,
+				ED21B4BB2A55DEF100E2A989 /* AnalyticsEvent.swift */,
+				ED21B4BD2A55DF6900E2A989 /* WishAppAnalyticsEvents.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -541,6 +547,7 @@
 				ED6EFA4C2A225A7400CC1B13 /* WishListMode.swift in Sources */,
 				EDC203152A3C94760076EAD0 /* UpdateWishTagsView.swift in Sources */,
 				EDC203092A3C61FC0076EAD0 /* LinkInfo.swift in Sources */,
+				ED21B4BE2A55DF6900E2A989 /* WishAppAnalyticsEvents.swift in Sources */,
 				ED9CAD9B2A470E320079D814 /* SettingsItemView.swift in Sources */,
 				ED17509A2A38D09B00665949 /* AppViewModel.swift in Sources */,
 				ED70B6812A41E27500E6786B /* DateExtension.swift in Sources */,
@@ -555,6 +562,7 @@
 				ED6EFA472A224B8700CC1B13 /* NavigationModel.swift in Sources */,
 				ED21B4B82A4F2D0500E2A989 /* Analytics.swift in Sources */,
 				ED6EFA3F2A22498700CC1B13 /* WishListViewModel.swift in Sources */,
+				ED21B4BC2A55DEF100E2A989 /* AnalyticsEvent.swift in Sources */,
 				EDC516162A3CA5200090D951 /* ScreenState.swift in Sources */,
 				ED232D4C2A1F85B000C51DB7 /* WishEntityExt.swift in Sources */,
 				ED6EFA412A2249B000CC1B13 /* MainViewModel.swift in Sources */,

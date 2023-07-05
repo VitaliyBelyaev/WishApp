@@ -10,4 +10,6 @@ import Foundation
 struct MainViewState {
     let commonItems: [CommonMainItem]
     let tagItems: [WishTagMainItem]
+    let currentCount: Int
+    let completedCount: Int
 }

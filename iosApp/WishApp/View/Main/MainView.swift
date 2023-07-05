@@ -33,14 +33,30 @@ struct MainView: View {
                 onAddTestTagClicked: { viewModel.onAddTagClicked() }
             )
             .onAppear {
-                WishAppAnalytcis.logEvent(name: "MainScreen")
+                logMainScreenShow()
             }
         }
         .sheet(isPresented: $navigationModel.isSettingPresented) {
             SettingsView {
                 navigationModel.isSettingPresented = false
             }
+            .onAppear {
+                WishAppAnalytcis.logEvent(SettingsSheetShowEvent())
+            }
         }
+    }
+    
+    private func logMainScreenShow() {
+        if(viewModel.state.currentCount == 0){
+            return
+        }
+        
+        let event = MainScreenShowEvent(
+            currentWishesCount: viewModel.state.currentCount,
+            completedWishesCount: viewModel.state.completedCount,
+            tagsCount: viewModel.state.tagItems.count
+        )
+        WishAppAnalytcis.logEvent(event)
     }
 }
 

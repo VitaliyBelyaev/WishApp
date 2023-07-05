@@ -57,6 +57,9 @@ struct TagItemView: View {
         }
         .sheet(isPresented: $isRenameTagPopoverPresented) {
             RenameTagView()
+                .onAppear {
+                    WishAppAnalytcis.logEvent(RenameTagScreenShowEvent())
+                }
         }
     }
     

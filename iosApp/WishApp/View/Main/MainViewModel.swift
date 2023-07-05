@@ -24,7 +24,11 @@ final class MainViewModel: ObservableObject {
     
     private var subscriptions: [AnyCancellable] = []
     
-    @Published var state: MainViewState = MainViewState(commonItems: [], tagItems: [])
+    @Published var state: MainViewState = MainViewState(
+        commonItems: [],
+        tagItems: [],
+        currentCount: 0,
+        completedCount: 0)
     
     init() {
         self.subscribeOnMainItems()
@@ -75,18 +79,22 @@ final class MainViewModel: ObservableObject {
         
         Publishers.CombineLatest3(all, completed, tags)
             .subscribe(on: DispatchQueue.global())
-            .map { allCount, completedCount, tags in
+            .map { currentCount, completedCount, tags in
+                
+                let currentCountInt = Int(truncating: currentCount)
+                let completedCountInt = Int(truncating: completedCount)
+                
                 let commonItems = [
-                    CommonMainItem(type: .All, count: Int(truncating: allCount)),
+                    CommonMainItem(type: .All, count: currentCountInt),
                     CommonMainItem(type: .Completed, count: Int(truncating: completedCount))
                 ]
                 let tagItems = tags.map { tag in
                     WishTagMainItem(tag: tag.tag, count: Int(tag.wishesCount))
                 }
-                return MainViewState(commonItems: commonItems, tagItems: tagItems)
+                return MainViewState(commonItems: commonItems, tagItems: tagItems, currentCount: currentCountInt, completedCount: completedCountInt)
             }
             .catch { error in
-                Just(MainViewState(commonItems: [], tagItems: []))
+                Just(MainViewState(commonItems: [], tagItems: [], currentCount: 0, completedCount: 0))
             }
             .receive(on: DispatchQueue.main)
             .assign(to: \.state, on: self)
