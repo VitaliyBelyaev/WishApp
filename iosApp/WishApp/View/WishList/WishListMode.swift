@@ -14,3 +14,21 @@ enum WishListMode: Codable, Hashable {
     case ByTag(String)
     case Empty
 }
+
+extension WishListMode {
+    
+    var analyticsString: String {
+        get {
+            switch self {
+            case .All:
+                return "All"
+            case .Completed:
+                return "Completed"
+            case .ByTag(_):
+                return "By Tag"
+            case .Empty:
+                return "Empty"
+            }
+        }
+    }
+}

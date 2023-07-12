@@ -66,6 +66,7 @@ struct WishItemView: View {
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button {
+                WishAppAnalytics.logEvent(WishListDeleteWishClickedEvent())
                 isDeleteWishConfirmationPresented = true
             } label: {
                 Label("delete", systemImage: "trash")
@@ -76,6 +77,7 @@ struct WishItemView: View {
             let title: LocalizedStringKey = wish.isCompleted ? "WishDetailed.markUndoneShort" : "WishDetailed.markDoneShort"
             let image = wish.isCompleted ? "arrow.uturn.backward" : "checkmark"
             Button {
+                WishAppAnalytics.logEvent(WishListChangeWishCompletnessClickedEvent())
                 onWishCompletnessChanged(wish.id, !wish.isCompleted)
             } label: {
                 Label(title, systemImage: image)
@@ -84,6 +86,7 @@ struct WishItemView: View {
         }
         .confirmationDialog("delete \(wish.title)", isPresented: $isDeleteWishConfirmationPresented, titleVisibility: .visible) {
             Button("delete", role: .destructive) {
+                WishAppAnalytics.logEvent(WishListDeleteWishConfirmedEvent())
                 onDeleteWishConfirmed(wish.id)
             }
         }

@@ -29,8 +29,9 @@ struct SettingsView: View {
                     }
                     
                     SettingsItemView(title: "Settings.rateUs") {
+                        WishAppAnalytics.logEvent(SettingsRateAppClickedEvent())
                         if let url = URL(string: "https://google.com"),
-                           UIApplication.shared.canOpenURL(url){
+                           UIApplication.shared.canOpenURL(url) {
                             UIApplication.shared.open(url)
                         }
                     }
@@ -45,6 +46,10 @@ struct SettingsView: View {
                 Section{
                     Text("Settings.description")
                         .font(.body)
+                        .environment(\.openURL, OpenURLAction { url in
+                            WishAppAnalytics.logEvent(SettingsProjectUrlClickedEvent())
+                            return .systemAction
+                        })
                 } footer: {
                     HStack {
                         Spacer()

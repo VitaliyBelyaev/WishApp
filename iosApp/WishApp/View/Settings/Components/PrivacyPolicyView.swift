@@ -16,6 +16,9 @@ struct PrivacyPolicyView: View {
         WebView(url: URL(string: privacyPolicyUrl))
             .navigationTitle("Settings.policy")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                WishAppAnalytics.logEvent(PrivacyPolicyScreenShowEvent())
+            }
     }
 }
 

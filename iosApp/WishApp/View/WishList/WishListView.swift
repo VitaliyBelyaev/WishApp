@@ -41,7 +41,7 @@ struct WishListView: View {
             onAddTestWishClicked: { viewModel.onAddWishClicked() }
         )
         .onAppear {
-            WishAppAnalytcis.logEvent(WishListScreenShowEvent())
+            WishAppAnalytics.logEvent(WishListScreenShowEvent(mode: mode.analyticsString))
         }
     }
 }

@@ -16,8 +16,13 @@ struct LinkView: View {
     
     var body: some View {
         Text(.init(linkInfo.getMdText()))
+            .environment(\.openURL, OpenURLAction { url in
+                WishAppAnalytics.logEvent(WishDetailedLinkClickedEvent())
+                return .systemAction
+            })
             .contextMenu {
                 Button(role: .destructive) {
+                    WishAppAnalytics.logEvent(WishDetailedDeleteLinkClickedEvent())
                     isDeleteLinkConfirmationPresented = true
                 } label: {
                     Label("delete", systemImage: "trash")
@@ -25,6 +30,7 @@ struct LinkView: View {
             }
             .confirmationDialog("delete \(linkInfo.link)", isPresented: $isDeleteLinkConfirmationPresented, titleVisibility: .visible) {
                 Button("delete", role: .destructive) {
+                    WishAppAnalytics.logEvent(WishDetailedDeleteLinkConfirmedEvent())
                     onDeleteConfirmed(linkInfo.link)
                 }
             }

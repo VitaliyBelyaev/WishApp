@@ -18,8 +18,12 @@ struct WishDetailedView: View {
     @State private var isDeleteWishConfirmationPresented = false
     @State private var isUpdateWishTagsSheetPresented = false
     
+    private let isNewWish: Bool
+    
     init(wishId: String?, tagId: String?) {
         _viewModel = StateObject.init(wrappedValue: { WishDetailedViewModel(wishId: wishId, tagId: tagId) }())
+        
+        self.isNewWish = wishId == nil
     }
     
     var body: some View {
@@ -45,10 +49,13 @@ struct WishDetailedView: View {
                 
                 Section {
                     HStack {
-                        TextField("",text: $viewModel.link)
+                        TextField("", text: $viewModel.link)
                             .lineLimit(1)
+                            .keyboardType(.URL)
+                            .textInputAutocapitalization(.never)
                         Spacer()
                         Button {
+                            WishAppAnalytics.logEvent(WishDetailedAddLinkButtonClickedEvent())
                             viewModel.onNewLinkAddClicked(link: viewModel.link)
                             viewModel.link = ""
                         } label: {
@@ -70,6 +77,7 @@ struct WishDetailedView: View {
                 
                 Section {
                     Button {
+                        WishAppAnalytics.logEvent(WishDetailedAddTagTextButtonClickedEvent())
                         isUpdateWishTagsSheetPresented = true
                     } label: {
                         HStack {
@@ -109,6 +117,7 @@ struct WishDetailedView: View {
         .toolbar {
             ToolbarItemGroup(placement: .secondaryAction) {
                 Button {
+                    WishAppAnalytics.logEvent(WishDetailedChangeWishCompletnessClickedEvent())
                     appViewModel.onWishCompletnessChangeButtonClicked(
                         wishId: viewModel.wish.id,
                         newIsCompleted: !viewModel.wish.isCompleted
@@ -123,12 +132,14 @@ struct WishDetailedView: View {
                 }
                 
                 Button(role: .destructive) {
+                    WishAppAnalytics.logEvent(WishDetailedDeleteWishClickedEvent())
                     isDeleteWishConfirmationPresented = true
                 } label: {
                     Label("delete", systemImage: "trash")
                 }
                 .confirmationDialog("delete \(viewModel.title)", isPresented: $isDeleteWishConfirmationPresented, titleVisibility: .visible) {
                     Button("delete", role: .destructive) {
+                        WishAppAnalytics.logEvent(WishDetailedDeleteWishConfirmedEvent())
                         viewModel.onDeleteWish()
                         appViewModel.deleteWish(id: viewModel.wish.id)
                         navigationModel.popMainPath()
@@ -138,6 +149,7 @@ struct WishDetailedView: View {
             ToolbarItemGroup(placement: .bottomBar) {
                 Spacer()
                 Button {
+                    WishAppAnalytics.logEvent(WishDetailedAddTagIconButtonClickedEvent())
                     isUpdateWishTagsSheetPresented = true
                 } label: {
                     Image(systemName: "tag")
@@ -146,6 +158,7 @@ struct WishDetailedView: View {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
                 Button {
+                    WishAppAnalytics.logEvent(WishDetailedAddTagIconButtonClickedEvent())
                     isUpdateWishTagsSheetPresented = true
                 } label: {
                     Image(systemName: "tag")
@@ -155,15 +168,40 @@ struct WishDetailedView: View {
         .sheet(isPresented: $isUpdateWishTagsSheetPresented) {
             UpdateWishTagsView(
                 wishId: viewModel.wish.id,
-                onCloseClicked: {isUpdateWishTagsSheetPresented = false }
+                onCloseClicked: { isUpdateWishTagsSheetPresented = false }
             )
             .onAppear {
-                WishAppAnalytcis.logEvent(UpdateWishTagsScreenShowEvent())
+                WishAppAnalytics.logEvent(UpdateWishTagsScreenShowEvent())
             }
         }
         .onAppear {
-            WishAppAnalytcis.logEvent(WishDetailedScreenShowEvent())
+            logScreenShow()
         }
+    }
+    
+    private func logScreenShow() {
+        var fromNavSegment: MainNavSegment? = nil
+        if navigationModel.mainPath.count > 1 {
+            fromNavSegment = navigationModel.mainPath[navigationModel.mainPath.count - 2]
+        }
+        
+        
+        let fromScreen: String
+        switch fromNavSegment {
+        case .none:
+            fromScreen = "Main"
+        case .some(.WishList(let mode)):
+            fromScreen = "Wish List \(mode.analyticsString)"
+        case .some(.WishDetailed(_, _)):
+            fromScreen = "Wish Detailed"
+        }
+        
+        let event = WishDetailedScreenShowEvent(
+            fromScreen: fromScreen,
+            isNewWish: isNewWish
+        )
+    
+        WishAppAnalytics.logEvent(event)
     }
 }
 

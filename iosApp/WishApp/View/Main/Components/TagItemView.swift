@@ -40,11 +40,13 @@ struct TagItemView: View {
         }
         .contextMenu {
             Button {
+                WishAppAnalytics.logEvent(MainRenameTagClickedEvent())
                 isRenameTagPopoverPresented = true
             } label: {
                 Label("Main.renameTag", systemImage: "pencil")
             }
             Button(role: .destructive) {
+                WishAppAnalytics.logEvent(MainDeleteTagClickedEvent())
                 isDeleteTagConfirmationPresented = true
             } label: {
                 Label("Main.deleteTag", systemImage: "trash")
@@ -52,13 +54,14 @@ struct TagItemView: View {
         }
         .confirmationDialog(confirmTitle, isPresented: $isDeleteTagConfirmationPresented, titleVisibility: .visible) {
             Button("Main.deleteTag", role: .destructive) {
+                WishAppAnalytics.logEvent(MainDeleteTagConfirmedEvent())
                 onDeleteClicked(item.tag)
             }
         }
         .sheet(isPresented: $isRenameTagPopoverPresented) {
             RenameTagView()
                 .onAppear {
-                    WishAppAnalytcis.logEvent(RenameTagScreenShowEvent())
+                    WishAppAnalytics.logEvent(RenameTagScreenShowEvent())
                 }
         }
     }

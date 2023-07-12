@@ -91,6 +91,8 @@ final class WishListViewModel: ObservableObject {
             }
         }
         
+        WishAppAnalytics.logEvent(WishListWishMovedEvent())
+        
         createFuture(for: dbRepository.swapMovedWishPositionWithPassedWishes(
             wishId: movedWish.id,
             wishPosition: movedWish.position,

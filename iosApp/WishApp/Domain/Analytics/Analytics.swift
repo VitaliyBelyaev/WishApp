@@ -10,7 +10,7 @@ import FirebaseAnalytics
 import Amplitude
 
 
-class WishAppAnalytcis {
+class WishAppAnalytics {
     
     private static let firebase = Analytics.self
     private static let amplitude = Amplitude.instance()

@@ -84,6 +84,9 @@ struct WishListContentView: View {
                     ShareLink(item: shareText) {
                         Image(systemName: "square.and.arrow.up")
                     }
+                    .simultaneousGesture(TapGesture().onEnded() {
+                       logShareClicked()
+                    })
                 }
                 
                 Spacer()
@@ -96,6 +99,10 @@ struct WishListContentView: View {
                 }
             }
         }
+    }
+    
+    private func logShareClicked() {
+        WishAppAnalytics.logEvent(WishListShareClickedEvent(mode: mode.analyticsString))
     }
 }
 

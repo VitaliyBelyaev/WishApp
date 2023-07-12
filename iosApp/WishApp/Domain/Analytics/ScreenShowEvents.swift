@@ -1,12 +1,11 @@
 //
-//  WishAppAnalyticsEvents.swift
+//  ScreenShowEvents.swift
 //  WishApp
 //
-//  Created by Vitaliy on 05.07.2023.
+//  Created by Vitaliy on 07.07.2023.
 //
 
 import Foundation
-
 
 class MainScreenShowEvent: AnalyticsEvent {
     
@@ -36,12 +35,25 @@ class SettingsSheetShowEvent: AnalyticsEvent {
 
 class WishListScreenShowEvent: AnalyticsEvent {
     
+    init(mode: String) {
+        self.params = [
+            "mode" : mode
+        ]
+    }
+    
     var name: String = "Wish List Screen - Show"
     
     var params: [String : Any]?
 }
 
 class WishDetailedScreenShowEvent: AnalyticsEvent {
+    
+    init(fromScreen: String, isNewWish: Bool) {
+        self.params = [
+            "from_screen" : fromScreen,
+            "is_new_wish" : isNewWish
+        ]
+    }
     
     var name: String = "Wish Detailed Screen - Show"
     
@@ -58,6 +70,13 @@ class UpdateWishTagsScreenShowEvent: AnalyticsEvent {
 class RenameTagScreenShowEvent: AnalyticsEvent {
     
     var name: String = "Rename Tag Screen - Show"
+    
+    var params: [String : Any]?
+}
+
+class PrivacyPolicyScreenShowEvent: AnalyticsEvent {
+    
+    var name: String = "Privacy Policy Screen - Show"
     
     var params: [String : Any]?
 }

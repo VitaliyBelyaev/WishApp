@@ -41,7 +41,7 @@ struct MainView: View {
                 navigationModel.isSettingPresented = false
             }
             .onAppear {
-                WishAppAnalytcis.logEvent(SettingsSheetShowEvent())
+                WishAppAnalytics.logEvent(SettingsSheetShowEvent())
             }
         }
     }
@@ -56,7 +56,7 @@ struct MainView: View {
             completedWishesCount: viewModel.state.completedCount,
             tagsCount: viewModel.state.tagItems.count
         )
-        WishAppAnalytcis.logEvent(event)
+        WishAppAnalytics.logEvent(event)
     }
 }
 
