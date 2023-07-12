@@ -117,7 +117,7 @@ struct WishDetailedView: View {
         .toolbar {
             ToolbarItemGroup(placement: .secondaryAction) {
                 Button {
-                    WishAppAnalytics.logEvent(WishDetailedChangeWishCompletnessClickedEvent())
+                    WishAppAnalytics.logEvent(WishDetailedChangeWishCompletenessClickedEvent())
                     appViewModel.onWishCompletnessChangeButtonClicked(
                         wishId: viewModel.wish.id,
                         newIsCompleted: !viewModel.wish.isCompleted

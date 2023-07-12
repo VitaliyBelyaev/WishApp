@@ -77,7 +77,7 @@ struct WishItemView: View {
             let title: LocalizedStringKey = wish.isCompleted ? "WishDetailed.markUndoneShort" : "WishDetailed.markDoneShort"
             let image = wish.isCompleted ? "arrow.uturn.backward" : "checkmark"
             Button {
-                WishAppAnalytics.logEvent(WishListChangeWishCompletnessClickedEvent())
+                WishAppAnalytics.logEvent(WishListChangeWishCompletenessClickedEvent())
                 onWishCompletnessChanged(wish.id, !wish.isCompleted)
             } label: {
                 Label(title, systemImage: image)

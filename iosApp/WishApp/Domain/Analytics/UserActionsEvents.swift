@@ -67,9 +67,9 @@ class WishListWishMovedEvent: AnalyticsEvent {
     var params: [String : Any]?
 }
 
-class WishListChangeWishCompletnessClickedEvent: AnalyticsEvent {
+class WishListChangeWishCompletenessClickedEvent: AnalyticsEvent {
     
-    var name: String = "Wish List Screen - Change Wish Completness Clicked"
+    var name: String = "Wish List Screen - Change Wish Completeness Clicked"
     
     var params: [String : Any]?
 }
@@ -89,9 +89,9 @@ class WishListDeleteWishConfirmedEvent: AnalyticsEvent {
 }
 
 // Wish Detailed
-class WishDetailedChangeWishCompletnessClickedEvent: AnalyticsEvent {
+class WishDetailedChangeWishCompletenessClickedEvent: AnalyticsEvent {
     
-    var name: String = "Wish Detailed Screen - Change Wish Completness Clicked"
+    var name: String = "Wish Detailed Screen - Change Wish Completeness Clicked"
     
     var params: [String : Any]?
 }
