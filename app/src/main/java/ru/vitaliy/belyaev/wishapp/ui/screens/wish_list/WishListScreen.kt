@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.screens.main
+package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Spacer
@@ -51,16 +51,17 @@ import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheet
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.EmptyWishesPlaceholder
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.Loader
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.MainScreenTopBar
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.TagsSheetContent
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.components.WishItemBlock
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.EmptyWishesPlaceholder
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.Loader
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.TagsSheetContent
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.WishItemBlock
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.WishListScreenTopBar
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.MainScreenState
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.MoveDirection
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishesFilter
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
+import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @ExperimentalComposeUiApi
@@ -68,13 +69,13 @@ import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 @ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
 @Composable
-fun MainScreen(
+fun WishListScreen(
     openWishDetailed: (WishEntity) -> Unit,
     onAddWishClicked: () -> Unit,
     onSettingIconClicked: () -> Unit,
     onShareClick: (List<WishEntity>) -> Unit,
     onEditTagClick: () -> Unit,
-    viewModel: MainViewModel = hiltViewModel(),
+    viewModel: WishListViewModel = hiltViewModel(),
     appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -92,6 +93,8 @@ fun MainScreen(
 
     val context = LocalContext.current
     val systemUiController = rememberSystemUiController()
+
+    trackScreenShow { viewModel.trackScreenShow() }
 
     LaunchedEffect(key1 = Unit) {
         appViewModel.showSnackOnMainFlow.collect {
@@ -144,7 +147,7 @@ fun MainScreen(
             modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
             contentWindowInsets = WindowInsets.Companion.safeDrawing,
             topBar = {
-                MainScreenTopBar(
+                WishListScreenTopBar(
                     selectedIds = state.selectedIds,
                     wishesFilter = state.wishesFilter,
                     onSettingIconClicked = onSettingIconClicked,
@@ -275,7 +278,7 @@ fun MainScreen(
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen(
+    WishListScreen(
         {},
         {},
         {},

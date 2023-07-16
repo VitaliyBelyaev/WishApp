@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.screens.main.components
+package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishesFilter
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 
 @ExperimentalMaterialApi

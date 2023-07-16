@@ -13,8 +13,8 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.AboutAppScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.privacypolicy.PrivacyPolicyScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.EditTagsScreen
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.WishListScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.WishDetailedScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.WishTagsScreen
 
@@ -31,7 +31,7 @@ fun Navigation(onShareClick: (List<WishEntity>) -> Unit) {
         startDestination = MainRoute.VALUE
     ) {
         composable(MainRoute.VALUE) {
-            MainScreen(
+            WishListScreen(
                 openWishDetailed = { navController.navigate(WishDetailedRouteWithArgs.build(it.id)) },
                 onAddWishClicked = { navController.navigate(WishDetailedRoute.VALUE) },
                 onSettingIconClicked = { navController.navigate(SettingsRoute.VALUE) },

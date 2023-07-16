@@ -6,9 +6,10 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
+import ru.vitaliy.belyaev.wishapp.entity.analytics.WishTagsScreenShowEvent
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishTagsAddNewTagClickedEvent
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishTagRelationRepository
@@ -34,10 +35,6 @@ class WishTagsViewModel @Inject constructor(
     private val recentlyAddedTagIds: MutableList<String> = mutableListOf()
 
     init {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.SCREEN_VIEW) {
-            param(AnalyticsNames.Param.SCREEN_NAME, "WishTags")
-        }
-
         launchSafe {
             tagsRepository
                 .observeAllTags()
@@ -51,8 +48,12 @@ class WishTagsViewModel @Inject constructor(
         }
     }
 
+    fun trackScreenShow() {
+        analyticsRepository.trackEvent(WishTagsScreenShowEvent)
+    }
+
     fun onAddTagClicked(tagName: String) {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.ADD_NEW_TAG)
+        analyticsRepository.trackEvent(WishTagsAddNewTagClickedEvent)
         launchSafe {
             val tagId = tagsRepository.insertTag(tagName)
             recentlyAddedTagIds.add(0, tagId)

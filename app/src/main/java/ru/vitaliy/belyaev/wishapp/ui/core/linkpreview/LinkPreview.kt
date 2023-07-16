@@ -26,7 +26,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkInfo
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.LinkInfo
 
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi

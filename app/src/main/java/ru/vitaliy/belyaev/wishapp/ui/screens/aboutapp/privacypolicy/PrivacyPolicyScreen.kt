@@ -20,6 +20,7 @@ import ru.vitaliy.belyaev.wishapp.shared.utils.PrivacyPolicy
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.core.webview.WebPageBlock
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
+import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalMaterialApi
@@ -30,6 +31,8 @@ fun PrivacyPolicyScreen(
 ) {
 
     val snackbarHostState = remember { SnackbarHostState() }
+
+    trackScreenShow { viewModel.trackScreenShow() }
 
     val systemUiController = rememberSystemUiController()
     val screenNavBarColor = CommonColors.navBarColor()

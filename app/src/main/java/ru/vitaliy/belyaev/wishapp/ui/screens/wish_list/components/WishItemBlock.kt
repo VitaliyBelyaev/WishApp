@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.screens.main.components
+package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -34,8 +34,8 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.ReorderButtonState
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.MoveDirection
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.ReorderButtonState
 
 @ExperimentalFoundationApi
 @Composable

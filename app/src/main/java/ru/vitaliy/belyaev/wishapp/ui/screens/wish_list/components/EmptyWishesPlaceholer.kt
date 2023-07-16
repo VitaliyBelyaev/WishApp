@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.screens.main.components
+package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

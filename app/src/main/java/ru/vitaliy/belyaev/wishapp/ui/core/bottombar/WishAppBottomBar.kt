@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.ReorderButtonState
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.ReorderButtonState
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishesFilter
 
 @Composable
 fun WishAppBottomBar(

@@ -37,6 +37,7 @@ import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.components.EditTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
+import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 
 @ExperimentalMaterial3Api
 @ExperimentalComposeUiApi
@@ -57,6 +58,8 @@ fun EditTagsScreen(
     }
 
     BackHandler { handleBackPressed() }
+
+    trackScreenShow { viewModel.trackScreenShow() }
 
     val systemUiController = rememberSystemUiController()
     val navBarColor = CommonColors.navBarColor()

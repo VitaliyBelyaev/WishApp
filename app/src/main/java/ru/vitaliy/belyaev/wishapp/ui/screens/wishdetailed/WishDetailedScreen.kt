@@ -72,13 +72,14 @@ import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreview
 import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreviewLoading
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Data
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkInfo
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.NoData
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.Data
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.LinkInfo
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.Loading
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.NoData
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.None
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
 import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
+import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -123,6 +124,8 @@ fun WishDetailedScreen(
             }
         }
     }
+
+    trackScreenShow { viewModel.trackScreenShow() }
 
     val screenNavBarColor = MaterialTheme.colorScheme.surfaceColorAtElevation(BottomAppBarDefaults.ContainerElevation)
     LaunchedEffect(key1 = Unit) {
@@ -361,8 +364,8 @@ fun WishDetailedScreen(
                 TextButton(
                     onClick = {
                         openDialog.value = Optional.empty()
-                        viewModel.onDeleteWishClicked()
-                        appViewModel.onDeleteWishClicked(viewModel.wishId)
+                        viewModel.onDeleteWishConfirmed()
+                        appViewModel.onDeleteWishConfirmed(viewModel.wishId)
                         onBackPressed()
                     }
                 ) {

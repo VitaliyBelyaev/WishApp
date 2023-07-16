@@ -8,20 +8,22 @@ import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.domain.GetLinkPreviewInteractor
+import ru.vitaliy.belyaev.wishapp.entity.analytics.WishDetailedScreenShowEvent
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishDetailedDeleteWishConfirmedEvent
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishDetailedWishLinkClickedEvent
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.createEmptyWish
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.LinkPreviewState
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.Loading
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.None
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishItem
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.toWishItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.LinkPreviewState
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.Loading
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.None
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.toWishItem
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
@@ -39,10 +41,6 @@ class WishDetailedViewModel @Inject constructor(
     private var cachedLinkPreviewState: LinkPreviewState = None
 
     init {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.SCREEN_VIEW) {
-            param(AnalyticsNames.Param.SCREEN_NAME, "WishDetailed")
-        }
-
         launchSafe {
             wishId = inputWishId.ifBlank {
                 val wish = createEmptyWish()
@@ -65,18 +63,8 @@ class WishDetailedViewModel @Inject constructor(
         }
     }
 
-    private suspend fun tryLoadLinkPreview(link: String, wish: WishEntity) {
-        if (link.isBlank()) {
-            cachedLinkPreviewState = None
-            val wishItem = wish.toWishItem(cachedLinkPreviewState)
-            uiState.value = Optional.of(wishItem)
-        } else {
-            val wishItemLoading = wish.toWishItem(Loading)
-            uiState.value = Optional.of(wishItemLoading)
-            cachedLinkPreviewState = getLinkPreviewInteractor(link)
-            val wishItem = wish.toWishItem(cachedLinkPreviewState)
-            uiState.value = Optional.of(wishItem)
-        }
+    fun trackScreenShow() {
+        analyticsRepository.trackEvent(WishDetailedScreenShowEvent(isNewWish = inputWishId.isBlank()))
     }
 
     fun onBackPressed() {
@@ -101,12 +89,26 @@ class WishDetailedViewModel @Inject constructor(
         }
     }
 
-    fun onDeleteWishClicked() {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.DELETE_WISH_FROM_WISH_DETAILED)
+    fun onDeleteWishConfirmed() {
+        analyticsRepository.trackEvent(WishDetailedDeleteWishConfirmedEvent)
         viewModelScope.cancel()
     }
 
     fun onLinkPreviewClick() {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.WISH_LINK_CLICK)
+        analyticsRepository.trackEvent(WishDetailedWishLinkClickedEvent)
+    }
+
+    private suspend fun tryLoadLinkPreview(link: String, wish: WishEntity) {
+        if (link.isBlank()) {
+            cachedLinkPreviewState = None
+            val wishItem = wish.toWishItem(cachedLinkPreviewState)
+            uiState.value = Optional.of(wishItem)
+        } else {
+            val wishItemLoading = wish.toWishItem(Loading)
+            uiState.value = Optional.of(wishItemLoading)
+            cachedLinkPreviewState = getLinkPreviewInteractor(link)
+            val wishItem = wish.toWishItem(cachedLinkPreviewState)
+            uiState.value = Optional.of(wishItem)
+        }
     }
 }

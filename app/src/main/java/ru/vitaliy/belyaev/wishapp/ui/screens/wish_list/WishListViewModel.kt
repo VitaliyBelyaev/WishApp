@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.screens.main
+package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.UUID
@@ -13,24 +13,29 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.entity.analytics.WishListScreenShowEvent
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishListDeleteWishesConfirmedEvent
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishListFilterByTagClickedEvent
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishListFilterCompletedClickedEvent
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishListFilterCurrentClickedEvent
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishListWishMovedEvent
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MainScreenState
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.MoveDirection
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.ReorderButtonState
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.ScrollInfo
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.MainScreenState
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.MoveDirection
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.ReorderButtonState
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.ScrollInfo
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishesFilter
 import timber.log.Timber
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class WishListViewModel @Inject constructor(
     private val wishesRepository: WishesRepository,
     private val tagsRepository: TagsRepository,
     private val analyticsRepository: AnalyticsRepository,
@@ -62,10 +67,6 @@ class MainViewModel @Inject constructor(
     private var scrollInfo: ScrollInfo? = null
 
     init {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.SCREEN_VIEW) {
-            param(AnalyticsNames.Param.SCREEN_NAME, "MainScreen")
-        }
-
         launchObservingWishes()
 
         launchSafe {
@@ -111,6 +112,16 @@ class MainViewModel @Inject constructor(
 //        }
     }
 
+    fun trackScreenShow() {
+        analyticsRepository.trackEvent(
+            WishListScreenShowEvent(
+                currentWishesCount = currentWishesCount.value,
+                completedWishesCount = completedWishesCount.value,
+                tagsCount = tagsWithWishCount.value.size
+            )
+        )
+    }
+
     fun onReorderIconClicked() {
         val oldReorderButtonState = uiState.value.reorderButtonState as? ReorderButtonState.Visible ?: return
         val newIsReorderEnabled = !oldReorderButtonState.isEnabled
@@ -142,16 +153,13 @@ class MainViewModel @Inject constructor(
     }
 
     fun onCloseEditModeClicked() {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.CLOSE_EDIT_MODE_CLICK)
         _uiState.value = _uiState.value.copy(selectedIds = emptyList())
     }
 
     fun onDeleteSelectedClicked() {
         launchSafe {
             val selectedIds = uiState.value.selectedIds
-            analyticsRepository.trackEvent(AnalyticsNames.Event.DELETE_FROM_EDIT_MODE_CLICK) {
-                param(AnalyticsNames.Param.QUANTITY, selectedIds.size.toString())
-            }
+            analyticsRepository.trackEvent(WishListDeleteWishesConfirmedEvent(selectedIds.size))
             runCatching { wishesRepository.deleteWishesByIds(selectedIds) }
                 .onSuccess { _uiState.value = uiState.value.copy(selectedIds = emptyList()) }
                 .onFailure { _showSnackFlow.emit(R.string.delete_wishes_error_message) }
@@ -159,13 +167,11 @@ class MainViewModel @Inject constructor(
     }
 
     fun onSelectAllClicked() {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.SELECT_ALL_WISHES_PRESS)
         val selectedIds = uiState.value.wishes.map { it.id }
         _uiState.value = uiState.value.copy(selectedIds = selectedIds)
     }
 
     fun onWishLongPress(wish: WishEntity) {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.WISH_LONG_PRESS)
         val oldState = _uiState.value
         val wishId = wish.id
         val selectedIds = if (oldState.selectedIds.isEmpty()) {
@@ -204,12 +210,15 @@ class MainViewModel @Inject constructor(
                 wish2Id = wish2.id,
                 wish2Position = wish2.position
             )
+            analyticsRepository.trackEvent(WishListWishMovedEvent)
         }
     }
 
     fun onNavItemSelected(wishesFilter: WishesFilter) {
-        if (wishesFilter is WishesFilter.ByTag) {
-            analyticsRepository.trackEvent(AnalyticsNames.Event.FILTER_BY_TAG_CLICK)
+        when (wishesFilter) {
+            is WishesFilter.All -> analyticsRepository.trackEvent(WishListFilterCurrentClickedEvent)
+            is WishesFilter.ByTag -> analyticsRepository.trackEvent(WishListFilterByTagClickedEvent)
+            is WishesFilter.Completed -> analyticsRepository.trackEvent(WishListFilterCompletedClickedEvent)
         }
         wishesFilterFlow.value = wishesFilter
 

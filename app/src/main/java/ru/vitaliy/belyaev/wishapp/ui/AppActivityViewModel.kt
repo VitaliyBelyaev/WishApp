@@ -10,10 +10,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.entity.Theme
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishDetailedChangeWishCompletenessClickedEvent
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishListShareClickedEvent
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.isEmpty
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
@@ -80,22 +81,21 @@ class AppActivityViewModel @Inject constructor(
         }
     }
 
-    fun onDeleteWishClicked(wishId: String) {
+    fun onDeleteWishConfirmed(wishId: String) {
         launchSafe {
             wishesRepository.deleteWishesByIds(listOf(wishId))
         }
     }
 
     fun onCompleteWishButtonClicked(wishId: String, oldIsCompleted: Boolean) {
+        analyticsRepository.trackEvent(WishDetailedChangeWishCompletenessClickedEvent)
         launchSafe {
             wishesRepository.updateWishIsCompleted(!oldIsCompleted, wishId)
         }
     }
 
     fun onShareWishListClicked(wishes: List<WishEntity>) {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.SHARE_CLICK) {
-            param(AnalyticsNames.Param.QUANTITY, wishes.size.toString())
-        }
+        analyticsRepository.trackEvent(WishListShareClickedEvent)
         wishListToShareLiveData.postValue(wishes)
     }
 

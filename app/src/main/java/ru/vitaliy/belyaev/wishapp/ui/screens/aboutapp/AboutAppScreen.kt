@@ -42,6 +42,7 @@ import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 import ru.vitaliy.belyaev.wishapp.utils.annotatedStringResource
 import ru.vitaliy.belyaev.wishapp.utils.createSendEmailIntent
 import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
+import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalMaterialApi
@@ -58,7 +59,6 @@ fun AboutAppScreen(
     val scrollState: ScrollState = rememberScrollState()
 
     val onSendFeedbackClicked: () -> Unit = {
-        viewModel.onSendFeedbackClicked()
         val feedback = createAppFeedback(context.resources)
         val intent = createSendEmailIntent(feedback.email, feedback.subject, feedback.message)
         try {
@@ -69,6 +69,8 @@ fun AboutAppScreen(
             }
         }
     }
+
+    trackScreenShow { viewModel.trackScreenShow() }
 
     val systemUiController = rememberSystemUiController()
     val screenNavBarColor = CommonColors.navBarColor()
@@ -92,6 +94,7 @@ fun AboutAppScreen(
     ) {
         val licensesTitle = stringResource(R.string.licenses)
         val onLicensesClick: () -> Unit = {
+            viewModel.onOpenSourceLicencesClicked()
             OssLicensesMenuActivity.setActivityTitle(licensesTitle)
             val intent = Intent(context, OssLicensesMenuActivity::class.java)
             ContextCompat.startActivity(context, intent, null)

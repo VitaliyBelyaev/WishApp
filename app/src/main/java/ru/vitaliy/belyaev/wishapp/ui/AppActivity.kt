@@ -17,9 +17,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.entity.Theme
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.InAppReviewRequestedEvent
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.InAppReviewShowEvent
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.shared.domain.ShareWishListTextGenerator
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
@@ -51,14 +52,14 @@ class AppActivity : AppCompatActivity() {
         }
 
         viewModel.requestReviewLiveData.observe(this) {
-            analyticsRepository.trackEvent(AnalyticsNames.Event.IN_APP_REVIEW_REQUESTED)
+            analyticsRepository.trackEvent(InAppReviewRequestedEvent)
             val reviewManager = ReviewManagerFactory.create(this)
             reviewManager
                 .requestReviewFlow()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val reviewInfo = task.result
-                        analyticsRepository.trackEvent(AnalyticsNames.Event.IN_APP_REVIEW_SHOWN)
+                        analyticsRepository.trackEvent(InAppReviewShowEvent)
                         reviewManager.launchReviewFlow(this, reviewInfo)
                     } else {
                         task.exception?.let { FirebaseCrashlytics.getInstance().recordException(it) }

@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.screens.main.entity
+package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity
 
 sealed class LinkPreviewState
 

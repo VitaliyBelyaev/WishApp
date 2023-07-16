@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.screens.main.components
+package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -13,19 +13,19 @@ import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.MainViewModel
-import ru.vitaliy.belyaev.wishapp.ui.screens.main.entity.WishesFilter
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.WishListViewModel
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishesFilter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalCoroutinesApi
 @Composable
-fun MainScreenTopBar(
+fun WishListScreenTopBar(
     selectedIds: List<String>,
     wishesFilter: WishesFilter,
     onSettingIconClicked: () -> Unit,
     onDeleteSelectedClicked: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior? = null,
-    viewModel: MainViewModel
+    viewModel: WishListViewModel
 ) {
     if (selectedIds.isEmpty()) {
         val title = when (wishesFilter) {

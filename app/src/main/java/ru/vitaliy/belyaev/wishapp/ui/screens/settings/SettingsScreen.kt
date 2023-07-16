@@ -43,6 +43,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.ThemeSettingBlo
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 import ru.vitaliy.belyaev.wishapp.utils.openGooglePlay
+import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -59,6 +60,8 @@ fun SettingsScreen(
     val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
     val scrollState: ScrollState = rememberScrollState()
     val systemUiController = rememberSystemUiController()
+
+    trackScreenShow { viewModel.trackScreenShow() }
 
     val screenNavBarColor = CommonColors.navBarColor()
     val bottomSheetNavbarColor = CommonColors.bottomSheetBgColor()
