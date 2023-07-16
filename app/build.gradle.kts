@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -10,6 +12,9 @@ plugins {
     id("com.google.android.gms.oss-licenses-plugin")
 }
 
+val amplitudeApiKey = "AMPLITUDE_API_KEY"
+val apikeyProperties = readProperties(file("../apikey.properties"))
+
 android {
     namespace = "ru.vitaliy.belyaev.wishapp"
     compileSdk = 33
@@ -20,6 +25,8 @@ android {
         targetSdk = 33
         versionCode = 19
         versionName = "1.5.1"
+
+        buildConfigField("String", amplitudeApiKey, apikeyProperties[amplitudeApiKey] as String)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -117,6 +124,9 @@ dependencies {
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-perf-ktx")
 
+    // Amplitude
+    implementation("com.amplitude:analytics-android:1.10.2")
+
     // DI
     implementation("io.insert-koin:koin-androidx-compose:${libs.versions.koinCompose.get()}")
     implementation("com.google.dagger:hilt-android:${libs.versions.hilt.get()}")
@@ -155,4 +165,10 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
+}
+
+fun readProperties(propertiesFile: File) = Properties().apply {
+    propertiesFile.inputStream().use { fis ->
+        load(fis)
+    }
 }

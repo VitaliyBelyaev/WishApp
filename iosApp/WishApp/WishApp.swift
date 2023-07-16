@@ -17,6 +17,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         FirebaseApp.configure()
         
         if let amplitudeApiKey = ProcessInfo.processInfo.environment["AMPLITUDE_API_KEY"] {
+            Amplitude.instance().trackingSessionEvents = true
             Amplitude.instance().initializeApiKey(amplitudeApiKey)
         }
         

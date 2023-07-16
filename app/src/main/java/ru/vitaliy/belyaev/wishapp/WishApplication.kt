@@ -3,6 +3,7 @@ package ru.vitaliy.belyaev.wishapp
 import android.app.Application
 import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.HiltAndroidApp
+import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AmplitudeWrapper
 import ru.vitaliy.belyaev.wishapp.utils.isAndroidVersionSOrAbove
 import timber.log.Timber
 
@@ -18,5 +19,7 @@ class WishApplication : Application() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
+
+        AmplitudeWrapper.init(applicationContext)
     }
 }
