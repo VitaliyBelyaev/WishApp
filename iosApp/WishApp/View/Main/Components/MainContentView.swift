@@ -16,7 +16,6 @@ struct MainContentView: View {
     let onSettingsClicked: () -> ()
     @State var isTagsSectionExpanded = true
     
-    
     let onAddTestTagClicked: () -> ()
     
     var body: some View {

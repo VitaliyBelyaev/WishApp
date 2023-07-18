@@ -7,7 +7,7 @@
 
 import SwiftUI
 import shared
-import Introspect
+import SwiftUIIntrospect
 
 struct TagItemView: View {
     
@@ -70,7 +70,7 @@ struct TagItemView: View {
         NavigationStack {
             Form {
                 TextField("", text: $tagTitle)
-                    .introspectTextField { textField in
+                    .introspect(.textField, on: .iOS(.v16, .v17)) { textField in
                         if self.becomeFirstResponder {
                             textField.becomeFirstResponder()
                             self.becomeFirstResponder = false

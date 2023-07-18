@@ -93,10 +93,9 @@ final class UpdateWishTagsViewModel: ObservableObject {
                 Just([])
             }
 
-        let queryPub = $query
-            .debounce(for: .milliseconds(200), scheduler: RunLoop.main)
+        let queryPublisher = $query
         
-        Publishers.CombineLatest4(allTagsPublisher, wishTagsPublisher, queryPub, $recentlyAddedTagsIds)
+        Publishers.CombineLatest4(allTagsPublisher, wishTagsPublisher, queryPublisher, $recentlyAddedTagsIds)
             .subscribe(on: DispatchQueue.global())
             .flatMap { [weak self] allTags, wishTags, query, recentlyAddedTagsIds ->  Publishers.Map<Publishers.Catch<AnyPublisher<[TagEntity], Error>, Just<[TagEntity]>>, ScreenState> in
                 
@@ -160,7 +159,7 @@ final class UpdateWishTagsViewModel: ObservableObject {
             if query.isEmpty {
                 return true
             } else {
-                return tagItem.tag.title.localizedCaseInsensitiveContains(query)
+                return tagItem.tag.title.starts(with: query)
             }
         }
     }

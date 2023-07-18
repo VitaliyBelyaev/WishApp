@@ -9,6 +9,7 @@ import SwiftUI
 import shared
 import Combine
 import SwiftUIFlowLayout
+import SwiftUIIntrospect
 
 struct WishDetailedView: View {
     
@@ -17,6 +18,7 @@ struct WishDetailedView: View {
     @StateObject private var viewModel: WishDetailedViewModel
     @State private var isDeleteWishConfirmationPresented = false
     @State private var isUpdateWishTagsSheetPresented = false
+    @State private var becomeFirstResponder = true
     
     private let isNewWish: Bool
     
@@ -35,6 +37,12 @@ struct WishDetailedView: View {
                         .lineLimit(4)
                         .strikethrough(viewModel.wish.isCompleted)
                         .onChange(of: viewModel.title) { viewModel.onTitleChanged(to: $0) }
+                        .introspect(.textField(axis: .vertical), on: .iOS(.v16, .v17)) { textField in
+                            if self.becomeFirstResponder && isNewWish {
+                                textField.becomeFirstResponder()
+                                self.becomeFirstResponder = false
+                            }
+                        }
                 } header: {
                     Text("WishDetailed.title")
                 }
@@ -189,7 +197,6 @@ struct WishDetailedView: View {
         if navigationModel.mainPath.count > 1 {
             fromNavSegment = navigationModel.mainPath[navigationModel.mainPath.count - 2]
         }
-        
         
         let fromScreen: String
         switch fromNavSegment {

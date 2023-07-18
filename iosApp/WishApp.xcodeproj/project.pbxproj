@@ -22,6 +22,8 @@
 		ED3194632A30CADC0070CDE4 /* WishDetailedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3194622A30CADC0070CDE4 /* WishDetailedViewModel.swift */; };
 		ED3973C62A28F27A00DB0896 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED3973C82A28F27A00DB0896 /* Localizable.strings */; };
 		ED3973CC2A28F33C00DB0896 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED3973CE2A28F33C00DB0896 /* InfoPlist.strings */; };
+		ED5383F72A66FA3600BFAFB2 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = ED5383F62A66FA3600BFAFB2 /* SwiftUIIntrospect */; };
+		ED5383FA2A66FBED00BFAFB2 /* SwiftUIFlowLayout in Frameworks */ = {isa = PBXBuildFile; productRef = ED5383F92A66FBED00BFAFB2 /* SwiftUIFlowLayout */; };
 		ED6DB19829B4F21F00A11CA3 /* WishApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6DB19729B4F21F00A11CA3 /* WishApp.swift */; };
 		ED6DB19C29B4F21F00A11CA3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED6DB19B29B4F21F00A11CA3 /* Assets.xcassets */; };
 		ED6DB19F29B4F21F00A11CA3 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED6DB19E29B4F21F00A11CA3 /* Preview Assets.xcassets */; };
@@ -122,7 +124,9 @@
 			files = (
 				ED7914282A4DE7DA00E7FF0C /* FirebaseCrashlytics in Frameworks */,
 				ED7914262A4DE7DA00E7FF0C /* FirebaseAnalytics in Frameworks */,
+				ED5383FA2A66FBED00BFAFB2 /* SwiftUIFlowLayout in Frameworks */,
 				ED21B4B52A4F292000E2A989 /* Amplitude in Frameworks */,
+				ED5383F72A66FA3600BFAFB2 /* SwiftUIIntrospect in Frameworks */,
 				DBBCD02E2D8F4C219DBA6628 /* Pods_WishApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -409,6 +413,8 @@
 				ED7914252A4DE7DA00E7FF0C /* FirebaseAnalytics */,
 				ED7914272A4DE7DA00E7FF0C /* FirebaseCrashlytics */,
 				ED21B4B42A4F292000E2A989 /* Amplitude */,
+				ED5383F62A66FA3600BFAFB2 /* SwiftUIIntrospect */,
+				ED5383F92A66FBED00BFAFB2 /* SwiftUIFlowLayout */,
 			);
 			productName = WishApp;
 			productReference = ED6DB19429B4F21F00A11CA3 /* WishApp.app */;
@@ -442,6 +448,8 @@
 			packageReferences = (
 				ED7914242A4DE7DA00E7FF0C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				ED21B4B32A4F292000E2A989 /* XCRemoteSwiftPackageReference "Amplitude-iOS" */,
+				ED5383F52A66FA3600BFAFB2 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
+				ED5383F82A66FBED00BFAFB2 /* XCRemoteSwiftPackageReference "swiftui-flow-layout" */,
 			);
 			productRefGroup = ED6DB19529B4F21F00A11CA3 /* Products */;
 			projectDirPath = "";
@@ -825,6 +833,22 @@
 				kind = branch;
 			};
 		};
+		ED5383F52A66FA3600BFAFB2 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect";
+			requirement = {
+				kind = exactVersion;
+				version = 0.9.1;
+			};
+		};
+		ED5383F82A66FBED00BFAFB2 /* XCRemoteSwiftPackageReference "swiftui-flow-layout" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/globulus/swiftui-flow-layout";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.5;
+			};
+		};
 		ED7914242A4DE7DA00E7FF0C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -840,6 +864,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED21B4B32A4F292000E2A989 /* XCRemoteSwiftPackageReference "Amplitude-iOS" */;
 			productName = Amplitude;
+		};
+		ED5383F62A66FA3600BFAFB2 /* SwiftUIIntrospect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED5383F52A66FA3600BFAFB2 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
+			productName = SwiftUIIntrospect;
+		};
+		ED5383F92A66FBED00BFAFB2 /* SwiftUIFlowLayout */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED5383F82A66FBED00BFAFB2 /* XCRemoteSwiftPackageReference "swiftui-flow-layout" */;
+			productName = SwiftUIFlowLayout;
 		};
 		ED7914252A4DE7DA00E7FF0C /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;

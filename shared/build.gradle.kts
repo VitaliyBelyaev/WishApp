@@ -49,12 +49,6 @@ kotlin {
         pod("KMPNativeCoroutinesCombine") {
             version = "~> ${libs.versions.nativeCoroutines.get()}"
         }
-        pod("Introspect") {
-            version = "~> ${libs.versions.iosIntrospect.get()}"
-        }
-        pod("SwiftUIFlowLayout") {
-            version = "~> 1.0.5"
-        }
     }
 
     sourceSets {

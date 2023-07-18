@@ -1,34 +1,26 @@
 PODS:
-  - Introspect (0.6.0)
   - KMPNativeCoroutinesCombine (1.0.0-ALPHA-10):
     - KMPNativeCoroutinesCore (= 1.0.0-ALPHA-10)
   - KMPNativeCoroutinesCore (1.0.0-ALPHA-10)
   - shared (1.0):
-    - Introspect (~> 0.6.0)
     - KMPNativeCoroutinesCombine (~> 1.0.0-ALPHA-9)
-    - SwiftUIFlowLayout (~> 1.0.5)
-  - SwiftUIFlowLayout (1.0.5)
 
 DEPENDENCIES:
   - shared (from `../shared`)
 
 SPEC REPOS:
   trunk:
-    - Introspect
     - KMPNativeCoroutinesCombine
     - KMPNativeCoroutinesCore
-    - SwiftUIFlowLayout
 
 EXTERNAL SOURCES:
   shared:
     :path: "../shared"
 
 SPEC CHECKSUMS:
-  Introspect: 59378bd7e1774f0327244ad2d06b1b9c805cb9ed
   KMPNativeCoroutinesCombine: aba1388c87a7ad95ca167ef033a487d83da428d6
   KMPNativeCoroutinesCore: 826573240f36e70f257c5215acab10a72b05ba82
-  shared: a526555c91eed460beb6fdb5260b89da6bafa441
-  SwiftUIFlowLayout: 7abf2f548de163172dab7eee25f76927c3035398
+  shared: 329b14100f49568e16dc8e45eebda18cd99e89ee
 
 PODFILE CHECKSUM: b892769b6c884a2cbeb6b7b490bac3291d916956
 
