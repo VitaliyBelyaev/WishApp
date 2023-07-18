@@ -19,6 +19,7 @@ struct WishDetailedView: View {
     @State private var isDeleteWishConfirmationPresented = false
     @State private var isUpdateWishTagsSheetPresented = false
     @State private var becomeFirstResponder = true
+    @State private var isKeyboardPresented = false
     
     private let isNewWish: Bool
     
@@ -119,6 +120,9 @@ struct WishDetailedView: View {
                 }
             }
         }
+        .onReceive(keyboardPublisher) { value in
+            isKeyboardPresented = value
+        }
         .scrollDismissesKeyboard(.interactively)
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("")
@@ -151,6 +155,14 @@ struct WishDetailedView: View {
                         viewModel.onDeleteWish()
                         appViewModel.deleteWish(id: viewModel.wish.id)
                         navigationModel.popMainPath()
+                    }
+                }
+            }
+            if isKeyboardPresented {
+                // TODO Придумать как расположить кнопку справа
+                ToolbarItem {
+                    Button("done") {
+                        hideKeyboard()
                     }
                 }
             }
@@ -212,7 +224,7 @@ struct WishDetailedView: View {
             fromScreen: fromScreen,
             isNewWish: isNewWish
         )
-    
+        
         WishAppAnalytics.logEvent(event)
     }
 }

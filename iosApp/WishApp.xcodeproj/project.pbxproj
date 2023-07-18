@@ -24,6 +24,7 @@
 		ED3973CC2A28F33C00DB0896 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED3973CE2A28F33C00DB0896 /* InfoPlist.strings */; };
 		ED5383F72A66FA3600BFAFB2 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = ED5383F62A66FA3600BFAFB2 /* SwiftUIIntrospect */; };
 		ED5383FA2A66FBED00BFAFB2 /* SwiftUIFlowLayout in Frameworks */ = {isa = PBXBuildFile; productRef = ED5383F92A66FBED00BFAFB2 /* SwiftUIFlowLayout */; };
+		ED5383FC2A6701B000BFAFB2 /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5383FB2A6701B000BFAFB2 /* ViewExtension.swift */; };
 		ED6DB19829B4F21F00A11CA3 /* WishApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6DB19729B4F21F00A11CA3 /* WishApp.swift */; };
 		ED6DB19C29B4F21F00A11CA3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED6DB19B29B4F21F00A11CA3 /* Assets.xcassets */; };
 		ED6DB19F29B4F21F00A11CA3 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED6DB19E29B4F21F00A11CA3 /* Preview Assets.xcassets */; };
@@ -81,6 +82,7 @@
 		ED3973C92A28F28600DB0896 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		ED3973CD2A28F33C00DB0896 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		ED3973CF2A28F33F00DB0896 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		ED5383FB2A6701B000BFAFB2 /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		ED6DB19429B4F21F00A11CA3 /* WishApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WishApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED6DB19729B4F21F00A11CA3 /* WishApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishApp.swift; sourceTree = "<group>"; };
 		ED6DB19B29B4F21F00A11CA3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -315,6 +317,7 @@
 				ED70B68B2A44977900E6786B /* BundleExtension.swift */,
 				ED9CAD9C2A4720CE0079D814 /* NavigationLinkExtension.swift */,
 				ED7102D82A49E5F500E24E3D /* UIDeviceExtension.swift */,
+				ED5383FB2A6701B000BFAFB2 /* ViewExtension.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -555,6 +558,7 @@
 				ED7914192A4C951A00E7FF0C /* PrivacyPolicyView.swift in Sources */,
 				ED1750902A373F1000665949 /* SettingsView.swift in Sources */,
 				EDB776EE2A27AC9D0087EA06 /* MainViewState.swift in Sources */,
+				ED5383FC2A6701B000BFAFB2 /* ViewExtension.swift in Sources */,
 				ED70B67F2A408D7D00E6786B /* WishItemView.swift in Sources */,
 				EDAE5D1F2A3B5AE50072EB31 /* SectionHeaderView.swift in Sources */,
 				ED6EFA4C2A225A7400CC1B13 /* WishListMode.swift in Sources */,
