@@ -17,15 +17,28 @@ struct WishItemView: View {
     let onWishCompletnessChanged: (String, Bool) -> ()
     
     private let wishAdditionalInfoOpacity = 0.7
+    private let wishTitlePlaceHolderOpacity = 0.5
+    
+    private let wishTitlePlaceholder: LocalizedStringKey = LocalizedStringKey("WishList.wishTitlePlaceholder")
     
     @State private var isDeleteWishConfirmationPresented = false
     
+    
+    
     var body: some View {
         VStack(alignment: .leading) {
-            Text(wish.title)
-                .font(.title)
-                .strikethrough(wish.isCompleted)
-                .padding(.bottom, 1)
+            if wish.title.isEmpty {
+                Text(wishTitlePlaceholder)
+                    .font(.title)
+                    .foregroundColor(.primary.opacity(wishTitlePlaceHolderOpacity))
+                    .strikethrough(wish.isCompleted)
+                    .padding(.bottom, 1)
+            } else {
+                Text(wish.title)
+                    .font(.title)
+                    .strikethrough(wish.isCompleted)
+                    .padding(.bottom, 1)
+            }
             
             if !wish.comment.isEmpty {
                 Text(wish.comment)

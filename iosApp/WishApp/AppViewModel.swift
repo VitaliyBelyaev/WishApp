@@ -20,6 +20,8 @@ final class AppViewModel: ObservableObject {
         }
     }
     
+    private var newWishIdToCheckForDeletion: String? = nil
+    
     private var subscriptions: [AnyCancellable] = []
     
     
@@ -37,26 +39,31 @@ final class AppViewModel: ObservableObject {
             .store(in: &subscriptions)
     }
     
+    func onNewWishIdToCheckForDeletionChanged(newWishId: String?) {
+        self.newWishIdToCheckForDeletion = newWishId
+    }
+    
     func onNewWishDetailedScreenExit() {
-        createFuture(for: dbRepository.getAllWishes(isCompleted: false))
+        guard let newWishIdToCheckForDeletion = newWishIdToCheckForDeletion else { return }
+        self.newWishIdToCheckForDeletion = nil
+        
+        createFuture(for: dbRepository.getWishById(id: newWishIdToCheckForDeletion))
             .subscribe(on: DispatchQueue.global())
-            .catch { error in
-                Just([])
-            }
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] wishes in
-                self?.deleteEmptyWishes(wishes: wishes)
+            .sinkIgnoringCompletion { [weak self] newWish in
+                self?.deleteWishIfEmpty(wish: newWish)
             }
             .store(in: &subscriptions)
     }
     
-    private func deleteEmptyWishes(wishes: [WishEntity]) {
-        let emptyWishesIds = wishes.filter{ wish in WishEntityKt.isWishEmpty(wish: wish) }.map { $0.id }
-        if !emptyWishesIds.isEmpty {
-            createFuture(for: dbRepository.deleteWishesByIds(ids: emptyWishesIds))
-                .subscribe(on: DispatchQueue.global())
-                .sinkSilently()
-                .store(in: &subscriptions)
+    private func deleteWishIfEmpty(wish: WishEntity) {
+        if !WishEntityKt.isWishEmpty(wish: wish) {
+            return
         }
+        
+        createFuture(for: dbRepository.deleteWishesByIds(ids: [wish.id]))
+            .subscribe(on: DispatchQueue.global())
+            .sinkSilently()
+            .store(in: &subscriptions)
     }
 }

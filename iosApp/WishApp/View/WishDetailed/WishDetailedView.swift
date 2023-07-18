@@ -177,6 +177,11 @@ struct WishDetailedView: View {
         .onAppear {
             logScreenShow()
         }
+        .onDisappear {
+            if isNewWish {
+                appViewModel.onNewWishIdToCheckForDeletionChanged(newWishId: viewModel.wish.id)
+            }
+        }
     }
     
     private func logScreenShow() {

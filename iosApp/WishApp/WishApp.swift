@@ -79,6 +79,7 @@ struct WishApp: App {
                     })
                     
                     if isOldPathContainsNewWishDetailed && !isNewPathContainsNewWishDetailed {
+                        
                         appViewModel.onNewWishDetailedScreenExit()
                     }
                 }

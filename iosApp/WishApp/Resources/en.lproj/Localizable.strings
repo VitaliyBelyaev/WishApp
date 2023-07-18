@@ -22,6 +22,7 @@
 
 "WishList.all" = "All";
 "WishList.completed" = "Completed";
+"WishList.wishTitlePlaceholder" = "No title";
 
 "WishDetailed.title" = "Title";
 "WishDetailed.comment" = "Comment";

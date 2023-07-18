@@ -22,6 +22,7 @@
 
 "WishList.all" = "Все";
 "WishList.completed" = "Выполненные";
+"WishList.wishTitlePlaceholder" = "Без названия";
 
 "WishDetailed.title" = "Название";
 "WishDetailed.comment" = "Комментарий";
