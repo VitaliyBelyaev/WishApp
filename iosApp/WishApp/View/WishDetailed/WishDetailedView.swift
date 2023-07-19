@@ -159,8 +159,7 @@ struct WishDetailedView: View {
                 }
             }
             if isKeyboardPresented {
-                // TODO Придумать как расположить кнопку справа
-                ToolbarItem {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button("done") {
                         hideKeyboard()
                     }

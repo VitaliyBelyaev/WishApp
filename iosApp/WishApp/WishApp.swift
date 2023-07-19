@@ -49,37 +49,14 @@ struct WishApp: App {
                 .environmentObject(navigationModel)
                 .onChange(of: navigationModel.mainPath) { [oldMainPath = navigationModel.mainPath] newMainPath in
                     let isOldPathContainsNewWishDetailed = oldMainPath.contains(where: { segment in
-                        switch segment {
-                        case .WishDetailed(.none, .some(_)):
-                            return true
-                        case .WishDetailed(.some(_), .some(_)):
-                            return false
-                        case .WishDetailed(.some(_), .none):
-                            return false
-                        case .WishDetailed(.none, .none):
-                            return true
-                        case .WishList(_):
-                            return false
-                        }
+                        isWishDetailedForNewWishSegment(segment: segment)
                     })
                     
                     let isNewPathContainsNewWishDetailed = newMainPath.contains(where: { segment in
-                        switch segment {
-                        case .WishDetailed(.none, .some(_)):
-                            return true
-                        case .WishDetailed(.some(_), .some(_)):
-                            return false
-                        case .WishDetailed(.some(_), .none):
-                            return false
-                        case .WishDetailed(.none, .none):
-                            return true
-                        case .WishList(_):
-                            return false
-                        }
+                        isWishDetailedForNewWishSegment(segment: segment)
                     })
                     
                     if isOldPathContainsNewWishDetailed && !isNewPathContainsNewWishDetailed {
-                        
                         appViewModel.onNewWishDetailedScreenExit()
                     }
                 }
@@ -88,14 +65,28 @@ struct WishApp: App {
                         navigationModel.jsonData = jsonData
                     }
                     for await _ in navigationModel.objectWillChangeSequence {
-                        navigationData = navigationModel.jsonData
+                        if !isWishDetailedForNewWishSegment(segment: navigationModel.mainPath.last) {
+                            navigationData = navigationModel.jsonData
+                        }
                     }
                 }
-            //                .onChange(of: scenePhase) { phase in
-            //                    if phase == .inactive {
-            //                        navigationData = navigationModel.jsonData
-            //                    }
-            //                }
+        }
+    }
+    
+    private func isWishDetailedForNewWishSegment(segment: MainNavSegment?) -> Bool {
+        switch segment {
+        case .WishDetailed(.none, .some(_)):
+            return true
+        case .WishDetailed(.some(_), .some(_)):
+            return false
+        case .WishDetailed(.some(_), .none):
+            return false
+        case .WishDetailed(.none, .none):
+            return true
+        case .WishList(_):
+            return false
+        case .none:
+            return false
         }
     }
 }

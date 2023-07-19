@@ -118,6 +118,15 @@
       }
     },
     {
+      "identity" : "swiftui-flow-layout",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/globulus/swiftui-flow-layout",
+      "state" : {
+        "revision" : "de7da3440c3b87ba94adfa98c698828d7746a76d",
+        "version" : "1.0.5"
+      }
+    },
+    {
       "identity" : "swiftui-introspect",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/siteline/SwiftUI-Introspect",

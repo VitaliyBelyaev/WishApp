@@ -19,7 +19,7 @@ struct MainView: View {
     }
     
     var body: some View {
-        NavigationStack(path: $navigationModel.mainPath) {
+        NavigationStack(path: $navigationModel.mainPath.animation(.linear(duration: 0))) {
             MainContentView(
                 state: viewModel.state,
                 onRenameTagConfirmed: { tag, newTitle in
