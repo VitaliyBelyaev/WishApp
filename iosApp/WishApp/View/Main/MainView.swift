@@ -7,10 +7,16 @@
 
 import SwiftUI
 import shared
+import StoreKit
 
 struct MainView: View {
     
+    @AppStorage(wrappedValue: 0, UserDefaultsKeys.positiveActionsCount)
+    private var positiveActionsCount: Int
+    
+    @Environment(\.requestReview) var requestReview
     @EnvironmentObject private var navigationModel: NavigationModel
+    
     @StateObject private var viewModel: MainViewModel
     @State private var isSettingsPresented: Bool = false
     
@@ -34,6 +40,12 @@ struct MainView: View {
             )
             .onAppear {
                 logMainScreenShow()
+            }
+            .onChange(of: positiveActionsCount) { newValue in
+                if NeedToRequestReviewUseCase.invoke(positiveActionsCount: newValue) {
+                    WishAppAnalytics.logEvent(InAppReviewRequestedEvent())
+                    requestReview()
+                }
             }
         }
         .sheet(isPresented: $navigationModel.isSettingPresented) {

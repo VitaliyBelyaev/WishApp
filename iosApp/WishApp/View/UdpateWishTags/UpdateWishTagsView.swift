@@ -10,9 +10,12 @@ import SwiftUIFlowLayout
 
 struct UpdateWishTagsView: View {
     
-    @StateObject private var viewModel: UpdateWishTagsViewModel
-    let onCloseClicked: () -> ()
+    @AppStorage(wrappedValue: 0, UserDefaultsKeys.positiveActionsCount)
+    private var positiveActionsCount: Int
     
+    @StateObject private var viewModel: UpdateWishTagsViewModel
+    
+    let onCloseClicked: () -> ()
     
     init(wishId: String, onCloseClicked: @escaping () -> ()) {
         self.onCloseClicked = onCloseClicked
@@ -25,6 +28,7 @@ struct UpdateWishTagsView: View {
                 if let createItem = viewModel.state.createItem {
                     Button {
                         viewModel.onCreateTagClicked(title: createItem.title)
+                        positiveActionsCount += 1
                     } label: {
                         HStack {
                             Image(systemName: "plus")

@@ -31,7 +31,9 @@ struct WishApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     @AppStorage("navigationData") private var navigationData: Data?
+    @AppStorage(wrappedValue: 0, UserDefaultsKeys.positiveActionsCount) private var positiveActionsCount: Int
     @Environment(\.scenePhase) private var scenePhase
+    
     @StateObject private var navigationModel = NavigationModel()
     @StateObject private var appViewModel: AppViewModel
     
@@ -40,7 +42,6 @@ struct WishApp: App {
     init() {
         _appViewModel = StateObject(wrappedValue: { AppViewModel() }())
     }
-    
     
     var body: some Scene {
         WindowGroup {
@@ -58,6 +59,7 @@ struct WishApp: App {
                     
                     if isOldPathContainsNewWishDetailed && !isNewPathContainsNewWishDetailed {
                         appViewModel.onNewWishDetailedScreenExit()
+                        positiveActionsCount += 1
                     }
                 }
                 .task {
