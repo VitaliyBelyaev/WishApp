@@ -66,7 +66,7 @@ struct UpdateWishTagsView: View {
                     }
                 }
             }
-            .searchable(text: $viewModel.query, placement: .toolbar, prompt: "UpdateWishTags.prompt")
+            .searchable(text: $viewModel.query, placement: .sidebar, prompt: "UpdateWishTags.prompt")
         }
     }
 }
