@@ -34,7 +34,7 @@
 "WishDetailed.markDoneShort" = "Done";
 "WishDetailed.markUndoneShort" = "Undone";
 
-"UpdateWishTags.prompt" = "Start typing to add tag";
+"UpdateWishTags.prompt" = "Enter tag name";
 
 "Settings.title" = "Settings";
 "Settings.backup" = "Data backup and restore";

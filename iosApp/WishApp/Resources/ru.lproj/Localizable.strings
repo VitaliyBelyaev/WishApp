@@ -34,7 +34,7 @@
 "WishDetailed.markDoneShort" = "Выполнена";
 "WishDetailed.markUndoneShort" = "Не выполнена";
 
-"UpdateWishTags.prompt" = "Введите название, чтобы создать тег";
+"UpdateWishTags.prompt" = "Введите название тега";
 
 "Settings.title" = "Настройки";
 "Settings.backup" = "Сохранение данных";
