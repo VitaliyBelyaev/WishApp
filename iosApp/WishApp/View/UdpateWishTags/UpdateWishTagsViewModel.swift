@@ -54,8 +54,9 @@ final class UpdateWishTagsViewModel: ObservableObject {
         
         let dbRepository = dbRepository
         let wishId = wishId
+        let titleTrimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        createFuture(for: dbRepository.insertTag(title: title))
+        createFuture(for: dbRepository.insertTag(title: titleTrimmed))
             .flatMap { tagId -> Publishers.Map<AnyPublisher<KotlinUnit, Error>, String> in
                 return createFuture(for: dbRepository.insertWishTagRelation(wishId: wishId, tagId: tagId))
                     .map { _ in

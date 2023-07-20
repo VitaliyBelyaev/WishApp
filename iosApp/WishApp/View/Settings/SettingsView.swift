@@ -30,8 +30,8 @@ struct SettingsView: View {
                     
                     SettingsItemView(title: "Settings.rateUs") {
                         WishAppAnalytics.logEvent(SettingsRateAppClickedEvent())
-                        if let url = URL(string: "https://google.com"),
-                           UIApplication.shared.canOpenURL(url) {
+                        let urlString = "https://apps.apple.com/app/id6450624836?action=write-review"
+                        if let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) {
                             UIApplication.shared.open(url)
                         }
                     }

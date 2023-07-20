@@ -11,6 +11,6 @@ import Foundation
 struct NeedToRequestReviewUseCase {
     
     static func invoke(positiveActionsCount: Int) -> Bool {
-        return positiveActionsCount != 0 && positiveActionsCount % 10 == 0
+        return positiveActionsCount != 0 && positiveActionsCount % 7 == 0
     }
 }

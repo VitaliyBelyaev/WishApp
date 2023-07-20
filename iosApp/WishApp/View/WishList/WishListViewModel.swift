@@ -44,25 +44,12 @@ final class WishListViewModel: ObservableObject {
         generateShareTextTask?.cancel()
     }
     
-    func onAddWishClicked() {
-        let timestamp = Date.currentTimeStamp
-        
-        let randNumber = Int.random(in: 0..<1000)
-        let wish = WishEntity(id: NSUUID().uuidString, title: "Test wish \(randNumber)", link: "https://www.google.com/", links:["https://www.google.com/"], comment: "Some commmment", isCompleted: false, createdTimestamp: timestamp, updatedTimestamp: timestamp, position: 0, tags: [])
-        
-        createFuture(for: dbRepository.insertWish(wish: wish))
-            .subscribe(on: DispatchQueue.global())
-            .sinkSilently()
-            .store(in: &subscriptions)
-    }
-    
     func onDeleteWishConfirmed(wishId: String) {
         createFuture(for: dbRepository.deleteWishesByIds(ids: [wishId]))
             .subscribe(on: DispatchQueue.global())
             .sinkSilently()
             .store(in: &subscriptions)
     }
-    
     
     func onMove(_ indexSet: IndexSet,_ beforeIndex: Int) {
         
@@ -106,7 +93,6 @@ final class WishListViewModel: ObservableObject {
     
     private func collectWishes() {
         let dbRepository = dbRepository
-        
         
         $mode
             .flatMap { mode in

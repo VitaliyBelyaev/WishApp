@@ -16,7 +16,7 @@ struct MainContentView: View {
     let onSettingsClicked: () -> ()
     @State var isTagsSectionExpanded = true
     
-    let onAddTestTagClicked: () -> ()
+    let onAddTestWishClicked: () -> ()
     
     var body: some View {
         List {
@@ -53,11 +53,14 @@ struct MainContentView: View {
         .navigationTitle("Main.title")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            
+            #if DEBUG
             ToolbarItem(placement: .primaryAction) {
-                Button("+tag"){
-                    onAddTestTagClicked()
+                Button("+wish"){
+                    onAddTestWishClicked()
                 }
             }
+            #endif
             
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -105,7 +108,7 @@ struct MainContentView_Previews: PreviewProvider {
                 onRenameTagConfirmed: {_,_ in},
                 onDeleteTagClicked: {_ in},
                 onSettingsClicked: {},
-                onAddTestTagClicked: {}
+                onAddTestWishClicked: {}
             )
         }
     }

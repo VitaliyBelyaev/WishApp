@@ -55,7 +55,7 @@ class WishTagsViewModel @Inject constructor(
     fun onAddTagClicked(tagName: String) {
         analyticsRepository.trackEvent(WishTagsAddNewTagClickedEvent)
         launchSafe {
-            val tagId = tagsRepository.insertTag(tagName)
+            val tagId = tagsRepository.insertTag(tagName.trim())
             recentlyAddedTagIds.add(0, tagId)
             wishTagRelationRepository.insertWishTagRelation(wishId, tagId)
             dataStoreRepository.incrementPositiveActionsCount()

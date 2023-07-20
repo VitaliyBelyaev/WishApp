@@ -37,8 +37,7 @@ struct WishListView: View {
                     newIsCompleted: newIsCompleted
                 )
             },
-            onMove: { indexSet, beforeIndex in viewModel.onMove(indexSet, beforeIndex) },
-            onAddTestWishClicked: { viewModel.onAddWishClicked() }
+            onMove: { indexSet, beforeIndex in viewModel.onMove(indexSet, beforeIndex) }
         )
         .onAppear {
             WishAppAnalytics.logEvent(WishListScreenShowEvent(mode: mode.analyticsString))

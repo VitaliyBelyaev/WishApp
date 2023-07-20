@@ -24,6 +24,9 @@ final class MainViewModel: ObservableObject {
     
     private var subscriptions: [AnyCancellable] = []
     
+    private var testWishes: [WishEntity] = []
+    private var testWishIndex: Int = 0
+    
     @Published var state: MainViewState = MainViewState(
         commonItems: [],
         tagItems: [],
@@ -31,6 +34,7 @@ final class MainViewModel: ObservableObject {
         completedCount: 0)
     
     init() {
+        self.testWishes = createTestWishes(forRu: true)
         self.subscribeOnMainItems()
     }
     
@@ -38,8 +42,9 @@ final class MainViewModel: ObservableObject {
         if(tag.title == newTitle) {
             return
         }
+        let newTitleTrimmed = newTitle.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        createFuture(for: dbRepository.updateTagTitle(title: newTitle, tagId: tag.id))
+        createFuture(for: dbRepository.updateTagTitle(title: newTitleTrimmed, tagId: tag.id))
             .subscribe(on: DispatchQueue.global())
             .sinkSilently()
             .store(in: &subscriptions)
@@ -53,16 +58,21 @@ final class MainViewModel: ObservableObject {
         
     }
     
-    func onAddWishClicked() {
+    func onAddTestWishClicked() {
+        if testWishes.isEmpty {
+            return
+        }
         let timestamp = Date.currentTimeStamp
         
-        let randNumber = Int.random(in: 0..<1000)
-        let wish = WishEntity(id: NSUUID().uuidString, title: "Test wish \(randNumber)", link: "Some link", links: [], comment: "Some commmment", isCompleted: false, createdTimestamp: timestamp, updatedTimestamp: timestamp, position: 0, tags: [])
-        
-        createFuture(for: dbRepository.insertWish(wish: wish))
+        let testWish: WishEntity = testWishes[testWishIndex % testWishes.count]
+            .createCopy(id: NSUUID().uuidString, createdTimestamp: timestamp, updatedTimestamp: timestamp)
+
+        createFuture(for: dbRepository.insertWish(wish: testWish))
             .subscribe(on: DispatchQueue.global())
             .sinkSilently()
             .store(in: &subscriptions)
+        
+        testWishIndex += 1
     }
     
     func onAddTagClicked() {
@@ -99,5 +109,17 @@ final class MainViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .assign(to: \.state, on: self)
             .store(in: &subscriptions)
+    }
+    
+    private func createTestWishes(forRu: Bool) -> [WishEntity] {
+        #if DEBUG
+        if forRu {
+            return SampleDataGenerator().createRuWishes()
+        } else {
+            return SampleDataGenerator().createEnWishes()
+        }
+        #else
+        return []
+        #endif
     }
 }

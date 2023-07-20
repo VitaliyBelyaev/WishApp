@@ -23,8 +23,6 @@ struct WishListContentView: View {
     let onMove: (IndexSet, Int) -> ()
     @State private var isDeleteWishConfirmationPresented = false
     
-    let onAddTestWishClicked: () -> ()
-    
     private var onMovePerform : ((IndexSet, Int) -> ())? {
         get {
             if mode != WishListMode.Completed {
@@ -67,11 +65,6 @@ struct WishListContentView: View {
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button("+wish"){
-                    onAddTestWishClicked()
-                }
-            }
             
             if mode != WishListMode.Completed && !wishes.isEmpty {
                 ToolbarItem(placement: .primaryAction) {
@@ -85,7 +78,7 @@ struct WishListContentView: View {
                         Image(systemName: "square.and.arrow.up")
                     }
                     .simultaneousGesture(TapGesture().onEnded() {
-                       logShareClicked()
+                        logShareClicked()
                     })
                 }
                 
@@ -127,8 +120,7 @@ struct WishListContentView_Previews: PreviewProvider {
                 onWishTagClicked: {_ in },
                 onDeleteWishConfirmed: {_ in },
                 onWishCompletnessChanged: {_,_ in },
-                onMove: {_,_ in },
-                onAddTestWishClicked: {}
+                onMove: {_,_ in }
             )
         }
     }
