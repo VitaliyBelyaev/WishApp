@@ -23,50 +23,15 @@ struct UpdateWishTagsView: View {
     }
     
     var body: some View {
+        
         NavigationStack {
-            List {
-                if let createItem = viewModel.state.createItem {
-                    Button {
-                        viewModel.onCreateTagClicked(title: createItem.title)
-                        positiveActionsCount += 1
-                    } label: {
-                        HStack {
-                            Image(systemName: "plus")
-                                .foregroundColor(.accentColor)
-                            Text("Create \"\(createItem.title)\"")
-                            Spacer()
-                        }
-                    }
-                }
-                
-                let tagItems = viewModel.state.tagItems
-                
-                if !tagItems.isEmpty {
-                    FlowLayout(mode: .scrollable, items: tagItems, itemSpacing: 4) { tagItem in
-                        let isOn: Binding<Bool> = Binding(
-                            get: {return tagItem.isSelected },
-                            set: {value, tr in viewModel.onTagSelectedChanged(tagItem: tagItem) }
-                        )
-                        
-                        Toggle(isOn: isOn) {
-                            Text(tagItem.tag.title)
-                        }
-                        .toggleStyle(.button)
-                        .buttonStyle(.bordered)
-                        .foregroundColor(isOn.wrappedValue ? .primary.opacity(0.8) : .gray)
-                    }
-                }
-            }
-            .listStyle(.grouped)
-            .navigationTitle("")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction){
-                    Button("done") {
-                        onCloseClicked()
-                    }
-                }
-            }
-            .searchable(text: $viewModel.query, placement: .sidebar, prompt: "UpdateWishTags.prompt")
+            UpdateWishTagsContentView(
+                query: $viewModel.query,
+                state: viewModel.state,
+                onCreateTagClicked: {viewModel.onCreateTagClicked(title: $0)},
+                onTagSelectedChanged: { viewModel.onTagSelectedChanged(tagItem: $0) },
+                onCloseClicked: onCloseClicked
+            )
         }
     }
 }
