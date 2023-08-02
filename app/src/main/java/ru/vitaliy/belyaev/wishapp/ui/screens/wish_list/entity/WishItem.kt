@@ -4,19 +4,19 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 
 data class WishItem(
     val wish: WishEntity,
-    val linkPreviewState: LinkPreviewState
+    val isAddLinkButtonEnabled: Boolean
 )
 
-fun WishEntity.toDefaultWishItem(): WishItem {
-    return if (link.isNotBlank()) {
-        WishItem(this, Loading)
-    } else {
-        WishItem(this, None)
-    }
-}
-
-fun WishEntity.toWishItem(linkPreviewState: LinkPreviewState): WishItem =
-    WishItem(this, linkPreviewState)
+//fun WishEntity.toDefaultWishItem(): WishItem {
+//    return if (link.isNotBlank()) {
+//        WishItem(this, Loading)
+//    } else {
+//        WishItem(this, None)
+//    }
+//}
+//
+//fun WishEntity.toWishItem(linkPreviewState: LinkPreviewState): WishItem =
+//    WishItem(this, linkPreviewState)
 
 
 

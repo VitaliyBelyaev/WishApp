@@ -1,5 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 
+import android.util.Patterns
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,28 +10,22 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.domain.GetLinkPreviewInteractor
 import ru.vitaliy.belyaev.wishapp.entity.analytics.WishDetailedScreenShowEvent
 import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishDetailedDeleteWishConfirmedEvent
 import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishDetailedWishLinkClickedEvent
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
-import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.LinksAdapter
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.createEmptyWish
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
-import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.LinkPreviewState
-import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.Loading
-import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
-import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.toWishItem
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
 class WishDetailedViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val wishesRepository: WishesRepository,
-    private val getLinkPreviewInteractor: GetLinkPreviewInteractor,
     private val analyticsRepository: AnalyticsRepository
 ) : BaseViewModel() {
 
@@ -38,7 +33,6 @@ class WishDetailedViewModel @Inject constructor(
     lateinit var wishId: String
 
     val uiState: MutableStateFlow<Optional<WishItem>> = MutableStateFlow(Optional.empty())
-    private var cachedLinkPreviewState: LinkPreviewState = None
 
     init {
         launchSafe {
@@ -51,14 +45,7 @@ class WishDetailedViewModel @Inject constructor(
             wishesRepository
                 .observeWishById(wishId)
                 .collect {
-                    val previousLink: String = uiState.value.toValueOfNull()?.wish?.link ?: ""
-                    val currentLink = it.link
-                    if (previousLink == currentLink) {
-                        val wishItem = it.toWishItem(cachedLinkPreviewState)
-                        uiState.value = Optional.of(wishItem)
-                    } else {
-                        tryLoadLinkPreview(currentLink, it)
-                    }
+                    uiState.value = Optional.of(WishItem(it, false))
                 }
         }
     }
@@ -78,8 +65,19 @@ class WishDetailedViewModel @Inject constructor(
     }
 
     fun onWishLinkChanged(newValue: String) {
+        val isValidLink = Patterns.WEB_URL.matcher(newValue).matches()
+
+        uiState.value.toValueOfNull()?.let {
+            uiState.value = Optional.of(it.copy(isAddLinkButtonEnabled = isValidLink))
+        }
+    }
+
+    fun onAddLinkClicked(link: String) {
+        val currentLinks = uiState.value.toValueOfNull()?.wish?.links ?: return
+
         launchSafe {
-            wishesRepository.updateWishLink(newValue, wishId)
+            val newLinkString = LinksAdapter.addLinkAndGetAccumulatedString(link, currentLinks)
+            wishesRepository.updateWishLink(newLinkString, wishId)
         }
     }
 
@@ -98,17 +96,17 @@ class WishDetailedViewModel @Inject constructor(
         analyticsRepository.trackEvent(WishDetailedWishLinkClickedEvent)
     }
 
-    private suspend fun tryLoadLinkPreview(link: String, wish: WishEntity) {
-        if (link.isBlank()) {
-            cachedLinkPreviewState = None
-            val wishItem = wish.toWishItem(cachedLinkPreviewState)
-            uiState.value = Optional.of(wishItem)
-        } else {
-            val wishItemLoading = wish.toWishItem(Loading)
-            uiState.value = Optional.of(wishItemLoading)
-            cachedLinkPreviewState = getLinkPreviewInteractor(link)
-            val wishItem = wish.toWishItem(cachedLinkPreviewState)
-            uiState.value = Optional.of(wishItem)
-        }
-    }
+//    private suspend fun tryLoadLinkPreview(link: String, wish: WishEntity) {
+//        if (link.isBlank()) {
+//            cachedLinkPreviewState = None
+//            val wishItem = wish.toWishItem(cachedLinkPreviewState)
+//            uiState.value = Optional.of(wishItem)
+//        } else {
+//            val wishItemLoading = wish.toWishItem(Loading)
+//            uiState.value = Optional.of(wishItemLoading)
+//            cachedLinkPreviewState = getLinkPreviewInteractor(link)
+//            val wishItem = wish.toWishItem(cachedLinkPreviewState)
+//            uiState.value = Optional.of(wishItem)
+//        }
+//    }
 }

@@ -80,31 +80,31 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.0")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 
     implementation(project(":shared"))
 
     // Android X common
-    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
-    implementation("androidx.appcompat:appcompat:1.6.0")
-    implementation("androidx.webkit:webkit:1.5.0")
-    implementation("androidx.core:core-splashscreen:1.0.0")
-    implementation("androidx.activity:activity-compose:1.6.1")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.webkit:webkit:1.7.0")
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.activity:activity-compose:1.7.2")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
     // Compose
-    implementation(platform("androidx.compose:compose-bom:2023.01.00"))
-    implementation("androidx.compose.ui:ui:1.4.0-alpha04")
-    implementation("androidx.compose.foundation:foundation:1.4.0-alpha04")
-    implementation("androidx.compose.material3:material3:1.1.0-alpha04")
+    implementation(platform("androidx.compose:compose-bom:2023.06.01"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material")
     implementation("androidx.compose.ui:ui-tooling-preview")
 
     // Compose Navigation
-    implementation("androidx.navigation:navigation-compose:2.5.3")
+    implementation("androidx.navigation:navigation-compose:2.6.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     // Google Accompanist
@@ -114,8 +114,8 @@ dependencies {
     implementation("com.google.accompanist:accompanist-systemuicontroller:${libs.versions.accompanist.get()}")
 
     // Google Android
-    implementation("com.google.android.material:material:1.7.0")
-    implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
+    implementation("com.google.android.material:material:1.9.0")
+    implementation("com.google.android.gms:play-services-oss-licenses:17.0.1")
     implementation("com.google.android.play:core:1.10.3")
 
     // Google Firebase
@@ -147,7 +147,7 @@ dependencies {
     implementation("com.jakewharton.timber:timber:5.0.1")
 
     // LeakCanary
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.9.1")
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.11")
 
     // Shimmer animation for loading
     implementation("com.valentinilk.shimmer:compose-shimmer:1.0.1")

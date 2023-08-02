@@ -80,9 +80,11 @@ fun WishListScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden) { state ->
-        return@rememberModalBottomSheetState state != ModalBottomSheetValue.HalfExpanded
-    }
+    val modalBottomSheetState =
+        rememberModalBottomSheetState(
+            initialValue = ModalBottomSheetValue.Hidden,
+            skipHalfExpanded = true
+        )
     val state: MainScreenState by viewModel.uiState.collectAsState()
     val tagsWithWishCount: List<TagWithWishCount> by viewModel.tagsWithWishCount.collectAsState()
     val currentWishesCount: Long by viewModel.currentWishesCount.collectAsState()
@@ -161,7 +163,7 @@ fun WishListScreen(
                     wishes = state.wishes,
                     wishesFilter = state.wishesFilter,
                     onShareClick = { onShareClick(state.wishes) },
-                    onMenuClick = { scope.launch { modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded) } },
+                    onMenuClick = { scope.launch { modalBottomSheetState.show() } },
                     reorderButtonState = state.reorderButtonState,
                     onReorderClick = { viewModel.onReorderIconClicked() },
                     onAddWishClicked = onAddWishClicked

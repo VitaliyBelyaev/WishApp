@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
-import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material3.Divider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -100,7 +99,7 @@ fun TagsSheetContent(
                     isSelected = isTagSelected,
                     onClick = {
                         onNavItemSelected(WishesFilter.ByTag(tag))
-                        scope.launch { modalBottomSheetState.snapTo(ModalBottomSheetValue.Hidden) }
+                        scope.launch { modalBottomSheetState.hide() }
                     }
                 )
             }
@@ -121,7 +120,7 @@ fun TagsSheetContent(
                 isSelected = wishesFilter is WishesFilter.All,
                 onClick = {
                     onNavItemSelected(WishesFilter.All)
-                    scope.launch { modalBottomSheetState.snapTo(ModalBottomSheetValue.Hidden) }
+                    scope.launch { modalBottomSheetState.hide() }
                 }
             )
             NavMenuItemBlock(
@@ -131,7 +130,7 @@ fun TagsSheetContent(
                 isSelected = wishesFilter is WishesFilter.Completed,
                 onClick = {
                     onNavItemSelected(WishesFilter.Completed)
-                    scope.launch { modalBottomSheetState.snapTo(ModalBottomSheetValue.Hidden) }
+                    scope.launch { modalBottomSheetState.hide() }
                 }
             )
             if (tagsWithWishCount.isNotEmpty()) {
@@ -141,7 +140,7 @@ fun TagsSheetContent(
                     isSelected = false,
                     onClick = {
                         scope.launch {
-                            modalBottomSheetState.snapTo(ModalBottomSheetValue.Hidden)
+                            modalBottomSheetState.hide()
                             onEditTagsClicked()
                         }
                     }

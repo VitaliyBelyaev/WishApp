@@ -121,7 +121,7 @@ fun SettingsScreen(
                     onClick = {
                         viewModel.onBackupAndRestoreItemClicked()
                         scope.launch {
-                            modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
+                            modalBottomSheetState.show()
                         }
                     }
                 )

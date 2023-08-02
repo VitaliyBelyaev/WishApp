@@ -5,7 +5,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +16,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,7 +56,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextDecoration
@@ -68,15 +72,7 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
-import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
-import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreview
-import ru.vitaliy.belyaev.wishapp.ui.core.linkpreview.LinkPreviewLoading
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
-import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.Data
-import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.LinkInfo
-import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.Loading
-import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.NoData
-import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.None
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
 import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
@@ -158,7 +154,7 @@ fun WishDetailedScreen(
             return@Scaffold
         }
         var title: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.title }) }
-        var link: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.link }) }
+        var link: String by remember { mutableStateOf("") }
         var comment: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.comment }) }
         val isCompleted: Boolean = wishItem.toValueOfNull()?.wish?.isCompleted ?: false
 
@@ -201,8 +197,10 @@ fun WishDetailedScreen(
                             style = MaterialTheme.typography.headlineMedium,
                         )
                     },
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.Transparent,
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                     ),
@@ -216,6 +214,7 @@ fun WishDetailedScreen(
                     }
                     onDispose { }
                 }
+//                Spacer(modifier = Modifier.height(12.dp))
 
                 TextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -224,15 +223,11 @@ fun WishDetailedScreen(
                         comment = newValue
                         viewModel.onWishCommentChanged(newValue)
                     },
-                    leadingIcon = {
-                        ThemedIcon(
-                            painterResource(R.drawable.ic_notes),
-                            contentDescription = "Comment"
-                        )
-                    },
                     placeholder = { Text(text = stringResource(R.string.enter_comment)) },
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.Transparent,
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                     ),
@@ -240,58 +235,115 @@ fun WishDetailedScreen(
                         capitalization = KeyboardCapitalization.Sentences
                     )
                 )
+                Spacer(modifier = Modifier.height(12.dp))
 
                 TextField(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 0.dp),
                     value = link,
                     onValueChange = { newValue ->
                         link = newValue
                         viewModel.onWishLinkChanged(newValue)
                     },
-                    leadingIcon = {
-                        ThemedIcon(
-                            painterResource(R.drawable.ic_link),
-                            contentDescription = "Link"
-                        )
+                    trailingIcon = {
+                        IconButton(
+                            onClick = {
+                                viewModel.onAddLinkClicked(link)
+                                link = ""
+                            },
+                            enabled = wishItem.toValueOfNull()?.isAddLinkButtonEnabled == true
+                        ) {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = "Add Link",
+                                tint = MaterialTheme.colorScheme.primary.copy(alpha = LocalContentAlpha.current)
+                            )
+                        }
+//                        ThemedIcon(
+//                            Icons.Default.Add,
+//                            contentDescription = "Link"
+//                        )
                     },
+                    singleLine = true,
                     placeholder = { Text(text = stringResource(R.string.enter_link)) },
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.Transparent,
+                    colors = TextFieldDefaults.colors(
+//                        focusedContainerColor = Color.Transparent,
+//                        unfocusedContainerColor = Color.Transparent,
+//                        disabledContainerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                     )
                 )
-                Spacer(modifier = Modifier.height(12.dp))
 
-                val wishItemValue = wishItem.toValueOfNull()
-                val pd = PaddingValues(start = 12.dp, end = 12.dp)
-                when (val linkPreviewState = wishItemValue?.linkPreviewState) {
-                    is Data -> {
-                        LinkPreview(
-                            linkInfo = linkPreviewState.linkInfo,
-                            url = wishItemValue.wish.link,
-                            paddingValues = pd,
-                            onLinkPreviewClick = onLinkPreviewClick,
+
+                for (link2 in wishItem.toValueOfNull()?.wish?.links ?: emptyList()) {
+                    TextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = link2,
+                        onValueChange = {
+
+                        },
+                        readOnly = true,
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+
+                                }
+                            ) {
+                                Icon(
+                                    Icons.Default.Delete,
+                                    contentDescription = "Delete Link",
+                                    tint = MaterialTheme.colorScheme.error.copy(alpha = LocalContentAlpha.current)
+                                )
+                            }
+//                        ThemedIcon(
+//                            Icons.Default.Add,
+//                            contentDescription = "Link"
+//                        )
+                        },
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+//                        focusedContainerColor = Color.Transparent,
+//                        unfocusedContainerColor = Color.Transparent,
+//                        disabledContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
                         )
-                    }
-                    is Loading -> {
-                        LinkPreviewLoading(pd)
-                    }
-                    is NoData -> {
-                        LinkPreview(
-                            linkInfo = LinkInfo(title = stringResource(R.string.open_link)),
-                            url = wishItemValue.wish.link,
-                            paddingValues = pd,
-                            onLinkPreviewClick = onLinkPreviewClick,
-                        )
-                    }
-                    is None -> {
-                        //nothing
-                    }
-                    else -> {
-                        //nothing
-                    }
+                    )
                 }
+
+//                Spacer(modifier = Modifier.height(12.dp))
+//
+//                val wishItemValue = wishItem.toValueOfNull()
+//                val pd = PaddingValues(start = 16.dp, end = 16.dp)
+//                when (val linkPreviewState = wishItemValue?.linkPreviewState) {
+//                    is Data -> {
+//                        LinkPreview(
+//                            linkInfo = linkPreviewState.linkInfo,
+//                            url = wishItemValue.wish.link,
+//                            paddingValues = pd,
+//                            onLinkPreviewClick = onLinkPreviewClick,
+//                        )
+//                    }
+//                    is Loading -> {
+//                        LinkPreviewLoading(pd)
+//                    }
+//                    is NoData -> {
+//                        LinkPreview(
+//                            linkInfo = LinkInfo(title = stringResource(R.string.open_link)),
+//                            url = wishItemValue.wish.link,
+//                            paddingValues = pd,
+//                            onLinkPreviewClick = onLinkPreviewClick,
+//                        )
+//                    }
+//                    is None -> {
+//                        //nothing
+//                    }
+//                    else -> {
+//                        //nothing
+//                    }
+//                }
                 Spacer(modifier = Modifier.height(16.dp))
 
                 val tags = wishItem.toValueOfNull()?.wish?.tags ?: emptyList()
