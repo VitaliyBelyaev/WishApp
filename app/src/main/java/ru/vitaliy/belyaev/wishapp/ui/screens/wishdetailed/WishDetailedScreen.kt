@@ -1,10 +1,13 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
@@ -24,7 +28,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -57,8 +63,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -67,16 +78,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.util.Optional
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
-import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
-import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalFoundationApi
@@ -102,24 +110,14 @@ fun WishDetailedScreen(
         appViewModel.onWishScreenExit(viewModel.wishId, viewModel.inputWishId.isBlank())
         onBackPressed()
     }
-    val openDialog: MutableState<Optional<WishItem>> = remember { mutableStateOf(Optional.empty()) }
+    val openDeleteWishConfirmationDialog: MutableState<Optional<WishItem>> =
+        remember { mutableStateOf(Optional.empty()) }
+    val openDeleteLinkConfirmationDialog: MutableState<Optional<String>> = remember { mutableStateOf(Optional.empty()) }
     val scrollState: ScrollState = rememberScrollState()
     val systemUiController = rememberSystemUiController()
     val bottomBarHeight = 56.dp
 
     BackHandler { handleBackPressed() }
-
-    val onLinkPreviewClick: (String) -> Unit = { url ->
-        viewModel.onLinkPreviewClick()
-        try {
-            uriHandler.openUri(url)
-        } catch (error: Throwable) {
-            Timber.e(error)
-            scope.launch {
-                snackbarHostState.showDismissableSnackbar(context.getString(R.string.fail_to_open_link))
-            }
-        }
-    }
 
     trackScreenShow { viewModel.trackScreenShow() }
 
@@ -138,7 +136,7 @@ fun WishDetailedScreen(
                 onBackPressed = handleBackPressed,
                 wishItem = wishItem.toValueOfNull(),
                 onWishTagsClicked = onWishTagsClicked,
-                onDeleteClicked = { openDialog.value = wishItem },
+                onDeleteClicked = { openDeleteWishConfirmationDialog.value = wishItem },
                 scrollBehavior = topAppBarScrollBehavior
             )
         },
@@ -237,10 +235,9 @@ fun WishDetailedScreen(
                 )
                 Spacer(modifier = Modifier.height(12.dp))
 
+                Divider()
                 TextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 0.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     value = link,
                     onValueChange = { newValue ->
                         link = newValue
@@ -257,93 +254,77 @@ fun WishDetailedScreen(
                             Icon(
                                 Icons.Default.Add,
                                 contentDescription = "Add Link",
-                                tint = MaterialTheme.colorScheme.primary.copy(alpha = LocalContentAlpha.current)
+                                tint = MaterialTheme.colorScheme.secondary.copy(alpha = LocalContentAlpha.current)
                             )
                         }
-//                        ThemedIcon(
-//                            Icons.Default.Add,
-//                            contentDescription = "Link"
-//                        )
                     },
                     singleLine = true,
                     placeholder = { Text(text = stringResource(R.string.enter_link)) },
                     colors = TextFieldDefaults.colors(
-//                        focusedContainerColor = Color.Transparent,
-//                        unfocusedContainerColor = Color.Transparent,
-//                        disabledContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                     )
                 )
+                Divider()
 
 
-                for (link2 in wishItem.toValueOfNull()?.wish?.links ?: emptyList()) {
-                    TextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = link2,
-                        onValueChange = {
-
-                        },
-                        readOnly = true,
-                        trailingIcon = {
-                            IconButton(
-                                onClick = {
-
-                                }
-                            ) {
-                                Icon(
-                                    Icons.Default.Delete,
-                                    contentDescription = "Delete Link",
-                                    tint = MaterialTheme.colorScheme.error.copy(alpha = LocalContentAlpha.current)
-                                )
-                            }
-//                        ThemedIcon(
-//                            Icons.Default.Add,
-//                            contentDescription = "Link"
-//                        )
-                        },
-                        singleLine = true,
-                        colors = TextFieldDefaults.colors(
-//                        focusedContainerColor = Color.Transparent,
-//                        unfocusedContainerColor = Color.Transparent,
-//                        disabledContainerColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
+                for (linkItem in wishItem.toValueOfNull()?.wish?.links?.reversed() ?: emptyList()) {
+                    val annotatedLinkString: AnnotatedString = buildAnnotatedString {
+                        val linkHost = Uri.parse(linkItem).host ?: linkItem
+                        append(linkHost)
+                        addStyle(
+                            style = SpanStyle(
+                                color = MaterialTheme.colorScheme.primary,
+                                textDecoration = TextDecoration.Underline,
+                                fontWeight = FontWeight.Medium,
+                            ),
+                            start = 0,
+                            end = linkHost.length
                         )
-                    )
+                        addStringAnnotation(
+                            tag = "URL",
+                            annotation = linkItem,
+                            start = 0,
+                            end = linkHost.length
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(TextFieldDefaults.MinHeight)
+                            .padding(start = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        ClickableText(
+                            style = LocalTextStyle.current,
+                            text = annotatedLinkString,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            onClick = {
+                                annotatedLinkString
+                                    .getStringAnnotations("URL", it, it)
+                                    .firstOrNull()?.let { stringAnnotation ->
+                                        uriHandler.openUri(stringAnnotation.item)
+                                    }
+                            }
+                        )
+
+                        IconButton(onClick = { openDeleteLinkConfirmationDialog.value = Optional.of(linkItem) }) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Delete Link",
+                                tint = MaterialTheme.colorScheme.error.copy(alpha = LocalContentAlpha.current)
+                            )
+                        }
+                    }
+                    Divider()
                 }
 
-//                Spacer(modifier = Modifier.height(12.dp))
-//
-//                val wishItemValue = wishItem.toValueOfNull()
-//                val pd = PaddingValues(start = 16.dp, end = 16.dp)
-//                when (val linkPreviewState = wishItemValue?.linkPreviewState) {
-//                    is Data -> {
-//                        LinkPreview(
-//                            linkInfo = linkPreviewState.linkInfo,
-//                            url = wishItemValue.wish.link,
-//                            paddingValues = pd,
-//                            onLinkPreviewClick = onLinkPreviewClick,
-//                        )
-//                    }
-//                    is Loading -> {
-//                        LinkPreviewLoading(pd)
-//                    }
-//                    is NoData -> {
-//                        LinkPreview(
-//                            linkInfo = LinkInfo(title = stringResource(R.string.open_link)),
-//                            url = wishItemValue.wish.link,
-//                            paddingValues = pd,
-//                            onLinkPreviewClick = onLinkPreviewClick,
-//                        )
-//                    }
-//                    is None -> {
-//                        //nothing
-//                    }
-//                    else -> {
-//                        //nothing
-//                    }
-//                }
                 Spacer(modifier = Modifier.height(16.dp))
 
                 val tags = wishItem.toValueOfNull()?.wish?.tags ?: emptyList()
@@ -407,15 +388,15 @@ fun WishDetailedScreen(
         }
     }
 
-    val wishToDelete = openDialog.value
+    val wishToDelete = openDeleteWishConfirmationDialog.value
     if (wishToDelete.isPresent) {
         AlertDialog(
-            onDismissRequest = { openDialog.value = Optional.empty() },
+            onDismissRequest = { openDeleteWishConfirmationDialog.value = Optional.empty() },
             title = { Text(stringResource(R.string.delete_wish_title)) },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        openDialog.value = Optional.empty()
+                        openDeleteWishConfirmationDialog.value = Optional.empty()
                         viewModel.onDeleteWishConfirmed()
                         appViewModel.onDeleteWishConfirmed(viewModel.wishId)
                         onBackPressed()
@@ -428,7 +409,36 @@ fun WishDetailedScreen(
             },
             dismissButton = {
                 TextButton(
-                    onClick = { openDialog.value = Optional.empty() }
+                    onClick = { openDeleteWishConfirmationDialog.value = Optional.empty() }
+                ) {
+                    Text(
+                        stringResource(R.string.cancel),
+                    )
+                }
+            }
+        )
+    }
+
+    val linkToDeleteOptional = openDeleteLinkConfirmationDialog.value
+    if (linkToDeleteOptional.isPresent) {
+        AlertDialog(
+            onDismissRequest = { openDeleteLinkConfirmationDialog.value = Optional.empty() },
+            title = { Text(stringResource(R.string.delete_wish_link_title, linkToDeleteOptional.get())) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        openDeleteLinkConfirmationDialog.value = Optional.empty()
+                        viewModel.onDeleteWishLinkConfirmed(linkToDeleteOptional.get())
+                    }
+                ) {
+                    Text(
+                        stringResource(R.string.delete)
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { openDeleteLinkConfirmationDialog.value = Optional.empty() }
                 ) {
                     Text(
                         stringResource(R.string.cancel),

@@ -92,6 +92,14 @@ class WishDetailedViewModel @Inject constructor(
         viewModelScope.cancel()
     }
 
+    fun onDeleteWishLinkConfirmed(link: String) {
+        val currentLinks = uiState.value.toValueOfNull()?.wish?.links ?: return
+        launchSafe {
+            val newLinkString = LinksAdapter.removeLinkAndGetAccumulatedString(link, currentLinks)
+            wishesRepository.updateWishLink(newLinkString, wishId)
+        }
+    }
+
     fun onLinkPreviewClick() {
         analyticsRepository.trackEvent(WishDetailedWishLinkClickedEvent)
     }

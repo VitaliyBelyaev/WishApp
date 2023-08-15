@@ -34,6 +34,7 @@
     <string name="delete_tag_title">¿Eliminar etiqueta?</string>
     <string name="delete_tag_description">Borraremos esta etiqueta y la quitaremos de todos tus deseos. Tus deseos no serán eliminados.</string>
     <string name="delete_wish_title">¿Eliminar deseo?</string>
+    <string name="delete_wish_link_title">¿Eliminar enlace %s?</string>
     <string name="delete_wishes_title">¿Eliminar los deseos seleccionados?</string>
     <string name="fail_to_open_link">No se pudo abrir el enlace</string>
     <string name="open_link">Enlace abierto</string>
