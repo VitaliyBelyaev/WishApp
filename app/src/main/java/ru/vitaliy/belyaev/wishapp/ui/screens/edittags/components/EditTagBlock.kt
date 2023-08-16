@@ -102,7 +102,7 @@ fun EditTagBlock(
                 ThemedIcon(
                     painterResource(R.drawable.ic_delete),
                     contentDescription = "Delete",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.error
                 )
             }
 

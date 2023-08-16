@@ -26,7 +26,6 @@ import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -82,6 +81,7 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
+import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
@@ -318,7 +318,7 @@ fun WishDetailedScreen(
                             Icon(
                                 Icons.Default.Delete,
                                 contentDescription = "Delete Link",
-                                tint = MaterialTheme.colorScheme.error.copy(alpha = LocalContentAlpha.current)
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = LocalContentAlpha.current)
                             )
                         }
                     }
@@ -390,61 +390,28 @@ fun WishDetailedScreen(
 
     val wishToDelete = openDeleteWishConfirmationDialog.value
     if (wishToDelete.isPresent) {
-        AlertDialog(
+        DestructiveConfirmationAlertDialog(
             onDismissRequest = { openDeleteWishConfirmationDialog.value = Optional.empty() },
             title = { Text(stringResource(R.string.delete_wish_title)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        openDeleteWishConfirmationDialog.value = Optional.empty()
-                        viewModel.onDeleteWishConfirmed()
-                        appViewModel.onDeleteWishConfirmed(viewModel.wishId)
-                        onBackPressed()
-                    }
-                ) {
-                    Text(
-                        stringResource(R.string.delete)
-                    )
-                }
+            confirmClick = {
+                openDeleteWishConfirmationDialog.value = Optional.empty()
+                viewModel.onDeleteWishConfirmed()
+                appViewModel.onDeleteWishConfirmed(viewModel.wishId)
+                onBackPressed()
             },
-            dismissButton = {
-                TextButton(
-                    onClick = { openDeleteWishConfirmationDialog.value = Optional.empty() }
-                ) {
-                    Text(
-                        stringResource(R.string.cancel),
-                    )
-                }
-            }
         )
     }
 
     val linkToDeleteOptional = openDeleteLinkConfirmationDialog.value
     if (linkToDeleteOptional.isPresent) {
-        AlertDialog(
+        DestructiveConfirmationAlertDialog(
             onDismissRequest = { openDeleteLinkConfirmationDialog.value = Optional.empty() },
-            title = { Text(stringResource(R.string.delete_wish_link_title, linkToDeleteOptional.get())) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        openDeleteLinkConfirmationDialog.value = Optional.empty()
-                        viewModel.onDeleteWishLinkConfirmed(linkToDeleteOptional.get())
-                    }
-                ) {
-                    Text(
-                        stringResource(R.string.delete)
-                    )
-                }
+            title = { Text(stringResource(R.string.delete_wish_link_title)) },
+            text = { Text(linkToDeleteOptional.get()) },
+            confirmClick = {
+                openDeleteLinkConfirmationDialog.value = Optional.empty()
+                viewModel.onDeleteWishLinkConfirmed(linkToDeleteOptional.get())
             },
-            dismissButton = {
-                TextButton(
-                    onClick = { openDeleteLinkConfirmationDialog.value = Optional.empty() }
-                ) {
-                    Text(
-                        stringResource(R.string.cancel),
-                    )
-                }
-            }
         )
     }
 }

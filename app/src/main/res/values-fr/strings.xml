@@ -34,7 +34,7 @@
     <string name="delete_tag_title">Supprimer le libellé ?</string>
     <string name="delete_tag_description">Nous supprimerons ce libellé et le supprimerons de tous vos souhaits. Vos souhaits ne seront pas supprimés.</string>
     <string name="delete_wish_title">Supprimer le souhait ?</string>
-    <string name="delete_wish_link_title">Supprimer le lien %s ?</string>
+    <string name="delete_wish_link_title">Supprimer le lien ?</string>
     <string name="delete_wishes_title">Supprimer les souhaits sélectionnés ?</string>
     <string name="fail_to_open_link">Impossible d\'ouvrir le lien</string>
     <string name="open_link">Ouvrir le lien</string>

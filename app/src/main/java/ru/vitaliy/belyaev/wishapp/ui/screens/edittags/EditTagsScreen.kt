@@ -33,6 +33,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.util.Optional
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
+import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.components.EditTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
@@ -110,27 +111,14 @@ fun EditTagsScreen(
 
         val tagToDelete = openDialog.value
         if (tagToDelete.isPresent) {
-            AlertDialog(
+            DestructiveConfirmationAlertDialog(
                 onDismissRequest = { openDialog.value = Optional.empty() },
                 title = { Text(stringResource(R.string.delete_tag_title)) },
                 text = { Text(stringResource(R.string.delete_tag_description)) },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            viewModel.onTagRemoveClicked(tagToDelete.get())
-                            openDialog.value = Optional.empty()
-                        }
-                    ) {
-                        Text(stringResource(R.string.delete))
-                    }
+                confirmClick = {
+                    viewModel.onTagRemoveClicked(tagToDelete.get())
+                    openDialog.value = Optional.empty()
                 },
-                dismissButton = {
-                    TextButton(
-                        onClick = { openDialog.value = Optional.empty() }
-                    ) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                }
             )
         }
     }

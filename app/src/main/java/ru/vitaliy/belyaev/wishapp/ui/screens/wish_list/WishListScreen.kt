@@ -42,6 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import java.util.Optional
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
@@ -49,6 +50,7 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
+import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheet
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.EmptyWishesPlaceholder
@@ -60,6 +62,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.MoveDirection
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishesFilter
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
+import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppButtonColors
 import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 
@@ -243,30 +246,13 @@ fun WishListScreen(
             }
 
             if (openDeleteConfirmDialog.value) {
-                AlertDialog(
+                DestructiveConfirmationAlertDialog(
                     onDismissRequest = { openDeleteConfirmDialog.value = false },
                     title = { Text(stringResource(R.string.delete_wishes_title)) },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                openDeleteConfirmDialog.value = false
-                                viewModel.onDeleteSelectedClicked()
-                            }
-                        ) {
-                            Text(
-                                stringResource(R.string.delete),
-                            )
-                        }
+                    confirmClick = {
+                        openDeleteConfirmDialog.value = false
+                        viewModel.onDeleteSelectedClicked()
                     },
-                    dismissButton = {
-                        TextButton(
-                            onClick = { openDeleteConfirmDialog.value = false }
-                        ) {
-                            Text(
-                                stringResource(R.string.cancel),
-                            )
-                        }
-                    }
                 )
             }
         }

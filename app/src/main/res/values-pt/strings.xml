@@ -34,7 +34,7 @@
     <string name="delete_tag_title">Excluir marcador?</string>
     <string name="delete_tag_description">Vamos excluir este marcador e removê-lo de todos os seus desejos. Seus desejos não serão excluídos.</string>
     <string name="delete_wish_title">Excluir desejo?</string>
-    <string name="delete_wish_link_title">Excluir link %s?</string>
+    <string name="delete_wish_link_title">Excluir link?</string>
     <string name="delete_wishes_title">Excluir desejos selecionados?</string>
     <string name="fail_to_open_link">Falha ao abrir o link</string>
     <string name="open_link">Link aberto</string>
