@@ -8,7 +8,7 @@ You can also group your wishes with labels and share wishes by the label.
 
 Written with Kotlin Multiplatform for Android and iOS platforms.<br/>
 
-Wishes and labels stored in SQLite database through SQLDelight, that placed in shared module and used by both Android and iOS app.<br/>
+Wishes and labels stored in SQLite database through SQLDelight, that placed in shared module and used by both Android and iOS apps.<br/>
 
 ## Kotlin Multiplatform stack and libs:
 - [SQLDelight](https://github.com/cashapp/sqldelight)
