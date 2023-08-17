@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="splash_bg_color">@color/primaryColor</color>
+    <color name="splash_bg_color">@color/launcherIconPrimaryColor</color>
     <color name="splash_icon_color">@android:color/white</color>
 </resources>
