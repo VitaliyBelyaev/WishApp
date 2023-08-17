@@ -1,6 +1,5 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -14,13 +13,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material3.Divider
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,56 +31,33 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishesFilter
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 
+@ExperimentalMaterial3Api
 @ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
 @Composable
 fun TagsSheetContent(
-    modalBottomSheetState: ModalBottomSheetState,
     tagsWithWishCount: List<TagWithWishCount>,
     wishesFilter: WishesFilter,
     currentWishesCount: Long,
     completedWishesCount: Long,
     onNavItemSelected: (WishesFilter) -> Unit,
     onEditTagsClicked: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
 
-    val scope = rememberCoroutineScope()
-
-    BackHandler(enabled = modalBottomSheetState.isVisible) {
-        scope.launch { modalBottomSheetState.hide() }
-    }
-
     ConstraintLayout(modifier = modifier) {
-        val (closeButtonRef, scrollableRef, staticRef) = createRefs()
-
-        IconButton(
-            onClick = { scope.launch { modalBottomSheetState.hide() } },
-            modifier = Modifier
-                .constrainAs(closeButtonRef) {
-                    top.linkTo(parent.top, margin = 8.dp)
-                    end.linkTo(parent.end, margin = 8.dp)
-                }
-        ) {
-            ThemedIcon(
-                painter = painterResource(R.drawable.ic_close),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(32.dp)
-            )
-        }
+        val (scrollableRef, staticRef) = createRefs()
 
         LazyColumn(
             modifier = Modifier.constrainAs(scrollableRef) {
                 height = Dimension.preferredWrapContent
-                top.linkTo(closeButtonRef.bottom)
+                top.linkTo(parent.top)
                 bottom.linkTo(staticRef.top)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
@@ -99,7 +73,6 @@ fun TagsSheetContent(
                     isSelected = isTagSelected,
                     onClick = {
                         onNavItemSelected(WishesFilter.ByTag(tag))
-                        scope.launch { modalBottomSheetState.hide() }
                     }
                 )
             }
@@ -120,7 +93,6 @@ fun TagsSheetContent(
                 isSelected = wishesFilter is WishesFilter.All,
                 onClick = {
                     onNavItemSelected(WishesFilter.All)
-                    scope.launch { modalBottomSheetState.hide() }
                 }
             )
             NavMenuItemBlock(
@@ -130,7 +102,6 @@ fun TagsSheetContent(
                 isSelected = wishesFilter is WishesFilter.Completed,
                 onClick = {
                     onNavItemSelected(WishesFilter.Completed)
-                    scope.launch { modalBottomSheetState.hide() }
                 }
             )
             if (tagsWithWishCount.isNotEmpty()) {
@@ -138,12 +109,7 @@ fun TagsSheetContent(
                     icon = painterResource(R.drawable.ic_edit),
                     title = stringResource(R.string.edit_tags),
                     isSelected = false,
-                    onClick = {
-                        scope.launch {
-                            modalBottomSheetState.hide()
-                            onEditTagsClicked()
-                        }
-                    }
+                    onClick = onEditTagsClicked
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))

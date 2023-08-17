@@ -18,7 +18,7 @@ import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 
 @ExperimentalMaterialApi
 @Composable
-fun WishAppBottomSheet(
+fun WishAppBottomSheetM2(
     sheetContent: @Composable ColumnScope.() -> Unit,
     modifier: Modifier = Modifier,
     sheetState: ModalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden),
