@@ -36,7 +36,7 @@ fun DestructiveConfirmationAlertDialog(
     onDismissRequest = onDismissRequest,
     confirmButton = {
         TextButton(
-            colors = WishAppButtonColors.destructiveTextButtonColors(),
+            colors = ButtonDefaults.filledTonalButtonColors(),
             onClick = { confirmClick() }
         ) { confirmButtonText() }
     },

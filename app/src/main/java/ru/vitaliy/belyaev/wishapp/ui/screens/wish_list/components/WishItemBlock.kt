@@ -28,8 +28,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
@@ -111,44 +109,18 @@ fun WishItemBlock(
                 } else {
                     stringResource(R.string.without_title) to MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                 }
-                ConstraintLayout {
-                    val (titleRef, linkIconRef) = createRefs()
-                    Text(
-                        text = title,
-                        color = titleColor,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            textDecoration = if (wishItem.isCompleted) TextDecoration.LineThrough else null,
-                            fontSize = 20.sp
-                        ),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.constrainAs(titleRef) {
-                            width = Dimension.preferredWrapContent
-                            start.linkTo(parent.start)
-                            top.linkTo(parent.top)
-                            val marginEnd = if (wishItem.link.isNotBlank()) {
-                                36.dp
-                            } else {
-                                0.dp
-                            }
-                            end.linkTo(parent.end, margin = marginEnd)
-                        }
-                    )
-                    if (wishItem.link.isNotBlank()) {
-                        ThemedIcon(
-                            painterResource(R.drawable.ic_link),
-                            contentDescription = "Link",
-                            modifier = Modifier
-                                .size(20.dp)
-                                .constrainAs(linkIconRef) {
-                                    start.linkTo(titleRef.end, margin = 8.dp)
-                                    end.linkTo(parent.end)
-                                    top.linkTo(titleRef.top)
-                                    bottom.linkTo(titleRef.bottom)
-                                }
-                        )
-                    }
-                }
+
+                Text(
+                    text = title,
+                    color = titleColor,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        textDecoration = if (wishItem.isCompleted) TextDecoration.LineThrough else null,
+                    ),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
                 if (wishItem.comment.isNotBlank()) {
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
@@ -159,6 +131,25 @@ fun WishItemBlock(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
+
+                if (wishItem.link.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        ThemedIcon(
+                            painterResource(R.drawable.ic_link),
+                            contentDescription = "Link",
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            text = "${wishItem.links.size}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.padding(start = 4.dp),
+                        )
+                    }
+                }
+
                 if (wishItem.tags.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(10.dp))
                     TagsBlock(
