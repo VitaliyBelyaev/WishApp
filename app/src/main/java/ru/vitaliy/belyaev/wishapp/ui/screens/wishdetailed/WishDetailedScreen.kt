@@ -270,7 +270,11 @@ fun WishDetailedScreen(
 
                 for (linkItem in wishItem.toValueOfNull()?.wish?.links?.reversed() ?: emptyList()) {
                     val annotatedLinkString: AnnotatedString = buildAnnotatedString {
-                        val linkHost = Uri.parse(linkItem).host ?: linkItem
+                        val linkHost: String = try {
+                            Uri.parse(linkItem).host ?: linkItem
+                        } catch (e: Exception) {
+                            linkItem
+                        }
                         append(linkHost)
                         addStyle(
                             style = SpanStyle(
