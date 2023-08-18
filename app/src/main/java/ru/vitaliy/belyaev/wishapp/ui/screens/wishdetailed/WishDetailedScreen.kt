@@ -85,6 +85,7 @@ import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
+import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTextFieldColors
 import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 import timber.log.Timber
@@ -209,13 +210,7 @@ fun WishDetailedScreen(
                             style = MaterialTheme.typography.headlineMedium,
                         )
                     },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                    ),
+                    colors = WishAppTextFieldColors.wishDetailedTextFieldColors(),
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Sentences
                     )
@@ -235,13 +230,7 @@ fun WishDetailedScreen(
                         viewModel.onWishCommentChanged(newValue)
                     },
                     placeholder = { Text(text = stringResource(R.string.enter_comment)) },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                    ),
+                    colors = WishAppTextFieldColors.wishDetailedTextFieldColors(),
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Sentences
                     )
@@ -274,13 +263,7 @@ fun WishDetailedScreen(
                     },
                     singleLine = true,
                     placeholder = { Text(text = stringResource(R.string.enter_link)) },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                    )
+                    colors = WishAppTextFieldColors.wishDetailedTextFieldColors(),
                 )
                 Divider()
 
