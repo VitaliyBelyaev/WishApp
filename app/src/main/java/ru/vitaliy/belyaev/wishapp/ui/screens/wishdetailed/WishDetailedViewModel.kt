@@ -11,8 +11,11 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.entity.analytics.WishDetailedScreenShowEvent
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishDetailedAddLinkButtonClickedEvent
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishDetailedDeleteLinkClickedEvent
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishDetailedDeleteLinkConfirmedEvent
 import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishDetailedDeleteWishConfirmedEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishDetailedWishLinkClickedEvent
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishDetailedLinkClickedEvent
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_LINK
@@ -84,6 +87,7 @@ class WishDetailedViewModel @Inject constructor(
     }
 
     fun onAddLinkClicked(link: String) {
+        analyticsRepository.trackEvent(WishDetailedAddLinkButtonClickedEvent)
         val currentLinks = uiState.value.toValueOfNull()?.wish?.links ?: return
 
         launchSafe {
@@ -104,6 +108,7 @@ class WishDetailedViewModel @Inject constructor(
     }
 
     fun onDeleteWishLinkConfirmed(link: String) {
+        analyticsRepository.trackEvent(WishDetailedDeleteLinkConfirmedEvent)
         val currentLinks = uiState.value.toValueOfNull()?.wish?.links ?: return
         launchSafe {
             val newLinkString = LinksAdapter.removeLinkAndGetAccumulatedString(link, currentLinks)
@@ -112,7 +117,11 @@ class WishDetailedViewModel @Inject constructor(
     }
 
     fun onLinkClicked() {
-        analyticsRepository.trackEvent(WishDetailedWishLinkClickedEvent)
+        analyticsRepository.trackEvent(WishDetailedLinkClickedEvent)
+    }
+
+    fun onDeleteLinkClicked() {
+        analyticsRepository.trackEvent(WishDetailedDeleteLinkClickedEvent)
     }
 
     companion object {

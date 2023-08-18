@@ -323,12 +323,18 @@ fun WishDetailedScreen(
                                 annotatedLinkString
                                     .getStringAnnotations("URL", it, it)
                                     .firstOrNull()?.let { stringAnnotation ->
+                                        viewModel.onLinkClicked()
                                         openLink(stringAnnotation.item)
                                     }
                             }
                         )
 
-                        IconButton(onClick = { openDeleteLinkConfirmationDialog.value = Optional.of(linkItem) }) {
+                        IconButton(
+                            onClick = {
+                                viewModel.onDeleteLinkClicked()
+                                openDeleteLinkConfirmationDialog.value = Optional.of(linkItem)
+                            }
+                        ) {
                             Icon(
                                 Icons.Default.Delete,
                                 contentDescription = "Delete Link",
