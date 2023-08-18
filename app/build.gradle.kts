@@ -23,8 +23,8 @@ android {
         applicationId = "ru.vitaliy.belyaev.wishapp"
         minSdk = 23
         targetSdk = 33
-        versionCode = 19
-        versionName = "1.5.1"
+        versionCode = 20
+        versionName = "1.6.0"
 
         buildConfigField("String", amplitudeApiKey, apikeyProperties[amplitudeApiKey] as String)
 
