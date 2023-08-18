@@ -6,8 +6,10 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.AboutAppScreen
@@ -24,28 +26,36 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.WishTagsScreen
 @ExperimentalCoroutinesApi
 @ExperimentalMaterialApi
 @Composable
-fun Navigation(onShareClick: (List<WishEntity>) -> Unit) {
-    val navController = rememberAnimatedNavController()
+fun Navigation(
+    navController: NavHostController,
+    onShareClick: (List<WishEntity>) -> Unit
+) {
     WishAppAnimatedNavHost(
         navController = navController,
         startDestination = MainRoute.VALUE
     ) {
         composable(MainRoute.VALUE) {
             WishListScreen(
-                openWishDetailed = { navController.navigate(WishDetailedRouteWithArgs.build(it.id)) },
-                onAddWishClicked = { navController.navigate(WishDetailedRoute.VALUE) },
+                openWishDetailed = { navController.navigate(WishDetailedRoute.buildRoute(wishId = it.id)) },
+                onAddWishClicked = { navController.navigate(WishDetailedRoute.buildRoute()) },
                 onSettingIconClicked = { navController.navigate(SettingsRoute.VALUE) },
                 onShareClick = onShareClick,
                 onEditTagClick = { navController.navigate(EditTagRoute.VALUE) }
             )
         }
-        composable(WishDetailedRoute.VALUE) {
-            WishDetailedScreen(
-                onBackPressed = { navController.popBackStack() },
-                onWishTagsClicked = { navController.navigate(WishTagsRoute.build(it)) }
+        composable(
+            route = WishDetailedRoute.VALUE,
+            arguments = listOf(
+                navArgument(ARG_WISH_ID) {
+                    nullable = true
+                    type = NavType.StringType
+                },
+                navArgument(ARG_WISH_LINK) {
+                    nullable = true
+                    type = NavType.StringType
+                }
             )
-        }
-        composable(WishDetailedRouteWithArgs.VALUE) {
+        ) {
             WishDetailedScreen(
                 onBackPressed = { navController.popBackStack() },
                 onWishTagsClicked = { navController.navigate(WishTagsRoute.build(it)) }

@@ -15,6 +15,7 @@ import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishDetailedDel
 import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishDetailedWishLinkClickedEvent
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
+import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_LINK
 import ru.vitaliy.belyaev.wishapp.shared.domain.LinksAdapter
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.createEmptyWish
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
@@ -24,13 +25,23 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
 @ExperimentalCoroutinesApi
 @HiltViewModel
 class WishDetailedViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val wishesRepository: WishesRepository,
     private val analyticsRepository: AnalyticsRepository
 ) : BaseViewModel() {
 
     val inputWishId: String = savedStateHandle[ARG_WISH_ID] ?: ""
     lateinit var wishId: String
+
+    private val sharedLinkForNewWish: String = savedStateHandle[ARG_WISH_LINK] ?: ""
+
+    var linkInputString: String
+        get() {
+            return savedStateHandle[KEY_LINK_INPUT_STRING] ?: sharedLinkForNewWish
+        }
+        private set(value) {
+            savedStateHandle[KEY_LINK_INPUT_STRING] = value
+        }
 
     val uiState: MutableStateFlow<Optional<WishItem>> = MutableStateFlow(Optional.empty())
 
@@ -65,11 +76,11 @@ class WishDetailedViewModel @Inject constructor(
     }
 
     fun onWishLinkChanged(newValue: String) {
-        val isValidLink = Patterns.WEB_URL.matcher(newValue).matches()
+        linkInputString = newValue
+    }
 
-        uiState.value.toValueOfNull()?.let {
-            uiState.value = Optional.of(it.copy(isAddLinkButtonEnabled = isValidLink))
-        }
+    fun isLinkValid(link: String): Boolean {
+        return Patterns.WEB_URL.matcher(link).matches()
     }
 
     fun onAddLinkClicked(link: String) {
@@ -100,21 +111,12 @@ class WishDetailedViewModel @Inject constructor(
         }
     }
 
-    fun onLinkPreviewClick() {
+    fun onLinkClicked() {
         analyticsRepository.trackEvent(WishDetailedWishLinkClickedEvent)
     }
 
-//    private suspend fun tryLoadLinkPreview(link: String, wish: WishEntity) {
-//        if (link.isBlank()) {
-//            cachedLinkPreviewState = None
-//            val wishItem = wish.toWishItem(cachedLinkPreviewState)
-//            uiState.value = Optional.of(wishItem)
-//        } else {
-//            val wishItemLoading = wish.toWishItem(Loading)
-//            uiState.value = Optional.of(wishItemLoading)
-//            cachedLinkPreviewState = getLinkPreviewInteractor(link)
-//            val wishItem = wish.toWishItem(cachedLinkPreviewState)
-//            uiState.value = Optional.of(wishItem)
-//        }
-//    }
+    companion object {
+
+        private const val KEY_LINK_INPUT_STRING = "KEY_LINK_INPUT_STRING"
+    }
 }

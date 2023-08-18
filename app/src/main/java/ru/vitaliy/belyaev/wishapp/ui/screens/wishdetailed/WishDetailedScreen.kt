@@ -77,6 +77,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.util.Optional
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.entity.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
@@ -84,7 +85,9 @@ import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
+import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalFoundationApi
@@ -116,6 +119,17 @@ fun WishDetailedScreen(
     val scrollState: ScrollState = rememberScrollState()
     val systemUiController = rememberSystemUiController()
     val bottomBarHeight = 56.dp
+
+    val openLink: (String) -> Unit = { link ->
+        try {
+            uriHandler.openUri(link)
+        } catch (error: Throwable) {
+            Timber.e(error)
+            scope.launch {
+                snackbarHostState.showDismissableSnackbar(context.getString(R.string.fail_to_open_link))
+            }
+        }
+    }
 
     BackHandler { handleBackPressed() }
 
@@ -152,7 +166,7 @@ fun WishDetailedScreen(
             return@Scaffold
         }
         var title: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.title }) }
-        var link: String by remember { mutableStateOf("") }
+        var link: String by remember { mutableStateOf(viewModel.linkInputString) }
         var comment: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.comment }) }
         val isCompleted: Boolean = wishItem.toValueOfNull()?.wish?.isCompleted ?: false
 
@@ -212,7 +226,6 @@ fun WishDetailedScreen(
                     }
                     onDispose { }
                 }
-//                Spacer(modifier = Modifier.height(12.dp))
 
                 TextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -248,8 +261,9 @@ fun WishDetailedScreen(
                             onClick = {
                                 viewModel.onAddLinkClicked(link)
                                 link = ""
+                                viewModel.onWishLinkChanged(link)
                             },
-                            enabled = wishItem.toValueOfNull()?.isAddLinkButtonEnabled == true
+                            enabled = viewModel.isLinkValid(link)
                         ) {
                             Icon(
                                 Icons.Default.Add,
@@ -309,7 +323,7 @@ fun WishDetailedScreen(
                                 annotatedLinkString
                                     .getStringAnnotations("URL", it, it)
                                     .firstOrNull()?.let { stringAnnotation ->
-                                        uriHandler.openUri(stringAnnotation.item)
+                                        openLink(stringAnnotation.item)
                                     }
                             }
                         )

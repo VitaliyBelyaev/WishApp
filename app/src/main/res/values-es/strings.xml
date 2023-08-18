@@ -48,4 +48,5 @@
     <string name="empty_tagged_wishes_message">Aún no has añadido la etiqueta %s a ningún deseo</string>
     <string name="share_app">Comparta la aplicación</string>
     <string name="share_app_text">Pruebe esta aplicación para almacenar y compartir sus deseos y https://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
+    <string name="invalid_link_error_message">Enlace inválido</string>
 </resources>

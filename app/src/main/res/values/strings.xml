@@ -48,4 +48,5 @@
     <string name="empty_tagged_wishes_message">You haven\'t added label %s to any wish yet</string>
     <string name="share_app">Share app</string>
     <string name="share_app_text">Try this app for storing and sharing your wishes\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
+    <string name="invalid_link_error_message">Invalid link</string>
 </resources>

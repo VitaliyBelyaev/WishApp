@@ -49,4 +49,5 @@
     <string name="empty_tagged_wishes_message">Ви ще не додали ярлик %s ні на одну хотелку</string>
     <string name="share_app">Поділитися додатком</string>
     <string name="share_app_text">Спробуй це додаток для зберігання своїх хотелок з можливістю ділитися ними через будь-месенджер\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
+    <string name="invalid_link_error_message">Недійсне посилання</string>
 </resources>
