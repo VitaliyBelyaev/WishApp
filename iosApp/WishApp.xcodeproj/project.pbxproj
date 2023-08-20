@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		DBBCD02E2D8F4C219DBA6628 /* Pods_WishApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE82C3BFCB066E79A9355667 /* Pods_WishApp.framework */; };
+		E325B4612A926C09005DD35D /* AppKeys.plist in Resources */ = {isa = PBXBuildFile; fileRef = E325B4602A926C09005DD35D /* AppKeys.plist */; };
 		ED1750902A373F1000665949 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED17508F2A373F1000665949 /* SettingsView.swift */; };
 		ED1750922A37452900665949 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1750912A37452900665949 /* MainContentView.swift */; };
 		ED1750952A38C97C00665949 /* WishListContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1750942A38C97C00665949 /* WishListContentView.swift */; };
@@ -70,6 +71,7 @@
 		09C1248ADD095BAC97F25AF2 /* Pods-WishApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WishApp.debug.xcconfig"; path = "Target Support Files/Pods-WishApp/Pods-WishApp.debug.xcconfig"; sourceTree = "<group>"; };
 		2571903193AD706D91A31376 /* Pods-WishApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WishApp.release.xcconfig"; path = "Target Support Files/Pods-WishApp/Pods-WishApp.release.xcconfig"; sourceTree = "<group>"; };
 		CE82C3BFCB066E79A9355667 /* Pods_WishApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WishApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E325B4602A926C09005DD35D /* AppKeys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = AppKeys.plist; sourceTree = "<group>"; };
 		ED17508F2A373F1000665949 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		ED1750912A37452900665949 /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
 		ED1750942A38C97C00665949 /* WishListContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishListContentView.swift; sourceTree = "<group>"; };
@@ -254,6 +256,7 @@
 				ED1750992A38D09B00665949 /* AppViewModel.swift */,
 				ED7914212A4DDA9400E7FF0C /* GoogleService-Info.plist */,
 				ED6DB19D29B4F21F00A11CA3 /* Preview Content */,
+				E325B4602A926C09005DD35D /* AppKeys.plist */,
 			);
 			path = WishApp;
 			sourceTree = "<group>";
@@ -482,6 +485,7 @@
 			files = (
 				ED6DB19F29B4F21F00A11CA3 /* Preview Assets.xcassets in Resources */,
 				ED3973CC2A28F33C00DB0896 /* InfoPlist.strings in Resources */,
+				E325B4612A926C09005DD35D /* AppKeys.plist in Resources */,
 				ED3973C62A28F27A00DB0896 /* Localizable.strings in Resources */,
 				ED2555BF2A2A3B0F00678E7C /* Localizable.stringsdict in Resources */,
 				ED6DB19C29B4F21F00A11CA3 /* Assets.xcassets in Resources */,
