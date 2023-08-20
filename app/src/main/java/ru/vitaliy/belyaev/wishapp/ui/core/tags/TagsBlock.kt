@@ -18,13 +18,13 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.flowlayout.FlowRow
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.data.database.Tag
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 
 @Composable
 fun TagsBlock(
     modifier: Modifier = Modifier,
-    tags: List<Tag>,
+    tags: List<TagEntity>,
     textSize: TextUnit,
     onClick: () -> Unit,
     onAddNewTagClick: (() -> Unit)? = null

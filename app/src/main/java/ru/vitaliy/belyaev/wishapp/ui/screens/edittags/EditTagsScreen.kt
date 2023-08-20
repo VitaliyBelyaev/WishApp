@@ -32,11 +32,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.util.Optional
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.data.database.Tag
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
+import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.components.EditTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
+import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 
 @ExperimentalMaterial3Api
 @ExperimentalComposeUiApi
@@ -47,7 +49,7 @@ fun EditTagsScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val editTagItems: List<EditTagItem> by viewModel.uiState.collectAsState()
-    val openDialog: MutableState<Optional<Tag>> = remember { mutableStateOf(Optional.empty()) }
+    val openDialog: MutableState<Optional<TagEntity>> = remember { mutableStateOf(Optional.empty()) }
     val lazyListState: LazyListState = rememberLazyListState()
 
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -58,6 +60,8 @@ fun EditTagsScreen(
 
     BackHandler { handleBackPressed() }
 
+    trackScreenShow { viewModel.trackScreenShow() }
+
     val systemUiController = rememberSystemUiController()
     val navBarColor = CommonColors.navBarColor()
     LaunchedEffect(key1 = Unit) {
@@ -66,13 +70,13 @@ fun EditTagsScreen(
         )
     }
 
-    val onTagClick: (Tag) -> Unit = {
+    val onTagClick: (TagEntity) -> Unit = {
         viewModel.onTagClicked(it)
     }
-    val onEditDoneClick: (String, Tag) -> Unit = { newTitle, tag ->
+    val onEditDoneClick: (String, TagEntity) -> Unit = { newTitle, tag ->
         viewModel.onEditTagDoneClicked(newTitle, tag)
     }
-    val onRemoveClick: (Tag) -> Unit = {
+    val onRemoveClick: (TagEntity) -> Unit = {
         openDialog.value = Optional.of(it)
     }
 
@@ -107,27 +111,14 @@ fun EditTagsScreen(
 
         val tagToDelete = openDialog.value
         if (tagToDelete.isPresent) {
-            AlertDialog(
+            DestructiveConfirmationAlertDialog(
                 onDismissRequest = { openDialog.value = Optional.empty() },
                 title = { Text(stringResource(R.string.delete_tag_title)) },
                 text = { Text(stringResource(R.string.delete_tag_description)) },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            viewModel.onTagRemoveClicked(tagToDelete.get())
-                            openDialog.value = Optional.empty()
-                        }
-                    ) {
-                        Text(stringResource(R.string.delete))
-                    }
+                confirmClick = {
+                    viewModel.onTagRemoveClicked(tagToDelete.get())
+                    openDialog.value = Optional.empty()
                 },
-                dismissButton = {
-                    TextButton(
-                        onClick = { openDialog.value = Optional.empty() }
-                    ) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                }
             )
         }
     }

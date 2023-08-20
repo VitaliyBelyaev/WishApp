@@ -10,11 +10,11 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.data.database.Tag
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 
 @Composable
-fun RemoveTagBlock(tag: Tag, onRemoveClick: (Tag) -> Unit) {
+fun RemoveTagBlock(tag: TagEntity, onRemoveClick: (TagEntity) -> Unit) {
 
     ConstraintLayout(
         modifier = Modifier

@@ -34,6 +34,7 @@
     <string name="delete_tag_title">Supprimer le libellé ?</string>
     <string name="delete_tag_description">Nous supprimerons ce libellé et le supprimerons de tous vos souhaits. Vos souhaits ne seront pas supprimés.</string>
     <string name="delete_wish_title">Supprimer le souhait ?</string>
+    <string name="delete_wish_link_title">Supprimer le lien ?</string>
     <string name="delete_wishes_title">Supprimer les souhaits sélectionnés ?</string>
     <string name="fail_to_open_link">Impossible d\'ouvrir le lien</string>
     <string name="open_link">Ouvrir le lien</string>
@@ -47,4 +48,5 @@
     <string name="empty_tagged_wishes_message">Vous n\'avez encore ajouté l\'étiquette %s à aucun souhait</string>
     <string name="share_app">Partager l\'application</string>
     <string name="share_app_text">Essayez cette application pour stocker et partager vos souhaits\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
+    <string name="invalid_link_error_message">Lien invalide</string>
 </resources>

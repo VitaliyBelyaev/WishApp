@@ -10,13 +10,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
-import ru.vitaliy.belyaev.wishapp.data.repository.wishes.WishesRepository
-import ru.vitaliy.belyaev.wishapp.data.repository.wishes.isEmpty
 import ru.vitaliy.belyaev.wishapp.entity.Theme
-import ru.vitaliy.belyaev.wishapp.entity.WishWithTags
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishDetailedChangeWishCompletenessClickedEvent
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishListShareClickedEvent
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.isEmpty
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.utils.SingleLiveEvent
 import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
@@ -30,7 +31,7 @@ class AppActivityViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider
 ) : BaseViewModel() {
 
-    val wishListToShareLiveData: SingleLiveEvent<List<WishWithTags>> = SingleLiveEvent()
+    val wishListToShareLiveData: SingleLiveEvent<List<WishEntity>> = SingleLiveEvent()
     val requestReviewLiveData: SingleLiveEvent<Unit> = SingleLiveEvent()
     private val _selectedTheme: MutableStateFlow<Theme> = MutableStateFlow(Theme.SYSTEM)
     val selectedTheme: StateFlow<Theme> = _selectedTheme
@@ -68,7 +69,7 @@ class AppActivityViewModel @Inject constructor(
 
     fun onWishScreenExit(wishId: String, isNewWish: Boolean) {
         launchSafe(dispatcherProvider.io()) {
-            val wish: WishWithTags = wishesRepository.getWishById(wishId)
+            val wish: WishEntity = wishesRepository.getWishById(wishId)
             if (wish.isEmpty()) {
                 wishesRepository.deleteWishesByIds(listOf(wishId))
                 return@launchSafe
@@ -80,22 +81,21 @@ class AppActivityViewModel @Inject constructor(
         }
     }
 
-    fun onDeleteWishClicked(wishId: String) {
+    fun onDeleteWishConfirmed(wishId: String) {
         launchSafe {
             wishesRepository.deleteWishesByIds(listOf(wishId))
         }
     }
 
     fun onCompleteWishButtonClicked(wishId: String, oldIsCompleted: Boolean) {
+        analyticsRepository.trackEvent(WishDetailedChangeWishCompletenessClickedEvent)
         launchSafe {
             wishesRepository.updateWishIsCompleted(!oldIsCompleted, wishId)
         }
     }
 
-    fun onShareWishListClicked(wishes: List<WishWithTags>) {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.SHARE) {
-            param(AnalyticsNames.Param.QUANTITY, wishes.size.toString())
-        }
+    fun onShareWishListClicked(wishes: List<WishEntity>) {
+        analyticsRepository.trackEvent(WishListShareClickedEvent)
         wishListToShareLiveData.postValue(wishes)
     }
 

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Tag %@ and %d wishes</key>
+	<dict>
+		<key>wishes</key>
+		<dict>
+			<key>other</key>
+			<string>Тег %1$@ используется в %2$d хотелках</string>
+			<key>zero</key>
+			<string>Тег %1$@ не используется</string>
+			<key>one</key>
+			<string>Тег %1$@ используется в %2$d хотелке</string>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+		</dict>
+		<key>tag</key>
+		<dict>
+			<key>other</key>
+			<string></string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+		</dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@tag@%#@wishes@</string>
+	</dict>
+</dict>
+</plist>

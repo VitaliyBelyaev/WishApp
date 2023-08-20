@@ -16,9 +16,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.shared.utils.PrivacyPolicy
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.core.webview.WebPageBlock
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
+import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalMaterialApi
@@ -29,6 +31,8 @@ fun PrivacyPolicyScreen(
 ) {
 
     val snackbarHostState = remember { SnackbarHostState() }
+
+    trackScreenShow { viewModel.trackScreenShow() }
 
     val systemUiController = rememberSystemUiController()
     val screenNavBarColor = CommonColors.navBarColor()
@@ -49,7 +53,7 @@ fun PrivacyPolicyScreen(
     ) { pd ->
         WebPageBlock(
             modifier = Modifier.padding(pd),
-            urlToRender = "https://vitaliybelyaev.github.io/",
+            urlToRender = PrivacyPolicy.url,
         )
     }
 }

@@ -4,10 +4,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import ru.vitaliy.belyaev.wishapp.data.database.Tag
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.data.repository.tags.TagsRepository
+import ru.vitaliy.belyaev.wishapp.entity.analytics.EditTagsScreenShowEvent
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.EditTagsDeleteTagConfirmedEvent
+import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.EditTagsRenameTagDoneClickedEvent
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
 
@@ -20,12 +22,9 @@ class EditTagsViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<List<EditTagItem>> = MutableStateFlow(emptyList())
     val uiState: StateFlow<List<EditTagItem>> = _uiState
 
-    private var currentEditingTag: Tag? = null
+    private var currentEditingTag: TagEntity? = null
 
     init {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.SCREEN_VIEW) {
-            param(AnalyticsNames.Param.SCREEN_NAME, "EditTags")
-        }
         launchSafe {
             tagsRepository
                 .observeAllTags()
@@ -35,27 +34,30 @@ class EditTagsViewModel @Inject constructor(
         }
     }
 
-    fun onTagClicked(tag: Tag) {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.TAG_CLICKED_FROM_EDIT_TAGS)
+    fun trackScreenShow() {
+        analyticsRepository.trackEvent(EditTagsScreenShowEvent)
+    }
+
+    fun onTagClicked(tag: TagEntity) {
         currentEditingTag = tag
         _uiState.value = _uiState.value.map { it.copy(isEditMode = it.tag == currentEditingTag) }
     }
 
-    fun onTagRemoveClicked(tag: Tag) {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.DELETE_TAG_FROM_EDIT_TAGS)
+    fun onTagRemoveClicked(tag: TagEntity) {
+        analyticsRepository.trackEvent(EditTagsDeleteTagConfirmedEvent)
         launchSafe {
-            tagsRepository.deleteTagsByIds(listOf(tag.tagId))
+            tagsRepository.deleteTagsByIds(listOf(tag.id))
         }
     }
 
-    fun onEditTagDoneClicked(newTitle: String, tag: Tag) {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.EDIT_TAG_DONE_CLICKED_FROM_EDIT_TAGS)
+    fun onEditTagDoneClicked(newTitle: String, tag: TagEntity) {
+        analyticsRepository.trackEvent(EditTagsRenameTagDoneClickedEvent)
         if (newTitle.isBlank()) {
             return
         }
         launchSafe {
             currentEditingTag = null
-            tagsRepository.updateTagTitle(newTitle.trim(), tag.tagId)
+            tagsRepository.updateTagTitle(newTitle.trim(), tag.id)
         }
     }
 }

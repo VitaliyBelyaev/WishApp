@@ -1,28 +1,34 @@
 package ru.vitaliy.belyaev.wishapp.di
 
-import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import ru.vitaliy.belyaev.wishapp.data.repository.DatabaseRepository
-import ru.vitaliy.belyaev.wishapp.data.repository.tags.TagsRepository
-import ru.vitaliy.belyaev.wishapp.data.repository.wishes.WishesRepository
-import ru.vitaliy.belyaev.wishapp.data.repository.wishtagrelation.WishTagRelationRepository
+import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishTagRelationRepository
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 
 @InstallIn(SingletonComponent::class)
 @Module
-interface DatabaseRepositoryModule {
+object DatabaseRepositoryModule {
 
     @Singleton
-    @Binds
-    fun bindWishesRepositoryRepository(impl: DatabaseRepository): WishesRepository
+    @Provides
+    fun provideWishesRepositoryRepository(
+        wishAppSdk: WishAppSdk
+    ): WishesRepository = wishAppSdk.databaseRepository
 
     @Singleton
-    @Binds
-    fun bindWishTagRelationRepositoryRepository(impl: DatabaseRepository): WishTagRelationRepository
+    @Provides
+    fun provideTagsRepositoryRepository(
+        wishAppSdk: WishAppSdk
+    ): TagsRepository = wishAppSdk.databaseRepository
 
     @Singleton
-    @Binds
-    fun bindTagsRepositoryRepository(impl: DatabaseRepository): TagsRepository
+    @Provides
+    fun provideWishTagRelationRepository(
+        wishAppSdk: WishAppSdk
+    ): WishTagRelationRepository = wishAppSdk.databaseRepository
 }

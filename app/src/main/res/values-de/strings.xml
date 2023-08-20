@@ -34,6 +34,7 @@
     <string name="delete_tag_title">Etikett löschen?</string>
     <string name="delete_tag_description">Wir löschen dieses Label und entfernen es aus allen Ihren Wünschen. Ihre Wünsche werden nicht gelöscht.</string>
     <string name="delete_wish_title">Wunsch löschen?</string>
+    <string name="delete_wish_link_title">Link löschen?</string>
     <string name="delete_wishes_title">Ausgewählte Wünsche löschen?</string>
     <string name="fail_to_open_link">Link konnte nicht geöffnet werden</string>
     <string name="open_link">Verbindung öffnen</string>
@@ -47,4 +48,5 @@
     <string name="empty_tagged_wishes_message">Sie haben Label %s noch keinem Wunsch hinzugefügt</string>
     <string name="share_app">App teilen</string>
     <string name="share_app_text">Probieren Sie diese App zum Speichern und Teilen Ihrer Wünsche aus\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
+    <string name="invalid_link_error_message">Ungültiger Link</string>
 </resources>

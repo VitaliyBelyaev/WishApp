@@ -34,6 +34,7 @@
     <string name="delete_tag_title">¿Eliminar etiqueta?</string>
     <string name="delete_tag_description">Borraremos esta etiqueta y la quitaremos de todos tus deseos. Tus deseos no serán eliminados.</string>
     <string name="delete_wish_title">¿Eliminar deseo?</string>
+    <string name="delete_wish_link_title">¿Eliminar enlace?</string>
     <string name="delete_wishes_title">¿Eliminar los deseos seleccionados?</string>
     <string name="fail_to_open_link">No se pudo abrir el enlace</string>
     <string name="open_link">Enlace abierto</string>
@@ -47,4 +48,5 @@
     <string name="empty_tagged_wishes_message">Aún no has añadido la etiqueta %s a ningún deseo</string>
     <string name="share_app">Comparta la aplicación</string>
     <string name="share_app_text">Pruebe esta aplicación para almacenar y compartir sus deseos y https://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
+    <string name="invalid_link_error_message">Enlace inválido</string>
 </resources>

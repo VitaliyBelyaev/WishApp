@@ -4,22 +4,18 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.ktx.Firebase
 import javax.inject.Singleton
+import ru.vitaliy.belyaev.wishapp.entity.analytics.AnalyticsEvent
 
 @Singleton
 class FirebaseAnalyticsRepository : AnalyticsRepository {
 
-    override fun trackEvent(eventName: String, block: ParametersBuilder.() -> Unit) {
-        val parametersBuilder = ParametersBuilder()
-        block.invoke(parametersBuilder)
-        val params = parametersBuilder.params
-        if (params.isEmpty()) {
-            Firebase.analytics.logEvent(eventName, null)
-        } else {
-            Firebase.analytics.logEvent(eventName) {
-                val iterator = params.iterator()
-                while (iterator.hasNext()) {
-                    val entry = iterator.next()
-                    param(entry.key, entry.value)
+    override fun trackEvent(event: AnalyticsEvent) {
+        Firebase.analytics.logEvent(event.name) {
+            event.params.entries.forEach { paramEntry ->
+                when (val paramValue = paramEntry.value) {
+                    is Double -> param(paramEntry.key, paramValue)
+                    is Long -> param(paramEntry.key, paramValue)
+                    else -> param(paramEntry.key, paramValue.toString())
                 }
             }
         }

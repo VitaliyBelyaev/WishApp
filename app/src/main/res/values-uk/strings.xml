@@ -35,6 +35,7 @@
     <string name="delete_tag_title">Видалити ярлик?</string>
     <string name="delete_tag_description">Ярлик буде видалено. Він зникне з усіх хотелок, причому самі хотелки збережеться.</string>
     <string name="delete_wish_title">Видалити хотелку?</string>
+    <string name="delete_wish_link_title">Видалити посилання?</string>
     <string name="delete_wishes_title">Видалити вибрані хотелки?</string>
     <string name="fail_to_open_link">Не вдалося відкрити посилання</string>
     <string name="open_link">Відкрити посилання</string>
@@ -48,4 +49,5 @@
     <string name="empty_tagged_wishes_message">Ви ще не додали ярлик %s ні на одну хотелку</string>
     <string name="share_app">Поділитися додатком</string>
     <string name="share_app_text">Спробуй це додаток для зберігання своїх хотелок з можливістю ділитися ними через будь-месенджер\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
+    <string name="invalid_link_error_message">Недійсне посилання</string>
 </resources>

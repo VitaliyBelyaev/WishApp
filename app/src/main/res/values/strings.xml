@@ -34,6 +34,7 @@
     <string name="delete_tag_title">Delete label?</string>
     <string name="delete_tag_description">We\'ll delete this label and remove it from all of your wishes. Your wishes wont\'t be deleted.</string>
     <string name="delete_wish_title">Delete wish?</string>
+    <string name="delete_wish_link_title">Delete link?</string>
     <string name="delete_wishes_title">Delete selected wishes?</string>
     <string name="fail_to_open_link">Failed to open link</string>
     <string name="open_link">Open link</string>
@@ -47,4 +48,5 @@
     <string name="empty_tagged_wishes_message">You haven\'t added label %s to any wish yet</string>
     <string name="share_app">Share app</string>
     <string name="share_app_text">Try this app for storing and sharing your wishes\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
+    <string name="invalid_link_error_message">Invalid link</string>
 </resources>

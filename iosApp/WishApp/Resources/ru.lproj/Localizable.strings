@@ -1,0 +1,47 @@
+/* 
+  Localizable.strings
+  WishApp
+
+  Created by Vitaliy on 01.06.2023.
+  
+*/
+"delete %@" = "Удалить %@?";
+"delete" = "Удалить";
+"close" = "Закрыть";
+"done" = "Готово";
+"shareTitle" = "Вот мой список хотелок:";
+
+"Main.title" = "Хотелки";
+"Main.all" = "Все";
+"Main.completed" = "Выполенные";
+"Main.tags" = "Теги";
+"Main.renameTag" = "Переименовать тег";
+"Main.deleteTag" = "Удалить тег";
+"Main.cancel" = "Отмена";
+"Main.done" = "Готово";
+
+"WishList.all" = "Все";
+"WishList.completed" = "Выполненные";
+"WishList.wishTitlePlaceholder" = "Без названия";
+
+"WishDetailed.title" = "Название";
+"WishDetailed.comment" = "Комментарий";
+"WishDetailed.links" = "Ссылки";
+"WishDetailed.tags" = "Теги";
+"WishDetailed.addTags" = "Добавить теги";
+"WishDetailed.markDone" = "Переместить в выполенные";
+"WishDetailed.markUndone" = "Переместить в текущие";
+"WishDetailed.markDoneShort" = "Выполнена";
+"WishDetailed.markUndoneShort" = "Не выполнена";
+
+"UpdateWishTags.prompt" = "Введите название тега";
+
+"Settings.title" = "Настройки";
+"Settings.backup" = "Сохранение данных";
+"Settings.theme" = "Тема приложения";
+"Settings.writeToSupport" = "Написать нам";
+"Settings.rateUs" = "Оцените нас в App Store";
+"Settings.aboutApp" = "О приложении";
+"Settings.description" = "Это приложение с открытым исходным кодом, код можно посмотреть [здесь](https://github.com/VitaliyBelyaev/WishApp)";
+"Settings.appVersion %@" = "Хотелки %@";
+"Settings.policy" = "Политика конфиденциальности";

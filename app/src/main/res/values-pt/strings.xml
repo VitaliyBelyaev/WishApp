@@ -34,6 +34,7 @@
     <string name="delete_tag_title">Excluir marcador?</string>
     <string name="delete_tag_description">Vamos excluir este marcador e removê-lo de todos os seus desejos. Seus desejos não serão excluídos.</string>
     <string name="delete_wish_title">Excluir desejo?</string>
+    <string name="delete_wish_link_title">Excluir link?</string>
     <string name="delete_wishes_title">Excluir desejos selecionados?</string>
     <string name="fail_to_open_link">Falha ao abrir o link</string>
     <string name="open_link">Link aberto</string>
@@ -47,4 +48,5 @@
     <string name="empty_tagged_wishes_message">Você ainda não adicionou o marcador %s a nenhum desejo</string>
     <string name="share_app">Compartilhe o aplicativo</string>
     <string name="share_app_text">Experimente este aplicativo para armazenar e compartilhar seus desejos\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
+    <string name="invalid_link_error_message">Link inválido</string>
 </resources>

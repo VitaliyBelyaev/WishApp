@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.data.database.Tag
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
 
@@ -69,5 +69,5 @@ fun TagItemBlock(tagItem: TagItem, onClick: (TagItem) -> Unit) {
 @Composable
 @Preview
 fun TagItemBlockPreview() {
-    TagItemBlock(TagItem(Tag("1", "Др"), false), {})
+    TagItemBlock(TagItem(TagEntity("1", "Др"), false), {})
 }

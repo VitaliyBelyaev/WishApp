@@ -49,6 +49,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.AddTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.components.TagItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
+import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalComposeUiApi
@@ -68,6 +69,8 @@ fun WishTagsScreen(
     }
 
     BackHandler { handleBackPressed() }
+
+    trackScreenShow { viewModel.trackScreenShow() }
 
     val systemUiController = rememberSystemUiController()
     val screenNavBarColor = CommonColors.navBarColor()

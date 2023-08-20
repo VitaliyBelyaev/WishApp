@@ -1,20 +1,33 @@
 package ru.vitaliy.belyaev.wishapp.navigation
 
 const val ARG_WISH_ID = "wishId"
+const val ARG_WISH_LINK = "wishLink"
 
 object MainRoute {
     const val VALUE = "main"
 }
 
 object WishDetailedRoute {
-    const val VALUE = "wish_detailed"
-}
 
-object WishDetailedRouteWithArgs {
-    const val VALUE = "${WishDetailedRoute.VALUE}/{$ARG_WISH_ID}"
+    const val VALUE = "wish_detailed?$ARG_WISH_ID={$ARG_WISH_ID}&$ARG_WISH_LINK={$ARG_WISH_LINK}"
 
-    fun build(wishId: String): String {
-        return "${WishDetailedRoute.VALUE}/$wishId"
+    fun buildRoute(
+        wishId: String? = null,
+        wishLink: String? = null
+    ): String {
+        return StringBuilder().apply {
+            append("wish_detailed")
+            var separator = "?"
+
+            if (!wishId.isNullOrBlank()) {
+                append("$separator$ARG_WISH_ID=$wishId")
+                separator = "&"
+            }
+
+            if (!wishLink.isNullOrBlank()) {
+                append("$separator$ARG_WISH_LINK=$wishLink")
+            }
+        }.toString()
     }
 }
 

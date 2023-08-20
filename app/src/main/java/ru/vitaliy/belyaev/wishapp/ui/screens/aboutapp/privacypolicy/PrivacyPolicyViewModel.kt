@@ -3,17 +3,15 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.privacypolicy
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsNames
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.entity.analytics.PrivacyPolicyScreenShowEvent
 
 @HiltViewModel
 class PrivacyPolicyViewModel @Inject constructor(
-    analyticsRepository: AnalyticsRepository
+    private val analyticsRepository: AnalyticsRepository
 ) : ViewModel() {
 
-    init {
-        analyticsRepository.trackEvent(AnalyticsNames.Event.SCREEN_VIEW) {
-            param(AnalyticsNames.Param.SCREEN_NAME, "PrivacyPolicy")
-        }
+    fun trackScreenShow() {
+        analyticsRepository.trackEvent(PrivacyPolicyScreenShowEvent)
     }
 }
