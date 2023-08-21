@@ -10,15 +10,20 @@ import shared
 import Combine
 import FirebaseCore
 import Amplitude
+import FirebaseCrashlytics
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         KoinKt.doInitKoin()
         FirebaseApp.configure()
         
-        if let amplitudeApiKey = ProcessInfo.processInfo.environment["AMPLITUDE_API_KEY"] {
+        if let amplitudeApiKey = valueForAPIKey(named: "AMPLITUDE_API_KEY") {
             Amplitude.instance().trackingSessionEvents = true
             Amplitude.instance().initializeApiKey(amplitudeApiKey)
+        } else {
+            let error = AmplitudeNotInitializedError()
+            Crashlytics.crashlytics().record(error: error)
+            print(error)
         }
         
         return true
