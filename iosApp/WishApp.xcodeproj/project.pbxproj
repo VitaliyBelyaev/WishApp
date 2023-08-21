@@ -8,7 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		DBBCD02E2D8F4C219DBA6628 /* Pods_WishApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE82C3BFCB066E79A9355667 /* Pods_WishApp.framework */; };
-		E325B4612A926C09005DD35D /* AppKeys.plist in Resources */ = {isa = PBXBuildFile; fileRef = E325B4602A926C09005DD35D /* AppKeys.plist */; };
+		E325B4632A926CA8005DD35D /* AppKeys.plist in Resources */ = {isa = PBXBuildFile; fileRef = E325B4622A926CA8005DD35D /* AppKeys.plist */; };
+		E325B4652A926CFD005DD35D /* ApiKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = E325B4642A926CFD005DD35D /* ApiKeys.swift */; };
+		E325B4672A92726E005DD35D /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E325B4662A92726E005DD35D /* Errors.swift */; };
 		ED1750902A373F1000665949 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED17508F2A373F1000665949 /* SettingsView.swift */; };
 		ED1750922A37452900665949 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1750912A37452900665949 /* MainContentView.swift */; };
 		ED1750952A38C97C00665949 /* WishListContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1750942A38C97C00665949 /* WishListContentView.swift */; };
@@ -71,7 +73,9 @@
 		09C1248ADD095BAC97F25AF2 /* Pods-WishApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WishApp.debug.xcconfig"; path = "Target Support Files/Pods-WishApp/Pods-WishApp.debug.xcconfig"; sourceTree = "<group>"; };
 		2571903193AD706D91A31376 /* Pods-WishApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WishApp.release.xcconfig"; path = "Target Support Files/Pods-WishApp/Pods-WishApp.release.xcconfig"; sourceTree = "<group>"; };
 		CE82C3BFCB066E79A9355667 /* Pods_WishApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WishApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E325B4602A926C09005DD35D /* AppKeys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = AppKeys.plist; sourceTree = "<group>"; };
+		E325B4622A926CA8005DD35D /* AppKeys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = AppKeys.plist; sourceTree = "<group>"; };
+		E325B4642A926CFD005DD35D /* ApiKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiKeys.swift; sourceTree = "<group>"; };
+		E325B4662A92726E005DD35D /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		ED17508F2A373F1000665949 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		ED1750912A37452900665949 /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
 		ED1750942A38C97C00665949 /* WishListContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishListContentView.swift; sourceTree = "<group>"; };
@@ -256,7 +260,7 @@
 				ED1750992A38D09B00665949 /* AppViewModel.swift */,
 				ED7914212A4DDA9400E7FF0C /* GoogleService-Info.plist */,
 				ED6DB19D29B4F21F00A11CA3 /* Preview Content */,
-				E325B4602A926C09005DD35D /* AppKeys.plist */,
+				E325B4622A926CA8005DD35D /* AppKeys.plist */,
 			);
 			path = WishApp;
 			sourceTree = "<group>";
@@ -319,6 +323,7 @@
 			children = (
 				ED232D4B2A1F85B000C51DB7 /* WishEntityExt.swift */,
 				ED48EB072A690BFB0092B8B6 /* UserDefaultsKeys.swift */,
+				E325B4662A92726E005DD35D /* Errors.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -332,6 +337,7 @@
 				ED9CAD9C2A4720CE0079D814 /* NavigationLinkExtension.swift */,
 				ED7102D82A49E5F500E24E3D /* UIDeviceExtension.swift */,
 				ED5383FB2A6701B000BFAFB2 /* ViewExtension.swift */,
+				E325B4642A926CFD005DD35D /* ApiKeys.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -485,7 +491,7 @@
 			files = (
 				ED6DB19F29B4F21F00A11CA3 /* Preview Assets.xcassets in Resources */,
 				ED3973CC2A28F33C00DB0896 /* InfoPlist.strings in Resources */,
-				E325B4612A926C09005DD35D /* AppKeys.plist in Resources */,
+				E325B4632A926CA8005DD35D /* AppKeys.plist in Resources */,
 				ED3973C62A28F27A00DB0896 /* Localizable.strings in Resources */,
 				ED2555BF2A2A3B0F00678E7C /* Localizable.stringsdict in Resources */,
 				ED6DB19C29B4F21F00A11CA3 /* Assets.xcassets in Resources */,
@@ -573,6 +579,7 @@
 				ED6EFA3B2A22495200CC1B13 /* MainView.swift in Sources */,
 				ED1750922A37452900665949 /* MainContentView.swift in Sources */,
 				EDEC6A162A58809B003DA87A /* UserActionsEvents.swift in Sources */,
+				E325B4672A92726E005DD35D /* Errors.swift in Sources */,
 				EDEC6A142A588079003DA87A /* ScreenShowEvents.swift in Sources */,
 				ED70B68C2A44977900E6786B /* BundleExtension.swift in Sources */,
 				ED7914192A4C951A00E7FF0C /* PrivacyPolicyView.swift in Sources */,
@@ -580,6 +587,7 @@
 				EDB776EE2A27AC9D0087EA06 /* MainViewState.swift in Sources */,
 				ED5383FC2A6701B000BFAFB2 /* ViewExtension.swift in Sources */,
 				ED70B67F2A408D7D00E6786B /* WishItemView.swift in Sources */,
+				E325B4652A926CFD005DD35D /* ApiKeys.swift in Sources */,
 				EDAE5D1F2A3B5AE50072EB31 /* SectionHeaderView.swift in Sources */,
 				ED6EFA4C2A225A7400CC1B13 /* WishListMode.swift in Sources */,
 				EDC203152A3C94760076EAD0 /* UpdateWishTagsView.swift in Sources */,
@@ -769,7 +777,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"WishApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 7K525734CM;
@@ -786,7 +794,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vitaliy.belyaev.WishApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -803,7 +811,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"WishApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 7K525734CM;
 				ENABLE_PREVIEWS = YES;
@@ -819,7 +827,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vitaliy.belyaev.WishApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
