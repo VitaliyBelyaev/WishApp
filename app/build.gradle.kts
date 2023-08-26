@@ -48,6 +48,13 @@ android {
     packagingOptions {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/DEPENDENCIES"
+            excludes += "META-INF/LICENSE"
+            excludes += "META-INF/LICENSE.txt"
+            excludes += "META-INF/license.txt"
+            excludes += "META-INF/NOTICE"
+            excludes += "META-INF/NOTICE.txt"
+            excludes += "META-INF/ASL2.0"
         }
     }
 
@@ -68,6 +75,7 @@ android {
             isShrinkResources = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             resValue("string", "release_app_name", "@string/debug_app_name")
+            signingConfig = signingConfigs.getByName("signingTest")
         }
 
         release {
@@ -123,6 +131,23 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-perf-ktx")
+
+    // GMS
+    implementation("com.google.android.gms:play-services-auth:20.6.0")
+
+//    // Guava
+//    implementation("com.google.guava:guava:24.1-jre")
+//    // Guava fix
+//    implementation("com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava")
+
+
+    // Google Drive
+    implementation("com.google.api-client:google-api-client-android:2.2.0") {
+        exclude(group = "org.apache.httpcomponents")
+    }
+    implementation("com.google.apis:google-api-services-drive:v3-rev197-1.25.0") {
+        exclude(group = "org.apache.httpcomponents")
+    }
 
     // Amplitude
     implementation("com.amplitude:analytics-android:1.10.2")

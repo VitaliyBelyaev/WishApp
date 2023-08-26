@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
+import ru.vitaliy.belyaev.wishapp.domain.BackupInfo
 import ru.vitaliy.belyaev.wishapp.entity.Theme
 import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishDetailedChangeWishCompletenessClickedEvent
 import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishListShareClickedEvent
@@ -35,6 +36,9 @@ class AppActivityViewModel @Inject constructor(
     val requestReviewLiveData: SingleLiveEvent<Unit> = SingleLiveEvent()
     private val _selectedTheme: MutableStateFlow<Theme> = MutableStateFlow(Theme.SYSTEM)
     val selectedTheme: StateFlow<Theme> = _selectedTheme
+
+    private val _currentBackupInfo: MutableStateFlow<BackupInfo> = MutableStateFlow(BackupInfo.None)
+    val currentBackupInfo: StateFlow<BackupInfo> = _currentBackupInfo
 
     private val _showSnackOnMainFlow = Channel<String>(capacity = Channel.BUFFERED)
     val showSnackOnMainFlow: Flow<String> = _showSnackOnMainFlow.receiveAsFlow()
@@ -112,5 +116,9 @@ class AppActivityViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun onNewBackupInfo(backupInfo: BackupInfo) {
+        _currentBackupInfo.value = backupInfo
     }
 }

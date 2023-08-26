@@ -14,6 +14,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.AboutAppScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.privacypolicy.PrivacyPolicyScreen
+import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupAndRestoreScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.EditTagsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.WishListScreen
@@ -28,7 +29,10 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.WishTagsScreen
 @Composable
 fun Navigation(
     navController: NavHostController,
-    onShareClick: (List<WishEntity>) -> Unit
+    onShareClick: (List<WishEntity>) -> Unit,
+    onBackupClicked: () -> Unit,
+    onCheckBackupClicked: () -> Unit,
+    onRestoreClicked: () -> Unit,
 ) {
     WishAppAnimatedNavHost(
         navController = navController,
@@ -64,7 +68,16 @@ fun Navigation(
         composable(SettingsRoute.VALUE) {
             SettingsScreen(
                 onBackPressed = { navController.popBackStack() },
-                onAboutAppClicked = { navController.navigate(AboutAppRoute.VALUE) }
+                onAboutAppClicked = { navController.navigate(AboutAppRoute.VALUE) },
+                onBackupAndRestoreClicked = { navController.navigate(BackupAndRestoreRoute.VALUE) },
+            )
+        }
+        composable(BackupAndRestoreRoute.VALUE) {
+            BackupAndRestoreScreen(
+                onBackPressed = { navController.popBackStack() },
+                onBackupClicked = onBackupClicked,
+                onCheckBackupClicked = onCheckBackupClicked,
+                onRestoreClicked = onRestoreClicked,
             )
         }
         composable(AboutAppRoute.VALUE) {

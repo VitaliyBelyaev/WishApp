@@ -45,11 +45,15 @@ import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 import ru.vitaliy.belyaev.wishapp.utils.openGooglePlay
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterialApi::class
+)
 @Composable
 fun SettingsScreen(
     onBackPressed: () -> Unit,
     onAboutAppClicked: () -> Unit,
+    onBackupAndRestoreClicked: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
 
@@ -102,8 +106,9 @@ fun SettingsScreen(
             SettingBlock(
                 title = stringResource(R.string.backup),
                 onClick = {
-                    viewModel.onBackupAndRestoreItemClicked()
-                    showBottomSheet = true
+//                    viewModel.onBackupAndRestoreItemClicked()
+//                    showBottomSheet = true
+                    onBackupAndRestoreClicked()
                 }
             )
             SettingBlock(
@@ -144,5 +149,5 @@ fun SettingsScreen(
 @Preview
 @Composable
 fun SettingsScreenPreview() {
-    SettingsScreen({}, {})
+    SettingsScreen({}, {}, {})
 }
