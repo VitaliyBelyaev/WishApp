@@ -1,6 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.ui
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -18,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.core.os.postDelayed
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
@@ -35,9 +37,11 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
+import com.google.api.services.drive.model.File
 import com.google.api.services.drive.model.FileList
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.ByteArrayOutputStream
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -60,6 +64,7 @@ import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
 import ru.vitaliy.belyaev.wishapp.shared.domain.ShareWishListTextGenerator
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
 import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
+import ru.vitaliy.belyaev.wishapp.utils.restartApp
 import timber.log.Timber
 
 @ExperimentalFoundationApi
@@ -215,16 +220,69 @@ class AppActivity : AppCompatActivity() {
     }
 
     private fun onRestoreClicked() {
-//        val account: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(this)
-//        doAfterSignIn = { acc, context ->
-//            checkDbBackupInDrive(acc, context)
-//        }
-//        if (account != null) {
-//            Timber.tag("RTRT").d("account email: ${account.email}, id: ${account.id}, name: ${account.displayName}")
-//            doAfterSignIn(account, this)
-//        } else {
-//            startForResult.launch(getGoogleSignInClient(this).signInIntent)
-//        }
+        val account: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(this)
+        doAfterSignIn = { acc, context ->
+            if (viewModel.currentBackupInfo.value is BackupInfo.Value) {
+                restoreDbFileFromDrive(
+                    (viewModel.currentBackupInfo.value as BackupInfo.Value).driveFileId,
+                    acc,
+                    context
+                )
+            }
+        }
+        if (account != null) {
+            Timber.tag("RTRT").d("account email: ${account.email}, id: ${account.id}, name: ${account.displayName}")
+            doAfterSignIn(account, this)
+        } else {
+            startForResult.launch(getGoogleSignInClient(this).signInIntent)
+        }
+    }
+
+    private fun restoreDbFileFromDrive(
+        driveFileId: String,
+        account: GoogleSignInAccount,
+        context: Context
+    ) {
+        lifecycleScope.launch {
+            runCatching {
+                val credential = GoogleAccountCredential.usingOAuth2(
+                    context,
+                    listOf(DriveScopes.DRIVE_APPDATA)
+                )
+                credential.selectedAccount = account.account
+
+                // get Drive Instance
+                val drive = Drive
+                    .Builder(
+                        NetHttpTransport(),
+                        JacksonFactory.getDefaultInstance(),
+                        credential
+                    )
+                    .setApplicationName(getString(R.string.app_name))
+                    .build()
+
+                withContext(Dispatchers.IO) {
+
+                    val outputStream = ByteArrayOutputStream()
+                    drive.Files().get(driveFileId).executeMediaAndDownloadTo(outputStream)
+                    val dbFile = getDatabasePath(wishAppSdk.databaseName)
+                    dbFile.delete()
+                    dbFile.writeBytes(outputStream.toByteArray())
+                }
+            }.onSuccess {
+                Toast.makeText(this@AppActivity, "DB file restored", Toast.LENGTH_SHORT).show()
+                restartApp()
+            }.onFailure {
+                Timber.e(it)
+
+                if (it is UserRecoverableAuthIOException) {
+                    Toast.makeText(this@AppActivity, "Auth error", Toast.LENGTH_SHORT).show()
+                    startForResult.launch(it.intent)
+                    return@onFailure
+                }
+                Toast.makeText(this@AppActivity, "Error while restore DB file", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun checkDbBackupInDrive(account: GoogleSignInAccount, context: Context) {
@@ -275,7 +333,7 @@ class AppActivity : AppCompatActivity() {
                     }
                 }
             }.onSuccess {
-                Toast.makeText(this@AppActivity, "File restored", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@AppActivity, "Check existing backup succeed", Toast.LENGTH_SHORT).show()
             }.onFailure {
                 Timber.e(it)
 
@@ -284,7 +342,7 @@ class AppActivity : AppCompatActivity() {
                     startForResult.launch(it.intent)
                     return@onFailure
                 }
-                Toast.makeText(this@AppActivity, "Error while uploading DB file", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@AppActivity, "Error while check existing backup", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -310,27 +368,51 @@ class AppActivity : AppCompatActivity() {
 
                 withContext(Dispatchers.IO) {
 
-                    val fileMetadata = com.google.api.services.drive.model.File()
+                    val fileMetadata = File()
                     fileMetadata.name = BACKUP_FILE_NAME
-                    fileMetadata.parents = listOf(FOLDER_NAME_FOR_PRIVATE_APP_STORAGE)
 
                     val fileToStore = getDatabasePath(wishAppSdk.databaseName)
                     val mediaContent = FileContent(BACKUP_FILE_MIME_TYPE, fileToStore)
 
-                    drive.Files().create(fileMetadata, mediaContent)
-                        .setFields("id")
-                        .apply {
-                            // Progress listener
-                            mediaHttpUploader.apply {
-                                setProgressListener {
-                                    Timber.tag("RTRT").d("Upload progress: ${it.progress}")
+                    val backupInfo = viewModel.currentBackupInfo.value
+                    if (backupInfo is BackupInfo.Value) {
+                        drive.Files().update(backupInfo.driveFileId, fileMetadata, mediaContent)
+                            .setFields("id, name, createdTime, size")
+                            .apply {
+                                // Progress listener
+                                mediaHttpUploader.apply {
+                                    setProgressListener {
+                                        Timber.tag("RTRT").d("Upload progress: ${it.progress}")
+                                    }
                                 }
-                            }
-                        }.execute()
+                            }.execute()
+                    } else {
+                        fileMetadata.parents = listOf(FOLDER_NAME_FOR_PRIVATE_APP_STORAGE)
+                        drive.Files().create(fileMetadata, mediaContent)
+                            .setFields("id, name, createdTime, size")
+                            .apply {
+                                // Progress listener
+                                mediaHttpUploader.apply {
+                                    setProgressListener {
+                                        Timber.tag("RTRT").d("Upload progress: ${it.progress}")
+                                    }
+                                }
+                            }.execute()
+                    }
                 }
             }.onSuccess {
                 Timber.tag("RTRT").d("File created, id: ${it.id}")
                 Toast.makeText(this@AppActivity, "File created, id: ${it.id}", Toast.LENGTH_SHORT).show()
+
+                viewModel.onNewBackupInfo(
+                    BackupInfo.Value(
+                        driveFileId = it.id,
+                        createdDateTime = Instant.ofEpochMilli(it.createdTime.value)
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDateTime(),
+                        sizeInBytes = it.getSize()
+                    )
+                )
             }.onFailure {
                 Timber.e(it)
 
