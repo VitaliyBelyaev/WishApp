@@ -1,23 +1,26 @@
-package ru.vitaliy.belyaev.wishapp.domain
+package ru.vitaliy.belyaev.wishapp.domain.use_case
 
+import android.content.Context
 import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.inject.Inject
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.repository.BackupRepository
 
-class RestoreBackupUseCase @Inject constructor(
+internal class RestoreBackupUseCase @Inject constructor(
     private val backupRepository: BackupRepository,
     private val dataStoreRepository: DataStoreRepository
 ) {
 
     suspend operator fun invoke(
+        context: Context,
         backupFileId: String,
         fileWhereCurrentDbStored: File
     ) {
 
         val outputStream = ByteArrayOutputStream()
         backupRepository.downloadBackup(
+            context = context,
             fileId = backupFileId,
             outputStream = outputStream
         )

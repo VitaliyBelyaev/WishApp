@@ -1,29 +1,22 @@
 package ru.vitaliy.belyaev.wishapp.domain.repository
 
+import android.content.Context
 import java.io.File
 import java.io.OutputStream
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 
-class BackupRepository {
+interface BackupRepository {
 
-    suspend fun checkExistingBackup(): BackupInfo {
-        return BackupInfo.None
-    }
+    suspend fun checkExistingBackup(context: Context): BackupInfo
 
     suspend fun uploadNewBackup(
+        context: Context,
         backupFile: File,
-        nameWithExtension: String
-    ): BackupInfo.Value {
-        return BackupInfo.Value(
-            fileId = "",
-            createdDateTime = java.time.LocalDateTime.now(),
-            sizeInBytes = 0L,
-        )
-    }
+    ): BackupInfo.Value
 
     suspend fun downloadBackup(
+        context: Context,
         fileId: String,
         outputStream: OutputStream,
-    ) {
-    }
+    )
 }

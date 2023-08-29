@@ -12,6 +12,7 @@ import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_IS_BACKUP_WAS_CREATED
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_IS_RESTORE_FROM_BACKUP_WAS_SUCCEED
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_POSITIVE_ACTIONS_COUNT
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_REVIEW_REQUEST_SHOWN_COUNT
@@ -95,6 +96,24 @@ class DataStoreRepository @Inject constructor(
     suspend fun updateIsRestoreFromBackupWasSucceed(newValue: Boolean) {
         dataStore.edit {
             it[KEY_IS_RESTORE_FROM_BACKUP_WAS_SUCCEED] = newValue
+        }
+    }
+
+    val isBackupWasCreated: Flow<Boolean> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map {
+            it[KEY_IS_BACKUP_WAS_CREATED] ?: false
+        }
+
+    suspend fun updateIsBackupWasCreated(newValue: Boolean) {
+        dataStore.edit {
+            it[KEY_IS_BACKUP_WAS_CREATED] = newValue
         }
     }
 

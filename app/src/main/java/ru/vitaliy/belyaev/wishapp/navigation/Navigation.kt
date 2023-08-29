@@ -14,7 +14,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.AboutAppScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.privacypolicy.PrivacyPolicyScreen
-import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupAndRestoreScreen
+import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.EditTagsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.WishListScreen
@@ -73,7 +73,7 @@ fun Navigation(
             )
         }
         composable(BackupAndRestoreRoute.VALUE) {
-            BackupAndRestoreScreen(
+            BackupScreen(
                 onBackPressed = { navController.popBackStack() },
                 onBackupClicked = onBackupClicked,
                 onCheckBackupClicked = onCheckBackupClicked,

@@ -1,5 +1,8 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.backup
 
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
@@ -44,12 +47,12 @@ import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
     ExperimentalComposeUiApi::class
 )
 @Composable
-fun BackupAndRestoreScreen(
+internal fun BackupScreen(
     onBackPressed: () -> Unit,
     onBackupClicked: () -> Unit,
     onCheckBackupClicked: () -> Unit,
     onRestoreClicked: () -> Unit,
-    viewModel: BackupAndRestoreViewModel = hiltViewModel(),
+    viewModel: BackupViewModel = hiltViewModel(),
     appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
 ) {
 
@@ -64,6 +67,23 @@ fun BackupAndRestoreScreen(
     systemUiController.setNavigationBarColor(color = CommonColors.navBarColor())
 
     val backupInfo: BackupInfo by appViewModel.currentBackupInfo.collectAsState()
+
+// todo сделать GoggleSignIn нормально
+    val startForResult = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+//        if (result.resultCode == Activity.RESULT_OK) {
+//            val intent = result.data
+//            if (result.data != null) {
+//                val task: Task<GoogleSignInAccount> =
+//                    GoogleSignIn.getSignedInAccountFromIntent(intent)
+//
+//                /**
+//                 * handle [task] result
+//                 */
+//            } else {
+//                Toast.makeText(ctx, "Google Login Error!", Toast.LENGTH_LONG).show()
+//            }
+//        }
+    }
 
     val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
