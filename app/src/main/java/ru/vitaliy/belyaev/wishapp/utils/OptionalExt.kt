@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.entity
+package ru.vitaliy.belyaev.wishapp.utils
 
 import java.util.Optional
 

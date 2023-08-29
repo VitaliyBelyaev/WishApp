@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.entity.analytics
+package ru.vitaliy.belyaev.wishapp.domain.model.analytics
 
 data class WishListScreenShowEvent(
     val currentWishesCount: Long,

@@ -6,10 +6,10 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
-import ru.vitaliy.belyaev.wishapp.entity.analytics.WishTagsScreenShowEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishTagsAddNewTagClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.WishTagsScreenShowEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishTagsAddNewTagClickedEvent
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishTagRelationRepository

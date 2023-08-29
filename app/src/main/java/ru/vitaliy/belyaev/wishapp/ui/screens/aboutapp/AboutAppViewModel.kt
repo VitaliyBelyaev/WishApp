@@ -2,10 +2,10 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.entity.analytics.AboutAppScreenShowEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.AboutAppOpenSourceLicencesClickedEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.AboutAppProjectUrlClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.AboutAppScreenShowEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.AboutAppOpenSourceLicencesClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.AboutAppProjectUrlClickedEvent
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 
 @HiltViewModel

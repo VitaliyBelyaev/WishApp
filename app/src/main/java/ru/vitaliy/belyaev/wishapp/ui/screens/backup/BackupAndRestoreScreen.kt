@@ -30,7 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.time.format.DateTimeFormatter
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.domain.BackupInfo
+import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar

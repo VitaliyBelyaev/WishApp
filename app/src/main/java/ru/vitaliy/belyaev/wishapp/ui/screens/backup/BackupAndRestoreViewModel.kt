@@ -2,9 +2,9 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.backup
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
-import ru.vitaliy.belyaev.wishapp.entity.analytics.BackupAndRestoreScreenShowEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.BackupAndRestoreScreenShowEvent
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 
 @HiltViewModel

@@ -1,7 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui
 
 import android.app.Activity
-import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -19,7 +18,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.core.os.postDelayed
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
@@ -43,7 +41,6 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.ByteArrayOutputStream
 import java.time.Instant
-import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -53,11 +50,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.domain.BackupInfo
-import ru.vitaliy.belyaev.wishapp.entity.Theme
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.InAppReviewRequestedEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.InAppReviewShowEvent
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
+import ru.vitaliy.belyaev.wishapp.domain.model.Theme
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppReviewRequestedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppReviewShowEvent
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedRoute
 import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
@@ -224,7 +221,7 @@ class AppActivity : AppCompatActivity() {
         doAfterSignIn = { acc, context ->
             if (viewModel.currentBackupInfo.value is BackupInfo.Value) {
                 restoreDbFileFromDrive(
-                    (viewModel.currentBackupInfo.value as BackupInfo.Value).driveFileId,
+                    (viewModel.currentBackupInfo.value as BackupInfo.Value).fileId,
                     acc,
                     context
                 )
@@ -321,7 +318,7 @@ class AppActivity : AppCompatActivity() {
                             .toLocalDateTime()
 
                         val backupInfo = BackupInfo.Value(
-                            driveFileId = it.id,
+                            fileId = it.id,
                             createdDateTime = createdLocalDateTime,
                             sizeInBytes = it.getSize()
                         )
@@ -376,7 +373,7 @@ class AppActivity : AppCompatActivity() {
 
                     val backupInfo = viewModel.currentBackupInfo.value
                     if (backupInfo is BackupInfo.Value) {
-                        drive.Files().update(backupInfo.driveFileId, fileMetadata, mediaContent)
+                        drive.Files().update(backupInfo.fileId, fileMetadata, mediaContent)
                             .setFields("id, name, createdTime, size")
                             .apply {
                                 // Progress listener
@@ -406,7 +403,7 @@ class AppActivity : AppCompatActivity() {
 
                 viewModel.onNewBackupInfo(
                     BackupInfo.Value(
-                        driveFileId = it.id,
+                        fileId = it.id,
                         createdDateTime = Instant.ofEpochMilli(it.createdTime.value)
                             .atZone(ZoneId.systemDefault())
                             .toLocalDateTime(),

@@ -4,14 +4,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
-import ru.vitaliy.belyaev.wishapp.entity.Theme
-import ru.vitaliy.belyaev.wishapp.entity.analytics.SettingsScreenShowEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.SettingDataBackupClickedEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.SettingRateAppClickedEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.SettingShareAppClickedEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.SettingsSelectAppThemeClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.Theme
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.SettingsScreenShowEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.SettingDataBackupClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.SettingRateAppClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.SettingShareAppClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.SettingsSelectAppThemeClickedEvent
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 
 @HiltViewModel

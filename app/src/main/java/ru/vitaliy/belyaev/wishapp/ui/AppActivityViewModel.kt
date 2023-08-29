@@ -10,12 +10,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
-import ru.vitaliy.belyaev.wishapp.domain.BackupInfo
-import ru.vitaliy.belyaev.wishapp.entity.Theme
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishDetailedChangeWishCompletenessClickedEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishListShareClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
+import ru.vitaliy.belyaev.wishapp.domain.model.Theme
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedChangeWishCompletenessClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListShareClickedEvent
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.isEmpty
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository

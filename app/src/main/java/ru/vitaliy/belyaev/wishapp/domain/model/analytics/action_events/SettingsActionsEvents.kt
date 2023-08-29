@@ -1,6 +1,6 @@
-package ru.vitaliy.belyaev.wishapp.entity.analytics.action_events
+package ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events
 
-import ru.vitaliy.belyaev.wishapp.entity.analytics.AnalyticsEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.AnalyticsEvent
 
 data class SettingsSelectAppThemeClickedEvent(
     val theme: String

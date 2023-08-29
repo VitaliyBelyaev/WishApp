@@ -4,7 +4,8 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.ktx.Firebase
 import javax.inject.Singleton
-import ru.vitaliy.belyaev.wishapp.entity.analytics.AnalyticsEvent
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.AnalyticsEvent
 
 @Singleton
 class FirebaseAnalyticsRepository : AnalyticsRepository {

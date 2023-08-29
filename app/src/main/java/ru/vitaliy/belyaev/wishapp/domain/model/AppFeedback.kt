@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.entity
+package ru.vitaliy.belyaev.wishapp.domain.model
 
 import android.content.res.Resources
 import android.os.Build

@@ -35,7 +35,7 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.entity.createAppFeedback
+import ru.vitaliy.belyaev.wishapp.domain.model.createAppFeedback
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors

@@ -2,7 +2,8 @@ package ru.vitaliy.belyaev.wishapp.data.repository.analytics
 
 import javax.inject.Inject
 import javax.inject.Singleton
-import ru.vitaliy.belyaev.wishapp.entity.analytics.AnalyticsEvent
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.AnalyticsEvent
 
 @Singleton
 class AmplitudeAnalyticsRepository @Inject constructor() : AnalyticsRepository {

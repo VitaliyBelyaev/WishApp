@@ -1,6 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.data.repository.analytics
 
-import ru.vitaliy.belyaev.wishapp.entity.analytics.AnalyticsEvent
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.AnalyticsEvent
 
 class AnalyticsRepositoryComposite(
     private val repositories: List<AnalyticsRepository>

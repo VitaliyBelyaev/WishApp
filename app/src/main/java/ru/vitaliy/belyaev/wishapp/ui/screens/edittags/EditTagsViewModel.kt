@@ -4,10 +4,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.entity.analytics.EditTagsScreenShowEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.EditTagsDeleteTagConfirmedEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.EditTagsRenameTagDoneClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.EditTagsScreenShowEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.EditTagsDeleteTagConfirmedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.EditTagsRenameTagDoneClickedEvent
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
