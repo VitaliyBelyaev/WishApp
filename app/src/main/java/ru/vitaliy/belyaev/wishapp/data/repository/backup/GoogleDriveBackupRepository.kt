@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.data.repository
+package ru.vitaliy.belyaev.wishapp.data.repository.backup
 
 import android.content.Context
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -10,11 +10,12 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.FileList
-import java.io.ByteArrayOutputStream
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.io.OutputStream
 import java.time.Instant
 import java.time.ZoneId
+import javax.inject.Inject
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.domain.model.GoogleSignInException
@@ -22,12 +23,14 @@ import ru.vitaliy.belyaev.wishapp.domain.repository.BackupRepository
 
 typealias DriveFile = com.google.api.services.drive.model.File
 
-class GoogleDriveBackupRepository : BackupRepository {
+internal class GoogleDriveBackupRepository(
+    private val context: Context
+) : BackupRepository {
 
     private val httpTransport = NetHttpTransport()
     private val jsonFactory = JacksonFactory.getDefaultInstance()
 
-    override suspend fun checkExistingBackup(context: Context): BackupInfo {
+    override suspend fun checkExistingBackup(): BackupInfo {
         val account = checkAccount(context)
         val drive = createDriveService(context, account)
 
@@ -42,7 +45,6 @@ class GoogleDriveBackupRepository : BackupRepository {
     }
 
     override suspend fun uploadNewBackup(
-        context: Context,
         backupFile: File,
     ): BackupInfo.Value {
         val account = checkAccount(context)
@@ -54,7 +56,7 @@ class GoogleDriveBackupRepository : BackupRepository {
 
         val mediaContent = FileContent(BACKUP_FILE_MIME_TYPE, backupFile)
 
-        val backupInfo = checkExistingBackup(context)
+        val backupInfo = checkExistingBackup()
         val driveFile: DriveFile = if (backupInfo is BackupInfo.Value) {
             drive.Files().update(backupInfo.fileId, fileMetadata, mediaContent)
                 .setFields(FIELDS_TO_INCLUDE_IN_RESPONSE_FOR_BACKUP_FILE)
@@ -70,7 +72,6 @@ class GoogleDriveBackupRepository : BackupRepository {
     }
 
     override suspend fun downloadBackup(
-        context: Context,
         fileId: String,
         outputStream: OutputStream
     ) {
@@ -92,8 +93,7 @@ class GoogleDriveBackupRepository : BackupRepository {
             selectedAccount = account.account
         }
 
-        return Drive
-            .Builder(httpTransport, jsonFactory, credential)
+        return Drive.Builder(httpTransport, jsonFactory, credential)
             .setApplicationName(context.getString(R.string.app_name))
             .build()
     }

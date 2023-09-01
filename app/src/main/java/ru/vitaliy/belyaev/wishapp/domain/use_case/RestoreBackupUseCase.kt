@@ -1,6 +1,5 @@
 package ru.vitaliy.belyaev.wishapp.domain.use_case
 
-import android.content.Context
 import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.inject.Inject
@@ -13,14 +12,12 @@ internal class RestoreBackupUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke(
-        context: Context,
         backupFileId: String,
         fileWhereCurrentDbStored: File
     ) {
 
         val outputStream = ByteArrayOutputStream()
         backupRepository.downloadBackup(
-            context = context,
             fileId = backupFileId,
             outputStream = outputStream
         )

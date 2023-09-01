@@ -11,6 +11,8 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import ru.vitaliy.belyaev.wishapp.domain.repository.BackupAuthRepository
+import ru.vitaliy.belyaev.wishapp.domain.use_case.IsUserSignedInToBackupServiceUseCase
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.AboutAppScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.privacypolicy.PrivacyPolicyScreen
@@ -27,12 +29,9 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.WishTagsScreen
 @ExperimentalCoroutinesApi
 @ExperimentalMaterialApi
 @Composable
-fun Navigation(
+internal fun Navigation(
     navController: NavHostController,
     onShareClick: (List<WishEntity>) -> Unit,
-    onBackupClicked: () -> Unit,
-    onCheckBackupClicked: () -> Unit,
-    onRestoreClicked: () -> Unit,
 ) {
     WishAppAnimatedNavHost(
         navController = navController,
@@ -75,9 +74,6 @@ fun Navigation(
         composable(BackupAndRestoreRoute.VALUE) {
             BackupScreen(
                 onBackPressed = { navController.popBackStack() },
-                onBackupClicked = onBackupClicked,
-                onCheckBackupClicked = onCheckBackupClicked,
-                onRestoreClicked = onRestoreClicked,
             )
         }
         composable(AboutAppRoute.VALUE) {

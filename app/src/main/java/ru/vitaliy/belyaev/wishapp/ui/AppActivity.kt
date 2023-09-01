@@ -55,6 +55,7 @@ import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppReviewRequestedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppReviewShowEvent
+import ru.vitaliy.belyaev.wishapp.domain.use_case.IsUserSignedInToBackupServiceUseCase
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedRoute
 import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
@@ -68,7 +69,7 @@ import timber.log.Timber
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @AndroidEntryPoint
-class AppActivity : AppCompatActivity() {
+internal class AppActivity : AppCompatActivity() {
 
     private val viewModel: AppActivityViewModel by viewModels()
 
@@ -151,15 +152,6 @@ class AppActivity : AppCompatActivity() {
                 Navigation(
                     navController = navController,
                     onShareClick = { viewModel.onShareWishListClicked(it) },
-                    onBackupClicked = {
-                        onBackupClicked()
-                    },
-                    onCheckBackupClicked = {
-                        onCheckBackupClicked()
-                    },
-                    onRestoreClicked = {
-                        onRestoreClicked()
-                    },
                 )
             }
 
