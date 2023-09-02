@@ -55,7 +55,6 @@ import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppReviewRequestedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppReviewShowEvent
-import ru.vitaliy.belyaev.wishapp.domain.use_case.IsUserSignedInToBackupServiceUseCase
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedRoute
 import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
@@ -311,7 +310,7 @@ internal class AppActivity : AppCompatActivity() {
 
                         val backupInfo = BackupInfo.Value(
                             fileId = it.id,
-                            createdDateTime = createdLocalDateTime,
+                            modifiedDateTime = createdLocalDateTime,
                             sizeInBytes = it.getSize()
                         )
                         viewModel.onNewBackupInfo(backupInfo)
@@ -396,7 +395,7 @@ internal class AppActivity : AppCompatActivity() {
                 viewModel.onNewBackupInfo(
                     BackupInfo.Value(
                         fileId = it.id,
-                        createdDateTime = Instant.ofEpochMilli(it.createdTime.value)
+                        modifiedDateTime = Instant.ofEpochMilli(it.createdTime.value)
                             .atZone(ZoneId.systemDefault())
                             .toLocalDateTime(),
                         sizeInBytes = it.getSize()

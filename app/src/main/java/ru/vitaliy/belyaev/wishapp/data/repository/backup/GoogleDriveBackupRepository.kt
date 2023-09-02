@@ -10,12 +10,10 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.FileList
-import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.io.OutputStream
 import java.time.Instant
 import java.time.ZoneId
-import javax.inject.Inject
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.domain.model.GoogleSignInException
@@ -99,13 +97,13 @@ internal class GoogleDriveBackupRepository(
     }
 
     private fun DriveFile.toBackupInfo(): BackupInfo.Value {
-        val createdLocalDateTime = Instant.ofEpochMilli(createdTime.value)
+        val createdLocalDateTime = Instant.ofEpochMilli(modifiedTime.value)
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
 
         return BackupInfo.Value(
             fileId = id,
-            createdDateTime = createdLocalDateTime,
+            modifiedDateTime = createdLocalDateTime,
             sizeInBytes = getSize()
         )
     }
@@ -118,6 +116,6 @@ internal class GoogleDriveBackupRepository(
         // This is special folder name in Google Drive that is used for storing app data, invisible to user
         private const val FOLDER_NAME_FOR_PRIVATE_APP_STORAGE = "appDataFolder"
 
-        private const val FIELDS_TO_INCLUDE_IN_RESPONSE_FOR_BACKUP_FILE = "id, name, createdTime, size"
+        private const val FIELDS_TO_INCLUDE_IN_RESPONSE_FOR_BACKUP_FILE = "id, name, createdTime, modifiedTime, size"
     }
 }

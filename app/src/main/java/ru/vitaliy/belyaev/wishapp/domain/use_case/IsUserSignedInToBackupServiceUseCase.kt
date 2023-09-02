@@ -11,11 +11,13 @@ internal class IsUserSignedInToBackupServiceUseCase @Inject constructor(
     suspend operator fun invoke(): Boolean {
         val haveSignedInAccountOnDevice = backupAuthRepository.isSignedIn()
 
+        Timber.tag("RTRT").d("IsUserSignedInToBackupServiceUseCase: haveSignedInAccountOnDevice = $haveSignedInAccountOnDevice")
         if (haveSignedInAccountOnDevice) {
             return true
         }
 
         return try {
+            Timber.tag("RTRT").d("IsUserSignedInToBackupServiceUseCase: signInSilently")
             backupAuthRepository.signInSilently()
             true
         } catch (e: Exception) {

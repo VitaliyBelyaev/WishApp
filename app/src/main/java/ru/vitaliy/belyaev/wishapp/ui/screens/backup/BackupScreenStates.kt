@@ -5,7 +5,9 @@ import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 sealed class LoadingState {
     object None : LoadingState()
     object Empty : LoadingState()
-    object OverData : LoadingState()
+    object CheckingBackup : LoadingState()
+    object UploadingNewBackup : LoadingState()
+    object RestoringBackup : LoadingState()
 }
 
 sealed class BackupViewState {

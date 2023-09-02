@@ -3,8 +3,10 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.backup
 import android.content.Context
 import android.content.Intent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.LocalDateTime
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -48,8 +50,9 @@ internal class BackupViewModel @Inject constructor(
             _loadingState.value = LoadingState.Empty
 
             val isUserSignedIn = isUserSignedInToBackupServiceUseCase()
+            Timber.tag("RTRT").d("BackupViewModel: isUserSignedIn = $isUserSignedIn")
             if (isUserSignedIn) {
-                checkExistingBackup(loadingState = LoadingState.Empty)
+                checkExistingBackup(loadingState = LoadingState.CheckingBackup)
             } else {
                 _loadingState.value = LoadingState.None
                 _viewState.value = BackupViewState.DrivePermissionRationale
@@ -69,7 +72,7 @@ internal class BackupViewModel @Inject constructor(
             launchSafe {
                 val isUserSignedIn = backupAuthRepository.checkIsSignedInFromIntent(intent)
                 if (isUserSignedIn) {
-                    checkExistingBackup(loadingState = LoadingState.OverData)
+                    checkExistingBackup(loadingState = LoadingState.CheckingBackup)
                 } else {
                     _loadingState.value = LoadingState.None
                     _viewState.value = BackupViewState.DrivePermissionRationale
@@ -82,12 +85,12 @@ internal class BackupViewModel @Inject constructor(
     }
 
     fun onRetryCheckBackupClicked() {
-        checkExistingBackup(loadingState = LoadingState.OverData)
+        checkExistingBackup(loadingState = LoadingState.CheckingBackup)
     }
 
     fun onCreateBackupClicked(context: Context) {
         launchSafe {
-            _loadingState.value = LoadingState.OverData
+            _loadingState.value = LoadingState.UploadingNewBackup
             runCatching {
                 withContext(Dispatchers.IO) {
                     createBackupUseCase(context.getDatabasePath(wishAppSdk.databaseName))
@@ -104,7 +107,7 @@ internal class BackupViewModel @Inject constructor(
 
     fun onRestoreBackupClicked(context: Context) {
         launchSafe {
-            _loadingState.value = LoadingState.OverData
+            _loadingState.value = LoadingState.RestoringBackup
             runCatching {
                 withContext(Dispatchers.IO) {
                     restoreBackupUseCase(

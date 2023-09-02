@@ -8,7 +8,7 @@ sealed class BackupInfo {
 
     data class Value(
         val fileId: String,
-        val createdDateTime: LocalDateTime,
+        val modifiedDateTime: LocalDateTime,
         val sizeInBytes: Long,
     ) : BackupInfo()
 }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -89,25 +90,19 @@ fun SettingsScreen(
         ) {
             Text(
                 text = stringResource(R.string.theme_title),
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
             )
             ThemeSettingBlock(
                 selectedTheme = selectedTheme,
                 onThemeClicked = { viewModel.onThemeItemClicked(it) }
             )
-            Text(
-                text = stringResource(R.string.other),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
-            )
+
+            Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp))
+
             SettingBlock(
                 title = stringResource(R.string.backup),
-                onClick = {
-//                    viewModel.onBackupAndRestoreItemClicked()
-//                    showBottomSheet = true
-                    onBackupAndRestoreClicked()
-                }
+                onClick = { onBackupAndRestoreClicked() }
             )
             SettingBlock(
                 title = stringResource(R.string.rate_app),
