@@ -35,8 +35,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -49,10 +51,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import java.util.Optional
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
+import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
 import ru.vitaliy.belyaev.wishapp.ui.core.loader.FullscreenLoaderWithText
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.SnackbarMessage
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
@@ -83,6 +87,10 @@ internal fun BackupScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val systemUiController = rememberSystemUiController()
     val scrollState: ScrollState = rememberScrollState()
+
+    val openCreateBackupConfirmationDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
+    val openRestoreBackupConfirmationDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
+    val openForceUpdateAppDataConfirmationDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
 
     trackScreenShow { viewModel.trackScreenShow() }
 
@@ -172,7 +180,18 @@ internal fun BackupScreen(
                 is BackupViewState.CurrentBackup -> {
                     CurrentBackupView(
                         backupInfo = state.backupInfo,
-                        onCreateBackupClicked = { viewModel.onCreateBackupClicked(context) },
+                        onCreateBackupClicked = {
+                            when (state) {
+                                is BackupViewState.CurrentBackup.WithRestore -> {
+                                    openCreateBackupConfirmationDialog.value = true
+                                }
+
+                                is BackupViewState.CurrentBackup.WithForceUpdate -> {
+
+                                    viewModel.onCreateBackupClicked(context)
+                                }
+                            }
+                        },
                         onRefreshBackupInfoClicked = { viewModel.onRefreshBackupInfoClicked() }
                     )
                     Divider(modifier = Modifier.padding(16.dp))
@@ -180,13 +199,13 @@ internal fun BackupScreen(
                     when (state) {
                         is BackupViewState.CurrentBackup.WithRestore -> {
                             RestoreBackupView(
-                                onRestoreBackupClicked = { viewModel.onRestoreBackupClicked(context) }
+                                onRestoreBackupClicked = { openRestoreBackupConfirmationDialog.value = true }
                             )
                         }
 
                         is BackupViewState.CurrentBackup.WithForceUpdate -> {
                             ForceUpdateAppDataView(
-                                onForceUpdateClicked = { viewModel.onRestoreBackupClicked(context) }
+                                onForceUpdateClicked = { openForceUpdateAppDataConfirmationDialog.value = true }
                             )
                         }
                     }
@@ -198,6 +217,46 @@ internal fun BackupScreen(
                     .height(16.dp)
             )
         }
+
+        if (openCreateBackupConfirmationDialog.value) {
+            DestructiveConfirmationAlertDialog(
+                onDismissRequest = { openCreateBackupConfirmationDialog.value = false },
+                title = { Text("Создать резервную копию?") },
+                text = { Text("Вы не восстанавливали данные из копии на этом устройстве. Рекомендуем восстановить данные из существующей копии перед созданием новой резервной копии. ") },
+                confirmButtonText = { Text("Создать") },
+                confirmClick = {
+                    openCreateBackupConfirmationDialog.value = false
+                    viewModel.onCreateBackupClicked(context)
+                },
+            )
+        }
+
+        if (openRestoreBackupConfirmationDialog.value) {
+            DestructiveConfirmationAlertDialog(
+                onDismissRequest = { openRestoreBackupConfirmationDialog.value = false },
+                title = { Text("Восстановить данные из копии?") },
+                text = { Text("При восстановлении данных из копии, все текущие данные в приложении будут потеряны") },
+                confirmButtonText = { Text("Восстановить") },
+                confirmClick = {
+                    openRestoreBackupConfirmationDialog.value = false
+                    viewModel.onRestoreBackupClicked(context)
+                },
+            )
+        }
+
+        if (openForceUpdateAppDataConfirmationDialog.value) {
+            DestructiveConfirmationAlertDialog(
+                onDismissRequest = { openForceUpdateAppDataConfirmationDialog.value = false },
+                title = { Text("Обновить данные в приложении?") },
+                text = { Text("При обновлении данных из резервной копии, все текущие данные в приложении будут потеряны") },
+                confirmButtonText = { Text("Обновить") },
+                confirmClick = {
+                    openForceUpdateAppDataConfirmationDialog.value = false
+                    viewModel.onRestoreBackupClicked(context)
+                },
+            )
+        }
+
 
         LoadingView(loadingState = loadingState)
     }
