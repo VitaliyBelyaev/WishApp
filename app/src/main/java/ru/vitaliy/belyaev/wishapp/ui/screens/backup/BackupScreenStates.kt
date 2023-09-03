@@ -15,6 +15,12 @@ sealed class BackupViewState {
     object DrivePermissionRationale : BackupViewState()
     object CheckBackupError : BackupViewState()
     object NoBackup : BackupViewState()
-    data class CurrentBackupWithRestore(val backupInfo: BackupInfo.Value) : BackupViewState()
-    data class CurrentBackup(val backupInfo: BackupInfo.Value) : BackupViewState()
+
+    sealed class CurrentBackup : BackupViewState() {
+
+        abstract val backupInfo: BackupInfo.Value
+
+        data class WithRestore(override val backupInfo: BackupInfo.Value) : CurrentBackup()
+        data class WithForceUpdate(override val backupInfo: BackupInfo.Value) : CurrentBackup()
+    }
 }

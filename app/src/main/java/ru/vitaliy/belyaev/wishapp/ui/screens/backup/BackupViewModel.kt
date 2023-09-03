@@ -2,27 +2,34 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.backup
 
 import android.content.Context
 import android.content.Intent
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.time.LocalDateTime
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.BackupAndRestoreScreenShowEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.error.CheckBackupException
+import ru.vitaliy.belyaev.wishapp.domain.model.error.RestoreBackupException
+import ru.vitaliy.belyaev.wishapp.domain.model.error.UploadNewBackupException
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.domain.repository.BackupAuthRepository
-import ru.vitaliy.belyaev.wishapp.domain.repository.BackupRepository
 import ru.vitaliy.belyaev.wishapp.domain.use_case.CreateBackupUseCase
+import ru.vitaliy.belyaev.wishapp.domain.use_case.GetExistingBackupInfoUseCase
 import ru.vitaliy.belyaev.wishapp.domain.use_case.IsUserSignedInToBackupServiceUseCase
 import ru.vitaliy.belyaev.wishapp.domain.use_case.NeedToShowRestoreUseCase
 import ru.vitaliy.belyaev.wishapp.domain.use_case.RestoreBackupUseCase
 import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
+import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.SnackbarMessage
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
-import ru.vitaliy.belyaev.wishapp.utils.restartApp
+import ru.vitaliy.belyaev.wishapp.utils.restartAppWithDelayMillis
 import timber.log.Timber
 
 @HiltViewModel
@@ -30,7 +37,7 @@ internal class BackupViewModel @Inject constructor(
     private val createBackupUseCase: CreateBackupUseCase,
     private val restoreBackupUseCase: RestoreBackupUseCase,
     private val isUserSignedInToBackupServiceUseCase: IsUserSignedInToBackupServiceUseCase,
-    private val backupRepository: BackupRepository,
+    private val getExistingBackupInfoUseCase: GetExistingBackupInfoUseCase,
     private val backupAuthRepository: BackupAuthRepository,
     private val analyticsRepository: AnalyticsRepository,
     private val needToShowRestoreUseCase: NeedToShowRestoreUseCase,
@@ -43,6 +50,9 @@ internal class BackupViewModel @Inject constructor(
     private val _loadingState: MutableStateFlow<LoadingState> = MutableStateFlow(LoadingState.None)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
 
+    private val _showSnackFlow = MutableSharedFlow<SnackbarMessage>()
+    val showSnackFlow: SharedFlow<SnackbarMessage> = _showSnackFlow.asSharedFlow()
+
     val signInIntent = backupAuthRepository.getSignInIntent()
 
     init {
@@ -50,9 +60,8 @@ internal class BackupViewModel @Inject constructor(
             _loadingState.value = LoadingState.Empty
 
             val isUserSignedIn = isUserSignedInToBackupServiceUseCase()
-            Timber.tag("RTRT").d("BackupViewModel: isUserSignedIn = $isUserSignedIn")
             if (isUserSignedIn) {
-                checkExistingBackup(loadingState = LoadingState.CheckingBackup)
+                checkExistingBackup(forceRemote = false)
             } else {
                 _loadingState.value = LoadingState.None
                 _viewState.value = BackupViewState.DrivePermissionRationale
@@ -67,12 +76,14 @@ internal class BackupViewModel @Inject constructor(
     fun onSignInResultReceived(intent: Intent?) {
         if (intent == null) {
             _viewState.value = BackupViewState.DrivePermissionRationale
-            // todo show error snack
+            launchSafe {
+                _showSnackFlow.emit(SnackbarMessage.StringValue.Message("Произошла ошибка при входе через Google аккаунт"))
+            }
         } else {
             launchSafe {
                 val isUserSignedIn = backupAuthRepository.checkIsSignedInFromIntent(intent)
                 if (isUserSignedIn) {
-                    checkExistingBackup(loadingState = LoadingState.CheckingBackup)
+                    checkExistingBackup(forceRemote = false)
                 } else {
                     _loadingState.value = LoadingState.None
                     _viewState.value = BackupViewState.DrivePermissionRationale
@@ -85,7 +96,7 @@ internal class BackupViewModel @Inject constructor(
     }
 
     fun onRetryCheckBackupClicked() {
-        checkExistingBackup(loadingState = LoadingState.CheckingBackup)
+        checkExistingBackup(forceRemote = true)
     }
 
     fun onCreateBackupClicked(context: Context) {
@@ -98,11 +109,23 @@ internal class BackupViewModel @Inject constructor(
             }.onSuccess { backupInfo ->
                 handleNewBackupInfo(backupInfo)
             }.onFailure {
-                Timber.e(it, message = "Error while creating backup")
+                val error = UploadNewBackupException(it)
+                Timber.e(error)
+                FirebaseCrashlytics.getInstance().recordException(error)
+
                 _loadingState.value = LoadingState.None
-                // todo show error snack
+
+                if (it is UserRecoverableAuthIOException) {
+                    _viewState.value = BackupViewState.DrivePermissionRationale
+                    return@launchSafe
+                }
+                _showSnackFlow.emit(SnackbarMessage.StringValue.Message("Произошла ошибка при создании резервной копии"))
             }
         }
+    }
+
+    fun onRefreshBackupInfoClicked() {
+        checkExistingBackup(forceRemote = true)
     }
 
     fun onRestoreBackupClicked(context: Context) {
@@ -111,35 +134,56 @@ internal class BackupViewModel @Inject constructor(
             runCatching {
                 withContext(Dispatchers.IO) {
                     restoreBackupUseCase(
-                        backupFileId = (viewState.value as BackupViewState.CurrentBackupWithRestore).backupInfo.fileId,
+                        backupFileId = (viewState.value as BackupViewState.CurrentBackup).backupInfo.fileId,
                         fileWhereCurrentDbStored = context.getDatabasePath(wishAppSdk.databaseName)
                     )
                 }
-            }.onSuccess { backupInfo ->
-                _loadingState.value = LoadingState.None
-                // todo show success snack
-                context.restartApp()
+            }.onSuccess {
+                _showSnackFlow.emit(SnackbarMessage.StringValue.Message("Данные успешно восстановлены, сейчас приложение перезапустится"))
+                context.restartAppWithDelayMillis(3000)
             }.onFailure {
-                Timber.e(it, message = "Error while restoring backup")
+                val error = RestoreBackupException(it)
+                Timber.e(error)
+                FirebaseCrashlytics.getInstance().recordException(error)
+
                 _loadingState.value = LoadingState.None
-                // todo show error snack
+                if (it is UserRecoverableAuthIOException) {
+                    _viewState.value = BackupViewState.DrivePermissionRationale
+                    return@launchSafe
+                }
+
+                _showSnackFlow.emit(SnackbarMessage.StringValue.Message("Произошла ошибка при восстановлении данных"))
             }
         }
     }
 
-    private fun checkExistingBackup(loadingState: LoadingState) {
+    private fun checkExistingBackup(forceRemote: Boolean) {
         launchSafe {
             runCatching {
-                _loadingState.value = loadingState
-                withContext(Dispatchers.IO) {
-                    backupRepository.checkExistingBackup()
-                }
+                _loadingState.value = LoadingState.CheckingBackup
+                withContext(Dispatchers.IO) { getExistingBackupInfoUseCase(forceRemote) }
             }.onSuccess { backupInfo ->
                 handleNewBackupInfo(backupInfo)
             }.onFailure {
-                Timber.e(it, message = "Error while checking existing backup")
+                val error = CheckBackupException(it)
+                Timber.e(error)
+                FirebaseCrashlytics.getInstance().recordException(error)
+
                 _loadingState.value = LoadingState.None
-                _viewState.value = BackupViewState.CheckBackupError
+
+                if (it is UserRecoverableAuthIOException) {
+                    _viewState.value = BackupViewState.DrivePermissionRationale
+                    return@launchSafe
+                }
+                when (viewState.value) {
+                    is BackupViewState.CurrentBackup -> {
+                        _showSnackFlow.emit(SnackbarMessage.StringValue.Message("Произошла ошибка при проверке наличия резервной копии"))
+                    }
+
+                    else -> {
+                        _viewState.value = BackupViewState.CheckBackupError
+                    }
+                }
             }
         }
     }
@@ -154,9 +198,9 @@ internal class BackupViewModel @Inject constructor(
             is BackupInfo.Value -> {
                 launchSafe {
                     val newViewState = if (needToShowRestoreUseCase()) {
-                        BackupViewState.CurrentBackupWithRestore(backupInfo)
+                        BackupViewState.CurrentBackup.WithRestore(backupInfo)
                     } else {
-                        BackupViewState.CurrentBackup(backupInfo)
+                        BackupViewState.CurrentBackup.WithForceUpdate(backupInfo)
                     }
                     _loadingState.value = LoadingState.None
                     _viewState.value = newViewState

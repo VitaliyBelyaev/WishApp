@@ -10,5 +10,7 @@ sealed class BackupInfo {
         val fileId: String,
         val modifiedDateTime: LocalDateTime,
         val sizeInBytes: Long,
+        val accountEmail: String?,
+        val device: String?,
     ) : BackupInfo()
 }

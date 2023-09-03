@@ -1,6 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.data.repository.backup
 
 import android.content.Context
+import android.os.Build
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
@@ -14,9 +15,10 @@ import java.io.File
 import java.io.OutputStream
 import java.time.Instant
 import java.time.ZoneId
+import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
-import ru.vitaliy.belyaev.wishapp.domain.model.GoogleSignInException
+import ru.vitaliy.belyaev.wishapp.domain.model.error.GoogleSignInException
 import ru.vitaliy.belyaev.wishapp.domain.repository.BackupRepository
 
 typealias DriveFile = com.google.api.services.drive.model.File
@@ -39,7 +41,7 @@ internal class GoogleDriveBackupRepository(
             .setPageSize(3)
             .execute()
 
-        return resultFiles.files.firstOrNull()?.toBackupInfo() ?: BackupInfo.None
+        return resultFiles.files.firstOrNull()?.toBackupInfo(account) ?: BackupInfo.None
     }
 
     override suspend fun uploadNewBackup(
@@ -50,6 +52,7 @@ internal class GoogleDriveBackupRepository(
 
         val fileMetadata = DriveFile().apply {
             name = BACKUP_FILE_NAME
+            appProperties = createAppProperties()
         }
 
         val mediaContent = FileContent(BACKUP_FILE_MIME_TYPE, backupFile)
@@ -66,7 +69,7 @@ internal class GoogleDriveBackupRepository(
                 .execute()
         }
 
-        return driveFile.toBackupInfo()
+        return driveFile.toBackupInfo(account)
     }
 
     override suspend fun downloadBackup(
@@ -96,7 +99,7 @@ internal class GoogleDriveBackupRepository(
             .build()
     }
 
-    private fun DriveFile.toBackupInfo(): BackupInfo.Value {
+    private fun DriveFile.toBackupInfo(account: GoogleSignInAccount): BackupInfo.Value {
         val createdLocalDateTime = Instant.ofEpochMilli(modifiedTime.value)
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
@@ -104,8 +107,22 @@ internal class GoogleDriveBackupRepository(
         return BackupInfo.Value(
             fileId = id,
             modifiedDateTime = createdLocalDateTime,
-            sizeInBytes = getSize()
+            sizeInBytes = getSize(),
+            accountEmail = account.email,
+            device = appProperties.extractDevice(),
         )
+    }
+
+    private fun createAppProperties(): Map<String, String> {
+        return mapOf(
+            KEY_APP_VERSION_NAME to BuildConfig.VERSION_NAME,
+            KEY_APP_VERSION_NUMBER to BuildConfig.VERSION_CODE.toString(),
+            KEY_DEVICE to "${Build.MANUFACTURER} ${Build.MODEL}",
+        )
+    }
+
+    private fun Map<String, String>?.extractDevice(): String? {
+        return this?.get(KEY_DEVICE)
     }
 
     companion object {
@@ -116,6 +133,11 @@ internal class GoogleDriveBackupRepository(
         // This is special folder name in Google Drive that is used for storing app data, invisible to user
         private const val FOLDER_NAME_FOR_PRIVATE_APP_STORAGE = "appDataFolder"
 
-        private const val FIELDS_TO_INCLUDE_IN_RESPONSE_FOR_BACKUP_FILE = "id, name, createdTime, modifiedTime, size"
+        private const val FIELDS_TO_INCLUDE_IN_RESPONSE_FOR_BACKUP_FILE =
+            "id, name, createdTime, modifiedTime, size, appProperties"
+
+        private const val KEY_DEVICE = "device"
+        private const val KEY_APP_VERSION_NAME = "appVersionName"
+        private const val KEY_APP_VERSION_NUMBER = "appVersionNumber"
     }
 }

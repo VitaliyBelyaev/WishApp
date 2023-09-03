@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.domain.model
+package ru.vitaliy.belyaev.wishapp.domain.model.error
 
 class GoogleSignInException(override val cause: Throwable? = null) : RuntimeException() {
 

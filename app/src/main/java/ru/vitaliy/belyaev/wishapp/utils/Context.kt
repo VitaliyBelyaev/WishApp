@@ -28,11 +28,10 @@ fun Context.openGooglePlay() {
     ExperimentalComposeUiApi::class,
     ExperimentalMaterialApi::class
 )
-fun Context.restartApp() {
+fun Context.restartAppWithDelayMillis(delayMillis: Long) {
     val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-    val topActivity = activityManager.appTasks[0].taskInfo.topActivity ?: return
 
-    Handler(mainLooper).postDelayed(1500) {
+    Handler(mainLooper).postDelayed(delayMillis) {
         val intent = Intent(this, AppActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
