@@ -3,7 +3,6 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.settings
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.rememberScrollState
@@ -17,13 +16,10 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -34,9 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
-import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheetM3
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
-import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.BackupSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.ThemeSettingBlock
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
@@ -46,7 +40,6 @@ import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 
 @OptIn(
     ExperimentalMaterial3Api::class,
-    ExperimentalMaterialApi::class
 )
 @Composable
 fun SettingsScreen(
@@ -61,9 +54,6 @@ fun SettingsScreen(
     val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
     val scrollState: ScrollState = rememberScrollState()
     val systemUiController = rememberSystemUiController()
-
-    val modalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var showBottomSheet by remember { mutableStateOf(false) }
 
     trackScreenShow { viewModel.trackScreenShow() }
 
@@ -123,17 +113,6 @@ fun SettingsScreen(
                 title = stringResource(R.string.about_app),
                 onClick = { onAboutAppClicked() }
             )
-        }
-
-        if (showBottomSheet) {
-            WishAppBottomSheetM3(
-                onDismissRequest = { showBottomSheet = false },
-                sheetState = modalBottomSheetState,
-            ) {
-                BackupSheetContent(
-                    modifier = Modifier.navigationBarsPadding()
-                )
-            }
         }
     }
 }

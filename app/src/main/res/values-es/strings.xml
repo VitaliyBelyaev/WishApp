@@ -20,7 +20,7 @@
     <string name="theme_system_description">La misma que en el dispositivo</string>
     <string name="theme_dark">Oscuro</string>
     <string name="theme_light">Ligero</string>
-    <string name="backup_description">Sus datos se guardan automáticamente en su cuenta de Google.\n\nDespués de reinstalar la aplicación, sus datos se restaurarán automáticamente.\n\nPara que funcione la copia de seguridad automática de sus datos, debe habilitar Copia de seguridad en la configuración del teléfono.</string>
+    <string name="backup_description">Usamos Google Drive para guardar y restaurar sus datos en la aplicación.\n\nNo te preocupes, no tendremos acceso a tus archivos de Google Drive, excepto al archivo de datos de la aplicación que crearemos.\n\nLe recomendamos que realice copias de seguridad periódicas para no perder sus datos y restaurarlos cuando reinstale la aplicación o en otro dispositivo.</string>
     <string name="no_email_app_error">No tiene una aplicación de correo electrónico en su dispositivo</string>
     <string name="feedback_subject_pattern">Realimentación. Aplicación %s</string>
     <string name="enter_label_name">Introduce el nombre de la etiqueta</string>

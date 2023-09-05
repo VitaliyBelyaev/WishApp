@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -19,12 +20,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -33,6 +36,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -40,6 +44,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -51,21 +56,21 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import java.util.Optional
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
+import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheetM3
 import ru.vitaliy.belyaev.wishapp.ui.core.loader.FullscreenLoaderWithText
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.SnackbarMessage
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
+import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.BackupSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 import ru.vitaliy.belyaev.wishapp.utils.BytesSizeFormatter
 import ru.vitaliy.belyaev.wishapp.utils.getDataOrNull
 import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
-import timber.log.Timber
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -91,6 +96,9 @@ internal fun BackupScreen(
     val openCreateBackupConfirmationDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
     val openRestoreBackupConfirmationDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
     val openForceUpdateAppDataConfirmationDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
+
+    val modalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     trackScreenShow { viewModel.trackScreenShow() }
 
@@ -120,7 +128,17 @@ internal fun BackupScreen(
                 stringResource(R.string.backup),
                 withBackIcon = true,
                 onBackPressed = onBackPressed,
-                scrollBehavior = topAppBarScrollBehavior
+                scrollBehavior = topAppBarScrollBehavior,
+                actions = {
+                    IconButton(
+                        onClick = { showBottomSheet = true }
+                    ) {
+                        Icon(
+                            Icons.Filled.Info,
+                            contentDescription = "Backup info"
+                        )
+                    }
+                },
             )
         },
         snackbarHost = {
@@ -257,6 +275,16 @@ internal fun BackupScreen(
             )
         }
 
+        if (showBottomSheet) {
+            WishAppBottomSheetM3(
+                onDismissRequest = { showBottomSheet = false },
+                sheetState = modalBottomSheetState,
+            ) {
+                BackupSheetContent(
+                    modifier = Modifier.navigationBarsPadding()
+                )
+            }
+        }
 
         LoadingView(loadingState = loadingState)
     }

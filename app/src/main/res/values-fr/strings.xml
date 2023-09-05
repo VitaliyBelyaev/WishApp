@@ -20,7 +20,7 @@
     <string name="theme_system_description">Le même que sur l\'appareil</string>
     <string name="theme_dark">Sombre</string>
     <string name="theme_light">Lumière</string>
-    <string name="backup_description">Vos données sont automatiquement enregistrées dans votre compte Google.\n\nAprès la réinstallation de l\'application, vos données seront automatiquement restaurées.\n\nPour que la sauvegarde automatique de vos données fonctionne, vous devez activer la sauvegarde dans les paramètres du téléphone.</string>
+    <string name="backup_description">Nous utilisons Google Drive pour enregistrer et restaurer vos données dans l\'application.\n\nNe vous inquiétez pas, nous n\'aurons pas accès à vos fichiers Google Drive, à l\'exception du fichier de données d\'application que nous allons créer.\n\nNous vous recommandons de faire des sauvegardes régulières pour ne pas perdre vos données et de les restaurer lorsque vous réinstallez l\'application ou sur un autre appareil.</string>
     <string name="no_email_app_error">Vous n\'avez pas d\'application de messagerie sur votre appareil</string>
     <string name="feedback_subject_pattern">Retour. Application %s</string>
     <string name="enter_label_name">Entrez le nom de l\'étiquette</string>

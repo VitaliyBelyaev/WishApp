@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.screens.settings.components
+package ru.vitaliy.belyaev.wishapp.ui.screens.backup.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding

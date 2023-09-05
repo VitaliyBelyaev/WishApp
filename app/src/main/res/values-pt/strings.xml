@@ -20,7 +20,7 @@
     <string name="theme_system_description">O mesmo que no dispositivo</string>
     <string name="theme_dark">Escuro</string>
     <string name="theme_light">Claro</string>
-    <string name="backup_description">Seus dados são salvos automaticamente em sua conta do Google.\n\nApós reinstalar o aplicativo, seus dados serão restaurados automaticamente.\n\nPara que o backup automático de seus dados funcione, você precisa ativar o Backup nas configurações do telefone.</string>
+    <string name="backup_description">Usamos o Google Drive para salvar e restaurar seus dados no aplicativo.\n\nNão se preocupe, não teremos acesso aos seus arquivos do Google Drive, exceto ao arquivo de dados do aplicativo que criaremos.\n\nRecomendamos que você faça backups regulares para não perder seus dados e restaure-os ao reinstalar o aplicativo ou em outro dispositivo.</string>
     <string name="no_email_app_error">Você não tem um aplicativo de e-mail em seu dispositivo</string>
     <string name="feedback_subject_pattern">Opinião. Aplicativo %s</string>
     <string name="enter_label_name">Digite o nome do rótulo</string>

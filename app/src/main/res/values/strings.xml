@@ -20,7 +20,7 @@
     <string name="theme_system_description">The same as on the device</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_light">Light</string>
-    <string name="backup_description">Your data is automatically saved in your Google account.\n\nAfter reinstalling the application, your data will be automatically restored.\n\nIn order for the automatic backup of your data to work, you need to enable Backup in the phone settings.</string>
+    <string name="backup_description">We use Google Drive to save and restore your data in the app.\n\nDon\'t worry, we won\'t have access to your Google Drive files except for the app data file we\'ll be creating.\n\nWe recommend that you make regular backups so as not to lose your data and restore it when you reinstall the application or on another device.</string>
     <string name="no_email_app_error">You do not have an email application on your device</string>
     <string name="feedback_subject_pattern">Feedback. Application %s</string>
     <string name="enter_label_name">Enter label name</string>

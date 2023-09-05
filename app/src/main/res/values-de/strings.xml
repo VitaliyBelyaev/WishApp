@@ -20,7 +20,7 @@
     <string name="theme_system_description">Das gleiche wie auf dem Gerät</string>
     <string name="theme_dark">Dunkel</string>
     <string name="theme_light">Hell</string>
-    <string name="backup_description">Ihre Daten werden automatisch in Ihrem Google-Konto gespeichert.\n\nNach der Neuinstallation der Anwendung werden Ihre Daten automatisch wiederhergestellt.\n\nDamit die automatische Sicherung Ihrer Daten funktioniert, müssen Sie die Sicherung in den Telefoneinstellungen aktivieren.</string>
+    <string name="backup_description">Zur Speicherung und Wiederherstellung Ihrer Daten in der App nutzen wir Google Drive.\n\nKeine Sorge, wir haben außer der App-Datendatei, die wir erstellen, keinen Zugriff auf Ihre Google Drive-Dateien.\n\nWir empfehlen Ihnen, regelmäßig Backups zu erstellen, um Ihre Daten nicht zu verlieren und sie bei einer Neuinstallation der Anwendung oder auf einem anderen Gerät wiederherzustellen.</string>
     <string name="no_email_app_error">Sie haben keine E-Mail-Anwendung auf Ihrem Gerät</string>
     <string name="feedback_subject_pattern">Rückmeldung. Anwendung %s</string>
     <string name="enter_label_name">Labelnamen eingeben</string>
