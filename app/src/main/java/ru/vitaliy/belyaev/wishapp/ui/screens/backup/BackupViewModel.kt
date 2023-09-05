@@ -108,6 +108,7 @@ internal class BackupViewModel @Inject constructor(
                 }
             }.onSuccess { backupInfo ->
                 handleNewBackupInfo(backupInfo)
+                _showSnackFlow.emit(SnackbarMessage.StringValue.Message("Резервная копия успешно создана"))
             }.onFailure {
                 val error = UploadNewBackupException(it)
                 Timber.e(error)

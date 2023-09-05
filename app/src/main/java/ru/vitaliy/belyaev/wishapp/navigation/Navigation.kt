@@ -43,7 +43,8 @@ internal fun Navigation(
                 onAddWishClicked = { navController.navigate(WishDetailedRoute.buildRoute()) },
                 onSettingIconClicked = { navController.navigate(SettingsRoute.VALUE) },
                 onShareClick = onShareClick,
-                onEditTagClick = { navController.navigate(EditTagRoute.VALUE) }
+                onEditTagClick = { navController.navigate(EditTagRoute.VALUE) },
+                onGoToBackupScreenClicked = { navController.navigate(BackupAndRestoreRoute.VALUE) },
             )
         }
         composable(

@@ -36,6 +36,8 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -73,6 +75,7 @@ fun WishListScreen(
     onSettingIconClicked: () -> Unit,
     onShareClick: (List<WishEntity>) -> Unit,
     onEditTagClick: () -> Unit,
+    onGoToBackupScreenClicked: () -> Unit,
     viewModel: WishListViewModel = hiltViewModel(),
     appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
 ) {
@@ -209,14 +212,17 @@ fun WishListScreen(
         }
 
         if (state.wishes.isEmpty() && !state.isLoading) {
-            val emptyMessage: String = when (val filter = state.wishesFilter) {
+            val filter = state.wishesFilter
+            val emptyMessage: String = when (filter) {
                 is WishesFilter.All -> stringResource(id = R.string.empty_current_wishes_message)
                 is WishesFilter.ByTag -> stringResource(id = R.string.empty_tagged_wishes_message, filter.tag.title)
                 is WishesFilter.Completed -> stringResource(id = R.string.empty_done_wishes_message)
             }
             EmptyWishesPlaceholder(
                 text = emptyMessage,
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier.padding(paddingValues),
+                showBackupSection = filter is WishesFilter.All,
+                onGoToBackupScreenClicked = onGoToBackupScreenClicked
             )
         }
 
@@ -268,6 +274,7 @@ fun WishListScreen(
 @Composable
 fun MainScreenPreview() {
     WishListScreen(
+        {},
         {},
         {},
         {},

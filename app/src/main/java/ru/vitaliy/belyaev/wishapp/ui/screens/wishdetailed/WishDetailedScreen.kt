@@ -266,7 +266,6 @@ fun WishDetailedScreen(
                 )
                 Divider()
 
-
                 for (linkItem in wishItem.toValueOfNull()?.wish?.links?.reversed() ?: emptyList()) {
                     val annotatedLinkString: AnnotatedString = buildAnnotatedString {
                         val linkHost: String = try {

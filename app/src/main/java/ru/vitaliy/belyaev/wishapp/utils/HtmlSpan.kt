@@ -2,6 +2,7 @@ package ru.vitaliy.belyaev.wishapp.utils
 
 import android.text.style.URLSpan
 import androidx.annotation.StringRes
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
@@ -32,7 +33,7 @@ fun annotatedStringResource(@StringRes id: Int): AnnotatedString {
             val end = spanned.getSpanEnd(span)
             addStyle(
                 SpanStyle(
-                    color = Color(0xff64B5F6),
+                    color = MaterialTheme.colorScheme.primary,
                     textDecoration = TextDecoration.Underline
                 ),
                 start,
