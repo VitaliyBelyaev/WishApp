@@ -31,7 +31,7 @@ fun WishAppBottomSheetM3(
     tonalElevation: Dp = BottomSheetDefaults.Elevation,
     scrimColor: Color = BottomSheetDefaults.ScrimColor,
     dragHandle: @Composable (() -> Unit)? = { BottomSheetDefaults.DragHandle() },
-    windowInsets: WindowInsets = WindowInsets.Companion.statusBars,
+    windowInsets: WindowInsets = WindowInsets.statusBars,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     ModalBottomSheet(

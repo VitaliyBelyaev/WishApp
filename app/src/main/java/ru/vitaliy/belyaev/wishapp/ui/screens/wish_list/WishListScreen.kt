@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,8 +35,6 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,8 +49,8 @@ import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheetM3
+import ru.vitaliy.belyaev.wishapp.ui.core.loader.FullscreenLoaderWithText
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.EmptyWishesPlaceholder
-import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.Loader
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.TagsSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.WishItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.WishListScreenTopBar
@@ -227,7 +224,7 @@ fun WishListScreen(
         }
 
         if (state.isLoading) {
-            Loader(modifier = Modifier.padding(paddingValues))
+            FullscreenLoaderWithText(modifier = Modifier.padding(paddingValues))
         }
 
         if (openDeleteConfirmDialog.value) {
@@ -259,7 +256,7 @@ fun WishListScreen(
                         closeBottomSheet()
                         onEditTagClick()
                     },
-                    modifier = Modifier.navigationBarsPadding()
+                    modifier = Modifier.padding(bottom = 48.dp)
                 )
             }
         }

@@ -281,7 +281,7 @@ internal fun BackupScreen(
                 sheetState = modalBottomSheetState,
             ) {
                 BackupSheetContent(
-                    modifier = Modifier.navigationBarsPadding()
+                    modifier = Modifier.padding(bottom = 48.dp)
                 )
             }
         }
