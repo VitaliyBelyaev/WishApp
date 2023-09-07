@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -58,6 +57,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.BackupScreenShowEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupForceUpdateAppDataClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupGiveDrivePermissionClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupInfoIconClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupRestoreBackupClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
@@ -81,6 +86,7 @@ import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 @Composable
 internal fun BackupScreen(
     onBackPressed: () -> Unit,
+    analyticsRepository: AnalyticsRepository,
     viewModel: BackupViewModel = hiltViewModel(),
     appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
 ) {
@@ -100,7 +106,7 @@ internal fun BackupScreen(
     val modalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showBottomSheet by remember { mutableStateOf(false) }
 
-    trackScreenShow { viewModel.trackScreenShow() }
+    trackScreenShow { analyticsRepository.trackEvent(BackupScreenShowEvent) }
 
     systemUiController.setNavigationBarColor(color = CommonColors.navBarColor())
 
@@ -131,7 +137,10 @@ internal fun BackupScreen(
                 scrollBehavior = topAppBarScrollBehavior,
                 actions = {
                     IconButton(
-                        onClick = { showBottomSheet = true }
+                        onClick = {
+                            analyticsRepository.trackEvent(BackupInfoIconClickedEvent)
+                            showBottomSheet = true
+                        }
                     ) {
                         Icon(
                             Icons.Filled.Info,
@@ -168,33 +177,29 @@ internal fun BackupScreen(
             when (val state = viewState) {
                 is BackupViewState.None -> {
                 }
-
                 is BackupViewState.DrivePermissionRationale -> {
                     DrivePermissionRationaleView {
+                        analyticsRepository.trackEvent(BackupGiveDrivePermissionClickedEvent)
                         drivePermissionLauncher.launch(viewModel.signInIntent)
-                        viewModel.onGiveDrivePermissionClicked()
                     }
                 }
-
                 is BackupViewState.NoBackup -> {
                     CurrentBackupView(
                         onCreateBackupClicked = { viewModel.onCreateBackupClicked(context) },
                         onRefreshBackupInfoClicked = { viewModel.onRefreshBackupInfoClicked() }
                     )
                 }
-
                 is BackupViewState.CheckBackupError -> {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = "Не удалось проверить есть ли резервная копия",
+                            text = stringResource(R.string.backup_check_backup_error_message),
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         Button(onClick = { viewModel.onRetryCheckBackupClicked() }) {
-                            Text(text = "Попробовать снова")
+                            Text(text = stringResource(R.string.backup_retry_check))
                         }
                     }
                 }
-
                 is BackupViewState.CurrentBackup -> {
                     CurrentBackupView(
                         backupInfo = state.backupInfo,
@@ -205,7 +210,6 @@ internal fun BackupScreen(
                                 }
 
                                 is BackupViewState.CurrentBackup.WithForceUpdate -> {
-
                                     viewModel.onCreateBackupClicked(context)
                                 }
                             }
@@ -217,13 +221,19 @@ internal fun BackupScreen(
                     when (state) {
                         is BackupViewState.CurrentBackup.WithRestore -> {
                             RestoreBackupView(
-                                onRestoreBackupClicked = { openRestoreBackupConfirmationDialog.value = true }
+                                onRestoreBackupClicked = {
+                                    analyticsRepository.trackEvent(BackupRestoreBackupClickedEvent)
+                                    openRestoreBackupConfirmationDialog.value = true
+                                }
                             )
                         }
 
                         is BackupViewState.CurrentBackup.WithForceUpdate -> {
                             ForceUpdateAppDataView(
-                                onForceUpdateClicked = { openForceUpdateAppDataConfirmationDialog.value = true }
+                                onForceUpdateClicked = {
+                                    analyticsRepository.trackEvent(BackupForceUpdateAppDataClickedEvent)
+                                    openForceUpdateAppDataConfirmationDialog.value = true
+                                }
                             )
                         }
                     }
@@ -239,9 +249,9 @@ internal fun BackupScreen(
         if (openCreateBackupConfirmationDialog.value) {
             DestructiveConfirmationAlertDialog(
                 onDismissRequest = { openCreateBackupConfirmationDialog.value = false },
-                title = { Text("Создать резервную копию?") },
-                text = { Text("Вы не восстанавливали данные из копии на этом устройстве. Рекомендуем восстановить данные из существующей копии перед созданием новой резервной копии. ") },
-                confirmButtonText = { Text("Создать") },
+                title = { Text(stringResource(R.string.backup_create_backup_confirm_dialog_title)) },
+                text = { Text(stringResource(R.string.backup_create_backup_confirm_dialog_message)) },
+                confirmButtonText = { Text(stringResource(R.string.backup_create_backup_confirm_dialog_positive_text)) },
                 confirmClick = {
                     openCreateBackupConfirmationDialog.value = false
                     viewModel.onCreateBackupClicked(context)
@@ -252,9 +262,9 @@ internal fun BackupScreen(
         if (openRestoreBackupConfirmationDialog.value) {
             DestructiveConfirmationAlertDialog(
                 onDismissRequest = { openRestoreBackupConfirmationDialog.value = false },
-                title = { Text("Восстановить данные из копии?") },
-                text = { Text("При восстановлении данных из копии, все текущие данные в приложении будут потеряны") },
-                confirmButtonText = { Text("Восстановить") },
+                title = { Text(stringResource(R.string.backup_restore_backup_confirm_dialog_title)) },
+                text = { Text(stringResource(R.string.backup_restore_backup_confirm_dialog_message)) },
+                confirmButtonText = { Text(stringResource(R.string.backup_restore_backup_confirm_dialog_positive_text)) },
                 confirmClick = {
                     openRestoreBackupConfirmationDialog.value = false
                     viewModel.onRestoreBackupClicked(context)
@@ -265,9 +275,9 @@ internal fun BackupScreen(
         if (openForceUpdateAppDataConfirmationDialog.value) {
             DestructiveConfirmationAlertDialog(
                 onDismissRequest = { openForceUpdateAppDataConfirmationDialog.value = false },
-                title = { Text("Обновить данные в приложении?") },
-                text = { Text("При обновлении данных из резервной копии, все текущие данные в приложении будут потеряны") },
-                confirmButtonText = { Text("Обновить") },
+                title = { Text(stringResource(R.string.backup_force_update_confirm_dialog_title)) },
+                text = { Text(stringResource(R.string.backup_force_update_confirm_dialog_message)) },
+                confirmButtonText = { Text(stringResource(R.string.backup_force_update_confirm_dialog_positive_text)) },
                 confirmClick = {
                     openForceUpdateAppDataConfirmationDialog.value = false
                     viewModel.onRestoreBackupClicked(context)
@@ -303,21 +313,21 @@ private fun LoadingView(loadingState: LoadingState) {
         LoadingState.CheckingBackup -> {
             FullscreenLoaderWithText(
                 isTranslucent = true,
-                text = "Проверяем наличие резервной копии",
+                text = stringResource(R.string.backup_check_backup_loader_text),
             )
         }
 
         LoadingState.RestoringBackup -> {
             FullscreenLoaderWithText(
                 isTranslucent = true,
-                text = "Восстанавливаем данные из резервной копии",
+                text = stringResource(R.string.backup_restore_backup_loader_text),
             )
         }
 
         LoadingState.UploadingNewBackup -> {
             FullscreenLoaderWithText(
                 isTranslucent = true,
-                text = "Создаём резервную копию",
+                text = stringResource(R.string.backup_create_backup_loader_text),
             )
         }
     }
@@ -333,14 +343,12 @@ private fun DrivePermissionRationaleView(onGiveDrivePermissionClicked: () -> Uni
             .padding(horizontal = 16.dp)
     ) {
         Text(
-            text = "Мы используем Google Drive для сохранения и восстановления ваших данных в приложении. Для этого нам нужно разрешение использовать ваш Google Drive.\n" +
-                    "\n" +
-                    "Не волнуйтесь, у нас не будет доступа к вашим файлам в Google Drive, кроме файла с данными из приложения, который мы будем создавать.",
+            text = stringResource(R.string.backup_drive_permission_rationale_text),
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
         Button(onClick = onGiveDrivePermissionClicked) {
-            Text(text = "Разрешить доступ к Google Drive")
+            Text(stringResource(R.string.backup_allow_access_to_drive_text))
         }
     }
 }
@@ -358,7 +366,7 @@ private fun CurrentBackupView(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Последнее резервное копирование",
+                text = stringResource(R.string.backup_current_backup_info_title),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
                     .padding(end = 8.dp)
@@ -384,57 +392,60 @@ private fun CurrentBackupView(
         when (backupInfo) {
             is BackupInfo.None -> {
                 ContentText(
-                    text = "На данный момент у вас нет резервной копии.\n\nСоздайте резервную копию в Google Drive, чтобы не потерять свои данные при переустановке приложения или смене устройства.",
+                    text = stringResource(R.string.backup_no_backup_text),
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
-
             is BackupInfo.Value -> {
                 if (backupInfo.accountEmail != null) {
+
                     ContentText(
-                        text = "Аккаунт: ${backupInfo.accountEmail}",
+                        text = stringResource(R.string.backup_current_backup_info_account, backupInfo.accountEmail),
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
                 ContentText(
-                    text = "Дата: ${BackupDateTimeFormatter.formatBackupDateTime(backupInfo.modifiedDateTime)}",
+                    text = stringResource(
+                        R.string.backup_current_backup_info_date,
+                        BackupDateTimeFormatter.formatBackupDateTime(backupInfo.modifiedDateTime)
+                    ),
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 ContentText(
-                    text = "Объём: ${BytesSizeFormatter.format(backupInfo.sizeInBytes)}",
+                    text = stringResource(
+                        R.string.backup_current_backup_info_size,
+                        BytesSizeFormatter.format(backupInfo.sizeInBytes)
+                    ),
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 if (backupInfo.device != null) {
                     ContentText(
-                        text = "Устройство: ${backupInfo.device}",
+                        text = stringResource(R.string.backup_current_backup_info_device, backupInfo.device),
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
             }
         }
         Button(onClick = { onCreateBackupClicked() }) {
-            Text(text = "Создать резервную копию")
+            Text(stringResource(R.string.backup_create_backup_button_text))
         }
     }
 }
 
 @Composable
-private fun RestoreBackupView(
-    onRestoreBackupClicked: () -> Unit
-) {
-
+private fun RestoreBackupView(onRestoreBackupClicked: () -> Unit) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Text(
-            text = "Восстановление",
+            text = stringResource(R.string.backup_restore_title),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         ContentText(
-            text = "У вас есть резервная копия, но вы не восстанавливали данные из неё на этом устройстве.\n\nРекомендуем восстановить данные из резервной копии.\n\nПосле успешного восстановления данных, приложение перезагрузится, чтобы изменения вступили в силу.",
+            text = stringResource(R.string.backup_restore_info_text),
             modifier = Modifier.padding(bottom = 8.dp)
         )
         Button(onClick = { onRestoreBackupClicked() }) {
-            Text(text = "Восстановить данные из копии")
+            Text(text = stringResource(R.string.backup_restore_button_text))
         }
     }
 }
@@ -443,21 +454,16 @@ private fun RestoreBackupView(
 private fun ForceUpdateAppDataView(onForceUpdateClicked: () -> Unit) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Text(
-            text = "Восстановление",
+            text = stringResource(R.string.backup_restore_title),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         ContentText(
-            text = "Вы уже восстановили данные из резервной копии на этом устройстве либо создавали копию с этого устройства, поэтому восстановление данных из копии не требуется.\n" +
-                    "\n" +
-                    "Однако вы можете принудительно обновить данные в приложении\n" +
-                    "данными из копии, если необходимо.\n" +
-                    "\n" +
-                    "После успешного обновления данных, приложение перезагрузится, чтобы изменения вступили в силу.",
+            text = stringResource(R.string.backup_force_update_info_text),
             modifier = Modifier.padding(bottom = 8.dp)
         )
         OutlinedButton(onClick = { onForceUpdateClicked() }) {
-            Text(text = "Принудительно обновить данные в приложении")
+            Text(text = stringResource(R.string.backup_force_update_button_text))
         }
     }
 }

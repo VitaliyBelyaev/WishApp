@@ -49,4 +49,39 @@
     <string name="share_app">App teilen</string>
     <string name="share_app_text">Probieren Sie diese App zum Speichern und Teilen Ihrer Wünsche aus\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
     <string name="invalid_link_error_message">Ungültiger Link</string>
+
+    <string name="backup_check_backup_error_message">Es konnte nicht überprüft werden, ob ein Backup vorhanden ist</string>
+    <string name="backup_retry_check">Wiederholen</string>
+    <string name="backup_create_backup_confirm_dialog_title">Backup erstellen?</string>
+    <string name="backup_create_backup_confirm_dialog_message">Sie haben auf diesem Gerät keine Daten wiederhergestellt. Wir empfehlen, die Daten aus einem vorhandenen Backup wiederherzustellen, bevor Sie ein neues Backup erstellen.</string>
+    <string name="backup_create_backup_confirm_dialog_positive_text">Erstellen</string>
+    <string name="backup_restore_backup_confirm_dialog_title">Daten aus Backup wiederherstellen?</string>
+    <string name="backup_restore_backup_confirm_dialog_message">Beim Wiederherstellen von Daten aus einer Kopie gehen alle aktuellen Daten in der Anwendung verloren</string>
+    <string name="backup_restore_backup_confirm_dialog_positive_text">Wiederherstellen</string>
+    <string name="backup_force_update_confirm_dialog_title">Daten in der App aktualisieren?</string>
+    <string name="backup_force_update_confirm_dialog_message">Beim Aktualisieren von Daten aus einem Backup gehen alle aktuellen Daten in der Anwendung verloren</string>
+    <string name="backup_force_update_confirm_dialog_positive_text">Aktualisierung</string>
+    <string name="backup_check_backup_loader_text">Suche nach einem Backup</string>
+    <string name="backup_restore_backup_loader_text">Daten aus einem Backup wiederherstellen</string>
+    <string name="backup_create_backup_loader_text">Erstellen eines Backups</string>
+    <string name="backup_drive_permission_rationale_text">Zur Speicherung und Wiederherstellung Ihrer Daten in der App nutzen wir Google Drive. Dazu benötigen wir die Erlaubnis, Ihr Google Drive zu verwenden.\n\nKeine Sorge, wir haben keinen Zugriff auf Ihre Google Drive-Dateien, außer auf die App-Datendatei, die wir erstellen werden.</string>
+    <string name="backup_current_backup_info_title">Letzte Sicherung</string>
+    <string name="backup_no_backup_text">Im Moment haben Sie kein Backup.\n\nSichern Sie es auf Google Drive, damit Ihre Daten nicht verloren gehen, wenn Sie die App neu installieren oder das Gerät wechseln.</string>
+    <string name="backup_current_backup_info_account">Konten: %s</string>
+    <string name="backup_current_backup_info_date">Datum: %s</string>
+    <string name="backup_current_backup_info_size">Größe: %s</string>
+    <string name="backup_current_backup_info_device">Gerät: %s</string>
+    <string name="backup_create_backup_button_text">Crie um backup</string>
+    <string name="backup_restore_title">Erholung</string>
+    <string name="backup_restore_info_text">Sie haben ein Backup, aber Sie haben die Daten davon auf diesem Gerät nicht wiederhergestellt.\n\nWir empfehlen, die Daten aus einem Backup wiederherzustellen.\n\nNach erfolgreicher Datenwiederherstellung wird die Anwendung neu gestartet, damit die Änderungen wirksam werden.</string>
+    <string name="backup_restore_button_text">Daten aus einer Kopie wiederherstellen</string>
+    <string name="backup_force_update_info_text">Sie haben bereits Daten aus einem Backup auf diesem Gerät wiederhergestellt oder eine Kopie von diesem Gerät erstellt, daher ist die Wiederherstellung von Daten aus einem Backup nicht erforderlich.\n\nSie können die Anwendung jedoch zwingen, die Daten in der Anwendung mit den Daten von zu aktualisieren ggf. das Backup.\n\nNachdem die Daten erfolgreich aktualisiert wurden, wird die Anwendung neu gestartet, damit die Änderungen wirksam werden.</string>
+    <string name="backup_force_update_button_text">Aktualisierung der Daten in der App erzwingen</string>
+    <string name="backup_allow_access_to_drive_text">Erlauben Sie den Zugriff auf Google Drive</string>
+    <string name="backup_google_auth_error_text">Bei der Anmeldung mit Ihrem Google-Konto ist ein Fehler aufgetreten</string>
+    <string name="backup_create_backup_success_text">Backup erfolgreich erstellt</string>
+    <string name="backup_create_backup_error_text">Beim Erstellen der Sicherung ist ein Fehler aufgetreten</string>
+    <string name="backup_restore_backup_success_text">Die Daten wurden erfolgreich wiederhergestellt, die Anwendung wird nun neu gestartet</string>
+    <string name="backup_restore_backup_error_text">Beim Wiederherstellen der Daten ist ein Fehler aufgetreten</string>
+    <string name="backup_check_backup_error_text">Bei der Suche nach einem Backup ist ein Fehler aufgetreten</string>
 </resources>

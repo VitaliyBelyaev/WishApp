@@ -14,8 +14,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
-import ru.vitaliy.belyaev.wishapp.domain.model.analytics.BackupAndRestoreScreenShowEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupCreateBackupClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupCreateBackupSucceedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupForceUpdateAppDataSucceedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupRefreshInfoClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupRestoreBackupSucceedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.error.CheckBackupException
 import ru.vitaliy.belyaev.wishapp.domain.model.error.RestoreBackupException
 import ru.vitaliy.belyaev.wishapp.domain.model.error.UploadNewBackupException
@@ -69,15 +74,11 @@ internal class BackupViewModel @Inject constructor(
         }
     }
 
-    fun trackScreenShow() {
-        analyticsRepository.trackEvent(BackupAndRestoreScreenShowEvent)
-    }
-
     fun onSignInResultReceived(intent: Intent?) {
         if (intent == null) {
             _viewState.value = BackupViewState.DrivePermissionRationale
             launchSafe {
-                _showSnackFlow.emit(SnackbarMessage.StringValue.Message("Произошла ошибка при входе через Google аккаунт"))
+                _showSnackFlow.emit(SnackbarMessage.StringResInt.Message(R.string.backup_google_auth_error_text))
             }
         } else {
             launchSafe {
@@ -92,14 +93,13 @@ internal class BackupViewModel @Inject constructor(
         }
     }
 
-    fun onGiveDrivePermissionClicked() {
-    }
-
     fun onRetryCheckBackupClicked() {
         checkExistingBackup(forceRemote = true)
     }
 
     fun onCreateBackupClicked(context: Context) {
+        analyticsRepository.trackEvent(BackupCreateBackupClickedEvent)
+
         launchSafe {
             _loadingState.value = LoadingState.UploadingNewBackup
             runCatching {
@@ -108,7 +108,8 @@ internal class BackupViewModel @Inject constructor(
                 }
             }.onSuccess { backupInfo ->
                 handleNewBackupInfo(backupInfo)
-                _showSnackFlow.emit(SnackbarMessage.StringValue.Message("Резервная копия успешно создана"))
+                analyticsRepository.trackEvent(BackupCreateBackupSucceedEvent)
+                _showSnackFlow.emit(SnackbarMessage.StringResInt.Message(R.string.backup_create_backup_success_text))
             }.onFailure {
                 val error = UploadNewBackupException(it)
                 Timber.e(error)
@@ -120,12 +121,13 @@ internal class BackupViewModel @Inject constructor(
                     _viewState.value = BackupViewState.DrivePermissionRationale
                     return@launchSafe
                 }
-                _showSnackFlow.emit(SnackbarMessage.StringValue.Message("Произошла ошибка при создании резервной копии"))
+                _showSnackFlow.emit(SnackbarMessage.StringResInt.Message(R.string.backup_create_backup_error_text))
             }
         }
     }
 
     fun onRefreshBackupInfoClicked() {
+        analyticsRepository.trackEvent(BackupRefreshInfoClickedEvent)
         checkExistingBackup(forceRemote = true)
     }
 
@@ -140,7 +142,14 @@ internal class BackupViewModel @Inject constructor(
                     )
                 }
             }.onSuccess {
-                _showSnackFlow.emit(SnackbarMessage.StringValue.Message("Данные успешно восстановлены, сейчас приложение перезапустится"))
+                val event = if (viewState.value is BackupViewState.CurrentBackup.WithRestore) {
+                    BackupRestoreBackupSucceedEvent
+                } else {
+                    BackupForceUpdateAppDataSucceedEvent
+                }
+                analyticsRepository.trackEvent(event)
+
+                _showSnackFlow.emit(SnackbarMessage.StringResInt.Message(R.string.backup_restore_backup_success_text))
                 context.restartAppWithDelayMillis(3000)
             }.onFailure {
                 val error = RestoreBackupException(it)
@@ -153,7 +162,7 @@ internal class BackupViewModel @Inject constructor(
                     return@launchSafe
                 }
 
-                _showSnackFlow.emit(SnackbarMessage.StringValue.Message("Произошла ошибка при восстановлении данных"))
+                _showSnackFlow.emit(SnackbarMessage.StringResInt.Message(R.string.backup_restore_backup_error_text))
             }
         }
     }
@@ -178,9 +187,8 @@ internal class BackupViewModel @Inject constructor(
                 }
                 when (viewState.value) {
                     is BackupViewState.CurrentBackup -> {
-                        _showSnackFlow.emit(SnackbarMessage.StringValue.Message("Произошла ошибка при проверке наличия резервной копии"))
+                        _showSnackFlow.emit(SnackbarMessage.StringResInt.Message(R.string.backup_check_backup_error_text))
                     }
-
                     else -> {
                         _viewState.value = BackupViewState.CheckBackupError
                     }

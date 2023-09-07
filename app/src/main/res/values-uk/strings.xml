@@ -50,4 +50,39 @@
     <string name="share_app">Поділитися додатком</string>
     <string name="share_app_text">Спробуй це додаток для зберігання своїх хотелок з можливістю ділитися ними через будь-месенджер\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
     <string name="invalid_link_error_message">Недійсне посилання</string>
+
+    <string name="backup_check_backup_error_message">Не вдалося перевірити, чи є резервна копія</string>
+    <string name="backup_retry_check">Повторіть спробу</string>
+    <string name="backup_create_backup_confirm_dialog_title">Створити резервну копію?</string>
+    <string name="backup_create_backup_confirm_dialog_message">Ви не відновили дані на цьому пристрої. Ми рекомендуємо відновити дані з існуючої резервної копії перед створенням нової резервної копії.</string>
+    <string name="backup_create_backup_confirm_dialog_positive_text">Створити</string>
+    <string name="backup_restore_backup_confirm_dialog_title">Відновити дані з резервної копії?</string>
+    <string name="backup_restore_backup_confirm_dialog_message">При відновленні даних з копії всі поточні дані в програмі будуть втрачені</string>
+    <string name="backup_restore_backup_confirm_dialog_positive_text">Відновити</string>
+    <string name="backup_force_update_confirm_dialog_title">Оновити дані в додатку?</string>
+    <string name="backup_force_update_confirm_dialog_message">Під час оновлення даних із резервної копії всі поточні дані в додатку будуть втрачені</string>
+    <string name="backup_force_update_confirm_dialog_positive_text">Оновити</string>
+    <string name="backup_check_backup_loader_text">Перевірка наявності резервної копії</string>
+    <string name="backup_restore_backup_loader_text">Відновлення даних з резервної копії</string>
+    <string name="backup_create_backup_loader_text">Створення резервної копії</string>
+    <string name="backup_drive_permission_rationale_text">Ми використовуємо Google Drive, щоб зберігати та відновлювати ваші дані в програмі. Для цього нам потрібен дозвіл на використання вашого Google Drive.\n\nНе хвилюйтеся, ми не матимемо доступу до ваших файлів Google Drive, окрім файлу даних програми, який ми створимо.</string>
+    <string name="backup_current_backup_info_title">Остання резервна копія</string>
+    <string name="backup_no_backup_text">Наразі у вас немає резервної копії.\n\nСтворіть резервну копію на Google Drive, щоб не втратити свої дані під час перевстановлення програми або зміни пристрою.</string>
+    <string name="backup_current_backup_info_account">Обліковий запис: %s</string>
+    <string name="backup_current_backup_info_date">Дата: %s</string>
+    <string name="backup_current_backup_info_size">Розмір: %s</string>
+    <string name="backup_current_backup_info_device">Пристрій: %s</string>
+    <string name="backup_create_backup_button_text">Створіть резервну копію</string>
+    <string name="backup_restore_title">Відновлення</string>
+    <string name="backup_restore_info_text">У вас є резервна копія, але ви не відновили дані з неї на цьому пристрої.\n\nМи рекомендуємо відновити дані з резервної копії.\n\nПісля успішного відновлення даних програма перезапуститься, щоб зміни набули чинності.</string>
+    <string name="backup_restore_button_text">Відновити дані з копії</string>
+    <string name="backup_force_update_info_text">Ви вже відновили дані з резервної копії на цьому пристрої або створили копію з цього пристрою, тому відновлення даних із резервної копії не потрібне.\n\nОднак ви можете змусити програму оновити дані в програмі даними з за потреби створіть резервну копію.\n\nПісля успішного оновлення даних програма перезапуститься, щоб зміни набули чинності.</string>
+    <string name="backup_force_update_button_text">Примусове оновлення даних у програмі</string>
+    <string name="backup_allow_access_to_drive_text">Дозволити доступ до Google Drive</string>
+    <string name="backup_google_auth_error_text">Помилка при вході через Google обліковий запис</string>
+    <string name="backup_create_backup_success_text">Резервна копія успішно створена</string>
+    <string name="backup_create_backup_error_text">Виникла помилка при створенні резервної копії</string>
+    <string name="backup_restore_backup_success_text">Дані успішно відновлені, зараз програма перезапуститься</string>
+    <string name="backup_restore_backup_error_text">Виникла помилка при відновленні даних</string>
+    <string name="backup_check_backup_error_text">Виникла помилка при перевірці наявності резервної копії</string>
 </resources>

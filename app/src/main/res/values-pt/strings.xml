@@ -49,4 +49,39 @@
     <string name="share_app">Compartilhe o aplicativo</string>
     <string name="share_app_text">Experimente este aplicativo para armazenar e compartilhar seus desejos\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
     <string name="invalid_link_error_message">Link inválido</string>
+
+    <string name="backup_check_backup_error_message">Falha ao verificar se há um backup</string>
+    <string name="backup_retry_check">Tentar novamente</string>
+    <string name="backup_create_backup_confirm_dialog_title">Criar um backup?</string>
+    <string name="backup_create_backup_confirm_dialog_message">Você não recuperou dados neste dispositivo. Recomendamos restaurar os dados de um backup existente antes de criar um novo backup.</string>
+    <string name="backup_create_backup_confirm_dialog_positive_text">Criar</string>
+    <string name="backup_restore_backup_confirm_dialog_title">Restaurar dados do backup?</string>
+    <string name="backup_restore_backup_confirm_dialog_message">Ao restaurar dados de uma cópia, todos os dados atuais do aplicativo serão perdidos</string>
+    <string name="backup_restore_backup_confirm_dialog_positive_text">Restaurar</string>
+    <string name="backup_force_update_confirm_dialog_title">Atualizar dados no aplicativo?</string>
+    <string name="backup_force_update_confirm_dialog_message">Ao atualizar os dados de um backup, todos os dados atuais do aplicativo serão perdidos</string>
+    <string name="backup_force_update_confirm_dialog_positive_text">Atualizar</string>
+    <string name="backup_check_backup_loader_text">Verificando um backup</string>
+    <string name="backup_restore_backup_loader_text">Restaurando dados de um backup</string>
+    <string name="backup_create_backup_loader_text">Criando um backup</string>
+    <string name="backup_drive_permission_rationale_text">Usamos o Google Drive para salvar e restaurar seus dados no aplicativo. Para fazer isso, precisamos de permissão para usar seu Google Drive.\n\nNão se preocupe, não teremos acesso aos seus arquivos do Google Drive, exceto ao arquivo de dados do aplicativo que criaremos.</string>
+    <string name="backup_current_backup_info_title">Ultimo Back up</string>
+    <string name="backup_no_backup_text">No momento você não tem um backup.\n\nFaça backup no Google Drive para não perder seus dados ao reinstalar o aplicativo ou trocar de dispositivo.</string>
+    <string name="backup_current_backup_info_account">Conta: %s</string>
+    <string name="backup_current_backup_info_date">Data: %s</string>
+    <string name="backup_current_backup_info_size">Tamanho: %s</string>
+    <string name="backup_current_backup_info_device">Dispositivo: %s</string>
+    <string name="backup_create_backup_button_text">Crie um backup</string>
+    <string name="backup_restore_title">Recuperação</string>
+    <string name="backup_restore_info_text">Você tem um backup, mas não restaurou os dados dele neste dispositivo.\n\nRecomendamos restaurar os dados de um backup.\n\nDepois de restaurar os dados com êxito, o aplicativo será reiniciado para que as alterações tenham efeito.</string>
+    <string name="backup_restore_button_text">Restaurar dados de uma cópia</string>
+    <string name="backup_force_update_info_text">Você já restaurou dados de um backup para este dispositivo ou criou uma cópia deste dispositivo, portanto, não é necessário restaurar dados de um backup.\n\nNo entanto, você pode forçar o aplicativo a atualizar os dados no aplicativo com os dados de o backup, se necessário.\n\nDepois de atualizar os dados com sucesso, o aplicativo será reiniciado para que as alterações tenham efeito.</string>
+    <string name="backup_force_update_button_text">Forçar atualização de dados no aplicativo</string>
+    <string name="backup_allow_access_to_drive_text">Permitir acesso ao Google Drive</string>
+    <string name="backup_google_auth_error_text">Ocorreu um erro ao fazer login com sua conta do Google</string>
+    <string name="backup_create_backup_success_text">Backup criado com sucesso</string>
+    <string name="backup_create_backup_error_text">Ocorreu um erro ao criar o backup</string>
+    <string name="backup_restore_backup_success_text">Os dados foram restaurados com sucesso, o aplicativo será reiniciado agora</string>
+    <string name="backup_restore_backup_error_text">Ocorreu um erro ao restaurar dados</string>
+    <string name="backup_check_backup_error_text">Ocorreu um erro ao verificar um backup</string>
 </resources>

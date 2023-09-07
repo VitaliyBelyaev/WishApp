@@ -219,7 +219,10 @@ fun WishListScreen(
                 text = emptyMessage,
                 modifier = Modifier.padding(paddingValues),
                 showBackupSection = filter is WishesFilter.All,
-                onGoToBackupScreenClicked = onGoToBackupScreenClicked
+                onGoToBackupScreenClicked = {
+                    viewModel.onGoToBackupScreenClicked()
+                    onGoToBackupScreenClicked()
+                }
             )
         }
 

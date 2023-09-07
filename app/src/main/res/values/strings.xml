@@ -49,4 +49,39 @@
     <string name="share_app">Share app</string>
     <string name="share_app_text">Try this app for storing and sharing your wishes\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
     <string name="invalid_link_error_message">Invalid link</string>
+
+    <string name="backup_check_backup_error_message">Failed to check if there is a backup</string>
+    <string name="backup_retry_check">Retry</string>
+    <string name="backup_create_backup_confirm_dialog_title">Create a backup?</string>
+    <string name="backup_create_backup_confirm_dialog_message">You have not recovered data on this device. We recommend restoring data from an existing backup before creating a new backup.</string>
+    <string name="backup_create_backup_confirm_dialog_positive_text">Create</string>
+    <string name="backup_restore_backup_confirm_dialog_title">Restore data from backup?</string>
+    <string name="backup_restore_backup_confirm_dialog_message">When restoring data from a copy, all current data in the application will be lost</string>
+    <string name="backup_restore_backup_confirm_dialog_positive_text">Restore</string>
+    <string name="backup_force_update_confirm_dialog_title">Update data in the app?</string>
+    <string name="backup_force_update_confirm_dialog_message">When updating data from a backup, all current data in the application will be lost</string>
+    <string name="backup_force_update_confirm_dialog_positive_text">Update</string>
+    <string name="backup_check_backup_loader_text">Checking for a backup</string>
+    <string name="backup_restore_backup_loader_text">Restoring data from a backup</string>
+    <string name="backup_create_backup_loader_text">Creating a backup</string>
+    <string name="backup_drive_permission_rationale_text">We use Google Drive to save and restore your data in the app. To do this, we need permission to use your Google Drive.\n\nDon\'t worry, we won\'t have access to your Google Drive files except for the app data file we\'ll be creating.</string>
+    <string name="backup_current_backup_info_title">Last backup</string>
+    <string name="backup_no_backup_text">At the moment you do not have a backup.\n\nBack up to Google Drive so you don\'t lose your data when you reinstall the app or change device.</string>
+    <string name="backup_current_backup_info_account">Account: %s</string>
+    <string name="backup_current_backup_info_date">Date: %s</string>
+    <string name="backup_current_backup_info_size">Size: %s</string>
+    <string name="backup_current_backup_info_device">Device: %s</string>
+    <string name="backup_create_backup_button_text">Create a backup</string>
+    <string name="backup_restore_title">Restore</string>
+    <string name="backup_restore_info_text">You have a backup, but you have not restored data from it on this device.\n\nWe recommend restoring data from a backup.\n\nAfter successfully restoring data, the application will restart for the changes to take effect.</string>
+    <string name="backup_restore_button_text">Restore data from a copy</string>
+    <string name="backup_force_update_info_text">You have already restored data from a backup to this device or created a copy from this device, so restoring data from a backup is not required.\n\nHowever, you can force the application to update the data in the application with the data from the backup if necessary.\n\nAfter successfully updating the data , the application will restart for the changes to take effect.</string>
+    <string name="backup_force_update_button_text">Force update data in the app</string>
+    <string name="backup_allow_access_to_drive_text">Allow access to Google Drive</string>
+    <string name="backup_google_auth_error_text">An error occurred while signing in with your Google account</string>
+    <string name="backup_create_backup_success_text">Backup created successfully</string>
+    <string name="backup_create_backup_error_text">An error occurred while creating the backup</string>
+    <string name="backup_restore_backup_success_text">The data was successfully restored, the application will now restart</string>
+    <string name="backup_restore_backup_error_text">An error occurred while restoring data</string>
+    <string name="backup_check_backup_error_text">An error occurred while checking for a backup</string>
 </resources>

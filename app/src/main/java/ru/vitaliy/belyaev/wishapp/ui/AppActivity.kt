@@ -95,6 +95,7 @@ internal class AppActivity : AppCompatActivity() {
                 Navigation(
                     navController = navController,
                     onShareClick = { viewModel.onShareWishListClicked(it) },
+                    analyticsRepository = analyticsRepository,
                 )
             }
 

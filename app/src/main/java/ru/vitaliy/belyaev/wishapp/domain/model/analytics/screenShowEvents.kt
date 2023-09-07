@@ -33,9 +33,9 @@ object SettingsScreenShowEvent : AnalyticsEvent {
     override val params: Map<String, Any?> = emptyMap()
 }
 
-object BackupAndRestoreScreenShowEvent : AnalyticsEvent {
+object BackupScreenShowEvent : AnalyticsEvent {
 
-    override val name: String = "Backup And Restore Screen - Show"
+    override val name: String = "Backup Screen - Show"
 
     override val params: Map<String, Any?> = emptyMap()
 }

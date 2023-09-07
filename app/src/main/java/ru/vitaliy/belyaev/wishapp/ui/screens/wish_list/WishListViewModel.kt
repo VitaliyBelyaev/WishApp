@@ -5,7 +5,6 @@ import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -16,14 +15,14 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.WishListScreenShowEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListDeleteWishesConfirmedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListFilterByTagClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListFilterCompletedClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListFilterCurrentClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListGoToBackupScreenClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListWishMovedEvent
-import ru.vitaliy.belyaev.wishapp.shared.data.coroutines.getDispatcherProvider
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
@@ -239,6 +238,10 @@ class WishListViewModel @Inject constructor(
             is WishesFilter.Completed -> ReorderButtonState.Hidden
         }
         _uiState.value = uiState.value.copy(reorderButtonState = reorderButtonState, selectedIds = emptyList())
+    }
+
+    fun onGoToBackupScreenClicked() {
+        analyticsRepository.trackEvent(WishListGoToBackupScreenClickedEvent)
     }
 
     private fun launchObservingWishes() {

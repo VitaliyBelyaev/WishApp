@@ -47,3 +47,10 @@ data class WishListDeleteWishesConfirmedEvent(
         "wish_count" to wishCount
     )
 }
+
+object WishListGoToBackupScreenClickedEvent : AnalyticsEvent {
+
+    override val name: String = "Wish List Screen - Go To Backup Screen Clicked"
+
+    override val params: Map<String, Any?> = emptyMap()
+}

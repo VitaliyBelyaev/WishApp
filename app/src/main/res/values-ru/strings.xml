@@ -50,4 +50,39 @@
     <string name="share_app">Поделиться приложением</string>
     <string name="share_app_text">Попробуй это приложения для хранения своих хотелок с возможностью делиться ими через любой мессенджер\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
     <string name="invalid_link_error_message">Невалидная ссылка</string>
+
+    <string name="backup_check_backup_error_message">Не удалось проверить есть ли резервная копия</string>
+    <string name="backup_retry_check">Попробовать снова</string>
+    <string name="backup_create_backup_confirm_dialog_title">Создать резервную копию?</string>
+    <string name="backup_create_backup_confirm_dialog_message">Вы не восстанавливали данные на этом устройстве. Рекомендуем восстановить данные из существующей копии перед созданием новой резервной копии.</string>
+    <string name="backup_create_backup_confirm_dialog_positive_text">Создать</string>
+    <string name="backup_restore_backup_confirm_dialog_title">Восстановить данные из копии?</string>
+    <string name="backup_restore_backup_confirm_dialog_message">При восстановлении данных из копии, все текущие данные в приложении будут потеряны</string>
+    <string name="backup_restore_backup_confirm_dialog_positive_text">Восстановить</string>
+    <string name="backup_force_update_confirm_dialog_title">Обновить данные в приложении?</string>
+    <string name="backup_force_update_confirm_dialog_message">При обновлении данных из резервной копии, все текущие данные в приложении будут потеряны</string>
+    <string name="backup_force_update_confirm_dialog_positive_text">Обновить</string>
+    <string name="backup_check_backup_loader_text">Проверяем наличие резервной копии</string>
+    <string name="backup_restore_backup_loader_text">Восстанавливаем данные из резервной копии</string>
+    <string name="backup_create_backup_loader_text">Создаём резервную копию</string>
+    <string name="backup_drive_permission_rationale_text">Мы используем Google Drive для сохранения и восстановления ваших данных в приложении. Для этого нам нужно разрешение использовать ваш Google Drive.\n\nНе волнуйтесь, у нас не будет доступа к вашим файлам в Google Drive, кроме файла с данными из приложения, который мы будем создавать.</string>
+    <string name="backup_allow_access_to_drive_text">Разрешить доступ к Google Drive</string>
+    <string name="backup_current_backup_info_title">Последнее резервное копирование</string>
+    <string name="backup_no_backup_text">На данный момент у вас нет резервной копии.\n\nСоздайте резервную копию в Google Drive, чтобы не потерять свои данные при переустановке приложения или смене устройства.</string>
+    <string name="backup_current_backup_info_account">Аккаунт: %s</string>
+    <string name="backup_current_backup_info_date">Дата: %s</string>
+    <string name="backup_current_backup_info_size">Размер: %s</string>
+    <string name="backup_current_backup_info_device">Устройство: %s</string>
+    <string name="backup_create_backup_button_text">Создать резервную копию</string>
+    <string name="backup_restore_title">Восстановление</string>
+    <string name="backup_restore_info_text">У вас есть резервная копия, но вы не восстанавливали данные из неё на этом устройстве.\n\nРекомендуем восстановить данные из резервной копии.\n\nПосле успешного восстановления данных, приложение перезагрузится, чтобы изменения вступили в силу.</string>
+    <string name="backup_restore_button_text">Восстановить данные из копии</string>
+    <string name="backup_force_update_info_text">Вы уже восстановили данные из резервной копии на этом устройстве либо создавали копию с этого устройства, поэтому восстановление данных из копии не требуется.\n\nОднако вы можете принудительно обновить данные в приложении данными из копии, если необходимо.\n\nПосле успешного обновления данных, приложение перезагрузится, чтобы изменения вступили в силу.</string>
+    <string name="backup_force_update_button_text">Принудительно обновить данные в приложении</string>
+    <string name="backup_google_auth_error_text">Произошла ошибка при входе через Google аккаунт</string>
+    <string name="backup_create_backup_success_text">Резервная копия успешно создана</string>
+    <string name="backup_create_backup_error_text">Произошла ошибка при создании резервной копии</string>
+    <string name="backup_restore_backup_success_text">Данные успешно восстановлены, сейчас приложение перезапустится</string>
+    <string name="backup_restore_backup_error_text">Произошла ошибка при восстановлении данных</string>
+    <string name="backup_check_backup_error_text">Произошла ошибка при проверке наличия резервной копии</string>
 </resources>

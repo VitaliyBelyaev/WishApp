@@ -49,4 +49,39 @@
     <string name="share_app">Comparta la aplicación</string>
     <string name="share_app_text">Pruebe esta aplicación para almacenar y compartir sus deseos y https://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
     <string name="invalid_link_error_message">Enlace inválido</string>
+
+    <string name="backup_check_backup_error_message">No se pudo verificar si hay una copia de seguridad</string>
+    <string name="backup_retry_check">Rever</string>
+    <string name="backup_create_backup_confirm_dialog_title">¿Crear una copia de seguridad?</string>
+    <string name="backup_create_backup_confirm_dialog_message">No has recuperado datos en este dispositivo. Recomendamos restaurar los datos de una copia de seguridad existente antes de crear una nueva copia de seguridad.</string>
+    <string name="backup_create_backup_confirm_dialog_positive_text">Crear</string>
+    <string name="backup_restore_backup_confirm_dialog_title">¿Restaurar datos desde la copia de seguridad?</string>
+    <string name="backup_restore_backup_confirm_dialog_message">Al restaurar datos a partir de una copia, se perderán todos los datos actuales de la aplicación.</string>
+    <string name="backup_restore_backup_confirm_dialog_positive_text">Restaurar</string>
+    <string name="backup_force_update_confirm_dialog_title">¿Actualizar datos en la aplicación?</string>
+    <string name="backup_force_update_confirm_dialog_message">Al actualizar los datos de una copia de seguridad, se perderán todos los datos actuales de la aplicación.</string>
+    <string name="backup_force_update_confirm_dialog_positive_text">Actualizar</string>
+    <string name="backup_check_backup_loader_text">Comprobando una copia de seguridad</string>
+    <string name="backup_restore_backup_loader_text">Restaurar datos desde una copia de seguridad</string>
+    <string name="backup_create_backup_loader_text">Creando una copia de seguridad</string>
+    <string name="backup_drive_permission_rationale_text">Usamos Google Drive para guardar y restaurar sus datos en la aplicación. Para hacer esto, necesitamos permiso para usar su Google Drive.\n\nNo se preocupe, no tendremos acceso a sus archivos de Google Drive, excepto al archivo de datos de la aplicación que crearemos.</string>
+    <string name="backup_current_backup_info_title">Última copia de seguridad</string>
+    <string name="backup_no_backup_text">Por el momento no tienes una copia de seguridad.\n\nHaz una copia de seguridad en Google Drive para no perder tus datos cuando reinstales la aplicación o cambies de dispositivo.</string>
+    <string name="backup_current_backup_info_account">Cuenta: %s</string>
+    <string name="backup_current_backup_info_date">Fecha: %s</string>
+    <string name="backup_current_backup_info_size">Tamaño: %s</string>
+    <string name="backup_current_backup_info_device">Dispositivo: %s</string>
+    <string name="backup_create_backup_button_text">Crear una copia de seguridad</string>
+    <string name="backup_restore_title">Recuperación</string>
+    <string name="backup_restore_info_text">Tienes una copia de seguridad, pero no has restaurado los datos en este dispositivo.\n\nRecomendamos restaurar los datos desde una copia de seguridad.\n\nDespués de restaurar los datos exitosamente, la aplicación se reiniciará para que los cambios surtan efecto.</string>
+    <string name="backup_restore_button_text">Restaurar datos desde una copia</string>
+    <string name="backup_force_update_info_text">Ya restauró los datos de una copia de seguridad en este dispositivo o creó una copia desde este dispositivo, por lo que no es necesario restaurar los datos de una copia de seguridad.\n\nSin embargo, puede forzar a la aplicación a actualizar los datos en la aplicación con los datos de la copia de seguridad si es necesario.\n\nDespués de actualizar exitosamente los datos, la aplicación se reiniciará para que los cambios surtan efecto.</string>
+    <string name="backup_force_update_button_text">Forzar actualización de datos en la aplicación</string>
+    <string name="backup_allow_access_to_drive_text">Permitir el acceso a Google Drive</string>
+    <string name="backup_google_auth_error_text">Se produjo un error al iniciar sesión con su cuenta de Google</string>
+    <string name="backup_create_backup_success_text">Copia de seguridad creada exitosamente</string>
+    <string name="backup_create_backup_error_text">Se produjo un error al crear la copia de seguridad.</string>
+    <string name="backup_restore_backup_success_text">Los datos se restauraron exitosamente, la aplicación ahora se reiniciará</string>
+    <string name="backup_restore_backup_error_text">Se produjo un error al restaurar los datos.</string>
+    <string name="backup_check_backup_error_text">Se produjo un error al buscar una copia de seguridad</string>
 </resources>
