@@ -35,6 +35,7 @@ import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
 import ru.vitaliy.belyaev.wishapp.shared.domain.ShareWishListTextGenerator
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
 import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
+import timber.log.Timber
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -65,29 +66,34 @@ internal class AppActivity : AppCompatActivity() {
             sharedLinkFromAnotherApp = extractSharedLinkAndShowErrorIfInvalid(intent)
         }
 
-        viewModel.wishListToShareLiveData.observe(this) {
-            val wishListAsFormattedText = ShareWishListTextGenerator.generateFormattedWishListText(
-                title = getString(R.string.wish_list_title),
-                wishes = it
-            )
-            startActivity(createSharePlainTextIntent(wishListAsFormattedText))
+        lifecycleScope.launch {
+            viewModel.wishListToShareFlow.collect {
+                val wishListAsFormattedText = ShareWishListTextGenerator.generateFormattedWishListText(
+                    title = getString(R.string.wish_list_title),
+                    wishes = it
+                )
+                startActivity(createSharePlainTextIntent(wishListAsFormattedText))
+            }
         }
 
-        viewModel.requestReviewLiveData.observe(this) {
-            analyticsRepository.trackEvent(InAppReviewRequestedEvent)
-            val reviewManager = ReviewManagerFactory.create(this)
-            reviewManager
-                .requestReviewFlow()
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val reviewInfo = task.result
-                        analyticsRepository.trackEvent(InAppReviewShowEvent)
-                        reviewManager.launchReviewFlow(this, reviewInfo)
-                    } else {
-                        task.exception?.let { FirebaseCrashlytics.getInstance().recordException(it) }
+        lifecycleScope.launch {
+            viewModel.requestReviewFlow.collect {
+                analyticsRepository.trackEvent(InAppReviewRequestedEvent)
+                val reviewManager = ReviewManagerFactory.create(this@AppActivity)
+                reviewManager
+                    .requestReviewFlow()
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val reviewInfo = task.result
+                            analyticsRepository.trackEvent(InAppReviewShowEvent)
+                            reviewManager.launchReviewFlow(this@AppActivity, reviewInfo)
+                        } else {
+                            task.exception?.let { FirebaseCrashlytics.getInstance().recordException(it) }
+                        }
                     }
-                }
+            }
         }
+
         setContent {
             val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
             val navController = rememberAnimatedNavController()
