@@ -38,7 +38,7 @@ internal class GoogleBackupAuthRepository(
     }
 
     private fun getGoogleSignInClient(context: Context): GoogleSignInClient {
-        val signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        val signInOptions = GoogleSignInOptions.Builder()
             .requestEmail()
             .requestScopes(Scope(DriveScopes.DRIVE_APPDATA))
             .build()
