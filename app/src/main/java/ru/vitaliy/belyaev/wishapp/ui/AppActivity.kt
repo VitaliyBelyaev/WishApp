@@ -35,7 +35,6 @@ import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
 import ru.vitaliy.belyaev.wishapp.shared.domain.ShareWishListTextGenerator
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
 import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
-import timber.log.Timber
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
