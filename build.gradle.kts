@@ -4,7 +4,7 @@ plugins {
     id("com.android.library").version(libs.versions.androidGradle.get()).apply(false)
     kotlin("android").version(libs.versions.kotlin.get()).apply(false)
     kotlin("kapt").version(libs.versions.kotlin.get()).apply(false)
-    id("com.squareup.sqldelight").version(libs.versions.sqlDelight.get()).apply(false)
+    id("app.cash.sqldelight").version(libs.versions.sqlDelight.get()).apply(false)
     id("com.google.dagger.hilt.android").version(libs.versions.hilt.get()).apply(false)
     id("com.google.gms.google-services").version("4.3.14").apply(false)
     id("com.google.firebase.crashlytics").version("2.9.2").apply(false)

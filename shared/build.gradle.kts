@@ -2,7 +2,7 @@ plugins {
     id("com.android.library")
     kotlin("multiplatform")
     kotlin("native.cocoapods")
-    id("com.squareup.sqldelight")
+    id("app.cash.sqldelight")
     id("com.rickclephas.kmp.nativecoroutines")
     id("com.google.devtools.ksp")
 }
@@ -61,8 +61,8 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:${libs.versions.kotlinDateTime.get()}")
 
                 // SQLDelight
-                implementation("com.squareup.sqldelight:runtime:${libs.versions.sqlDelight.get()}")
-                implementation("com.squareup.sqldelight:coroutines-extensions:${libs.versions.sqlDelight.get()}")
+                implementation("app.cash.sqldelight:runtime:${libs.versions.sqlDelight.get()}")
+                implementation("app.cash.sqldelight:coroutines-extensions:${libs.versions.sqlDelight.get()}")
 
                 // UUID
                 implementation("com.benasher44:uuid:${libs.versions.uuid.get()}")
@@ -85,7 +85,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 // SQLDelight
-                implementation("com.squareup.sqldelight:android-driver:${libs.versions.sqlDelight.get()}")
+                implementation("app.cash.sqldelight:android-driver:${libs.versions.sqlDelight.get()}")
             }
         }
         val androidTest by getting
@@ -100,7 +100,7 @@ kotlin {
 
             dependencies {
                 // SQLDelight
-                implementation("com.squareup.sqldelight:native-driver:${libs.versions.sqlDelight.get()}")
+                implementation("app.cash.sqldelight:native-driver:${libs.versions.sqlDelight.get()}")
             }
         }
         val iosX64Test by getting
@@ -120,10 +120,12 @@ kotlin {
 }
 
 sqldelight {
-    database("WishAppDb") {
-        packageName = "ru.vitaliy.belyaev.wishapp.shared.data.database"
-        dialect = "sqlite:3.24"
-        schemaOutputDirectory = file("src/main/sqldelight/databases")
-        verifyMigrations = true
+    databases {
+        create("WishAppDb") {
+            packageName.set("ru.vitaliy.belyaev.wishapp.shared.data.database")
+            dialect("app.cash.sqldelight:sqlite-3-24-dialect:${libs.versions.sqlDelight.get()}")
+            schemaOutputDirectory.file("src/main/sqldelight/databases")
+            verifyMigrations.set(true)
+        }
     }
 }
