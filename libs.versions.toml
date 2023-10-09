@@ -1,16 +1,36 @@
 [versions]
-androidGradle = "7.4.0"
 kotlin = "1.8.21"
-kotlinCoroutines = "1.7.0"
+kotlinCoroutines = "1.7.1"
 kotlinDateTime = "0.4.0"
-ksp = "1.8.21-1.0.11"
-
 compose = "1.3.3"
 sqlDelight = "2.0.0"
-hilt = "2.44.2"
 koin = "3.4.2"
 accompanist = "0.30.1"
 koinCompose = "3.4.1"
 napier = "2.6.1"
 uuid = "0.6.0"
-nativeCoroutines = "1.0.0-ALPHA-9"
+nativeCoroutines = "1.0.0-ALPHA-10"
+
+#Plugins versions only
+androidGradle = "7.4.0"
+ksp = "1.8.21-1.0.11"
+hilt = "2.44.2"
+googleServices = "4.3.14"
+firebaseCrashlytics = "2.9.2"
+firebasePerf = "1.4.2"
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "androidGradle" }
+androidLibrary = { id = "com.android.library", version.ref = "androidGradle" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
+kmpNativeCoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version.ref = "nativeCoroutines" }
+sqlDelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+firebaseCrashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }
+firebasePerf = { id = "com.google.firebase.firebase-perf", version.ref = "firebasePerf" }

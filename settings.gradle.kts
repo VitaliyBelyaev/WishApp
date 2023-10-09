@@ -17,7 +17,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        gradlePluginPortal()
         maven(url = "https://jitpack.io")
         maven(url = "https://www.jetbrains.com/intellij-repository/releases")
         maven(url = "https://jetbrains.bintray.com/intellij-third-party-dependencies")
@@ -51,7 +50,6 @@ dependencyResolutionManagement {
             }
             filter { includeModuleByRegex(".*", ".*kotlin-native-prebuilt.*") }
         }
-
     }
 }
 

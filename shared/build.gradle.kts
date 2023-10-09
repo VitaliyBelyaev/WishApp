@@ -1,10 +1,10 @@
 plugins {
-    id("com.android.library")
-    kotlin("multiplatform")
-    kotlin("native.cocoapods")
-    id("app.cash.sqldelight")
-    id("com.rickclephas.kmp.nativecoroutines")
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kotlinCocoapods)
+    alias(libs.plugins.sqlDelight)
+    alias(libs.plugins.kmpNativeCoroutines)
+    alias(libs.plugins.ksp)
 }
 
 kotlin.sourceSets.all {
@@ -88,7 +88,7 @@ kotlin {
                 implementation("app.cash.sqldelight:android-driver:${libs.versions.sqlDelight.get()}")
             }
         }
-        val androidTest by getting
+        val androidUnitTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting

@@ -504,6 +504,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		1BD4AE511C359344A2D059D9 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);

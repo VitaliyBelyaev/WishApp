@@ -3,7 +3,7 @@ PODS:
     - KMPNativeCoroutinesCore (= 1.0.0-ALPHA-10)
   - KMPNativeCoroutinesCore (1.0.0-ALPHA-10)
   - shared (1.0):
-    - KMPNativeCoroutinesCombine (~> 1.0.0-ALPHA-9)
+    - KMPNativeCoroutinesCombine (~> 1.0.0-ALPHA-10)
 
 DEPENDENCIES:
   - shared (from `../shared`)
@@ -20,7 +20,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   KMPNativeCoroutinesCombine: aba1388c87a7ad95ca167ef033a487d83da428d6
   KMPNativeCoroutinesCore: 826573240f36e70f257c5215acab10a72b05ba82
-  shared: 329b14100f49568e16dc8e45eebda18cd99e89ee
+  shared: e32671d1561a9906054a0f634d8aa76cc35cbe9b
 
 PODFILE CHECKSUM: b892769b6c884a2cbeb6b7b490bac3291d916956
 
