@@ -16,7 +16,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import androidx.navigation.compose.rememberNavController
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.AndroidEntryPoint
@@ -95,7 +95,7 @@ internal class AppActivity : AppCompatActivity() {
 
         setContent {
             val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
-            val navController = rememberAnimatedNavController()
+            val navController = rememberNavController()
             WishAppTheme(selectedTheme = selectedTheme) {
                 Navigation(
                     navController = navController,

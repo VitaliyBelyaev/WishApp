@@ -10,19 +10,19 @@ plugins {
     alias(libs.plugins.kotlinCocoapods).apply(false)
     alias(libs.plugins.hilt).apply(false)
     alias(libs.plugins.googleServices).apply(false)
-    alias(libs.plugins.firebaseCrashlytics).apply(false)
-    alias(libs.plugins.firebasePerf).apply(false)
+    alias(libs.plugins.firebase.crashlytics).apply(false)
+    alias(libs.plugins.firebase.perf).apply(false)
     alias(libs.plugins.ksp).apply(false)
     alias(libs.plugins.kmpNativeCoroutines).apply(false)
 }
 
 buildscript {
     repositories {
-        maven("https://plugins.gradle.org/m2/")
-        maven("https://jitpack.io")
         google()
         mavenCentral()
         gradlePluginPortal()
+        maven("https://plugins.gradle.org/m2/")
+        maven("https://jitpack.io")
     }
 
     dependencies {

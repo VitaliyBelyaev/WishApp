@@ -10,6 +10,7 @@ import shared
 import Combine
 import KMPNativeCoroutinesCore
 import KMPNativeCoroutinesCombine
+import UIKit
 
 @MainActor
 final class WishDetailedViewModel: ObservableObject {

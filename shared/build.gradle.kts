@@ -26,7 +26,7 @@ android {
 }
 
 kotlin {
-    android()
+    androidTarget()
 
     listOf(
         iosX64(),
@@ -45,47 +45,40 @@ kotlin {
         ios.deploymentTarget = "16.0"
 
         podfile = project.file("../iosApp/Podfile")
-
-        pod("KMPNativeCoroutinesCombine") {
-            version = "~> ${libs.versions.nativeCoroutines.get()}"
-        }
     }
 
     sourceSets {
         val commonMain by getting {
             dependencies {
                 // Coroutines
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${libs.versions.kotlinCoroutines.get()}")
+                implementation(libs.kotlin.coroutines.core)
 
                 // Date time
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:${libs.versions.kotlinDateTime.get()}")
+                implementation(libs.kotlin.dateTime)
 
                 // SQLDelight
-                implementation("app.cash.sqldelight:runtime:${libs.versions.sqlDelight.get()}")
-                implementation("app.cash.sqldelight:coroutines-extensions:${libs.versions.sqlDelight.get()}")
+                implementation(libs.sqlDelight.runtime)
+                implementation(libs.sqlDelight.extensions.coroutines)
 
                 // UUID
-                implementation("com.benasher44:uuid:${libs.versions.uuid.get()}")
+                implementation(libs.kmmUuid)
 
                 // DI
-                implementation("io.insert-koin:koin-core:${libs.versions.koin.get()}")
+                implementation(libs.koin.core)
 
                 // Logging
-                implementation("io.github.aakira:napier:${libs.versions.napier.get()}")
-
-                // Tests
-                implementation(kotlin("test"))
+                implementation(libs.napier)
             }
         }
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test"))
+                implementation(libs.kotlin.test)
             }
         }
         val androidMain by getting {
             dependencies {
                 // SQLDelight
-                implementation("app.cash.sqldelight:android-driver:${libs.versions.sqlDelight.get()}")
+                implementation(libs.sqlDelight.driver.android)
             }
         }
         val androidUnitTest by getting
@@ -100,7 +93,7 @@ kotlin {
 
             dependencies {
                 // SQLDelight
-                implementation("app.cash.sqldelight:native-driver:${libs.versions.sqlDelight.get()}")
+                implementation(libs.sqlDelight.driver.native)
             }
         }
         val iosX64Test by getting
