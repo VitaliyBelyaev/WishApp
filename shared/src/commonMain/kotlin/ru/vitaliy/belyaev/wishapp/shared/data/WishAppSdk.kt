@@ -1,6 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.shared.data
 
-import com.squareup.sqldelight.db.SqlDriver
+import app.cash.sqldelight.db.SqlDriver
 import ru.vitaliy.belyaev.wishapp.shared.data.coroutines.getDispatcherProvider
 import ru.vitaliy.belyaev.wishapp.shared.data.database.DatabaseDriverFactory
 import ru.vitaliy.belyaev.wishapp.shared.data.database.WishAppDb

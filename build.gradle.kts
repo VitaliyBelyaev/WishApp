@@ -1,25 +1,28 @@
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.application").version(libs.versions.androidGradle.get()).apply(false)
-    id("com.android.library").version(libs.versions.androidGradle.get()).apply(false)
-    kotlin("android").version(libs.versions.kotlin.get()).apply(false)
-    kotlin("kapt").version(libs.versions.kotlin.get()).apply(false)
-    id("com.squareup.sqldelight").version(libs.versions.sqlDelight.get()).apply(false)
-    id("com.google.dagger.hilt.android").version(libs.versions.hilt.get()).apply(false)
-    id("com.google.gms.google-services").version("4.3.14").apply(false)
-    id("com.google.firebase.crashlytics").version("2.9.2").apply(false)
-    id("com.google.firebase.firebase-perf").version("1.4.2").apply(false)
-    id("com.google.devtools.ksp").version(libs.versions.ksp.get()).apply(false)
-    id("com.rickclephas.kmp.nativecoroutines").version(libs.versions.nativeCoroutines.get()).apply(false)
+    alias(libs.plugins.androidApplication).apply(false)
+    alias(libs.plugins.androidLibrary).apply(false)
+    alias(libs.plugins.kotlinAndroid).apply(false)
+    alias(libs.plugins.kotlinParcelize).apply(false)
+    alias(libs.plugins.kotlinMultiplatform).apply(false)
+    alias(libs.plugins.kapt).apply(false)
+    alias(libs.plugins.sqlDelight).apply(false)
+    alias(libs.plugins.kotlinCocoapods).apply(false)
+    alias(libs.plugins.hilt).apply(false)
+    alias(libs.plugins.googleServices).apply(false)
+    alias(libs.plugins.firebase.crashlytics).apply(false)
+    alias(libs.plugins.firebase.perf).apply(false)
+    alias(libs.plugins.ksp).apply(false)
+    alias(libs.plugins.kmpNativeCoroutines).apply(false)
 }
 
 buildscript {
     repositories {
         google()
         mavenCentral()
-        maven(url = "https://jitpack.io")
-        maven(url = "https://www.jetbrains.com/intellij-repository/releases")
-        maven(url = "https://jetbrains.bintray.com/intellij-third-party-dependencies")
+        gradlePluginPortal()
+        maven("https://plugins.gradle.org/m2/")
+        maven("https://jitpack.io")
     }
 
     dependencies {
