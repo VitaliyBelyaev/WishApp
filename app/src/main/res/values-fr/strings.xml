@@ -84,4 +84,6 @@
     <string name="backup_restore_backup_success_text">Les données ont été restaurées avec succès, l\'application va maintenant redémarrer</string>
     <string name="backup_restore_backup_error_text">Une erreur s\'est produite lors de la restauration des données</string>
     <string name="backup_check_backup_error_text">Une erreur s\'est produite lors de la recherche d\'une sauvegarde</string>
+    <string name="backup_wishlist_empty_text">Ou restaurez vos données à partir d\'une sauvegarde</string>
+    <string name="backup_wishlist_go_to_backup_button_text">Aller à la sauvegarde</string>
 </resources>
