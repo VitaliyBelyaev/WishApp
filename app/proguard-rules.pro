@@ -19,3 +19,10 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# For Google Drive API v3 see https://issuetracker.google.com/issues/131072620#comment12
+-keep class * extends com.google.api.client.json.GenericJson { *; }
+-keep class com.google.api.services.drive.** { *; }
+-keepclassmembers class * {
+  @com.google.api.client.util.Key <fields>;
+}
