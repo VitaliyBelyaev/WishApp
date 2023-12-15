@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.kapt)
     alias(libs.plugins.kotlinParcelize)
+    alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.hilt)
     alias(libs.plugins.googleServices)
     alias(libs.plugins.firebase.crashlytics)
@@ -92,6 +93,8 @@ dependencies {
     coreLibraryDesugaring(libs.android.tools.desugar)
 
     implementation(project(":shared"))
+
+    implementation(libs.kotlin.serialization.json)
 
     // Android X common
     implementation(libs.androidx.core.coreKtx)
