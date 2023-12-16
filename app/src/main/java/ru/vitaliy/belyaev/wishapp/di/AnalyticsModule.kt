@@ -7,7 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AmplitudeAnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepositoryComposite
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.FirebaseAnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.LogAnalyticsRepository

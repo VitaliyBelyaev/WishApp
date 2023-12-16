@@ -1,3 +1,4 @@
+import kotlin.Boolean;
 
 CREATE TABLE Wish (
   wishId TEXT PRIMARY KEY NOT NULL,

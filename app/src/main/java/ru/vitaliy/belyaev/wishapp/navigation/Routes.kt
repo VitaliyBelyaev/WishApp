@@ -35,6 +35,10 @@ object SettingsRoute {
     const val VALUE = "settings"
 }
 
+object BackupAndRestoreRoute {
+    const val VALUE = "backup_and_restore"
+}
+
 object AboutAppRoute {
     const val VALUE = "about_app"
 }

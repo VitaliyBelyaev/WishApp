@@ -1,10 +1,10 @@
 plugins {
-    id("com.android.library")
-    kotlin("multiplatform")
-    kotlin("native.cocoapods")
-    id("com.squareup.sqldelight")
-    id("com.rickclephas.kmp.nativecoroutines")
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kotlinCocoapods)
+    alias(libs.plugins.sqlDelight)
+    alias(libs.plugins.kmpNativeCoroutines)
+    alias(libs.plugins.ksp)
 }
 
 kotlin.sourceSets.all {
@@ -26,7 +26,7 @@ android {
 }
 
 kotlin {
-    android()
+    androidTarget()
 
     listOf(
         iosX64(),
@@ -45,50 +45,43 @@ kotlin {
         ios.deploymentTarget = "16.0"
 
         podfile = project.file("../iosApp/Podfile")
-
-        pod("KMPNativeCoroutinesCombine") {
-            version = "~> ${libs.versions.nativeCoroutines.get()}"
-        }
     }
 
     sourceSets {
         val commonMain by getting {
             dependencies {
                 // Coroutines
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${libs.versions.kotlinCoroutines.get()}")
+                implementation(libs.kotlin.coroutines.core)
 
                 // Date time
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:${libs.versions.kotlinDateTime.get()}")
+                implementation(libs.kotlin.dateTime)
 
                 // SQLDelight
-                implementation("com.squareup.sqldelight:runtime:${libs.versions.sqlDelight.get()}")
-                implementation("com.squareup.sqldelight:coroutines-extensions:${libs.versions.sqlDelight.get()}")
+                implementation(libs.sqlDelight.runtime)
+                implementation(libs.sqlDelight.extensions.coroutines)
 
                 // UUID
-                implementation("com.benasher44:uuid:${libs.versions.uuid.get()}")
+                implementation(libs.kmmUuid)
 
                 // DI
-                implementation("io.insert-koin:koin-core:${libs.versions.koin.get()}")
+                implementation(libs.koin.core)
 
                 // Logging
-                implementation("io.github.aakira:napier:${libs.versions.napier.get()}")
-
-                // Tests
-                implementation(kotlin("test"))
+                implementation(libs.napier)
             }
         }
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test"))
+                implementation(libs.kotlin.test)
             }
         }
         val androidMain by getting {
             dependencies {
                 // SQLDelight
-                implementation("com.squareup.sqldelight:android-driver:${libs.versions.sqlDelight.get()}")
+                implementation(libs.sqlDelight.driver.android)
             }
         }
-        val androidTest by getting
+        val androidUnitTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
@@ -100,7 +93,7 @@ kotlin {
 
             dependencies {
                 // SQLDelight
-                implementation("com.squareup.sqldelight:native-driver:${libs.versions.sqlDelight.get()}")
+                implementation(libs.sqlDelight.driver.native)
             }
         }
         val iosX64Test by getting
@@ -120,10 +113,12 @@ kotlin {
 }
 
 sqldelight {
-    database("WishAppDb") {
-        packageName = "ru.vitaliy.belyaev.wishapp.shared.data.database"
-        dialect = "sqlite:3.24"
-        schemaOutputDirectory = file("src/main/sqldelight/databases")
-        verifyMigrations = true
+    databases {
+        create("WishAppDb") {
+            packageName.set("ru.vitaliy.belyaev.wishapp.shared.data.database")
+            dialect("app.cash.sqldelight:sqlite-3-24-dialect:${libs.versions.sqlDelight.get()}")
+            schemaOutputDirectory.file("src/main/sqldelight/databases")
+            verifyMigrations.set(true)
+        }
     }
 }
