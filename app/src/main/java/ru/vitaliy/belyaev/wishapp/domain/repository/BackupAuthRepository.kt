@@ -8,6 +8,10 @@ internal interface BackupAuthRepository {
 
     suspend fun signInSilently()
 
+    suspend fun signOut()
+
+    suspend fun disconnectAccount()
+
     suspend fun checkIsSignedInFromIntent(intent: Intent): Boolean
 
     fun getSignInIntent(): Intent

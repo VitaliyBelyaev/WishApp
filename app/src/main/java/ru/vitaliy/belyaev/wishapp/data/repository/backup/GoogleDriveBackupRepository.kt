@@ -41,7 +41,7 @@ internal class GoogleDriveBackupRepository(
             .setPageSize(3)
             .execute()
 
-        return resultFiles.files.firstOrNull()?.toBackupInfo(account) ?: BackupInfo.None
+        return resultFiles.files.firstOrNull()?.toBackupInfo(account) ?: BackupInfo.None(account.email)
     }
 
     override suspend fun uploadNewBackup(

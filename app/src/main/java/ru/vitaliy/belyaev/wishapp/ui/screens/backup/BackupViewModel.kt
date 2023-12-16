@@ -1,7 +1,9 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.backup
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.activity.result.ActivityResult
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,6 +17,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.domain.CurrentBackupInfoHolder
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupCreateBackupClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupCreateBackupSucceedEvent
@@ -43,6 +46,7 @@ internal class BackupViewModel @Inject constructor(
     private val restoreBackupUseCase: RestoreBackupUseCase,
     private val isUserSignedInToBackupServiceUseCase: IsUserSignedInToBackupServiceUseCase,
     private val getExistingBackupInfoUseCase: GetExistingBackupInfoUseCase,
+    private val currentBackupInfoHolder: CurrentBackupInfoHolder,
     private val backupAuthRepository: BackupAuthRepository,
     private val analyticsRepository: AnalyticsRepository,
     private val needToShowRestoreUseCase: NeedToShowRestoreUseCase,
@@ -58,7 +62,8 @@ internal class BackupViewModel @Inject constructor(
     private val _showSnackFlow = MutableSharedFlow<SnackbarMessage>()
     val showSnackFlow: SharedFlow<SnackbarMessage> = _showSnackFlow.asSharedFlow()
 
-    val signInIntent = backupAuthRepository.getSignInIntent()
+    val signInIntent: Intent
+        get() = backupAuthRepository.getSignInIntent()
 
     init {
         launchSafe {
@@ -74,27 +79,78 @@ internal class BackupViewModel @Inject constructor(
         }
     }
 
-    fun onSignInResultReceived(intent: Intent?) {
-        if (intent == null) {
+    fun onSignInResultReceived(result: ActivityResult) {
+        if (result.resultCode == Activity.RESULT_CANCELED) {
+            return
+        }
+
+        val intent = result.data
+        if (result.resultCode != Activity.RESULT_OK || intent == null) {
+            val error =
+                IllegalStateException("Received non-OK result code or null data from sign-in intent, resultCode:${result.resultCode}, data:$intent")
+            Timber.e(error)
+            FirebaseCrashlytics.getInstance().recordException(error)
+
+            _loadingState.value = LoadingState.None
             _viewState.value = BackupViewState.DrivePermissionRationale
             launchSafe {
                 _showSnackFlow.emit(SnackbarMessage.StringResInt.Message(R.string.backup_google_auth_error_text))
             }
-        } else {
-            launchSafe {
-                val isUserSignedIn = backupAuthRepository.checkIsSignedInFromIntent(intent)
-                if (isUserSignedIn) {
-                    checkExistingBackup(forceRemote = false)
-                } else {
-                    _loadingState.value = LoadingState.None
-                    _viewState.value = BackupViewState.DrivePermissionRationale
-                }
+
+            return
+        }
+
+        launchSafe {
+            val isUserSignedIn = backupAuthRepository.checkIsSignedInFromIntent(intent)
+            if (isUserSignedIn) {
+                checkExistingBackup(forceRemote = false)
+            } else {
+                _loadingState.value = LoadingState.None
+                _viewState.value = BackupViewState.DrivePermissionRationale
             }
         }
     }
 
     fun onRetryCheckBackupClicked() {
         checkExistingBackup(forceRemote = true)
+    }
+
+    fun onSignOutClicked() {
+        launchSafe {
+            _loadingState.value = LoadingState.Empty
+            runCatching {
+                withContext(Dispatchers.IO) { backupAuthRepository.signOut() }
+            }.onSuccess {
+                _loadingState.value = LoadingState.None
+                _viewState.value = BackupViewState.DrivePermissionRationale
+                currentBackupInfoHolder.updateBackupInfo(BackupInfo.None())
+            }.onFailure {
+                val error = IllegalStateException("Error while signing out from backup service", it)
+                Timber.e(error)
+                FirebaseCrashlytics.getInstance().recordException(error)
+
+                _loadingState.value = LoadingState.None
+            }
+        }
+    }
+
+    fun onDisconnectAccountClicked() {
+        launchSafe {
+            _loadingState.value = LoadingState.Empty
+            runCatching {
+                withContext(Dispatchers.IO) { backupAuthRepository.disconnectAccount() }
+            }.onSuccess {
+                _loadingState.value = LoadingState.None
+                _viewState.value = BackupViewState.DrivePermissionRationale
+                currentBackupInfoHolder.updateBackupInfo(BackupInfo.None())
+            }.onFailure {
+                val error = IllegalStateException("Error while revoke access", it)
+                Timber.e(error)
+                FirebaseCrashlytics.getInstance().recordException(error)
+
+                _loadingState.value = LoadingState.None
+            }
+        }
     }
 
     fun onCreateBackupClicked(context: Context) {
@@ -201,7 +257,7 @@ internal class BackupViewModel @Inject constructor(
         when (backupInfo) {
             is BackupInfo.None -> {
                 _loadingState.value = LoadingState.None
-                _viewState.value = BackupViewState.NoBackup
+                _viewState.value = BackupViewState.NoBackup(backupInfo)
             }
 
             is BackupInfo.Value -> {

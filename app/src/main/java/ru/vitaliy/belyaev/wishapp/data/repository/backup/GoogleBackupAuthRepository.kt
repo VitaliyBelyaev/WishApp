@@ -23,6 +23,14 @@ internal class GoogleBackupAuthRepository(
         getGoogleSignInClient(context).silentSignIn().await()
     }
 
+    override suspend fun signOut() {
+        getGoogleSignInClient(context).signOut().await()
+    }
+
+    override suspend fun disconnectAccount() {
+        getGoogleSignInClient(context).revokeAccess().await()
+    }
+
     override suspend fun checkIsSignedInFromIntent(intent: Intent): Boolean {
         return try {
             GoogleSignIn.getSignedInAccountFromIntent(intent).await()
@@ -38,7 +46,7 @@ internal class GoogleBackupAuthRepository(
     }
 
     private fun getGoogleSignInClient(context: Context): GoogleSignInClient {
-        val signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        val signInOptions = GoogleSignInOptions.Builder()
             .requestEmail()
             .requestScopes(Scope(DriveScopes.DRIVE_APPDATA))
             .build()

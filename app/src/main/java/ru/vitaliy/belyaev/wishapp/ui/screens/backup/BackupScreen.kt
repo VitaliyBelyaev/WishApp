@@ -4,9 +4,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
@@ -24,11 +22,9 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -44,19 +40,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.BackupScreenShowEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupForceUpdateAppDataClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupGiveDrivePermissionClickedEvent
@@ -67,13 +59,17 @@ import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
 import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheetM3
-import ru.vitaliy.belyaev.wishapp.ui.core.loader.FullscreenLoaderWithText
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.SnackbarMessage
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.BackupSheetContent
+import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.ContentText
+import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.CurrentBackupView
+import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.DrivePermissionRationaleView
+import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.ForceUpdateAppDataView
+import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.LoadingView
+import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.ManageAccountView
+import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.RestoreBackupView
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
-import ru.vitaliy.belyaev.wishapp.utils.BytesSizeFormatter
-import ru.vitaliy.belyaev.wishapp.utils.getDataOrNull
 import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 
@@ -112,7 +108,7 @@ internal fun BackupScreen(
 
     val drivePermissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            viewModel.onSignInResultReceived(result.getDataOrNull())
+            viewModel.onSignInResultReceived(result)
         }
 
     LaunchedEffect(key1 = Unit) {
@@ -188,17 +184,35 @@ internal fun BackupScreen(
                         onCreateBackupClicked = { viewModel.onCreateBackupClicked(context) },
                         onRefreshBackupInfoClicked = { viewModel.onRefreshBackupInfoClicked() }
                     )
+
+                    Divider(modifier = Modifier.padding(vertical = 16.dp))
+
+                    ManageAccountView(
+                        accountEmail = state.backupInfo.accountEmail,
+                        onSignOutClicked = { viewModel.onSignOutClicked() },
+                        onDisconnectAccountClicked = { viewModel.onDisconnectAccountClicked() }
+                    )
                 }
                 is BackupViewState.CheckBackupError -> {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
+                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        ContentText(
                             text = stringResource(R.string.backup_check_backup_error_message),
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         Button(onClick = { viewModel.onRetryCheckBackupClicked() }) {
+                            Icon(Icons.Default.Refresh, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
                             Text(text = stringResource(R.string.backup_retry_check))
                         }
                     }
+
+                    Divider(modifier = Modifier.padding(vertical = 16.dp))
+
+                    ManageAccountView(
+                        accountEmail = null,
+                        onSignOutClicked = { viewModel.onSignOutClicked() },
+                        onDisconnectAccountClicked = { viewModel.onDisconnectAccountClicked() }
+                    )
                 }
                 is BackupViewState.CurrentBackup -> {
                     CurrentBackupView(
@@ -216,7 +230,7 @@ internal fun BackupScreen(
                         },
                         onRefreshBackupInfoClicked = { viewModel.onRefreshBackupInfoClicked() }
                     )
-                    Divider(modifier = Modifier.padding(16.dp))
+                    Divider(modifier = Modifier.padding(vertical = 16.dp))
 
                     when (state) {
                         is BackupViewState.CurrentBackup.WithRestore -> {
@@ -237,6 +251,14 @@ internal fun BackupScreen(
                             )
                         }
                     }
+
+                    Divider(modifier = Modifier.padding(vertical = 16.dp))
+
+                    ManageAccountView(
+                        accountEmail = state.backupInfo.accountEmail,
+                        onSignOutClicked = { viewModel.onSignOutClicked() },
+                        onDisconnectAccountClicked = { viewModel.onDisconnectAccountClicked() }
+                    )
                 }
             }
             Spacer(
@@ -298,187 +320,4 @@ internal fun BackupScreen(
 
         LoadingView(loadingState = loadingState)
     }
-}
-
-@Composable
-private fun LoadingView(loadingState: LoadingState) {
-    when (loadingState) {
-        LoadingState.None -> {
-        }
-
-        LoadingState.Empty -> {
-            FullscreenLoaderWithText(isTranslucent = false)
-        }
-
-        LoadingState.CheckingBackup -> {
-            FullscreenLoaderWithText(
-                isTranslucent = true,
-                text = stringResource(R.string.backup_check_backup_loader_text),
-            )
-        }
-
-        LoadingState.RestoringBackup -> {
-            FullscreenLoaderWithText(
-                isTranslucent = true,
-                text = stringResource(R.string.backup_restore_backup_loader_text),
-            )
-        }
-
-        LoadingState.UploadingNewBackup -> {
-            FullscreenLoaderWithText(
-                isTranslucent = true,
-                text = stringResource(R.string.backup_create_backup_loader_text),
-            )
-        }
-    }
-}
-
-@Composable
-private fun DrivePermissionRationaleView(onGiveDrivePermissionClicked: () -> Unit) {
-
-    Column(
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.backup_drive_permission_rationale_text),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        Button(onClick = onGiveDrivePermissionClicked) {
-            Text(stringResource(R.string.backup_allow_access_to_drive_text))
-        }
-    }
-}
-
-@Composable
-private fun CurrentBackupView(
-    backupInfo: BackupInfo = BackupInfo.None,
-    onCreateBackupClicked: () -> Unit,
-    onRefreshBackupInfoClicked: () -> Unit
-) {
-
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        Row(
-            modifier = Modifier.padding(bottom = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.backup_current_backup_info_title),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .weight(6f)
-            )
-
-            if (backupInfo is BackupInfo.Value) {
-                FilledTonalIconButton(
-                    modifier = Modifier
-                        .size(26.dp)
-                        .weight(1f),
-                    onClick = onRefreshBackupInfoClicked
-                ) {
-                    Icon(
-                        modifier = Modifier.size(20.dp),
-                        imageVector = Icons.Default.Refresh,
-                        contentDescription = "Refresh"
-                    )
-                }
-            }
-        }
-
-        when (backupInfo) {
-            is BackupInfo.None -> {
-                ContentText(
-                    text = stringResource(R.string.backup_no_backup_text),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-            is BackupInfo.Value -> {
-                if (backupInfo.accountEmail != null) {
-
-                    ContentText(
-                        text = stringResource(R.string.backup_current_backup_info_account, backupInfo.accountEmail),
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                }
-                ContentText(
-                    text = stringResource(
-                        R.string.backup_current_backup_info_date,
-                        BackupDateTimeFormatter.formatBackupDateTime(backupInfo.modifiedDateTime)
-                    ),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                ContentText(
-                    text = stringResource(
-                        R.string.backup_current_backup_info_size,
-                        BytesSizeFormatter.format(backupInfo.sizeInBytes)
-                    ),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                if (backupInfo.device != null) {
-                    ContentText(
-                        text = stringResource(R.string.backup_current_backup_info_device, backupInfo.device),
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                }
-            }
-        }
-        Button(onClick = { onCreateBackupClicked() }) {
-            Text(stringResource(R.string.backup_create_backup_button_text))
-        }
-    }
-}
-
-@Composable
-private fun RestoreBackupView(onRestoreBackupClicked: () -> Unit) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        Text(
-            text = stringResource(R.string.backup_restore_title),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        ContentText(
-            text = stringResource(R.string.backup_restore_info_text),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        Button(onClick = { onRestoreBackupClicked() }) {
-            Text(text = stringResource(R.string.backup_restore_button_text))
-        }
-    }
-}
-
-@Composable
-private fun ForceUpdateAppDataView(onForceUpdateClicked: () -> Unit) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        Text(
-            text = stringResource(R.string.backup_restore_title),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        ContentText(
-            text = stringResource(R.string.backup_force_update_info_text),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        OutlinedButton(onClick = { onForceUpdateClicked() }) {
-            Text(text = stringResource(R.string.backup_force_update_button_text))
-        }
-    }
-}
-
-@Composable
-private fun ContentText(
-    text: String,
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
-    style: TextStyle = MaterialTheme.typography.bodyMedium,
-) {
-    Text(
-        modifier = modifier,
-        text = text,
-        color = color,
-        style = style,
-    )
 }

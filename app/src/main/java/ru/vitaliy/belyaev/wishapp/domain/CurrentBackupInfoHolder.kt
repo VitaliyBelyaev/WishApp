@@ -10,7 +10,7 @@ import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 @Singleton
 internal class CurrentBackupInfoHolder @Inject constructor() {
 
-    private val _backupInfo: MutableStateFlow<BackupInfo> = MutableStateFlow(BackupInfo.None)
+    private val _backupInfo: MutableStateFlow<BackupInfo> = MutableStateFlow(BackupInfo.None())
     val backupInfo: StateFlow<BackupInfo> = _backupInfo.asStateFlow()
 
     fun updateBackupInfo(backupInfo: BackupInfo) {

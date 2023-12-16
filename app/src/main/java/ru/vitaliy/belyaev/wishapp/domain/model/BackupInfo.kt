@@ -4,13 +4,15 @@ import java.time.LocalDateTime
 
 sealed class BackupInfo {
 
-    object None : BackupInfo()
+    abstract val accountEmail: String?
+
+    data class None(override val accountEmail: String? = null) : BackupInfo()
 
     data class Value(
         val fileId: String,
         val modifiedDateTime: LocalDateTime,
         val sizeInBytes: Long,
-        val accountEmail: String?,
+        override val accountEmail: String?,
         val device: String?,
     ) : BackupInfo()
 }

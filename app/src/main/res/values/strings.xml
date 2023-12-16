@@ -86,4 +86,8 @@
     <string name="backup_check_backup_error_text">An error occurred while checking for a backup</string>
     <string name="backup_wishlist_empty_text">Or restore your data from a backup</string>
     <string name="backup_wishlist_go_to_backup_button_text">Go to backup</string>
+    <string name="backup_account_manage_title">Account management</string>
+    <string name="backup_account_sing_out_button_text">Log out</string>
+    <string name="backup_account_disconnect_description">Disconnecting your account will sign you out of your account and revoke permission to access your Google Drive</string>
+    <string name="backup_account_disconnect_button_text">Disconnect account</string>
 </resources>

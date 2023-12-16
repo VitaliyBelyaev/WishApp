@@ -14,7 +14,7 @@ sealed class BackupViewState {
     object None : BackupViewState()
     object DrivePermissionRationale : BackupViewState()
     object CheckBackupError : BackupViewState()
-    object NoBackup : BackupViewState()
+    data class NoBackup(val backupInfo: BackupInfo.None) : BackupViewState()
 
     sealed class CurrentBackup : BackupViewState() {
 
