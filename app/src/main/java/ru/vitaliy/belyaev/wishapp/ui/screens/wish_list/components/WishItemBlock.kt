@@ -81,14 +81,14 @@ fun WishItemBlock(
             }
             val baseShape = MaterialTheme.shapes.medium
             val borderWidth = if (isSelected) {
-                2.5.dp
+                2.dp
             } else {
                 1.dp
             }
             val borderColor = if (isSelected) {
                 MaterialTheme.colorScheme.primary
             } else {
-                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                MaterialTheme.colorScheme.secondary.copy(alpha = 0.25f)
             }
 
             Column(

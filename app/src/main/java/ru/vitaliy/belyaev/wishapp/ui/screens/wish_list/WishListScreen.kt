@@ -197,7 +197,7 @@ fun WishListScreen(
                 WishItemBlock(
                     wishItem = wishItem,
                     isSelected = isSelected,
-                    horizontalPadding = 12.dp,
+                    horizontalPadding = 8.dp,
                     onWishClicked = onWishClicked,
                     onWishLongPress = { wish -> viewModel.onWishLongPress(wish) },
                     state.reorderButtonState,
