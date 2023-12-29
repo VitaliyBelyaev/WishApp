@@ -8,12 +8,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.google.accompanist.navigation.animation.composable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.AboutAppScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.privacypolicy.PrivacyPolicyScreen
+import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.EditTagsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.WishListScreen
@@ -26,9 +28,10 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.WishTagsScreen
 @ExperimentalCoroutinesApi
 @ExperimentalMaterialApi
 @Composable
-fun Navigation(
+internal fun Navigation(
     navController: NavHostController,
-    onShareClick: (List<WishEntity>) -> Unit
+    onShareClick: (List<WishEntity>) -> Unit,
+    analyticsRepository: AnalyticsRepository,
 ) {
     WishAppAnimatedNavHost(
         navController = navController,
@@ -40,7 +43,8 @@ fun Navigation(
                 onAddWishClicked = { navController.navigate(WishDetailedRoute.buildRoute()) },
                 onSettingIconClicked = { navController.navigate(SettingsRoute.VALUE) },
                 onShareClick = onShareClick,
-                onEditTagClick = { navController.navigate(EditTagRoute.VALUE) }
+                onEditTagClick = { navController.navigate(EditTagRoute.VALUE) },
+                onGoToBackupScreenClicked = { navController.navigate(BackupAndRestoreRoute.VALUE) },
             )
         }
         composable(
@@ -64,7 +68,14 @@ fun Navigation(
         composable(SettingsRoute.VALUE) {
             SettingsScreen(
                 onBackPressed = { navController.popBackStack() },
-                onAboutAppClicked = { navController.navigate(AboutAppRoute.VALUE) }
+                onAboutAppClicked = { navController.navigate(AboutAppRoute.VALUE) },
+                onBackupAndRestoreClicked = { navController.navigate(BackupAndRestoreRoute.VALUE) },
+            )
+        }
+        composable(BackupAndRestoreRoute.VALUE) {
+            BackupScreen(
+                onBackPressed = { navController.popBackStack() },
+                analyticsRepository = analyticsRepository,
             )
         }
         composable(AboutAppRoute.VALUE) {

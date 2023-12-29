@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
@@ -50,8 +49,8 @@ import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
 import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheetM3
+import ru.vitaliy.belyaev.wishapp.ui.core.loader.FullscreenLoaderWithText
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.EmptyWishesPlaceholder
-import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.Loader
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.TagsSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.WishItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.WishListScreenTopBar
@@ -73,6 +72,7 @@ fun WishListScreen(
     onSettingIconClicked: () -> Unit,
     onShareClick: (List<WishEntity>) -> Unit,
     onEditTagClick: () -> Unit,
+    onGoToBackupScreenClicked: () -> Unit,
     viewModel: WishListViewModel = hiltViewModel(),
     appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
 ) {
@@ -197,7 +197,7 @@ fun WishListScreen(
                 WishItemBlock(
                     wishItem = wishItem,
                     isSelected = isSelected,
-                    horizontalPadding = 12.dp,
+                    horizontalPadding = 8.dp,
                     onWishClicked = onWishClicked,
                     onWishLongPress = { wish -> viewModel.onWishLongPress(wish) },
                     state.reorderButtonState,
@@ -209,19 +209,25 @@ fun WishListScreen(
         }
 
         if (state.wishes.isEmpty() && !state.isLoading) {
-            val emptyMessage: String = when (val filter = state.wishesFilter) {
+            val filter = state.wishesFilter
+            val emptyMessage: String = when (filter) {
                 is WishesFilter.All -> stringResource(id = R.string.empty_current_wishes_message)
                 is WishesFilter.ByTag -> stringResource(id = R.string.empty_tagged_wishes_message, filter.tag.title)
                 is WishesFilter.Completed -> stringResource(id = R.string.empty_done_wishes_message)
             }
             EmptyWishesPlaceholder(
                 text = emptyMessage,
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier.padding(paddingValues),
+                showBackupSection = filter is WishesFilter.All,
+                onGoToBackupScreenClicked = {
+                    viewModel.onGoToBackupScreenClicked()
+                    onGoToBackupScreenClicked()
+                }
             )
         }
 
         if (state.isLoading) {
-            Loader(modifier = Modifier.padding(paddingValues))
+            FullscreenLoaderWithText(modifier = Modifier.padding(paddingValues))
         }
 
         if (openDeleteConfirmDialog.value) {
@@ -253,7 +259,7 @@ fun WishListScreen(
                         closeBottomSheet()
                         onEditTagClick()
                     },
-                    modifier = Modifier.navigationBarsPadding()
+                    modifier = Modifier.padding(bottom = 48.dp)
                 )
             }
         }
@@ -268,6 +274,7 @@ fun WishListScreen(
 @Composable
 fun MainScreenPreview() {
     WishListScreen(
+        {},
         {},
         {},
         {},

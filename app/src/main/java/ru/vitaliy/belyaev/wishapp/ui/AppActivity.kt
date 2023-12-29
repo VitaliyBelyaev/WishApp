@@ -16,7 +16,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import androidx.navigation.compose.rememberNavController
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,12 +25,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.entity.Theme
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.InAppReviewRequestedEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.InAppReviewShowEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.Theme
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppReviewRequestedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppReviewShowEvent
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedRoute
+import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
 import ru.vitaliy.belyaev.wishapp.shared.domain.ShareWishListTextGenerator
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
 import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
@@ -39,12 +40,15 @@ import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @AndroidEntryPoint
-class AppActivity : AppCompatActivity() {
+internal class AppActivity : AppCompatActivity() {
 
     private val viewModel: AppActivityViewModel by viewModels()
 
     @Inject
     lateinit var analyticsRepository: AnalyticsRepository
+
+    @Inject
+    lateinit var wishAppSdk: WishAppSdk
 
     private var sharedLinkFromAnotherApp: String? = null
 
@@ -61,36 +65,42 @@ class AppActivity : AppCompatActivity() {
             sharedLinkFromAnotherApp = extractSharedLinkAndShowErrorIfInvalid(intent)
         }
 
-        viewModel.wishListToShareLiveData.observe(this) {
-            val wishListAsFormattedText = ShareWishListTextGenerator.generateFormattedWishListText(
-                title = getString(R.string.wish_list_title),
-                wishes = it
-            )
-            startActivity(createSharePlainTextIntent(wishListAsFormattedText))
+        lifecycleScope.launch {
+            viewModel.wishListToShareFlow.collect {
+                val wishListAsFormattedText = ShareWishListTextGenerator.generateFormattedWishListText(
+                    title = getString(R.string.wish_list_title),
+                    wishes = it
+                )
+                startActivity(createSharePlainTextIntent(wishListAsFormattedText))
+            }
         }
 
-        viewModel.requestReviewLiveData.observe(this) {
-            analyticsRepository.trackEvent(InAppReviewRequestedEvent)
-            val reviewManager = ReviewManagerFactory.create(this)
-            reviewManager
-                .requestReviewFlow()
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val reviewInfo = task.result
-                        analyticsRepository.trackEvent(InAppReviewShowEvent)
-                        reviewManager.launchReviewFlow(this, reviewInfo)
-                    } else {
-                        task.exception?.let { FirebaseCrashlytics.getInstance().recordException(it) }
+        lifecycleScope.launch {
+            viewModel.requestReviewFlow.collect {
+                analyticsRepository.trackEvent(InAppReviewRequestedEvent)
+                val reviewManager = ReviewManagerFactory.create(this@AppActivity)
+                reviewManager
+                    .requestReviewFlow()
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val reviewInfo = task.result
+                            analyticsRepository.trackEvent(InAppReviewShowEvent)
+                            reviewManager.launchReviewFlow(this@AppActivity, reviewInfo)
+                        } else {
+                            task.exception?.let { FirebaseCrashlytics.getInstance().recordException(it) }
+                        }
                     }
-                }
+            }
         }
+
         setContent {
             val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
-            val navController = rememberAnimatedNavController()
+            val navController = rememberNavController()
             WishAppTheme(selectedTheme = selectedTheme) {
                 Navigation(
                     navController = navController,
                     onShareClick = { viewModel.onShareWishListClicked(it) },
+                    analyticsRepository = analyticsRepository,
                 )
             }
 

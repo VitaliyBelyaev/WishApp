@@ -3,6 +3,7 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.UUID
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,15 +12,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.entity.analytics.WishListScreenShowEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishListDeleteWishesConfirmedEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishListFilterByTagClickedEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishListFilterCompletedClickedEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishListFilterCurrentClickedEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishListWishMovedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.WishListScreenShowEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListDeleteWishesConfirmedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListFilterByTagClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListFilterCompletedClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListFilterCurrentClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListGoToBackupScreenClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListWishMovedEvent
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
@@ -56,7 +59,7 @@ class WishListViewModel @Inject constructor(
     private val _showSnackFlow = MutableSharedFlow<Int>()
     val showSnackFlow: SharedFlow<Int> = _showSnackFlow.asSharedFlow()
 
-    private val _scrollInfoFlow = MutableSharedFlow<ScrollInfo>()
+    private val _scrollInfoFlow = MutableSharedFlow<ScrollInfo>(extraBufferCapacity = 64)
     val scrollInfoFlow: SharedFlow<ScrollInfo> = _scrollInfoFlow.asSharedFlow()
 
     private val wishesFilterFlow = MutableStateFlow<WishesFilter>(WishesFilter.All)
@@ -237,20 +240,26 @@ class WishListViewModel @Inject constructor(
         _uiState.value = uiState.value.copy(reorderButtonState = reorderButtonState, selectedIds = emptyList())
     }
 
+    fun onGoToBackupScreenClicked() {
+        analyticsRepository.trackEvent(WishListGoToBackupScreenClickedEvent)
+    }
+
     private fun launchObservingWishes() {
         launchSafe {
             runCatching {
                 wishesFilterFlow
                     .flatMapLatest {
-                        when (it) {
-                            is WishesFilter.ByTag -> {
-                                wishesRepository.observeWishesByTag(it.tag.id)
-                            }
-                            is WishesFilter.All -> {
-                                wishesRepository.observeAllWishes(isCompleted = false)
-                            }
-                            is WishesFilter.Completed -> {
-                                wishesRepository.observeAllWishes(isCompleted = true)
+                        withContext(Dispatchers.IO) {
+                            when (it) {
+                                is WishesFilter.ByTag -> {
+                                    wishesRepository.observeWishesByTag(it.tag.id)
+                                }
+                                is WishesFilter.All -> {
+                                    wishesRepository.observeAllWishes(isCompleted = false)
+                                }
+                                is WishesFilter.Completed -> {
+                                    wishesRepository.observeAllWishes(isCompleted = true)
+                                }
                             }
                         }
                     }

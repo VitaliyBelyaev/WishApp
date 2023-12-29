@@ -6,20 +6,22 @@ import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
-import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
-import ru.vitaliy.belyaev.wishapp.entity.Theme
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishDetailedChangeWishCompletenessClickedEvent
-import ru.vitaliy.belyaev.wishapp.entity.analytics.action_events.WishListShareClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.Theme
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedChangeWishCompletenessClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListShareClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.isEmpty
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
-import ru.vitaliy.belyaev.wishapp.utils.SingleLiveEvent
 import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
 import timber.log.Timber
 
@@ -31,8 +33,12 @@ class AppActivityViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider
 ) : BaseViewModel() {
 
-    val wishListToShareLiveData: SingleLiveEvent<List<WishEntity>> = SingleLiveEvent()
-    val requestReviewLiveData: SingleLiveEvent<Unit> = SingleLiveEvent()
+    private val _wishListToShareFlow: MutableSharedFlow<List<WishEntity>> = MutableSharedFlow(extraBufferCapacity = 2)
+    val wishListToShareFlow: SharedFlow<List<WishEntity>> = _wishListToShareFlow.asSharedFlow()
+
+    private val _requestReviewFlow: MutableSharedFlow<Unit> = MutableSharedFlow(extraBufferCapacity = 2)
+    val requestReviewFlow: SharedFlow<Unit> = _requestReviewFlow.asSharedFlow()
+
     private val _selectedTheme: MutableStateFlow<Theme> = MutableStateFlow(Theme.SYSTEM)
     val selectedTheme: StateFlow<Theme> = _selectedTheme
 
@@ -61,7 +67,7 @@ class AppActivityViewModel @Inject constructor(
                 .collect { (needShowReviewRequest, positiveActionsCount) ->
                     if (needShowReviewRequest) {
                         dataStoreRepository.updateReviewRequestShownCount(positiveActionsCount)
-                        requestReviewLiveData.call()
+                        _requestReviewFlow.emit(Unit)
                     }
                 }
         }
@@ -96,7 +102,7 @@ class AppActivityViewModel @Inject constructor(
 
     fun onShareWishListClicked(wishes: List<WishEntity>) {
         analyticsRepository.trackEvent(WishListShareClickedEvent)
-        wishListToShareLiveData.postValue(wishes)
+        launchSafe { _wishListToShareFlow.emit(wishes) }
     }
 
     fun showSnackMessageOnMain(message: String) {

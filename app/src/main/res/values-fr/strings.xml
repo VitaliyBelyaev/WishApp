@@ -20,7 +20,7 @@
     <string name="theme_system_description">Le même que sur l\'appareil</string>
     <string name="theme_dark">Sombre</string>
     <string name="theme_light">Lumière</string>
-    <string name="backup_description">Vos données sont automatiquement enregistrées dans votre compte Google.\n\nAprès la réinstallation de l\'application, vos données seront automatiquement restaurées.\n\nPour que la sauvegarde automatique de vos données fonctionne, vous devez activer la sauvegarde dans les paramètres du téléphone.</string>
+    <string name="backup_description">Nous utilisons Google Drive pour enregistrer et restaurer vos données dans l\'application.\n\nNe vous inquiétez pas, nous n\'aurons pas accès à vos fichiers Google Drive, à l\'exception du fichier de données d\'application que nous allons créer.\n\nNous vous recommandons de faire des sauvegardes régulières pour ne pas perdre vos données et de les restaurer lorsque vous réinstallez l\'application ou sur un autre appareil.</string>
     <string name="no_email_app_error">Vous n\'avez pas d\'application de messagerie sur votre appareil</string>
     <string name="feedback_subject_pattern">Retour. Application %s</string>
     <string name="enter_label_name">Entrez le nom de l\'étiquette</string>
@@ -49,4 +49,45 @@
     <string name="share_app">Partager l\'application</string>
     <string name="share_app_text">Essayez cette application pour stocker et partager vos souhaits\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
     <string name="invalid_link_error_message">Lien invalide</string>
+
+    <string name="backup_check_backup_error_message">Impossible de vérifier s\'il existe une sauvegarde</string>
+    <string name="backup_retry_check">Recommencez</string>
+    <string name="backup_create_backup_confirm_dialog_title">Créer une sauvegarde ?</string>
+    <string name="backup_create_backup_confirm_dialog_message">Vous n\'avez pas récupéré de données sur cet appareil. Nous vous recommandons de restaurer les données d\'une sauvegarde existante avant de créer une nouvelle sauvegarde.</string>
+    <string name="backup_create_backup_confirm_dialog_positive_text">Créer</string>
+    <string name="backup_restore_backup_confirm_dialog_title">Restaurer les données à partir d\'une sauvegarde ?</string>
+    <string name="backup_restore_backup_confirm_dialog_message">Lors de la restauration des données à partir d\'une copie, toutes les données actuelles de l\'application seront perdues</string>
+    <string name="backup_restore_backup_confirm_dialog_positive_text">Restaurer</string>
+    <string name="backup_force_update_confirm_dialog_title">Mettre à jour les données dans l\'application ?</string>
+    <string name="backup_force_update_confirm_dialog_message">Lors de la mise à jour des données à partir d\'une sauvegarde, toutes les données actuelles de l\'application seront perdues</string>
+    <string name="backup_force_update_confirm_dialog_positive_text">Rafraîchir</string>
+    <string name="backup_check_backup_loader_text">Vérification d\'une sauvegarde</string>
+    <string name="backup_restore_backup_loader_text">Restaurer des données à partir d\'une sauvegarde</string>
+    <string name="backup_create_backup_loader_text">Création d\'une sauvegarde</string>
+    <string name="backup_drive_permission_rationale_text">Nous utilisons Google Drive pour enregistrer et restaurer vos données dans l\'application. Pour ce faire, nous avons besoin d\'une autorisation pour utiliser votre Google Drive.\n\nNe vous inquiétez pas, nous n\'aurons pas accès à vos fichiers Google Drive, à l\'exception du fichier de données d\'application que nous allons créer.</string>
+    <string name="backup_current_backup_info_title">Dernière sauvegarde</string>
+    <string name="backup_no_backup_text">Pour le moment, vous n\'avez pas de sauvegarde.\n\nSauvegardez sur Google Drive afin de ne pas perdre vos données lorsque vous réinstallez l\'application ou changez d\'appareil.</string>
+    <string name="backup_current_backup_info_account">Compte : %s</string>
+    <string name="backup_current_backup_info_date">Date: %s</string>
+    <string name="backup_current_backup_info_size">Taille : %s</string>
+    <string name="backup_current_backup_info_device">Device: %s</string>
+    <string name="backup_create_backup_button_text">Créer une sauvegarde</string>
+    <string name="backup_restore_title">Récupération</string>
+    <string name="backup_restore_info_text">Vous disposez d\'une sauvegarde, mais vous n\'avez pas restauré les données sur cet appareil.\n\nNous vous recommandons de restaurer les données à partir d\'une sauvegarde.\n\nUne fois les données restaurées avec succès, l\'application redémarrera pour que les modifications prennent effet.</string>
+    <string name="backup_restore_button_text">Restaurer les données à partir d\'une copie</string>
+    <string name="backup_force_update_info_text">Vous avez déjà restauré les données d\'une sauvegarde sur cet appareil ou créé une copie à partir de cet appareil. La restauration des données à partir d\'une sauvegarde n\'est donc pas nécessaire.\n\nCependant, vous pouvez forcer l\'application à mettre à jour les données de l\'application avec les données de la sauvegarde si nécessaire.\n\nAprès avoir mis à jour les données avec succès, l\'application redémarrera pour que les modifications prennent effet.</string>
+    <string name="backup_force_update_button_text">Forcer la mise à jour des données dans l\'application</string>
+    <string name="backup_allow_access_to_drive_text">Autoriser l\'accès à Google Drive</string>
+    <string name="backup_google_auth_error_text">Une erreur s\'est produite lors de la connexion avec votre compte Google</string>
+    <string name="backup_create_backup_success_text">Sauvegarde créée avec succès</string>
+    <string name="backup_create_backup_error_text">Une erreur s\'est produite lors de la création de la sauvegarde</string>
+    <string name="backup_restore_backup_success_text">Les données ont été restaurées avec succès, l\'application va maintenant redémarrer</string>
+    <string name="backup_restore_backup_error_text">Une erreur s\'est produite lors de la restauration des données</string>
+    <string name="backup_check_backup_error_text">Une erreur s\'est produite lors de la recherche d\'une sauvegarde</string>
+    <string name="backup_wishlist_empty_text">Ou restaurez vos données à partir d\'une sauvegarde</string>
+    <string name="backup_wishlist_go_to_backup_button_text">Aller à la sauvegarde</string>
+    <string name="backup_account_manage_title">Gestion de compte</string>
+    <string name="backup_account_sing_out_button_text">Se déconnecter</string>
+    <string name="backup_account_disconnect_description">La déconnexion de votre compte vous déconnectera de votre compte et révoquera l\'autorisation d\'accéder à votre Google Drive.</string>
+    <string name="backup_account_disconnect_button_text">Déconnecter le compte</string>
 </resources>
