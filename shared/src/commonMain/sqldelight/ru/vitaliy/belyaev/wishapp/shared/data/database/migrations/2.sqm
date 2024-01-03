@@ -1,0 +1,6 @@
+
+CREATE TABLE Image (
+ id TEXT PRIMARY KEY NOT NULL,
+ wishId TEXT NOT NULL,
+ rawData BLOB NOT NULL
+);

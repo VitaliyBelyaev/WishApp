@@ -1,0 +1,37 @@
+
+CREATE TABLE Image (
+ id TEXT PRIMARY KEY NOT NULL,
+ wishId TEXT NOT NULL,
+ rawData BLOB NOT NULL
+);
+
+insert:
+INSERT INTO Image(id, wishId, rawData)
+VALUES (?,?,?);
+
+getById:
+SELECT *
+FROM Image
+WHERE id = ?;
+
+getAll:
+SELECT *
+FROM Image;
+
+getByWishId:
+SELECT *
+FROM Image
+WHERE wishId = ?;
+
+deleteByIds:
+DELETE FROM Image
+WHERE id IN ?;
+
+deleteByWishIds:
+DELETE FROM Image
+WHERE wishId IN ?;
+
+deleteById:
+DELETE FROM Image
+WHERE id = ?;
+

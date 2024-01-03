@@ -7,9 +7,12 @@ import com.benasher44.uuid.uuid4
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import ru.vitaliy.belyaev.wishapp.shared.data.coroutines.DispatcherProvider
+import ru.vitaliy.belyaev.wishapp.shared.data.database.Image
+import ru.vitaliy.belyaev.wishapp.shared.data.database.ImageQueries
 import ru.vitaliy.belyaev.wishapp.shared.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.shared.data.database.TagQueries
 import ru.vitaliy.belyaev.wishapp.shared.data.database.Wish
@@ -17,11 +20,14 @@ import ru.vitaliy.belyaev.wishapp.shared.data.database.WishAppDb
 import ru.vitaliy.belyaev.wishapp.shared.data.database.WishQueries
 import ru.vitaliy.belyaev.wishapp.shared.data.database.WishTagRelation
 import ru.vitaliy.belyaev.wishapp.shared.data.database.WishTagRelationQueries
+import ru.vitaliy.belyaev.wishapp.shared.data.mapper.ImageMapper
 import ru.vitaliy.belyaev.wishapp.shared.data.mapper.TagMapper
 import ru.vitaliy.belyaev.wishapp.shared.data.mapper.WishMapper
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishTagRelationRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
@@ -30,11 +36,12 @@ import ru.vitaliy.belyaev.wishapp.shared.utils.nowEpochMillis
 class DatabaseRepository(
     database: WishAppDb,
     private val dispatcherProvider: DispatcherProvider
-) : WishesRepository, WishTagRelationRepository, TagsRepository {
+) : WishesRepository, WishTagRelationRepository, TagsRepository, ImagesRepository {
 
     private val wishQueries: WishQueries = database.wishQueries
     private val wishTagRelationQueries: WishTagRelationQueries = database.wishTagRelationQueries
     private val tagQueries: TagQueries = database.tagQueries
+    private val imageQueries: ImageQueries = database.imageQueries
 
     // region WishesRepository
     @NativeCoroutines
@@ -314,6 +321,7 @@ class DatabaseRepository(
                     wishQueries.deleteById(id)
                 }
                 wishTagRelationQueries.deleteByWishIds(ids)
+                imageQueries.deleteByWishIds(ids)
             }
         }
     }
@@ -429,4 +437,65 @@ class DatabaseRepository(
     }
 
     // end region TagsRepository
+
+    // region ImagesRepository
+
+    @NativeCoroutines
+    override suspend fun insertImage(image: ImageEntity) {
+        imageQueries.insert(
+            image.id,
+            image.wishId,
+            image.rawData
+        )
+    }
+
+    @NativeCoroutines
+    override suspend fun getImageById(id: String): ImageEntity {
+        return imageQueries.getById(id).executeAsOne().run {
+            ImageMapper.mapToDomain(this)
+        }
+    }
+
+    @NativeCoroutines
+    override suspend fun getAllImages(): List<ImageEntity> {
+        imageQueries.getAll().executeAsList().run {
+            return map {
+                ImageMapper.mapToDomain(it)
+            }
+        }
+    }
+
+    @NativeCoroutines
+    override suspend fun getImagesByWishId(wishId: String): List<ImageEntity> {
+        imageQueries.getByWishId(wishId).executeAsList().run {
+            return map {
+                ImageMapper.mapToDomain(it)
+            }
+        }
+    }
+
+    @NativeCoroutines
+    override fun observeImagesByWishId(wishId: String): Flow<List<ImageEntity>> {
+        return imageQueries.getByWishId(wishId)
+            .asFlow()
+            .mapToList(dispatcherProvider.io())
+            .map {
+                it.map { image ->
+                    ImageMapper.mapToDomain(image)
+                }
+            }
+
+    }
+
+    @NativeCoroutines
+    override suspend fun deleteImageById(id: String) {
+        imageQueries.deleteById(id)
+    }
+
+    @NativeCoroutines
+    override suspend fun deleteImagesByIds(ids: List<String>) {
+        imageQueries.deleteByIds(ids)
+    }
+
+    // end region ImagesRepository
 }

@@ -2,11 +2,16 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 
 import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -15,10 +20,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -57,6 +64,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
@@ -73,23 +81,26 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.util.Optional
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
 import ru.vitaliy.belyaev.wishapp.utils.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
+import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTextFieldColors
 import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
@@ -129,6 +140,47 @@ fun WishDetailedScreen(
                 snackbarHostState.showDismissableSnackbar(context.getString(R.string.fail_to_open_link))
             }
         }
+    }
+
+    val images: List<ImageEntity> by viewModel.images.collectAsState()
+
+    val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            uri?.let {
+                context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    val bytes = inputStream.readBytes()
+                    viewModel.onImageSelected(bytes)
+                }
+            }
+        }
+    )
+
+    val maxSelectionCount = 1
+    // I will start this off by saying that I am still learning Android development:
+    // We are tricking the multiple photos picker here which is probably not the best way,
+    // if you know of a better way to implement this feature drop a comment and let me know
+    // how to improve this design
+//    val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = maxSelectionCount),
+//        onResult = { uris ->  }
+//    )
+
+    fun launchPhotoPicker() {
+        singlePhotoPickerLauncher.launch(
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
+
+
+//        if (maxSelectionCount > 1) {
+//            multiplePhotoPickerLauncher.launch(
+//                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+//            )
+//        } else {
+//            singlePhotoPickerLauncher.launch(
+//                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+//            )
+//        }
     }
 
     BackHandler { handleBackPressed() }
@@ -346,6 +398,33 @@ fun WishDetailedScreen(
                     },
                     modifier = Modifier.padding(start = 12.dp, end = 12.dp)
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(onClick = { launchPhotoPicker() }) {
+                    Text(text = "Add photos")
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                if (images.isNotEmpty()) {
+                    val itemsSpacing = 8.dp
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(itemsSpacing),
+                        verticalArrangement = Arrangement.spacedBy(itemsSpacing),
+                    ) {
+                        for (image in images) {
+                            Timber.tag("RTRT").d("render images loop, imageSize: ${image.rawData.size}")
+
+                            AsyncImage(
+                                model = image.rawData,
+                                contentDescription = null,
+                                modifier = Modifier.height(100.dp),
+                                contentScale = ContentScale.FillHeight
+                            )
+                        }
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(24.dp))
             }
 

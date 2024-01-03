@@ -179,7 +179,6 @@ dependencies {
     testImplementation(libs.mockito.mockitoCore)
     testImplementation(libs.mockito.mockitoInline)
 
-
     // Instrumentation
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.ext.junit)
