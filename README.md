@@ -32,6 +32,7 @@ Fully written with Jetpack Compose with Material You(Material 3) theming and dyn
 - Jetpack Navigation for Compose
 - Hilt
 - Kotlin Coroutines
+- Google Drive API for backup and restore user data
 
 ## iOS app
 
