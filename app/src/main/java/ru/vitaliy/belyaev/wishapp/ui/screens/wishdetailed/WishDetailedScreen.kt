@@ -413,8 +413,6 @@ fun WishDetailedScreen(
                         verticalArrangement = Arrangement.spacedBy(itemsSpacing),
                     ) {
                         for (image in images) {
-                            Timber.tag("RTRT").d("render images loop, imageSize: ${image.rawData.size}")
-
                             AsyncImage(
                                 model = image.rawData,
                                 contentDescription = null,

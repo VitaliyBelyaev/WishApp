@@ -1,9 +1,13 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Patterns
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.ByteArrayOutputStream
+import java.math.RoundingMode
 import java.util.Optional
 import java.util.UUID
 import javax.inject.Inject
@@ -79,21 +83,17 @@ class WishDetailedViewModel @Inject constructor(
             wishIdSetJob.join()
             imagesRepository
                 .observeImagesByWishId(wishId)
-                .collect {
-
-                    Timber.tag("RTRT").d("imagesRepository event: ${it.size}")
-
-                    images.value = it
-                }
+                .collect { images.value = it }
         }
     }
 
     fun onImageSelected(imageRawData: ByteArray) {
-
-        Timber.tag("RTRT").d("onImageSelected: ${imageRawData.size}")
+        Timber.tag("RTRT").d("onImageSelected, init size: ${imageRawData.size}")
         launchSafe {
             withContext(Dispatchers.IO) {
-                imagesRepository.insertImage(ImageEntity(UUID.randomUUID().toString(), wishId, imageRawData))
+                val downscaledImageRawData = decreaseImageSizeIfNeeded(imageRawData)
+                Timber.tag("RTRT").d("onImageSelected, downscaled size: ${downscaledImageRawData.size}")
+                imagesRepository.insertImage(ImageEntity(UUID.randomUUID().toString(), wishId, downscaledImageRawData))
             }
         }
     }
@@ -158,8 +158,40 @@ class WishDetailedViewModel @Inject constructor(
         analyticsRepository.trackEvent(WishDetailedDeleteLinkClickedEvent)
     }
 
+    private fun decreaseImageSizeIfNeeded(imageRawData: ByteArray): ByteArray {
+        val options = BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+        }
+        BitmapFactory.decodeByteArray(imageRawData, 0, imageRawData.size, options)
+
+        val biggerSidePixelSize = maxOf(options.outWidth, options.outHeight)
+        val sampleSize = if (biggerSidePixelSize <= IMAGE_BIGGER_SIDE_PIXELS_LIMIT) {
+            1
+        } else {
+            (biggerSidePixelSize.toDouble() / IMAGE_BIGGER_SIDE_PIXELS_LIMIT.toDouble())
+                .toBigDecimal()
+                .setScale(0, RoundingMode.HALF_UP).toInt()
+        }
+
+        options.inJustDecodeBounds = false
+        options.inSampleSize = sampleSize
+        val downsampledBitmap = BitmapFactory.decodeByteArray(imageRawData, 0, imageRawData.size, options)
+
+        val downsampledImageRawData = ByteArrayOutputStream().use {
+            downsampledBitmap.compress(Bitmap.CompressFormat.JPEG, BITMAP_COMPRESS_QUALITY, it)
+            it.toByteArray()
+        }
+        downsampledBitmap.recycle()
+        return downsampledImageRawData
+    }
+
     companion object {
 
         private const val KEY_LINK_INPUT_STRING = "KEY_LINK_INPUT_STRING"
+        private const val IMAGE_BIGGER_SIDE_PIXELS_LIMIT = 1280
+
+        // Выбрано такое значения из рассчета, что семплированная картинка
+        // с размером по большей строне 1280 будет в итоге занимать места в диапазоне 250-300 кБ
+        private const val BITMAP_COMPRESS_QUALITY = 75
     }
 }
