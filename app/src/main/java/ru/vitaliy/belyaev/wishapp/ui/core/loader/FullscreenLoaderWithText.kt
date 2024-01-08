@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ru.vitaliy.belyaev.wishapp.ui.screens.backup.Progress
 
 @Composable
 fun FullscreenLoaderWithText(
@@ -28,6 +29,7 @@ fun FullscreenLoaderWithText(
     text: String = "",
     isTranslucent: Boolean = false,
     isLinear: Boolean = true,
+    progress: Progress? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -61,13 +63,32 @@ fun FullscreenLoaderWithText(
         }
 
         if (isLinear) {
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .height(6.dp)
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
-                strokeCap = StrokeCap.Round,
-            )
+            if (progress != null) {
+
+                LinearProgressIndicator(
+                    progress = progress.progress.toFloat(),
+                    modifier = Modifier
+                        .height(6.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp),
+                    strokeCap = StrokeCap.Round,
+                )
+
+                Text(
+                    modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.End,
+                    text = progress.progressCurrentToTotalString
+                )
+            } else {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .height(6.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp),
+                    strokeCap = StrokeCap.Round,
+                )
+            }
         }
     }
 }
