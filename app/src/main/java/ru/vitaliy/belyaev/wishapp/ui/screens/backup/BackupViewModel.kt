@@ -280,6 +280,7 @@ internal class BackupViewModel @Inject constructor(
     }
 
     private fun handleNewBackupInfo(backupInfo: BackupInfo) {
+        currentBackupInfoHolder.updateBackupInfo(backupInfo)
         when (backupInfo) {
             is BackupInfo.None -> {
                 _loadingState.value = LoadingState.None
