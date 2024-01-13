@@ -1,12 +1,10 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.wishapp.BuildConfig
@@ -40,14 +38,14 @@ fun WishListScreenTopBar(
                 if (BuildConfig.DEBUG) {
                     IconButton(onClick = { viewModel.onAddTestWishClicked() }) {
                         ThemedIcon(
-                            Icons.Filled.Add,
+                            painterResource(R.drawable.ic_add),
                             contentDescription = "Add test wish"
                         )
                     }
                 }
                 IconButton(onClick = { onSettingIconClicked() }) {
                     ThemedIcon(
-                        Icons.Filled.Settings,
+                        painterResource(R.drawable.ic_settings),
                         contentDescription = "Settings"
                     )
                 }

@@ -1,18 +1,12 @@
-package ru.vitaliy.belyaev.wishapp.ui.core.bottombar
+package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components
 
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons.Filled
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
@@ -20,7 +14,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.ReorderButtonState
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishesFilter
 
 @Composable
-fun WishAppBottomBar(
+fun WishListBottomBar(
     wishes: List<WishEntity>,
     wishesFilter: WishesFilter,
     onShareClick: () -> Unit,
@@ -35,7 +29,7 @@ fun WishAppBottomBar(
             FloatingActionButton(
                 content = {
                     ThemedIcon(
-                        modifier = Modifier.size(26.dp),
+//                        modifier = Modifier.size(26.dp),
                         painter = painterResource(R.drawable.ic_add),
                         contentDescription = "Add wish",
                     )
@@ -47,7 +41,7 @@ fun WishAppBottomBar(
         actions = {
             IconButton(onClick = onMenuClick) {
                 ThemedIcon(
-                    imageVector = Filled.Menu,
+                    painter = painterResource(R.drawable.ic_menu),
                     contentDescription = "Navigation menu",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -69,7 +63,7 @@ fun WishAppBottomBar(
             if (wishes.isNotEmpty() && wishesFilter !is WishesFilter.Completed) {
                 IconButton(onClick = onShareClick) {
                     ThemedIcon(
-                        imageVector = Filled.Share,
+                        painter = painterResource(R.drawable.ic_share),
                         contentDescription = "Share wishes",
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )

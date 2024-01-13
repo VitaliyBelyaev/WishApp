@@ -1,5 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -31,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -47,12 +49,12 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
-import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheetM3
 import ru.vitaliy.belyaev.wishapp.ui.core.loader.FullscreenLoaderWithText
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.EmptyWishesPlaceholder
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.TagsSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.WishItemBlock
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.WishListBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.WishListScreenTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.MoveDirection
@@ -126,6 +128,10 @@ fun WishListScreen(
         }
     }
 
+    BackHandler(state.wishesFilter != WishesFilter.All) {
+        viewModel.onNavItemSelected(WishesFilter.All)
+    }
+
     val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
         modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
@@ -141,7 +147,7 @@ fun WishListScreen(
             )
         },
         bottomBar = {
-            WishAppBottomBar(
+            WishListBottomBar(
                 wishes = state.wishes,
                 wishesFilter = state.wishesFilter,
                 onShareClick = { onShareClick(state.wishes) },

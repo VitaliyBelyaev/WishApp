@@ -8,7 +8,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -20,19 +19,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,16 +35,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -68,6 +59,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -88,15 +80,16 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
-import ru.vitaliy.belyaev.wishapp.utils.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
+import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
-import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.components.WishDetailedBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTextFieldColors
 import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
+import ru.vitaliy.belyaev.wishapp.utils.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 import timber.log.Timber
 
@@ -171,7 +164,6 @@ fun WishDetailedScreen(
             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
         )
 
-
 //        if (maxSelectionCount > 1) {
 //            multiplePhotoPickerLauncher.launch(
 //                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
@@ -188,11 +180,7 @@ fun WishDetailedScreen(
     trackScreenShow { viewModel.trackScreenShow() }
 
     val screenNavBarColor = MaterialTheme.colorScheme.surfaceColorAtElevation(BottomAppBarDefaults.ContainerElevation)
-    LaunchedEffect(key1 = Unit) {
-        systemUiController.setNavigationBarColor(
-            color = screenNavBarColor
-        )
-    }
+    systemUiController.setNavigationBarColor(color = screenNavBarColor)
 
     val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
@@ -203,7 +191,25 @@ fun WishDetailedScreen(
                 wishItem = wishItem.toValueOfNull(),
                 onWishTagsClicked = onWishTagsClicked,
                 onDeleteClicked = { openDeleteWishConfirmationDialog.value = wishItem },
+                onAddImageClicked = { launchPhotoPicker() },
                 scrollBehavior = topAppBarScrollBehavior
+            )
+        },
+        bottomBar = {
+            WishDetailedBottomBar(
+                wishItem = wishItem.toValueOfNull(),
+                onWishTagsClicked = onWishTagsClicked,
+                onAddImageClicked = { launchPhotoPicker() },
+                onWishCompletedClicked = { wishId, oldIsCompleted ->
+                    appViewModel.onCompleteWishButtonClicked(
+                        wishId = wishId,
+                        oldIsCompleted = oldIsCompleted
+                    )
+                    if (!oldIsCompleted) {
+                        appViewModel.showSnackMessageOnMain(context.getString(R.string.wish_done_snack_message))
+                        onBackPressed()
+                    }
+                }
             )
         },
         snackbarHost = {
@@ -236,7 +242,7 @@ fun WishDetailedScreen(
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                         top.linkTo(parent.top)
-                        bottom.linkTo(bottomPanelRef.top)
+                        bottom.linkTo(parent.bottom)
                         width = Dimension.fillToConstraints
                         height = Dimension.fillToConstraints
                     }
@@ -305,10 +311,10 @@ fun WishDetailedScreen(
                             },
                             enabled = viewModel.isLinkValid(link)
                         ) {
-                            Icon(
-                                Icons.Default.Add,
+                            ThemedIcon(
+                                painterResource(R.drawable.ic_check),
                                 contentDescription = "Add Link",
-                                tint = MaterialTheme.colorScheme.secondary.copy(alpha = LocalContentAlpha.current)
+                                tint = MaterialTheme.colorScheme.primary.copy(alpha = LocalContentAlpha.current)
                             )
                         }
                     },
@@ -373,7 +379,7 @@ fun WishDetailedScreen(
                             }
                         ) {
                             Icon(
-                                Icons.Default.Delete,
+                                painterResource(R.drawable.ic_delete),
                                 contentDescription = "Delete Link",
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = LocalContentAlpha.current)
                             )
@@ -401,16 +407,12 @@ fun WishDetailedScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Button(onClick = { launchPhotoPicker() }) {
-                    Text(text = "Add photos")
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-
                 if (images.isNotEmpty()) {
                     val itemsSpacing = 8.dp
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(itemsSpacing),
                         verticalArrangement = Arrangement.spacedBy(itemsSpacing),
+                        modifier = Modifier.padding(start = 12.dp, end = 12.dp)
                     ) {
                         for (image in images) {
                             AsyncImage(
@@ -424,48 +426,6 @@ fun WishDetailedScreen(
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
-            }
-
-            val text = if (isCompleted) {
-                stringResource(R.string.wish_not_done)
-            } else {
-                stringResource(R.string.wish_done)
-            }
-            Surface(
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = BottomAppBarDefaults.ContainerElevation,
-                modifier = Modifier
-                    .constrainAs(bottomPanelRef) {
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        bottom.linkTo(parent.bottom)
-                        width = Dimension.fillToConstraints
-                        height = Dimension.value(bottomBarHeight)
-                    }
-            ) {
-                Box {
-                    TextButton(
-                        onClick = {
-                            val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TextButton
-                            appViewModel.onCompleteWishButtonClicked(
-                                wishId = wishId,
-                                oldIsCompleted = isCompleted
-                            )
-                            if (!isCompleted) {
-                                appViewModel.showSnackMessageOnMain(context.getString(R.string.wish_done_snack_message))
-                                onBackPressed()
-                            }
-                        },
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .padding(end = 8.dp)
-                    ) {
-                        Text(
-                            text = text,
-                            style = MaterialTheme.typography.labelLarge,
-                        )
-                    }
-                }
             }
         }
     }

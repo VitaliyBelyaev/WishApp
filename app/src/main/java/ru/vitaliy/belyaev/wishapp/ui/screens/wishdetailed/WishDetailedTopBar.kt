@@ -1,7 +1,5 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -19,6 +17,7 @@ fun WishDetailedTopBar(
     wishItem: WishItem?,
     onWishTagsClicked: (String) -> Unit,
     onDeleteClicked: () -> Unit,
+    onAddImageClicked: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     WishAppTopBar(
@@ -26,20 +25,27 @@ fun WishDetailedTopBar(
         withBackIcon = true,
         onBackPressed = onBackPressed,
         actions = {
-            IconButton(
-                onClick = {
-                    val wishId = wishItem?.wish?.id ?: return@IconButton
-                    onWishTagsClicked(wishId)
-                }
-            ) {
-                ThemedIcon(
-                    painterResource(R.drawable.ic_label),
-                    contentDescription = "Open tags"
-                )
-            }
+//            IconButton(onClick = onAddImageClicked) {
+//                ThemedIcon(
+//                    painterResource(R.drawable.ic_image_24),
+//                    contentDescription = "Add image"
+//                )
+//            }
+//
+//            IconButton(
+//                onClick = {
+//                    val wishId = wishItem?.wish?.id ?: return@IconButton
+//                    onWishTagsClicked(wishId)
+//                }
+//            ) {
+//                ThemedIcon(
+//                    painterResource(R.drawable.ic_label),
+//                    contentDescription = "Open tags"
+//                )
+//            }
             IconButton(onClick = onDeleteClicked) {
                 ThemedIcon(
-                    Icons.Filled.Delete,
+                    painterResource(R.drawable.ic_delete),
                     contentDescription = "Delete wish"
                 )
             }

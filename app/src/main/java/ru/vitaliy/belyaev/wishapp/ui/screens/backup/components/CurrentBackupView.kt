@@ -4,20 +4,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
+import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupDateTimeFormatter
 import ru.vitaliy.belyaev.wishapp.utils.BytesSizeFormatter
 
@@ -48,9 +47,9 @@ internal fun CurrentBackupView(
                         .weight(1f),
                     onClick = onRefreshBackupInfoClicked
                 ) {
-                    Icon(
+                    ThemedIcon(
                         modifier = Modifier.size(20.dp),
-                        imageVector = Icons.Default.Refresh,
+                        painter = painterResource(R.drawable.ic_refresh),
                         contentDescription = "Refresh"
                     )
                 }

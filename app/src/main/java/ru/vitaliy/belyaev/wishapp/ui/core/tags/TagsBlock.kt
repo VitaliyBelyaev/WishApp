@@ -66,7 +66,6 @@ fun TagsBlock(
                     painter = painterResource(R.drawable.ic_add),
                     contentDescription = "Add label",
                     modifier = Modifier.padding(end = 4.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = stringResource(R.string.add_tag),
