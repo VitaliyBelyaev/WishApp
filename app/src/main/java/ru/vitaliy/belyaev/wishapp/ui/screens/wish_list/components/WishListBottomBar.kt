@@ -1,12 +1,15 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components
 
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
@@ -29,7 +32,7 @@ fun WishListBottomBar(
             FloatingActionButton(
                 content = {
                     ThemedIcon(
-//                        modifier = Modifier.size(26.dp),
+                        modifier = Modifier.size(36.dp),
                         painter = painterResource(R.drawable.ic_add),
                         contentDescription = "Add wish",
                     )

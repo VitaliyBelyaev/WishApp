@@ -1,4 +1,4 @@
-package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components
+package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.wrapContentSize
@@ -9,7 +9,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -18,37 +17,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
+import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditModeTopBar(
-    selectedCount: Int,
-    onCloseEditModeClicked: () -> Unit,
-    onDeleteSelectedClicked: () -> Unit,
-    onSelectAllClicked: () -> Unit,
-    scrollBehavior: TopAppBarScrollBehavior? = null
+fun WishDetailedTopBar(
+    onBackPressed: () -> Unit,
+    wishItem: WishItem?,
+    onWishTagsClicked: (String) -> Unit,
+    onDeleteClicked: () -> Unit,
+    onAddImageClicked: () -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
+
     val expanded = remember { mutableStateOf(false) }
-    TopAppBar(
-        title = { Text(text = selectedCount.toString()) },
-        navigationIcon = {
-            IconButton(onClick = onCloseEditModeClicked) {
-                ThemedIcon(
-                    painterResource(R.drawable.ic_close),
-                    contentDescription = "Close"
-                )
-            }
-        },
+    WishAppTopBar(
+        "",
+        withBackIcon = true,
+        onBackPressed = onBackPressed,
         actions = {
-            IconButton(onClick = onDeleteSelectedClicked) {
-                ThemedIcon(
-                    painterResource(R.drawable.ic_delete),
-                    contentDescription = "Delete"
-                )
-            }
             Box(Modifier.wrapContentSize(Alignment.TopEnd)) {
                 IconButton(onClick = {
                     expanded.value = true
@@ -65,23 +55,28 @@ fun EditModeTopBar(
                 ) {
                     DropdownMenuItem(
                         text = {
-                            Text(stringResource(R.string.select_all))
+                            Text(stringResource(R.string.delete))
+                        },
+                        leadingIcon = {
+                            ThemedIcon(
+                                painterResource(R.drawable.ic_delete),
+                                contentDescription = "Delete wish"
+                            )
                         },
                         onClick = {
                             expanded.value = false
-                            onSelectAllClicked()
+                            onDeleteClicked()
                         }
                     )
                 }
             }
+//            IconButton(onClick = onDeleteClicked) {
+//                ThemedIcon(
+//                    painterResource(R.drawable.ic_delete),
+//                    contentDescription = "Delete wish"
+//                )
+//            }
         },
         scrollBehavior = scrollBehavior
     )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-@Preview
-fun EditModeTopBarPreview() {
-    EditModeTopBar(3, { }, { }, { }, null)
 }

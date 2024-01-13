@@ -112,7 +112,6 @@ fun TagsSheetContent(
                     onClick = onEditTagsClicked
                 )
             }
-            Spacer(modifier = Modifier.height(10.dp))
         }
     }
 }
