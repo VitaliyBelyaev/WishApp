@@ -2,6 +2,8 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.BitmapFactory.Options
+import android.graphics.Matrix
 import android.util.Patterns
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -16,6 +18,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
+import ru.vitaliy.belyaev.wishapp.domain.model.ImageData
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.WishDetailedScreenShowEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedAddLinkButtonClickedEvent
@@ -87,13 +90,24 @@ class WishDetailedViewModel @Inject constructor(
         }
     }
 
-    fun onImageSelected(imageRawData: ByteArray) {
-        Timber.tag("RTRT").d("onImageSelected, init size: ${imageRawData.size}")
+    fun onImageSelected(imageRawData: ImageData) {
         launchSafe {
             withContext(Dispatchers.IO) {
                 val downscaledImageRawData = decreaseImageSizeIfNeeded(imageRawData)
                 Timber.tag("RTRT").d("onImageSelected, downscaled size: ${downscaledImageRawData.size}")
                 imagesRepository.insertImage(ImageEntity(UUID.randomUUID().toString(), wishId, downscaledImageRawData))
+            }
+        }
+    }
+
+    fun onImagesSelected(imagesRawData: List<ImageData>) {
+        launchSafe {
+            withContext(Dispatchers.IO) {
+                val images = imagesRawData.map { imageRawData ->
+                    val downscaledImageRawData = decreaseImageSizeIfNeeded(imageRawData)
+                    ImageEntity(UUID.randomUUID().toString(), wishId, downscaledImageRawData)
+                }
+                imagesRepository.insertImages(images)
             }
         }
     }
@@ -158,11 +172,11 @@ class WishDetailedViewModel @Inject constructor(
         analyticsRepository.trackEvent(WishDetailedDeleteLinkClickedEvent)
     }
 
-    private fun decreaseImageSizeIfNeeded(imageRawData: ByteArray): ByteArray {
-        val options = BitmapFactory.Options().apply {
+    private fun decreaseImageSizeIfNeeded(imageRawData: ImageData): ByteArray {
+        val options = Options().apply {
             inJustDecodeBounds = true
         }
-        BitmapFactory.decodeByteArray(imageRawData, 0, imageRawData.size, options)
+        BitmapFactory.decodeByteArray(imageRawData.rawData, 0, imageRawData.rawData.size, options)
 
         val biggerSidePixelSize = maxOf(options.outWidth, options.outHeight)
         val sampleSize = if (biggerSidePixelSize <= IMAGE_BIGGER_SIDE_PIXELS_LIMIT) {
@@ -175,14 +189,45 @@ class WishDetailedViewModel @Inject constructor(
 
         options.inJustDecodeBounds = false
         options.inSampleSize = sampleSize
-        val downsampledBitmap = BitmapFactory.decodeByteArray(imageRawData, 0, imageRawData.size, options)
-
+        val downsampledAndRotatedBitmap = createBitmap(imageRawData, options)
         val downsampledImageRawData = ByteArrayOutputStream().use {
-            downsampledBitmap.compress(Bitmap.CompressFormat.JPEG, BITMAP_COMPRESS_QUALITY, it)
+            downsampledAndRotatedBitmap.compress(Bitmap.CompressFormat.JPEG, BITMAP_COMPRESS_QUALITY, it)
             it.toByteArray()
         }
-        downsampledBitmap.recycle()
+        downsampledAndRotatedBitmap.recycle()
         return downsampledImageRawData
+    }
+
+    private fun createBitmap(
+        imageRawData: ImageData,
+        options: Options,
+    ): Bitmap {
+        Timber.tag("RTRT").d("createBitmap, imageData: ${imageRawData.rotationDegrees}")
+
+
+        val downsampledBitmap = BitmapFactory.decodeByteArray(
+            imageRawData.rawData,
+            0,
+            imageRawData.rawData.size,
+            options
+        )
+        return if (imageRawData.rotationDegrees != 0) {
+            val matrix = Matrix()
+            matrix.postRotate(imageRawData.rotationDegrees.toFloat())
+            val rotatedBitmap = Bitmap.createBitmap(
+                downsampledBitmap,
+                0,
+                0,
+                downsampledBitmap.width,
+                downsampledBitmap.height,
+                matrix,
+                true
+            )
+            downsampledBitmap.recycle()
+            rotatedBitmap
+        } else {
+            downsampledBitmap
+        }
     }
 
     companion object {

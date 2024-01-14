@@ -450,6 +450,19 @@ class DatabaseRepository(
     }
 
     @NativeCoroutines
+    override suspend fun insertImages(images: List<ImageEntity>) {
+        imageQueries.transaction {
+            for (image in images) {
+                imageQueries.insert(
+                    image.id,
+                    image.wishId,
+                    image.rawData
+                )
+            }
+        }
+    }
+
+    @NativeCoroutines
     override suspend fun getImageById(id: String): ImageEntity {
         return imageQueries.getById(id).executeAsOne().run {
             ImageMapper.mapToDomain(this)

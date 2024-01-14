@@ -72,13 +72,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.exifinterface.media.ExifInterface
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import java.io.ByteArrayInputStream
 import java.util.Optional
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.domain.model.ImageData
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
@@ -138,42 +141,46 @@ fun WishDetailedScreen(
 
     val images: List<ImageEntity> by viewModel.images.collectAsState()
 
-    val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { uri ->
-            uri?.let {
+//    val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.PickVisualMedia(),
+//        onResult = { uri ->
+//            uri?.let {
+//                context.contentResolver.openInputStream(uri)?.use { inputStream ->
+//                    val bytes = inputStream.readBytes()
+//                    viewModel.onImageSelected(bytes)
+//                }
+//            }
+//        }
+//    )
+
+    val maxSelectionCount = 5
+    val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = maxSelectionCount),
+        onResult = { uris ->
+            val imagesData: List<ImageData> = uris.mapNotNull { uri ->
                 context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                    val bytes = inputStream.readBytes()
-                    viewModel.onImageSelected(bytes)
+                    val rawData = inputStream.readBytes()
+                    val rotationDegrees = ByteArrayInputStream(rawData).use {
+                        ExifInterface(it).rotationDegrees
+                    }
+                    ImageData(
+                        rawData = rawData,
+                        rotationDegrees = rotationDegrees
+                    )
                 }
             }
+            viewModel.onImagesSelected(imagesData)
         }
     )
 
-    val maxSelectionCount = 1
-    // I will start this off by saying that I am still learning Android development:
-    // We are tricking the multiple photos picker here which is probably not the best way,
-    // if you know of a better way to implement this feature drop a comment and let me know
-    // how to improve this design
-//    val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = maxSelectionCount),
-//        onResult = { uris ->  }
-//    )
-
     fun launchPhotoPicker() {
-        singlePhotoPickerLauncher.launch(
+//        singlePhotoPickerLauncher.launch(
+//            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+//        )
+
+        multiplePhotoPickerLauncher.launch(
             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
         )
-
-//        if (maxSelectionCount > 1) {
-//            multiplePhotoPickerLauncher.launch(
-//                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-//            )
-//        } else {
-//            singlePhotoPickerLauncher.launch(
-//                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-//            )
-//        }
     }
 
     BackHandler { handleBackPressed() }
@@ -196,6 +203,7 @@ fun WishDetailedScreen(
         bottomBar = {
             WishDetailedBottomBar(
                 wishItem = wishItem.toValueOfNull(),
+                bottomBarHeight = bottomBarHeight,
                 onWishTagsClicked = onWishTagsClicked,
                 onAddImageClicked = { launchPhotoPicker() },
                 onWishCompletedClicked = { wishId, oldIsCompleted ->
@@ -210,12 +218,7 @@ fun WishDetailedScreen(
                 }
             )
         },
-        snackbarHost = {
-            SnackbarHost(
-                modifier = Modifier.padding(bottom = bottomBarHeight),
-                hostState = snackbarHostState
-            )
-        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         contentWindowInsets = WindowInsets.Companion.safeDrawing,
     ) { paddingValues ->
         if (!wishItem.isPresent) {
@@ -231,7 +234,7 @@ fun WishDetailedScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            val (contentRef, bottomPanelRef) = createRefs()
+            val contentRef = createRef()
 
             Column(
                 modifier = Modifier
@@ -386,26 +389,8 @@ fun WishDetailedScreen(
                     Divider()
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                val tags = wishItem.toValueOfNull()?.wish?.tags ?: emptyList()
-                TagsBlock(
-                    tags = tags,
-                    textSize = 16.sp,
-                    onClick = {
-                        val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
-                        onWishTagsClicked(wishId)
-                    },
-                    onAddNewTagClick = {
-                        val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
-                        onWishTagsClicked(wishId)
-                    },
-                    modifier = Modifier.padding(start = 12.dp, end = 12.dp)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
                 if (images.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(16.dp))
                     val itemsSpacing = 8.dp
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(itemsSpacing),
@@ -421,6 +406,20 @@ fun WishDetailedScreen(
                             )
                         }
                     }
+                }
+
+                val tags = wishItem.toValueOfNull()?.wish?.tags ?: emptyList()
+                if (tags.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    TagsBlock(
+                        tags = tags,
+                        textSize = 16.sp,
+                        onClick = {
+                            val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
+                            onWishTagsClicked(wishId)
+                        },
+                        modifier = Modifier.padding(start = 12.dp, end = 12.dp)
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))

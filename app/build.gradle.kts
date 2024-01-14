@@ -106,6 +106,7 @@ dependencies {
     implementation(libs.androidx.webkit.webkit)
     implementation(libs.androidx.activity.activityCompose)
     implementation(libs.androidx.constraintlayout.constraintlayoutCompose)
+    implementation(libs.androidx.exifinterface.exifinterface)
 
     // Compose
     implementation(platform(libs.androidx.compose.composeBom))

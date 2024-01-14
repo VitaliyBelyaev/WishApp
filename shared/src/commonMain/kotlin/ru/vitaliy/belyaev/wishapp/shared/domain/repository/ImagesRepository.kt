@@ -10,6 +10,9 @@ interface ImagesRepository {
     suspend fun insertImage(image: ImageEntity)
 
     @NativeCoroutines
+    suspend fun insertImages(images: List<ImageEntity>)
+
+    @NativeCoroutines
     suspend fun getImageById(id: String): ImageEntity
 
     @NativeCoroutines

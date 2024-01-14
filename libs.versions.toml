@@ -41,6 +41,7 @@ androidx-constraintlayout-constraintlayoutCompose = { module = "androidx.constra
 androidx-compose-composeBom = { module = "androidx.compose:compose-bom", version = "2023.10.01" }
 androidx-navigation-navigationCompose = { module = "androidx.navigation:navigation-compose", version = "2.7.5" }
 androidx-hilt-hiltNavigationCompose = { module = "androidx.hilt:hilt-navigation-compose", version = "1.1.0" }
+androidx-exifinterface-exifinterface = { module = "androidx.exifinterface:exifinterface", version = "1.3.7" }
 
 #Koin
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }

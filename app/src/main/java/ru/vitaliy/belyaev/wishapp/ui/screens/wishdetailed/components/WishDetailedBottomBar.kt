@@ -38,6 +38,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
 @Composable
 fun WishDetailedBottomBar(
     wishItem: WishItem?,
+    bottomBarHeight: Dp,
     onWishTagsClicked: (String) -> Unit,
     onAddImageClicked: () -> Unit,
     onWishCompletedClicked: (String, Boolean) -> Unit,
@@ -47,7 +48,7 @@ fun WishDetailedBottomBar(
         contentPadding = PaddingValues(),
         modifier = Modifier
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
-            .height(56.dp),
+            .height(bottomBarHeight),
         actions = {
             Actions(
                 wishItem = wishItem,
@@ -67,14 +68,6 @@ private fun RowScope.Actions(
     onWishCompletedClicked: (String, Boolean) -> Unit,
 ) {
 
-    IconButton(onClick = onAddImageClicked) {
-        ThemedIcon(
-            painterResource(R.drawable.ic_add_image),
-            contentDescription = "Add image",
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-
     IconButton(
         onClick = {
             val wishId = wishItem?.wish?.id ?: return@IconButton
@@ -84,6 +77,14 @@ private fun RowScope.Actions(
         Icon(
             painterResource(R.drawable.ic_label),
             contentDescription = "Open tags",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+
+    IconButton(onClick = onAddImageClicked) {
+        ThemedIcon(
+            painterResource(R.drawable.ic_add_image),
+            contentDescription = "Add image",
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
