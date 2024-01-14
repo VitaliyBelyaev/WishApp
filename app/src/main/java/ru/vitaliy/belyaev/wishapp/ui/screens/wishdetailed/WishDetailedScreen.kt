@@ -7,6 +7,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -88,6 +89,7 @@ import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
+import ru.vitaliy.belyaev.wishapp.ui.model.WishImageClickData
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.components.WishDetailedBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.components.WishDetailedTopBar
@@ -106,6 +108,7 @@ import timber.log.Timber
 fun WishDetailedScreen(
     onBackPressed: () -> Unit,
     onWishTagsClicked: (String) -> Unit,
+    onWishImageClicked: (WishImageClickData) -> Unit,
     appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
     viewModel: WishDetailedViewModel = hiltViewModel()
 ) {
@@ -397,11 +400,22 @@ fun WishDetailedScreen(
                         verticalArrangement = Arrangement.spacedBy(itemsSpacing),
                         modifier = Modifier.padding(start = 12.dp, end = 12.dp)
                     ) {
-                        for (image in images) {
+                        images.forEachIndexed { index, image ->
                             AsyncImage(
                                 model = image.rawData,
                                 contentDescription = null,
-                                modifier = Modifier.height(100.dp),
+                                modifier = Modifier
+                                    .height(100.dp)
+                                    .clickable {
+                                        wishItem.toValueOfNull()?.wish?.id?.let {
+                                            val data = WishImageClickData(
+                                                wishId = it,
+                                                wishImageId = image.id,
+                                                wishImageIndex = index
+                                            )
+                                            onWishImageClicked(data)
+                                        }
+                                    },
                                 contentScale = ContentScale.FillHeight
                             )
                         }
@@ -413,7 +427,7 @@ fun WishDetailedScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     TagsBlock(
                         tags = tags,
-                        textSize = 16.sp,
+                        textSize = 14.sp,
                         onClick = {
                             val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
                             onWishTagsClicked(wishId)

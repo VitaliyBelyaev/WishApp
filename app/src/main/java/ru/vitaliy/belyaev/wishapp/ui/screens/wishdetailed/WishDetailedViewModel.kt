@@ -71,6 +71,8 @@ class WishDetailedViewModel @Inject constructor(
                 wishesRepository.insertWish(wish)
                 wish.id
             }
+
+            Timber.tag("RTRT").d("WishDetailedViewModel init, wishId: $wishId")
         }
 
         launchSafe {
@@ -86,7 +88,12 @@ class WishDetailedViewModel @Inject constructor(
             wishIdSetJob.join()
             imagesRepository
                 .observeImagesByWishId(wishId)
-                .collect { images.value = it }
+                .collect {
+
+
+                    images.value = it
+                    Timber.tag("RTRT").d("this:$this, images: ${it.size}")
+                }
         }
     }
 

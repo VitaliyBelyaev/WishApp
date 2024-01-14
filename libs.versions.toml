@@ -78,6 +78,8 @@ napier = { module = "io.github.aakira:napier", version = "2.6.1" }
 timber = { module = "com.jakewharton.timber:timber", version = "5.0.1" }
 squareup-leakcanary-leakcanaryAndroid = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.12" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version = "32.7.0" }
+saket-telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil", version = "0.7.1" }
+
 
 #Tests
 junit-junit = { module = "junit:junit", version = "4.13.2" }

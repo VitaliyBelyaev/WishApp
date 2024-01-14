@@ -165,6 +165,7 @@ dependencies {
 
     // Coil
     implementation(libs.coilKt.coilCompose)
+    implementation(libs.saket.telephoto.zoomableImageCoil)
 
     // Timber
     implementation(libs.timber)

@@ -18,6 +18,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.aboutapp.privacypolicy.PrivacyPolic
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.EditTagsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_images.WishImagesViewerScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.WishListScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.WishDetailedScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.WishTagsScreen
@@ -62,7 +63,15 @@ internal fun Navigation(
         ) {
             WishDetailedScreen(
                 onBackPressed = { navController.popBackStack() },
-                onWishTagsClicked = { navController.navigate(WishTagsRoute.build(it)) }
+                onWishTagsClicked = { navController.navigate(WishTagsRoute.build(it)) },
+                onWishImageClicked = {
+                    val route = WishImagesViewerRoute.build(
+                        wishId = it.wishId,
+                        wishImageId = it.wishImageId,
+                        wishImageIndex = it.wishImageIndex,
+                    )
+                    navController.navigate(route)
+                }
             )
         }
         composable(SettingsRoute.VALUE) {
@@ -96,6 +105,18 @@ internal fun Navigation(
         }
         composable(EditTagRoute.VALUE) {
             EditTagsScreen(
+                onBackPressed = { navController.popBackStack() }
+            )
+        }
+        composable(
+            route = WishImagesViewerRoute.VALUE,
+            arguments = listOf(
+                navArgument(ARG_WISH_IMAGE_INDEX) {
+                    type = NavType.IntType
+                }
+            )
+        ) {
+            WishImagesViewerScreen(
                 onBackPressed = { navController.popBackStack() }
             )
         }
