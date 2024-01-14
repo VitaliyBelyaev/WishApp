@@ -6,11 +6,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Divider
@@ -27,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -63,7 +63,7 @@ fun TagsSheetContent(
                 end.linkTo(parent.end)
             }
         ) {
-            items(tagsWithWishCount) { tagWithWishCount ->
+            itemsIndexed(tagsWithWishCount) { index, tagWithWishCount ->
                 val tag = tagWithWishCount.tag
                 val isTagSelected = wishesFilter is WishesFilter.ByTag && wishesFilter.tag.id == tag.id
                 NavMenuItemBlock(
@@ -71,6 +71,7 @@ fun TagsSheetContent(
                     title = tag.title,
                     count = tagWithWishCount.wishesCount,
                     isSelected = isTagSelected,
+                    bottomCornersRadius = if (index == tagsWithWishCount.lastIndex) 0.dp else 12.dp,
                     onClick = {
                         onNavItemSelected(WishesFilter.ByTag(tag))
                     }
@@ -87,10 +88,11 @@ fun TagsSheetContent(
         ) {
             Divider(color = CommonColors.dividerColor())
             NavMenuItemBlock(
-                icon = painterResource(R.drawable.ic_list_bulleted),
+                icon = painterResource(R.drawable.ic_bulleted_list),
                 title = stringResource(R.string.all_wishes),
                 count = currentWishesCount,
                 isSelected = wishesFilter is WishesFilter.All,
+                topCornersRadius = 0.dp,
                 onClick = {
                     onNavItemSelected(WishesFilter.All)
                 }
@@ -122,17 +124,22 @@ fun NavMenuItemBlock(
     title: String,
     count: Long = 0,
     isSelected: Boolean,
+    topCornersRadius: Dp = 12.dp,
+    bottomCornersRadius: Dp = 12.dp,
     onClick: () -> Unit
 ) {
 
     val bgColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else Color.Transparent
-    val cornerRadius = 50.dp
-    val shape = RoundedCornerShape(topEnd = cornerRadius, bottomEnd = cornerRadius)
+    val shape = RoundedCornerShape(
+        topStart = topCornersRadius,
+        bottomStart = bottomCornersRadius,
+        topEnd = topCornersRadius,
+        bottomEnd = bottomCornersRadius
+    )
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(end = 8.dp)
             .background(color = bgColor, shape = shape)
             .clip(shape)
             .clickable { onClick() }
@@ -159,8 +166,7 @@ fun NavMenuItemBlock(
                 modifier = Modifier.padding(end = 4.dp),
                 text = count.toString(),
                 maxLines = 1,
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 overflow = TextOverflow.Ellipsis,
             )
         }
@@ -175,6 +181,8 @@ fun NavMenuItemBlockPreview() {
         title = "Tags",
         count = 1,
         isSelected = false,
+        topCornersRadius = 12.dp,
+        bottomCornersRadius = 12.dp,
         {}
     )
 }
