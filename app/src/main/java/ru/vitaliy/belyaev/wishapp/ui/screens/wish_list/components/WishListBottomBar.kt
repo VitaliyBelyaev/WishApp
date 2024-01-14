@@ -57,7 +57,7 @@ fun WishListBottomBar(
                         MaterialTheme.colorScheme.onSurfaceVariant
                     }
                     ThemedIcon(
-                        painter = painterResource(R.drawable.img_reorder_filled),
+                        painter = painterResource(R.drawable.ic_reorder),
                         contentDescription = "Reorder wishes",
                         tint = tint
                     )

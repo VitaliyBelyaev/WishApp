@@ -52,6 +52,7 @@ import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
 import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheetM3
+import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishappBottomSheetDefaults
 import ru.vitaliy.belyaev.wishapp.ui.core.loader.FullscreenLoaderWithText
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.EmptyWishesPlaceholder
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.TagsSheetContent
@@ -267,7 +268,7 @@ fun WishListScreen(
                         closeBottomSheet()
                         onEditTagClick()
                     },
-                    modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars)
+                    modifier = Modifier.padding(bottom = WishappBottomSheetDefaults.bottomPadding)
                 )
             }
         }
