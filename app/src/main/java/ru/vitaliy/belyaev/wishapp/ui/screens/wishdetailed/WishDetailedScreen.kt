@@ -189,10 +189,7 @@ fun WishDetailedScreen(
         topBar = {
             WishDetailedTopBar(
                 onBackPressed = handleBackPressed,
-                wishItem = wishItem.toValueOfNull(),
-                onWishTagsClicked = onWishTagsClicked,
                 onDeleteClicked = { openDeleteWishConfirmationDialog.value = wishItem },
-                onAddImageClicked = { launchPhotoPicker() },
                 scrollBehavior = topAppBarScrollBehavior
             )
         },

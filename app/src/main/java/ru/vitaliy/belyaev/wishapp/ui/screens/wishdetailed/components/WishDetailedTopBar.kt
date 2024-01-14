@@ -1,6 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -18,18 +19,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.core.dropdown.WishappDropDownDefaults
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
-import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WishDetailedTopBar(
     onBackPressed: () -> Unit,
-    wishItem: WishItem?,
-    onWishTagsClicked: (String) -> Unit,
     onDeleteClicked: () -> Unit,
-    onAddImageClicked: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
 
@@ -54,9 +52,10 @@ fun WishDetailedTopBar(
                     onDismissRequest = { expanded.value = false },
                 ) {
                     DropdownMenuItem(
-                        text = {
-                            Text(stringResource(R.string.delete))
-                        },
+                        modifier = Modifier.sizeIn(
+                            minWidth = WishappDropDownDefaults.dropDownMenuItemMinWidth()
+                        ),
+                        text = { Text(stringResource(R.string.delete)) },
                         leadingIcon = {
                             ThemedIcon(
                                 painterResource(R.drawable.ic_delete),
@@ -70,12 +69,6 @@ fun WishDetailedTopBar(
                     )
                 }
             }
-//            IconButton(onClick = onDeleteClicked) {
-//                ThemedIcon(
-//                    painterResource(R.drawable.ic_delete),
-//                    contentDescription = "Delete wish"
-//                )
-//            }
         },
         scrollBehavior = scrollBehavior
     )

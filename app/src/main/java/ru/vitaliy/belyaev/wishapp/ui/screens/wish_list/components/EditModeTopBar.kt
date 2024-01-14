@@ -1,6 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -20,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.core.dropdown.WishappDropDownDefaults
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,9 +66,10 @@ fun EditModeTopBar(
                     onDismissRequest = { expanded.value = false },
                 ) {
                     DropdownMenuItem(
-                        text = {
-                            Text(stringResource(R.string.select_all))
-                        },
+                        modifier = Modifier.sizeIn(
+                            minWidth = WishappDropDownDefaults.dropDownMenuItemMinWidth()
+                        ),
+                        text = { Text(stringResource(R.string.select_all)) },
                         onClick = {
                             expanded.value = false
                             onSelectAllClicked()
