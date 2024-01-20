@@ -41,4 +41,11 @@ class WishImagesViewerViewModel @Inject constructor(
         // todo: Track
 //        analyticsRepository.trackEvent(AboutAppScreenShowEvent)
     }
+
+    fun onDeleteImageConfirmed(imageIndex: Int) {
+        launchSafe {
+            val image = images.value.getOrNull(imageIndex) ?: return@launchSafe
+            imagesRepository.deleteImageById(image.id)
+        }
+    }
 }

@@ -163,9 +163,10 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:logging-interceptor")
 
-    // Coil
+    // Work with images
     implementation(libs.coilKt.coilCompose)
     implementation(libs.saket.telephoto.zoomableImageCoil)
+    implementation(libs.engawapg.lib.zoomable)
 
     // Timber
     implementation(libs.timber)

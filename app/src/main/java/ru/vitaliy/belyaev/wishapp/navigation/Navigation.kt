@@ -19,6 +19,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.EditTagsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_images.WishImagesViewerScreen
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_images.WishImagesViewerScreenRoute
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.WishListScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.WishDetailedScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.WishTagsScreen
@@ -116,7 +117,7 @@ internal fun Navigation(
                 }
             )
         ) {
-            WishImagesViewerScreen(
+            WishImagesViewerScreenRoute(
                 onBackPressed = { navController.popBackStack() }
             )
         }

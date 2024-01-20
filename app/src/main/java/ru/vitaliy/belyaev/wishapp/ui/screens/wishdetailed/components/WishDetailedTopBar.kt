@@ -18,10 +18,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
+import ru.vitaliy.belyaev.wishapp.ui.core.dropdown.DeleteDropDownItem
+import ru.vitaliy.belyaev.wishapp.ui.core.dropdown.MenuMoreWithDropDown
 import ru.vitaliy.belyaev.wishapp.ui.core.dropdown.WishappDropDownDefaults
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_images.WishImagesViewerScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,45 +37,30 @@ fun WishDetailedTopBar(
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
 
-    val expanded = remember { mutableStateOf(false) }
+
     WishAppTopBar(
         "",
         withBackIcon = true,
         onBackPressed = onBackPressed,
         actions = {
-            Box(Modifier.wrapContentSize(Alignment.TopEnd)) {
-                IconButton(onClick = {
-                    expanded.value = true
-                }) {
-                    ThemedIcon(
-                        Icons.Filled.MoreVert,
-                        contentDescription = "Menu"
-                    )
-                }
-
-                DropdownMenu(
-                    expanded = expanded.value,
-                    onDismissRequest = { expanded.value = false },
-                ) {
-                    DropdownMenuItem(
-                        modifier = Modifier.sizeIn(
-                            minWidth = WishappDropDownDefaults.dropDownMenuItemMinWidth()
-                        ),
-                        text = { Text(stringResource(R.string.delete)) },
-                        leadingIcon = {
-                            ThemedIcon(
-                                painterResource(R.drawable.ic_delete),
-                                contentDescription = "Delete wish"
-                            )
-                        },
-                        onClick = {
-                            expanded.value = false
-                            onDeleteClicked()
-                        }
-                    )
+            MenuMoreWithDropDown { expanded ->
+                DeleteDropDownItem {
+                    expanded.value = false
+                    onDeleteClicked()
                 }
             }
         },
         scrollBehavior = scrollBehavior
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun WishDetailedTopBarPreview() {
+
+    WishDetailedTopBar(
+        onBackPressed = {},
+        onDeleteClicked = {},
     )
 }
