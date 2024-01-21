@@ -34,6 +34,7 @@
     <string name="delete_tag_title">Etikett löschen?</string>
     <string name="delete_tag_description">Wir löschen dieses Label und entfernen es aus allen Ihren Wünschen. Ihre Wünsche werden nicht gelöscht.</string>
     <string name="delete_wish_title">Wunsch löschen?</string>
+    <string name="delete_wish_image_title">Lösche Bild?</string>
     <string name="delete_wish_link_title">Link löschen?</string>
     <string name="delete_wishes_title">Ausgewählte Wünsche löschen?</string>
     <string name="fail_to_open_link">Link konnte nicht geöffnet werden</string>

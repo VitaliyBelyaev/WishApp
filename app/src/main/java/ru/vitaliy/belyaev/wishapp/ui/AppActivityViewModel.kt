@@ -20,6 +20,7 @@ import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListS
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.isEmpty
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
@@ -29,6 +30,7 @@ import timber.log.Timber
 class AppActivityViewModel @Inject constructor(
     private val wishesRepository: WishesRepository,
     private val dataStoreRepository: DataStoreRepository,
+    private val imagesRepository: ImagesRepository,
     private val analyticsRepository: AnalyticsRepository,
     private val dispatcherProvider: DispatcherProvider
 ) : BaseViewModel() {
@@ -90,6 +92,12 @@ class AppActivityViewModel @Inject constructor(
     fun onDeleteWishConfirmed(wishId: String) {
         launchSafe {
             wishesRepository.deleteWishesByIds(listOf(wishId))
+        }
+    }
+
+    fun onDeleteWishImageConfirmed(wishImageId: String) {
+        launchSafe {
+            imagesRepository.deleteImageById(wishImageId)
         }
     }
 

@@ -166,7 +166,6 @@ dependencies {
     // Work with images
     implementation(libs.coilKt.coilCompose)
     implementation(libs.saket.telephoto.zoomableImageCoil)
-    implementation(libs.engawapg.lib.zoomable)
 
     // Timber
     implementation(libs.timber)

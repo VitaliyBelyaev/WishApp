@@ -35,6 +35,7 @@
     <string name="delete_tag_title">Видалити ярлик?</string>
     <string name="delete_tag_description">Ярлик буде видалено. Він зникне з усіх хотелок, причому самі хотелки збережеться.</string>
     <string name="delete_wish_title">Видалити хотелку?</string>
+    <string name="delete_wish_image_title">Видалити зображення?</string>
     <string name="delete_wish_link_title">Видалити посилання?</string>
     <string name="delete_wishes_title">Видалити вибрані хотелки?</string>
     <string name="fail_to_open_link">Не вдалося відкрити посилання</string>

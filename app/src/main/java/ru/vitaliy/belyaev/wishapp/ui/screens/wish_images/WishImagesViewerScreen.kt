@@ -1,6 +1,5 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wish_images
 
-import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.WindowInsets
@@ -29,15 +28,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.util.Optional
 import me.saket.telephoto.zoomable.ZoomSpec
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import me.saket.telephoto.zoomable.rememberZoomableImageState
 import me.saket.telephoto.zoomable.rememberZoomableState
-import net.engawapg.lib.zoomable.rememberZoomState
-import net.engawapg.lib.zoomable.zoomable
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
@@ -52,7 +48,7 @@ fun WishImagesViewerScreen(
     onBackPressed: () -> Unit,
     initialWishImageIndex: Int,
     images: List<ImageEntity>,
-    onDeleteImageConfirmed: (imageIndex: Int) -> Unit,
+    onDeleteImageConfirmed: (imageId: String) -> Unit,
 ) {
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -68,7 +64,7 @@ fun WishImagesViewerScreen(
         systemUiController.setNavigationBarColor(color = screenNavBarColor)
     }
 
-    val openDeleteImageConfirmationDialog: MutableState<Optional<Int>> =
+    val openDeleteImageConfirmationDialog: MutableState<Optional<String>> =
         remember { mutableStateOf(Optional.empty()) }
 
     val pagerState = rememberPagerState(
@@ -92,8 +88,10 @@ fun WishImagesViewerScreen(
                     MenuMoreWithDropDown { expanded ->
                         DeleteDropDownItem {
                             expanded.value = false
-                            openDeleteImageConfirmationDialog.value = Optional.of(pagerState.currentPage)
-//                            onDeleteImageClicked(pagerState.currentPage)
+
+                            images.getOrNull(pagerState.currentPage)?.let { imageToDelete ->
+                                openDeleteImageConfirmationDialog.value = Optional.of(imageToDelete.id)
+                            }
                         }
                     }
                 }
@@ -101,7 +99,6 @@ fun WishImagesViewerScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { contentPadding ->
-
         HorizontalPager(
             modifier = Modifier
                 .padding(contentPadding)
@@ -113,7 +110,7 @@ fun WishImagesViewerScreen(
                 snapVelocityThreshold = 600.dp
             ),
         ) { page ->
-            ZoomableContent1(
+            ZoomableContent(
                 page = page,
                 pagerState = pagerState,
                 images = images,
@@ -121,15 +118,17 @@ fun WishImagesViewerScreen(
         }
     }
 
-    val imageIndexToDelete = openDeleteImageConfirmationDialog.value
-    if (imageIndexToDelete.isPresent) {
+    val imageIdToDelete = openDeleteImageConfirmationDialog.value
+    if (imageIdToDelete.isPresent) {
         DestructiveConfirmationAlertDialog(
             onDismissRequest = { openDeleteImageConfirmationDialog.value = Optional.empty() },
-            title = { Text(stringResource(R.string.delete_wish_title)) },
+            title = { Text(stringResource(R.string.delete_wish_image_title)) },
             confirmClick = {
                 openDeleteImageConfirmationDialog.value = Optional.empty()
-                onDeleteImageConfirmed(imageIndexToDelete.get())
-//                onBackPressed()
+                onDeleteImageConfirmed(imageIdToDelete.get())
+                if (images.size == 1) {
+                    onBackPressed()
+                }
             },
         )
     }
@@ -137,7 +136,7 @@ fun WishImagesViewerScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun PagerScope.ZoomableContent1(
+private fun PagerScope.ZoomableContent(
     page: Int,
     pagerState: PagerState,
     images: List<ImageEntity>,
@@ -159,43 +158,11 @@ private fun PagerScope.ZoomableContent1(
             contentDescription = null,
         )
     }
+    zoomableState.zoomFraction
 
     if (!isActivePage) {
         LaunchedEffect(Unit) {
             zoomableState.resetZoom(withAnimation = false)
-        }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun PagerScope.ZoomableContent2(
-    page: Int,
-    pagerState: PagerState,
-    images: List<ImageEntity>
-) {
-    val isActivePage = page == pagerState.settledPage
-
-    val zoomState = rememberZoomState(
-        maxScale = 3f,
-        velocityDecay = exponentialDecay(
-            frictionMultiplier = 1f,
-            absVelocityThreshold = 0.1f
-        )
-    )
-    images.getOrNull(page)?.let { image ->
-        AsyncImage(
-            modifier = Modifier
-                .zoomable(zoomState)
-                .fillMaxSize(),
-            model = image.rawData,
-            contentDescription = null,
-        )
-    }
-
-    if (!isActivePage) {
-        LaunchedEffect(Unit) {
-            zoomState.reset()
         }
     }
 }
