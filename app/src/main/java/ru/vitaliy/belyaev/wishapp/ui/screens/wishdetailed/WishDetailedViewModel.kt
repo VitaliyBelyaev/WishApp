@@ -19,14 +19,13 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.domain.model.ImageData
-import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.WishDetailedScreenShowEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedAddLinkButtonClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedDeleteLinkClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedDeleteLinkConfirmedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedDeleteWishConfirmedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedLinkClickedEvent
-import ru.vitaliy.belyaev.wishapp.utils.toValueOfNull
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_LINK
 import ru.vitaliy.belyaev.wishapp.shared.domain.LinksAdapter
@@ -36,7 +35,7 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
-import timber.log.Timber
+import ru.vitaliy.belyaev.wishapp.utils.toValueOfNull
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
@@ -62,8 +61,6 @@ class WishDetailedViewModel @Inject constructor(
 
     val uiState: MutableStateFlow<Optional<WishItem>> = MutableStateFlow(Optional.empty())
 
-    val images: MutableStateFlow<List<ImageEntity>> = MutableStateFlow(emptyList())
-
     init {
         val wishIdSetJob = launchSafe {
             wishId = inputWishId.ifBlank {
@@ -71,8 +68,6 @@ class WishDetailedViewModel @Inject constructor(
                 wishesRepository.insertWish(wish)
                 wish.id
             }
-
-            Timber.tag("RTRT").d("WishDetailedViewModel init, wishId: $wishId")
         }
 
         launchSafe {
@@ -82,28 +77,6 @@ class WishDetailedViewModel @Inject constructor(
                 .collect {
                     uiState.value = Optional.of(WishItem(it, false))
                 }
-        }
-
-        launchSafe {
-            wishIdSetJob.join()
-            imagesRepository
-                .observeImagesByWishId(wishId)
-                .collect {
-
-
-                    images.value = it
-                    Timber.tag("RTRT").d("this:$this, images: ${it.size}")
-                }
-        }
-    }
-
-    fun onImageSelected(imageRawData: ImageData) {
-        launchSafe {
-            withContext(Dispatchers.IO) {
-                val downscaledImageRawData = decreaseImageSizeIfNeeded(imageRawData)
-                Timber.tag("RTRT").d("onImageSelected, downscaled size: ${downscaledImageRawData.size}")
-                imagesRepository.insertImage(ImageEntity(UUID.randomUUID().toString(), wishId, downscaledImageRawData))
-            }
         }
     }
 
@@ -209,9 +182,6 @@ class WishDetailedViewModel @Inject constructor(
         imageRawData: ImageData,
         options: Options,
     ): Bitmap {
-        Timber.tag("RTRT").d("createBitmap, imageData: ${imageRawData.rotationDegrees}")
-
-
         val downsampledBitmap = BitmapFactory.decodeByteArray(
             imageRawData.rawData,
             0,

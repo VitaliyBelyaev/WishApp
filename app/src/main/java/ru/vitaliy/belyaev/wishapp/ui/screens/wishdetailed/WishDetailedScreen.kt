@@ -8,10 +8,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
@@ -53,10 +54,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
@@ -71,11 +74,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import androidx.exifinterface.media.ExifInterface
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.io.ByteArrayInputStream
 import java.util.Optional
@@ -83,7 +85,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.ImageData
-import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
@@ -142,20 +143,6 @@ fun WishDetailedScreen(
         }
     }
 
-    val images: List<ImageEntity> by viewModel.images.collectAsState()
-
-//    val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.PickVisualMedia(),
-//        onResult = { uri ->
-//            uri?.let {
-//                context.contentResolver.openInputStream(uri)?.use { inputStream ->
-//                    val bytes = inputStream.readBytes()
-//                    viewModel.onImageSelected(bytes)
-//                }
-//            }
-//        }
-//    )
-
     val maxSelectionCount = 5
     val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = maxSelectionCount),
@@ -177,10 +164,6 @@ fun WishDetailedScreen(
     )
 
     fun launchPhotoPicker() {
-//        singlePhotoPickerLauncher.launch(
-//            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-//        )
-
         multiplePhotoPickerLauncher.launch(
             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
         )
@@ -232,212 +215,220 @@ fun WishDetailedScreen(
         var comment: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.comment }) }
         val isCompleted: Boolean = wishItem.toValueOfNull()?.wish?.isCompleted ?: false
 
-        ConstraintLayout(
+        Column(
             modifier = Modifier
+                .verticalScroll(scrollState)
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            val contentRef = createRef()
-
-            Column(
+            val focusRequester = remember { FocusRequester() }
+            TextField(
                 modifier = Modifier
-                    .verticalScroll(scrollState)
-                    .constrainAs(contentRef) {
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        width = Dimension.fillToConstraints
-                        height = Dimension.fillToConstraints
-                    }
-            ) {
-                val focusRequester = remember { FocusRequester() }
-                TextField(
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester),
-                    value = title,
-                    textStyle = MaterialTheme.typography.headlineMedium.copy(
-                        textDecoration = if (isCompleted) TextDecoration.LineThrough else null
-                    ),
-                    onValueChange = { newValue ->
-                        title = newValue
-                        viewModel.onWishTitleChanged(newValue)
-                    },
-                    placeholder = {
-                        Text(
-                            text = stringResource(R.string.enter_title),
-                            style = MaterialTheme.typography.headlineMedium,
-                        )
-                    },
-                    colors = WishAppTextFieldColors.wishDetailedTextFieldColors(),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Sentences
+                    .padding(top = 8.dp)
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+                value = title,
+                textStyle = MaterialTheme.typography.headlineMedium.copy(
+                    textDecoration = if (isCompleted) TextDecoration.LineThrough else null
+                ),
+                onValueChange = { newValue ->
+                    title = newValue
+                    viewModel.onWishTitleChanged(newValue)
+                },
+                placeholder = {
+                    Text(
+                        text = stringResource(R.string.enter_title),
+                        style = MaterialTheme.typography.headlineMedium,
                     )
+                },
+                colors = WishAppTextFieldColors.wishDetailedTextFieldColors(),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences
                 )
-                DisposableEffect(title) {
-                    if (title.isBlank()) {
-                        focusRequester.requestFocus()
-                    }
-                    onDispose { }
+            )
+            DisposableEffect(title) {
+                if (title.isBlank()) {
+                    focusRequester.requestFocus()
                 }
-
-                TextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = comment,
-                    onValueChange = { newValue ->
-                        comment = newValue
-                        viewModel.onWishCommentChanged(newValue)
-                    },
-                    placeholder = { Text(text = stringResource(R.string.enter_comment)) },
-                    colors = WishAppTextFieldColors.wishDetailedTextFieldColors(),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Sentences
-                    )
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Divider()
-                TextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = link,
-                    onValueChange = { newValue ->
-                        link = newValue
-                        viewModel.onWishLinkChanged(newValue)
-                    },
-                    trailingIcon = {
-                        IconButton(
-                            onClick = {
-                                viewModel.onAddLinkClicked(link)
-                                link = ""
-                                viewModel.onWishLinkChanged(link)
-                            },
-                            enabled = viewModel.isLinkValid(link)
-                        ) {
-                            ThemedIcon(
-                                painterResource(R.drawable.ic_check),
-                                contentDescription = "Add Link",
-                                tint = MaterialTheme.colorScheme.primary.copy(alpha = LocalContentAlpha.current)
-                            )
-                        }
-                    },
-                    singleLine = true,
-                    placeholder = { Text(text = stringResource(R.string.enter_link)) },
-                    colors = WishAppTextFieldColors.wishDetailedTextFieldColors(),
-                )
-                Divider()
-
-                for (linkItem in wishItem.toValueOfNull()?.wish?.links?.reversed() ?: emptyList()) {
-                    val annotatedLinkString: AnnotatedString = buildAnnotatedString {
-                        val linkHost: String = try {
-                            Uri.parse(linkItem).host ?: linkItem
-                        } catch (e: Exception) {
-                            linkItem
-                        }
-                        append(linkHost)
-                        addStyle(
-                            style = SpanStyle(
-                                color = MaterialTheme.colorScheme.primary,
-                                textDecoration = TextDecoration.Underline,
-                                fontWeight = FontWeight.Medium,
-                            ),
-                            start = 0,
-                            end = linkHost.length
-                        )
-                        addStringAnnotation(
-                            tag = "URL",
-                            annotation = linkItem,
-                            start = 0,
-                            end = linkHost.length
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(TextFieldDefaults.MinHeight)
-                            .padding(start = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        ClickableText(
-                            style = LocalTextStyle.current,
-                            text = annotatedLinkString,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            onClick = {
-                                annotatedLinkString
-                                    .getStringAnnotations("URL", it, it)
-                                    .firstOrNull()?.let { stringAnnotation ->
-                                        viewModel.onLinkClicked()
-                                        openLink(stringAnnotation.item)
-                                    }
-                            }
-                        )
-
-                        IconButton(
-                            onClick = {
-                                viewModel.onDeleteLinkClicked()
-                                openDeleteLinkConfirmationDialog.value = Optional.of(linkItem)
-                            }
-                        ) {
-                            Icon(
-                                painterResource(R.drawable.ic_delete),
-                                contentDescription = "Delete Link",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = LocalContentAlpha.current)
-                            )
-                        }
-                    }
-                    Divider()
-                }
-
-                if (images.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    val itemsSpacing = 8.dp
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(itemsSpacing),
-                        verticalArrangement = Arrangement.spacedBy(itemsSpacing),
-                        modifier = Modifier.padding(start = 12.dp, end = 12.dp)
-                    ) {
-                        images.forEachIndexed { index, image ->
-                            AsyncImage(
-                                model = image.rawData,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .height(100.dp)
-                                    .clickable {
-                                        wishItem.toValueOfNull()?.wish?.id?.let {
-                                            val data = WishImageClickData(
-                                                wishId = it,
-                                                wishImageId = image.id,
-                                                wishImageIndex = index
-                                            )
-                                            onWishImageClicked(data)
-                                        }
-                                    },
-                                contentScale = ContentScale.FillHeight
-                            )
-                        }
-                    }
-                }
-
-                val tags = wishItem.toValueOfNull()?.wish?.tags ?: emptyList()
-                if (tags.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    TagsBlock(
-                        tags = tags,
-                        textSize = 14.sp,
-                        onClick = {
-                            val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
-                            onWishTagsClicked(wishId)
-                        },
-                        modifier = Modifier.padding(start = 12.dp, end = 12.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
+                onDispose { }
             }
+
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = comment,
+                onValueChange = { newValue ->
+                    comment = newValue
+                    viewModel.onWishCommentChanged(newValue)
+                },
+                placeholder = { Text(text = stringResource(R.string.enter_comment)) },
+                colors = WishAppTextFieldColors.wishDetailedTextFieldColors(),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences
+                )
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Divider()
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = link,
+                onValueChange = { newValue ->
+                    link = newValue
+                    viewModel.onWishLinkChanged(newValue)
+                },
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            viewModel.onAddLinkClicked(link)
+                            link = ""
+                            viewModel.onWishLinkChanged(link)
+                        },
+                        enabled = viewModel.isLinkValid(link)
+                    ) {
+                        ThemedIcon(
+                            painterResource(R.drawable.ic_check),
+                            contentDescription = "Add Link",
+                            tint = MaterialTheme.colorScheme.primary.copy(alpha = LocalContentAlpha.current)
+                        )
+                    }
+                },
+                singleLine = true,
+                placeholder = { Text(text = stringResource(R.string.enter_link)) },
+                colors = WishAppTextFieldColors.wishDetailedTextFieldColors(),
+            )
+            Divider()
+
+            for (linkItem in wishItem.toValueOfNull()?.wish?.links?.reversed() ?: emptyList()) {
+                val annotatedLinkString: AnnotatedString = buildAnnotatedString {
+                    val linkHost: String = try {
+                        Uri.parse(linkItem).host ?: linkItem
+                    } catch (e: Exception) {
+                        linkItem
+                    }
+                    append(linkHost)
+                    addStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline,
+                            fontWeight = FontWeight.Medium,
+                        ),
+                        start = 0,
+                        end = linkHost.length
+                    )
+                    addStringAnnotation(
+                        tag = "URL",
+                        annotation = linkItem,
+                        start = 0,
+                        end = linkHost.length
+                    )
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(TextFieldDefaults.MinHeight)
+                        .padding(start = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    ClickableText(
+                        style = LocalTextStyle.current,
+                        text = annotatedLinkString,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        onClick = {
+                            annotatedLinkString
+                                .getStringAnnotations("URL", it, it)
+                                .firstOrNull()?.let { stringAnnotation ->
+                                    viewModel.onLinkClicked()
+                                    openLink(stringAnnotation.item)
+                                }
+                        }
+                    )
+
+                    IconButton(
+                        onClick = {
+                            viewModel.onDeleteLinkClicked()
+                            openDeleteLinkConfirmationDialog.value = Optional.of(linkItem)
+                        }
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.ic_delete),
+                            contentDescription = "Delete Link",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = LocalContentAlpha.current)
+                        )
+                    }
+                }
+                Divider()
+            }
+
+            val images = wishItem.toValueOfNull()?.wish?.images ?: emptyList()
+            if (images.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(16.dp))
+                val itemsSpacing = 8.dp
+                val edgeHorizontalPadding = 12.dp
+                val imageHeight = 190.dp
+
+                val imagesScrollState = rememberScrollState()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(imageHeight)
+                        .horizontalScroll(imagesScrollState),
+                    horizontalArrangement = Arrangement.spacedBy(itemsSpacing),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    images.forEachIndexed { index, image ->
+                        val imageRequest = ImageRequest.Builder(LocalContext.current)
+                            .data(image.rawData)
+                            .memoryCacheKey(image.id)
+                            .crossfade(true)
+                            .build()
+
+                        val paddingStart = if (index == 0) edgeHorizontalPadding else 0.dp
+                        val paddingEnd = if (index == images.lastIndex) edgeHorizontalPadding else 0.dp
+
+                        val maxWidth =
+                            LocalConfiguration.current.screenWidthDp.dp - edgeHorizontalPadding - itemsSpacing
+                        AsyncImage(
+                            model = imageRequest,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .height(imageHeight)
+                                .sizeIn(maxWidth = maxWidth)
+                                .padding(start = paddingStart, end = paddingEnd)
+                                .clip(MaterialTheme.shapes.medium)
+                                .clickable {
+                                    wishItem.toValueOfNull()?.wish?.id?.let {
+                                        val data = WishImageClickData(
+                                            wishId = it,
+                                            wishImageId = image.id,
+                                            wishImageIndex = index
+                                        )
+                                        onWishImageClicked(data)
+                                    }
+                                },
+                            contentScale = ContentScale.FillHeight
+                        )
+                    }
+                }
+            }
+
+            val tags = wishItem.toValueOfNull()?.wish?.tags ?: emptyList()
+            if (tags.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(24.dp))
+                TagsBlock(
+                    tags = tags,
+                    textSize = 14.sp,
+                    onClick = {
+                        val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
+                        onWishTagsClicked(wishId)
+                    },
+                    modifier = Modifier.padding(start = 12.dp, end = 12.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 

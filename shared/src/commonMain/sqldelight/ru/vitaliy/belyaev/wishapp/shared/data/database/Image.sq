@@ -23,6 +23,11 @@ SELECT *
 FROM Image
 WHERE wishId = ?;
 
+getByWishesIds:
+SELECT *
+FROM Image
+WHERE wishId IN ?;
+
 deleteByIds:
 DELETE FROM Image
 WHERE id IN ?;

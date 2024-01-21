@@ -17,14 +17,12 @@ import java.io.File
 import java.io.OutputStream
 import java.time.Instant
 import java.time.ZoneId
-import kotlin.math.roundToInt
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.domain.model.error.GoogleSignInException
 import ru.vitaliy.belyaev.wishapp.domain.repository.BackupRepository
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupLoadProgressListener
-import timber.log.Timber
 
 typealias DriveFile = com.google.api.services.drive.model.File
 
@@ -77,22 +75,6 @@ internal class GoogleDriveBackupRepository(
             .apply { configureUploader(mediaHttpUploader, progressListener) }
             .execute()
 
-        // TODO: Проверить что не сломалось
-//        val driveFile: DriveFile = if (backupInfo is BackupInfo.Value) {
-//            drive.Files().update(backupInfo.fileId, fileMetadata, mediaContent)
-//                .setFields(FIELDS_TO_INCLUDE_IN_RESPONSE_FOR_BACKUP_FILE)
-//                .apply {
-//                    configureUploader(mediaHttpUploader, mediaContent.length)
-//                }
-//                .execute()
-//        } else {
-//            fileMetadata.parents = listOf(FOLDER_NAME_FOR_PRIVATE_APP_STORAGE)
-//            drive.Files().create(fileMetadata, mediaContent)
-//                .setFields(FIELDS_TO_INCLUDE_IN_RESPONSE_FOR_BACKUP_FILE)
-//                .apply { configureUploader(mediaHttpUploader, mediaContent.length) }
-//                .execute()
-//        }
-
         return driveFile.toBackupInfo(account)
     }
 
@@ -103,25 +85,10 @@ internal class GoogleDriveBackupRepository(
         uploader.isDirectUploadEnabled = false
         uploader.chunkSize = LOAD_CHUNK_SIZE
         uploader.setProgressListener {
-            Timber.tag("RTRT").d("uploadState: ${it.uploadState}")
-            Timber.tag("RTRT").d("upload progress: ${(it.progress * 100).roundToInt()}")
-
             if (it.progress == 0.0) {
-                Timber.tag("RTRT").d("upload progress 0, nothing progress to show")
                 return@setProgressListener
             }
-
             progressListener.onProgressChanged(it.progress, it.numBytesUploaded)
-
-//            val totalSizeBytes = (it.numBytesUploaded / it.progress)
-//                .toBigDecimal()
-//                .setScale(1, RoundingMode.HALF_UP).toLong()
-//
-//            val uploadedMegabytes = BytesSizeFormatter.format(it.numBytesUploaded)
-//            val totalMegabytes = BytesSizeFormatter.format(totalSizeBytes)
-//
-//            val progressBytesString = "$uploadedMegabytes MB / $totalMegabytes MB"
-//            Timber.tag("RTRT").d("upload progress bytes: $progressBytesString")
         }
     }
 
@@ -132,19 +99,10 @@ internal class GoogleDriveBackupRepository(
         downloader.isDirectDownloadEnabled = false
         downloader.chunkSize = LOAD_CHUNK_SIZE
         downloader.setProgressListener {
-            Timber.tag("RTRT").d("downloadState: ${it.downloadState}")
-            Timber.tag("RTRT").d("download progress: ${(it.progress * 100).roundToInt()}")
-
             if (it.progress == 0.0) {
-                Timber.tag("RTRT").d("download progress 0, nothing progress to show")
                 return@setProgressListener
             }
-
             progressListener.onProgressChanged(it.progress, it.numBytesDownloaded)
-
-//            val pr = if (it.progress == 0.0) 1.0 else it.progress
-//            val progressBytesString = "${it.numBytesDownloaded} / ${(it.numBytesDownloaded / pr).roundToLong()}"
-//            Timber.tag("RTRT").d("download progress bytes: $progressBytesString")
         }
     }
 
@@ -220,6 +178,6 @@ internal class GoogleDriveBackupRepository(
         private const val KEY_APP_VERSION_NAME = "appVersionName"
         private const val KEY_APP_VERSION_NUMBER = "appVersionNumber"
 
-        private const val LOAD_CHUNK_SIZE = MediaHttpUploader.MINIMUM_CHUNK_SIZE * 4 // 1 MB
+        private const val LOAD_CHUNK_SIZE = MediaHttpUploader.MINIMUM_CHUNK_SIZE * 2 // 512 KB
     }
 }

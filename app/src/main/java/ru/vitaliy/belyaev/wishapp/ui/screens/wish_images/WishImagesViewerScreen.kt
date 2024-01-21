@@ -1,7 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wish_images
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,7 +10,6 @@ import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerScope
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -28,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.request.ImageRequest
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.util.Optional
 import me.saket.telephoto.zoomable.ZoomSpec
@@ -54,7 +53,6 @@ fun WishImagesViewerScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val scrollState: ScrollState = rememberScrollState()
 
 //    trackScreenShow { viewModel.trackScreenShow() }
 
@@ -151,14 +149,19 @@ private fun PagerScope.ZoomableContent(
         autoApplyTransformations = true
     )
     images.getOrNull(page)?.let { image ->
+        val imageRequest = ImageRequest.Builder(LocalContext.current)
+            .data(image.rawData)
+            .memoryCacheKey(image.id)
+            .crossfade(true)
+            .build()
+
         ZoomableAsyncImage(
             modifier = Modifier.fillMaxSize(),
             state = rememberZoomableImageState(zoomableState),
-            model = image.rawData,
+            model = imageRequest,
             contentDescription = null,
         )
     }
-    zoomableState.zoomFraction
 
     if (!isActivePage) {
         LaunchedEffect(Unit) {

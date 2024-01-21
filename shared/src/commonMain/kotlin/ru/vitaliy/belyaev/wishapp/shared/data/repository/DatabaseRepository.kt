@@ -1,5 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.shared.data.repository
 
+import app.cash.sqldelight.Query
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
@@ -213,8 +214,14 @@ class DatabaseRepository(
             .getWishTags(id)
             .asFlow()
             .mapToList(dispatcherProvider.io())
-        return wishDtoFlow.combine(tagsFlow) { wishDto, tags ->
-            WishMapper.mapToDomain(wishDto, tags)
+
+        val imagesFlow: Flow<List<Image>> = imageQueries
+            .getByWishId(id)
+            .asFlow()
+            .mapToList(dispatcherProvider.io())
+
+        return combine(wishDtoFlow, tagsFlow, imagesFlow) { wishDto, tags, images ->
+            WishMapper.mapToDomain(wishDto, tags, images)
         }
     }
 
@@ -224,18 +231,24 @@ class DatabaseRepository(
             val wishDto: Wish = wishQueries
                 .getById(id)
                 .executeAsOne()
+
             val tags: List<Tag> = wishTagRelationQueries
                 .getWishTags(id)
                 .executeAsList()
 
-            WishMapper.mapToDomain(wishDto, tags)
+            val images: List<Image> = imageQueries
+                .getByWishId(id)
+                .executeAsList()
+
+            WishMapper.mapToDomain(wishDto, tags, images)
         }
     }
 
     @NativeCoroutines
     override fun observeAllWishes(isCompleted: Boolean): Flow<List<WishEntity>> {
-        val wishesFlow: Flow<List<Wish>> = wishQueries
-            .getAll(isCompleted)
+        val wishesQuery: Query<Wish> = wishQueries.getAll(isCompleted)
+
+        val wishesFlow: Flow<List<Wish>> = wishesQuery
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
@@ -248,12 +261,20 @@ class DatabaseRepository(
         // We need this for reactive changes of tags content in wish
         val tagsFlow: Flow<List<TagEntity>> = observeAllTags()
 
-        return combine(wishesFlow, wishTagRelationsFlow, tagsFlow) { wishes, _, _ ->
+        // We need this for reactive changes of images content in wish
+        val imagesFlow: Flow<List<Image>> = imageQueries
+            .getAll()
+            .asFlow()
+            .mapToList(dispatcherProvider.io())
+
+        return combine(wishesFlow, wishTagRelationsFlow, tagsFlow, imagesFlow) { wishes, _, _, allImages ->
             wishes.map {
                 val tags: List<Tag> = wishTagRelationQueries
                     .getWishTags(it.wishId)
                     .executeAsList()
-                WishMapper.mapToDomain(it, tags)
+
+                val images = allImages.filter { image -> image.wishId == it.wishId }
+                WishMapper.mapToDomain(it, tags, images)
             }
         }
     }
@@ -268,7 +289,12 @@ class DatabaseRepository(
                     val tags: List<Tag> = wishTagRelationQueries
                         .getWishTags(it.wishId)
                         .executeAsList()
-                    WishMapper.mapToDomain(it, tags)
+
+                    val images: List<Image> = imageQueries
+                        .getByWishId(it.wishId)
+                        .executeAsList()
+
+                    WishMapper.mapToDomain(it, tags, images)
                 }
         }
     }
@@ -290,21 +316,29 @@ class DatabaseRepository(
 
     @NativeCoroutines
     override fun observeWishesByTag(tagId: String): Flow<List<WishEntity>> {
+        val wishesByTagQuery: Query<Wish> = wishTagRelationQueries.getAllWishesByTag(tagId)
 
-        val wishesByTagFlow: Flow<List<Wish>> = wishTagRelationQueries
-            .getAllWishesByTag(tagId)
+        val wishesByTagFlow: Flow<List<Wish>> = wishesByTagQuery
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
         // We need this for reactive changes of tag content
         val tagFlow: Flow<Tag> = tagQueries.getById(tagId).asFlow().mapToOne(dispatcherProvider.io())
 
-        return combine(wishesByTagFlow, tagFlow) { wishes, _ ->
+        val wishesByTag: List<Wish> = wishesByTagQuery.executeAsList()
+        val imagesFlow: Flow<List<Image>> = imageQueries
+            .getByWishesIds(wishesByTag.map { it.wishId })
+            .asFlow()
+            .mapToList(dispatcherProvider.io())
+
+        return combine(wishesByTagFlow, tagFlow, imagesFlow) { wishes, _, allImages ->
             wishes.map {
                 val tags: List<Tag> = wishTagRelationQueries
                     .getWishTags(it.wishId)
                     .executeAsList()
-                WishMapper.mapToDomain(it, tags)
+
+                val images = allImages.filter { image -> image.wishId == it.wishId }
+                WishMapper.mapToDomain(it, tags, images)
             }
         }
     }
@@ -497,7 +531,6 @@ class DatabaseRepository(
                     ImageMapper.mapToDomain(image)
                 }
             }
-
     }
 
     @NativeCoroutines
