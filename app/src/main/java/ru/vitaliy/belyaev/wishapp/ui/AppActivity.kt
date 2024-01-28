@@ -37,9 +37,7 @@ import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedRoute
 import ru.vitaliy.belyaev.wishapp.navigation.WishImagesViewerRoute
 import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
-import ru.vitaliy.belyaev.wishapp.shared.domain.ShareWishListTextGenerator
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
-import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -66,18 +64,14 @@ internal class AppActivity : AppCompatActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        if (savedInstanceState == null) {
-            sharedLinkFromAnotherApp = extractSharedLinkAndShowErrorIfInvalid(intent)
+
+        if(savedInstanceState == null) {
+            viewModel.onCreateWithoutSavedInstanceState(this)
         }
 
-        lifecycleScope.launch {
-            viewModel.wishListToShareFlow.collect {
-                val wishListAsFormattedText = ShareWishListTextGenerator.generateFormattedWishListText(
-                    title = getString(R.string.wish_list_title),
-                    wishes = it
-                )
-                startActivity(createSharePlainTextIntent(wishListAsFormattedText))
-            }
+
+        if (savedInstanceState == null) {
+            sharedLinkFromAnotherApp = extractSharedLinkAndShowErrorIfInvalid(intent)
         }
 
         lifecycleScope.launch {
@@ -115,13 +109,12 @@ internal class AppActivity : AppCompatActivity() {
             WishAppTheme(selectedTheme = theme) {
                 Navigation(
                     navController = navController,
-                    onShareClick = { viewModel.onShareWishListClicked(it) },
                     analyticsRepository = analyticsRepository,
                 )
             }
             navController.addOnDestinationChangedListener { _, destination, _ ->
                 val newForceDark = destination.route == WishImagesViewerRoute.VALUE
-                if(newForceDark != forceDark.value) {
+                if (newForceDark != forceDark.value) {
                     forceDark.value = newForceDark
                 }
             }

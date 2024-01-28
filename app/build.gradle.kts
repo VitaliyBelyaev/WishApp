@@ -167,6 +167,9 @@ dependencies {
     implementation(libs.coilKt.coilCompose)
     implementation(libs.saket.telephoto.zoomableImageCoil)
 
+    // Flexbox
+    implementation(libs.google.android.flexbox)
+
     // Timber
     implementation(libs.timber)
 

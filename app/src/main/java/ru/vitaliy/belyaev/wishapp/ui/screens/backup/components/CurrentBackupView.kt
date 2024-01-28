@@ -18,6 +18,7 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupDateTimeFormatter
+import ru.vitaliy.belyaev.wishapp.ui.theme.AppButtonDefaults
 import ru.vitaliy.belyaev.wishapp.utils.BytesSizeFormatter
 
 @Composable
@@ -45,7 +46,8 @@ internal fun CurrentBackupView(
                     modifier = Modifier
                         .size(26.dp)
                         .weight(1f),
-                    onClick = onRefreshBackupInfoClicked
+                    onClick = onRefreshBackupInfoClicked,
+                    shape = AppButtonDefaults.defaultButtonShape(),
                 ) {
                     ThemedIcon(
                         modifier = Modifier.size(20.dp),
@@ -92,7 +94,10 @@ internal fun CurrentBackupView(
                 }
             }
         }
-        Button(onClick = { onCreateBackupClicked() }) {
+        Button(
+            onClick = onCreateBackupClicked,
+            shape = AppButtonDefaults.defaultButtonShape(),
+        ) {
             Text(stringResource(R.string.backup_create_backup_button_text))
         }
     }

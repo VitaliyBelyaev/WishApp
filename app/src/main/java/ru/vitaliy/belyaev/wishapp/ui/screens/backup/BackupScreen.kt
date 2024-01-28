@@ -68,6 +68,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.ForceUpdateAppDat
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.LoadingView
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.ManageAccountView
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.RestoreBackupView
+import ru.vitaliy.belyaev.wishapp.ui.theme.AppButtonDefaults
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
@@ -198,7 +199,10 @@ internal fun BackupScreen(
                             text = stringResource(R.string.backup_check_backup_error_message),
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
-                        Button(onClick = { viewModel.onRetryCheckBackupClicked() }) {
+                        Button(
+                            onClick = { viewModel.onRetryCheckBackupClicked() },
+                            shape = AppButtonDefaults.defaultButtonShape(),
+                        ) {
                             ThemedIcon(
                                 painter = painterResource(R.drawable.ic_refresh),
                                 contentDescription = null

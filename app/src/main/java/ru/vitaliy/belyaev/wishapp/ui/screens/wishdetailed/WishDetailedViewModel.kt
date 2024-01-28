@@ -20,10 +20,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.domain.model.ImageData
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.WishDetailedScreenShowEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedAddImagesClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedAddLinkButtonClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedDeleteLinkClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedDeleteLinkConfirmedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedDeleteWishConfirmedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedImagesSelectedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedLinkClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
@@ -80,7 +82,13 @@ class WishDetailedViewModel @Inject constructor(
         }
     }
 
+    fun onAddImageClicked() {
+        analyticsRepository.trackEvent(WishDetailedAddImagesClickedEvent)
+    }
+
     fun onImagesSelected(imagesRawData: List<ImageData>) {
+        analyticsRepository.trackEvent(WishDetailedImagesSelectedEvent(imagesRawData.size))
+
         launchSafe {
             withContext(Dispatchers.IO) {
                 val images = imagesRawData.map { imageRawData ->

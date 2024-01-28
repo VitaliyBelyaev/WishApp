@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <TextView
+            android:id="@+id/wishTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:textSize="12px"
+            tools:text="1. Wishsvrjksbrkvbhsrbvhbrshvsbrjhvbshbrvjh" />
+
+    <TextView
+            android:id="@+id/wishComment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14px"
+            android:layout_marginTop="2px"
+            android:alpha="0.7"
+            android:textColor="@android:color/black"
+            android:textSize="9px"
+            tools:text="Wishvbsrkhbvkbsrvbhksrbshjrvb" />
+
+    <LinearLayout
+            android:id="@+id/linksContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14px"
+            android:layout_marginTop="2px"
+            android:orientation="vertical" />
+
+    <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/imagesContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="14px"
+            android:layout_marginTop="8px"
+            app:flexDirection="row"
+            app:flexWrap="wrap" />
+
+</LinearLayout>

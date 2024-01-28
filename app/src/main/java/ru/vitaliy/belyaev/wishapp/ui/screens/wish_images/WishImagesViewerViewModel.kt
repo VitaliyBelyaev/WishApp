@@ -6,18 +6,17 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.WishImagesViewerScreenShowEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_IMAGE_INDEX
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
-import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 
 @HiltViewModel
 class WishImagesViewerViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val wishesRepository: WishesRepository,
+    savedStateHandle: SavedStateHandle,
     private val analyticsRepository: AnalyticsRepository,
     private val imagesRepository: ImagesRepository,
 ) : BaseViewModel() {
@@ -33,12 +32,17 @@ class WishImagesViewerViewModel @Inject constructor(
         launchSafe {
             imagesRepository
                 .observeImagesByWishId(wishId)
-                .collect { _images.value = it }
+                .collect {
+                    if (images.value.isEmpty() && it.isNotEmpty()) {
+                        trackScreenShow(it.size)
+                    }
+
+                    _images.value = it
+                }
         }
     }
 
-    fun trackScreenShow() {
-        // todo: Track
-//        analyticsRepository.trackEvent(AboutAppScreenShowEvent)
+    private fun trackScreenShow(imagesCount: Int) {
+        analyticsRepository.trackEvent(WishImagesViewerScreenShowEvent(imagesCount))
     }
 }

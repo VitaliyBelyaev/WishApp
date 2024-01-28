@@ -191,7 +191,10 @@ fun WishDetailedScreen(
                 wishItem = wishItem.toValueOfNull(),
                 bottomBarHeight = bottomBarHeight,
                 onWishTagsClicked = onWishTagsClicked,
-                onAddImageClicked = { launchPhotoPicker() },
+                onAddImageClicked = {
+                    viewModel.onAddImageClicked()
+                    launchPhotoPicker()
+                },
                 onWishCompletedClicked = { wishId, oldIsCompleted ->
                     appViewModel.onCompleteWishButtonClicked(
                         wishId = wishId,

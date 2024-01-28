@@ -1,7 +1,9 @@
 package ru.vitaliy.belyaev.wishapp.ui
 
+import android.content.Context
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.File
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -16,13 +18,14 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedChangeWishCompletenessClickedEvent
-import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListShareClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishImagesViewerDeleteImageConfirmedEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.isEmpty
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
+import ru.vitaliy.belyaev.wishapp.utils.WISHLIST_PDF_DIR_NAME
 import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
 import timber.log.Timber
 
@@ -34,9 +37,6 @@ class AppActivityViewModel @Inject constructor(
     private val analyticsRepository: AnalyticsRepository,
     private val dispatcherProvider: DispatcherProvider
 ) : BaseViewModel() {
-
-    private val _wishListToShareFlow: MutableSharedFlow<List<WishEntity>> = MutableSharedFlow(extraBufferCapacity = 2)
-    val wishListToShareFlow: SharedFlow<List<WishEntity>> = _wishListToShareFlow.asSharedFlow()
 
     private val _requestReviewFlow: MutableSharedFlow<Unit> = MutableSharedFlow(extraBufferCapacity = 2)
     val requestReviewFlow: SharedFlow<Unit> = _requestReviewFlow.asSharedFlow()
@@ -96,6 +96,7 @@ class AppActivityViewModel @Inject constructor(
     }
 
     fun onDeleteWishImageConfirmed(wishImageId: String) {
+        analyticsRepository.trackEvent(WishImagesViewerDeleteImageConfirmedEvent)
         launchSafe {
             imagesRepository.deleteImageById(wishImageId)
         }
@@ -106,11 +107,6 @@ class AppActivityViewModel @Inject constructor(
         launchSafe {
             wishesRepository.updateWishIsCompleted(!oldIsCompleted, wishId)
         }
-    }
-
-    fun onShareWishListClicked(wishes: List<WishEntity>) {
-        analyticsRepository.trackEvent(WishListShareClickedEvent)
-        launchSafe { _wishListToShareFlow.emit(wishes) }
     }
 
     fun showSnackMessageOnMain(message: String) {
@@ -124,6 +120,21 @@ class AppActivityViewModel @Inject constructor(
                     throwable,
                     "Failed to send message on main $message"
                 )
+            }
+        }
+    }
+
+    fun onCreateWithoutSavedInstanceState(context: Context) {
+        launchSafe(Dispatchers.IO) {
+            clearPdfFilesForShare(context)
+        }
+    }
+
+    private fun clearPdfFilesForShare(context: Context) {
+        val pdfDir = File(context.filesDir, WISHLIST_PDF_DIR_NAME)
+        if (pdfDir.exists()) {
+            pdfDir.listFiles()?.forEach {
+                it.delete()
             }
         }
     }

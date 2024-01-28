@@ -67,3 +67,14 @@ object WishTagsScreenShowEvent : AnalyticsEvent {
 
     override val params: Map<String, Any?> = emptyMap()
 }
+
+data class WishImagesViewerScreenShowEvent(
+    private val imagesCount: Int
+) : AnalyticsEvent {
+
+    override val name: String = "Wish Images Viewer Screen - Show"
+
+    override val params: Map<String, Any?> = mapOf(
+        "images_count" to imagesCount
+    )
+}

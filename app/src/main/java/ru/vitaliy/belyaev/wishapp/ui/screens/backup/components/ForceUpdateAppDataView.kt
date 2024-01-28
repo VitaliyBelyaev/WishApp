@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.theme.AppButtonDefaults
 
 @Composable
 internal fun ForceUpdateAppDataView(onForceUpdateClicked: () -> Unit) {
@@ -23,7 +24,10 @@ internal fun ForceUpdateAppDataView(onForceUpdateClicked: () -> Unit) {
             text = stringResource(R.string.backup_force_update_info_text),
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        OutlinedButton(onClick = { onForceUpdateClicked() }) {
+        OutlinedButton(
+            onClick = onForceUpdateClicked,
+            shape = AppButtonDefaults.defaultButtonShape(),
+        ) {
             Text(text = stringResource(R.string.backup_force_update_button_text))
         }
     }

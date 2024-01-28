@@ -80,6 +80,9 @@ squareup-leakcanary-leakcanaryAndroid = { module = "com.squareup.leakcanary:leak
 firebase-bom = { module = "com.google.firebase:firebase-bom", version = "32.7.0" }
 saket-telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil", version = "0.7.1" }
 
+#Flexbox
+google-android-flexbox = {module = "com.google.android.flexbox:flexbox", version= "3.0.0"}
+
 #Tests
 junit-junit = { module = "junit:junit", version = "4.13.2" }
 hamcrest-hamcrestJunit = { module = "org.hamcrest:hamcrest-junit", version = "2.0.0.0" }
