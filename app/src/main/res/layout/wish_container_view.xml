@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="14px"
             android:layout_marginTop="2px"
-            android:alpha="0.7"
+            android:alpha="0.8"
             android:textColor="@android:color/black"
             android:textSize="9px"
             tools:text="Wishvbsrkhbvkbsrvbhksrbshjrvb" />

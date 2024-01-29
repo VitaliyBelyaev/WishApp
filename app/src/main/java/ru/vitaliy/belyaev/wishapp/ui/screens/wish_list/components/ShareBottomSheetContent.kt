@@ -16,10 +16,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.ShareData
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.theme.AppButtonDefaults
@@ -42,11 +44,11 @@ fun ShareBottomSheetContent(
         bottom = 12.dp
     )
 
-    Column(modifier = modifier.padding(start = 16.dp, end = 16.dp)) {
+    Column(modifier = modifier.padding(start = 12.dp, end = 12.dp)) {
         Text(
             modifier = Modifier
                 .fillMaxWidth(),
-            text = "Share ${wishesToShare.size} wishes as...",
+            text = stringResource(R.string.share_title),
             style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Start
         )
@@ -62,7 +64,7 @@ fun ShareBottomSheetContent(
                 .fillMaxWidth()
         ) {
             Text(
-                text = "Text (without images)",
+                text = stringResource(R.string.share_type_text_button_text),
                 style = MaterialTheme.typography.bodyLarge,
             )
         }
@@ -80,7 +82,7 @@ fun ShareBottomSheetContent(
 
             if (isPdfShareButtonLoading) {
                 Text(
-                    text = "Generating PDF file",
+                    text = stringResource(R.string.share_generating_pdf_button_text),
                     style = MaterialTheme.typography.bodyLarge,
                 )
 
@@ -93,7 +95,7 @@ fun ShareBottomSheetContent(
                 )
             } else {
                 Text(
-                    text = "PDF file (with images)",
+                    text = stringResource(R.string.share_type_pdf_button_text),
                     style = MaterialTheme.typography.bodyLarge,
                 )
             }

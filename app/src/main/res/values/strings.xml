@@ -91,4 +91,9 @@
     <string name="backup_account_sing_out_button_text">Log out</string>
     <string name="backup_account_disconnect_description">Disconnecting your account will sign you out of your account and revoke permission to access your Google Drive</string>
     <string name="backup_account_disconnect_button_text">Disconnect account</string>
+
+    <string name="share_title">Share as…</string>
+    <string name="share_type_text_button_text">Text (without images)</string>
+    <string name="share_type_pdf_button_text">PDF file (with images)</string>
+    <string name="share_generating_pdf_button_text">Generating PDF file</string>
 </resources>

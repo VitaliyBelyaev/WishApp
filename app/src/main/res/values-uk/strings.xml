@@ -92,4 +92,15 @@
     <string name="backup_account_sing_out_button_text">Вийти з акаунта</string>
     <string name="backup_account_disconnect_description">При відв\'язці облікового запису ви вийдете з нього і відкликаєте дозвіл на доступ до вашого Google диску</string>
     <string name="backup_account_disconnect_button_text">Відв\'язати обліковий запис</string>
+
+    <plurals name="share_wishes_count">
+        <item quantity="one">%d wish</item>
+        <item quantity="other">%d wishes</item>
+        <item quantity="many">%d wishes</item>
+        <item quantity="few">%d wishes</item>
+    </plurals>
+    <string name="share_title">Виберіть у якому форматі поділитися</string>
+    <string name="share_type_text_button_text">Текст (без зображень)</string>
+    <string name="share_type_pdf_button_text">PDF файл (із зображеннями)</string>
+    <string name="share_generating_pdf_button_text">Створюємо PDF файл</string>
 </resources>
