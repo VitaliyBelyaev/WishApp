@@ -1,15 +1,16 @@
 package ru.vitaliy.belyaev.wishapp.ui.core.topappbar
 
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.material.icons.Icons.Filled
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,7 +27,11 @@ fun WishAppTopBar(
         if (withBackIcon) {
             {
                 IconButton(onClick = { onBackPressed?.invoke() }) {
-                    ThemedIcon(Filled.ArrowBack, contentDescription = "Back")
+                    ThemedIcon(
+                        painter = painterResource(R.drawable.ic_arrow_back),
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         } else {

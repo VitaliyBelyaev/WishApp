@@ -117,7 +117,7 @@ sqldelight {
         create("WishAppDb") {
             packageName.set("ru.vitaliy.belyaev.wishapp.shared.data.database")
             dialect("app.cash.sqldelight:sqlite-3-24-dialect:${libs.versions.sqlDelight.get()}")
-            schemaOutputDirectory.file("src/main/sqldelight/databases")
+            schemaOutputDirectory = file("src/commonMain/sqldelight/databases")
             verifyMigrations.set(true)
         }
     }

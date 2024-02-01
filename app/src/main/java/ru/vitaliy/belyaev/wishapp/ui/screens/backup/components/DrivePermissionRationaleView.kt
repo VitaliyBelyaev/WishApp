@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.theme.AppButtonDefaults
 
 @Composable
 internal fun DrivePermissionRationaleView(onGiveDrivePermissionClicked: () -> Unit) {
@@ -26,7 +27,10 @@ internal fun DrivePermissionRationaleView(onGiveDrivePermissionClicked: () -> Un
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        Button(onClick = onGiveDrivePermissionClicked) {
+        Button(
+            onClick = onGiveDrivePermissionClicked,
+            shape = AppButtonDefaults.defaultButtonShape(),
+        ) {
             Text(stringResource(R.string.backup_allow_access_to_drive_text))
         }
     }

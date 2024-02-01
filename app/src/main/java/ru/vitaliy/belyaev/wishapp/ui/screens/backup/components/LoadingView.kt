@@ -9,32 +9,54 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.backup.LoadingState
 @Composable
 internal fun LoadingView(loadingState: LoadingState) {
     when (loadingState) {
-        LoadingState.None -> {
+        is LoadingState.None -> {
         }
 
-        LoadingState.Empty -> {
+        is LoadingState.Empty -> {
             FullscreenLoaderWithText(isTranslucent = false)
         }
 
-        LoadingState.CheckingBackup -> {
+        is LoadingState.CheckingBackup -> {
             FullscreenLoaderWithText(
                 isTranslucent = true,
                 text = stringResource(R.string.backup_check_backup_loader_text),
             )
         }
 
-        LoadingState.RestoringBackup -> {
-            FullscreenLoaderWithText(
-                isTranslucent = true,
-                text = stringResource(R.string.backup_restore_backup_loader_text),
-            )
+        is LoadingState.RestoringBackup -> {
+            when (loadingState) {
+                is LoadingState.RestoringBackup.Indeterminate -> {
+                    FullscreenLoaderWithText(
+                        isTranslucent = true,
+                        text = stringResource(R.string.backup_restore_backup_loader_text),
+                    )
+                }
+                is LoadingState.RestoringBackup.Determinate -> {
+                    FullscreenLoaderWithText(
+                        isTranslucent = true,
+                        text = stringResource(R.string.backup_restore_backup_loader_text),
+                        progress = loadingState.progress,
+                    )
+                }
+            }
         }
 
-        LoadingState.UploadingNewBackup -> {
-            FullscreenLoaderWithText(
-                isTranslucent = true,
-                text = stringResource(R.string.backup_create_backup_loader_text),
-            )
+        is LoadingState.UploadingNewBackup -> {
+            when (loadingState) {
+                is LoadingState.UploadingNewBackup.Indeterminate -> {
+                    FullscreenLoaderWithText(
+                        isTranslucent = true,
+                        text = stringResource(R.string.backup_create_backup_loader_text),
+                    )
+                }
+                is LoadingState.UploadingNewBackup.Determinate -> {
+                    FullscreenLoaderWithText(
+                        isTranslucent = true,
+                        text = stringResource(R.string.backup_create_backup_loader_text),
+                        progress = loadingState.progress,
+                    )
+                }
+            }
         }
     }
 }

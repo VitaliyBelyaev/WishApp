@@ -43,3 +43,21 @@ object WishDetailedDeleteLinkConfirmedEvent : AnalyticsEvent {
 
     override val params: Map<String, Any?> = emptyMap()
 }
+
+object WishDetailedAddImagesClickedEvent : AnalyticsEvent {
+
+    override val name: String = "Wish Detailed Screen - Add Images Button Clicked"
+
+    override val params: Map<String, Any?> = emptyMap()
+}
+
+data class WishDetailedImagesSelectedEvent(
+    private val imagesCount: Int
+) : AnalyticsEvent {
+
+    override val name: String = "Wish Detailed Screen - Images Selected"
+
+    override val params: Map<String, Any?> = mapOf(
+        "images_count" to imagesCount
+    )
+}

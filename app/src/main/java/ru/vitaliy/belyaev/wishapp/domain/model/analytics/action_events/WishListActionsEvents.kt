@@ -2,11 +2,19 @@ package ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events
 
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.AnalyticsEvent
 
-object WishListShareClickedEvent : AnalyticsEvent {
+data class WishListShareClickedEvent(
+    val shareType: String,
+    val wishesCount: Int,
+    val totalImagesCount: Int,
+): AnalyticsEvent {
 
     override val name: String = "Wish List Screen - Share Clicked"
 
-    override val params: Map<String, Any?> = emptyMap()
+    override val params: Map<String, Any?> = mapOf(
+        "share_type" to shareType,
+        "wishes_count" to wishesCount,
+        "total_images_count" to totalImagesCount
+    )
 }
 
 object WishListFilterByTagClickedEvent : AnalyticsEvent {

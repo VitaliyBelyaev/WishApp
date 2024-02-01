@@ -7,7 +7,8 @@ data class MainScreenState(
     val selectedIds: List<String> = emptyList(),
     val wishesFilter: WishesFilter = WishesFilter.All,
     val reorderButtonState: ReorderButtonState = ReorderButtonState.Visible(false),
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val isShareAsPdfLoading: Boolean = false,
 )
 
 sealed class ReorderButtonState {

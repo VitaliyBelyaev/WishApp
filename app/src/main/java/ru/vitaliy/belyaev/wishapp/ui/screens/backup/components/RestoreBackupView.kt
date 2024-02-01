@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.theme.AppButtonDefaults
 
 @Composable
 internal fun RestoreBackupView(onRestoreBackupClicked: () -> Unit) {
@@ -23,7 +24,10 @@ internal fun RestoreBackupView(onRestoreBackupClicked: () -> Unit) {
             text = stringResource(R.string.backup_restore_info_text),
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        Button(onClick = { onRestoreBackupClicked() }) {
+        Button(
+            onClick = onRestoreBackupClicked,
+            shape = AppButtonDefaults.defaultButtonShape(),
+        ) {
             Text(text = stringResource(R.string.backup_restore_button_text))
         }
     }

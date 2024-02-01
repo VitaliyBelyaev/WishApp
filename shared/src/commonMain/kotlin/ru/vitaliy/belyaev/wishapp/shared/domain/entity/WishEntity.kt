@@ -14,7 +14,8 @@ data class WishEntity(
     val createdTimestamp: Long,
     val updatedTimestamp: Long,
     val position: Long,
-    val tags: List<TagEntity> = emptyList()
+    val tags: List<TagEntity> = emptyList(),
+    val images: List<ImageEntity> = emptyList(),
 )
 
 fun createEmptyWish(): WishEntity {
@@ -29,7 +30,8 @@ fun createEmptyWish(): WishEntity {
         createdTimestamp = currentMillis,
         updatedTimestamp = currentMillis,
         position = 0,
-        tags = emptyList()
+        tags = emptyList(),
+        images = emptyList(),
     )
 }
 

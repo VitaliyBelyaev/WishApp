@@ -2,6 +2,8 @@ package ru.vitaliy.belyaev.wishapp.navigation
 
 const val ARG_WISH_ID = "wishId"
 const val ARG_WISH_LINK = "wishLink"
+const val ARG_WISH_IMAGE_ID = "wishImageId"
+const val ARG_WISH_IMAGE_INDEX = "wishImageIndex"
 
 object MainRoute {
     const val VALUE = "main"
@@ -56,5 +58,17 @@ object WishTagsRoute {
 
     fun build(wishId: String): String {
         return "wish_tags/$wishId"
+    }
+}
+
+object WishImagesViewerRoute {
+    const val VALUE = "wish_images_viewer?$ARG_WISH_ID={$ARG_WISH_ID}&$ARG_WISH_IMAGE_ID={$ARG_WISH_IMAGE_ID}&$ARG_WISH_IMAGE_INDEX={$ARG_WISH_IMAGE_INDEX}"
+
+    fun build(
+        wishId: String,
+        wishImageId: String,
+        wishImageIndex: Int
+    ): String {
+        return "wish_images_viewer?$ARG_WISH_ID=$wishId&$ARG_WISH_IMAGE_ID=$wishImageId&$ARG_WISH_IMAGE_INDEX=$wishImageIndex"
     }
 }

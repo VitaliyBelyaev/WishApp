@@ -23,6 +23,6 @@ fun BackupSheetContent(
     Text(
         text = stringResource(R.string.backup_description),
         color = MaterialTheme.colorScheme.onSurface,
-        modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp)
+        modifier = modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
     )
 }

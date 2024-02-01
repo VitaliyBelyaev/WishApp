@@ -35,6 +35,7 @@
     <string name="delete_tag_title">Удалить ярлык?</string>
     <string name="delete_tag_description">Ярлык будет удалён. Он исчезнет со всех хотелок, при этом сами хотелки сохранятся.</string>
     <string name="delete_wish_title">Удалить хотелку?</string>
+    <string name="delete_wish_image_title">Удалить изображение?</string>
     <string name="delete_wish_link_title">Удалить ссылку?</string>
     <string name="delete_wishes_title">Удалить выбранные хотелки?</string>
     <string name="fail_to_open_link">Не удалось открыть ссылку</string>
@@ -91,4 +92,9 @@
     <string name="backup_account_sing_out_button_text">Выйти из аккаунта</string>
     <string name="backup_account_disconnect_description">При отвязке аккаунта вы выйдете из него и отзовете разрешение на доступ к вашему Google диску</string>
     <string name="backup_account_disconnect_button_text">Отвязать аккаунт</string>
+    <string name="share_title">Выберите в каком формате поделиться</string>
+    <string name="share_type_text_button_text">Текст (без изображений)</string>
+    <string name="share_type_pdf_button_text">PDF файл (с изображениями)</string>
+    <string name="share_generating_pdf_button_text">Создаём PDF файл</string>
+
 </resources>

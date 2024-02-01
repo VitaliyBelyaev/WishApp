@@ -7,6 +7,7 @@ import androidx.activity.result.ActivityResult
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.math.RoundingMode
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -37,6 +38,7 @@ import ru.vitaliy.belyaev.wishapp.domain.use_case.RestoreBackupUseCase
 import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.SnackbarMessage
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
+import ru.vitaliy.belyaev.wishapp.utils.BytesSizeFormatter
 import ru.vitaliy.belyaev.wishapp.utils.restartAppWithDelayMillis
 import timber.log.Timber
 
@@ -157,10 +159,23 @@ internal class BackupViewModel @Inject constructor(
         analyticsRepository.trackEvent(BackupCreateBackupClickedEvent)
 
         launchSafe {
-            _loadingState.value = LoadingState.UploadingNewBackup
+            _loadingState.value = LoadingState.UploadingNewBackup.Indeterminate
+
+            val uploadProgressListener = object : BackupLoadProgressListener {
+
+                override fun onProgressChanged(progress: Double, currentBytesLoaded: Long) {
+                    getProgressEntity(progress, currentBytesLoaded)?.let {
+                        _loadingState.value = LoadingState.UploadingNewBackup.Determinate(it)
+                    }
+                }
+            }
+
             runCatching {
                 withContext(Dispatchers.IO) {
-                    createBackupUseCase(context.getDatabasePath(wishAppSdk.databaseName))
+                    createBackupUseCase(
+                        backupFile = context.getDatabasePath(wishAppSdk.databaseName),
+                        progressListener = uploadProgressListener
+                    )
                 }
             }.onSuccess { backupInfo ->
                 handleNewBackupInfo(backupInfo)
@@ -189,12 +204,23 @@ internal class BackupViewModel @Inject constructor(
 
     fun onRestoreBackupClicked(context: Context) {
         launchSafe {
-            _loadingState.value = LoadingState.RestoringBackup
+            _loadingState.value = LoadingState.RestoringBackup.Indeterminate
+
+            val downloadProgressListener = object : BackupLoadProgressListener {
+
+                override fun onProgressChanged(progress: Double, currentBytesLoaded: Long) {
+                    getProgressEntity(progress, currentBytesLoaded)?.let {
+                        _loadingState.value = LoadingState.RestoringBackup.Determinate(it)
+                    }
+                }
+            }
+
             runCatching {
                 withContext(Dispatchers.IO) {
                     restoreBackupUseCase(
                         backupFileId = (viewState.value as BackupViewState.CurrentBackup).backupInfo.fileId,
-                        fileWhereCurrentDbStored = context.getDatabasePath(wishAppSdk.databaseName)
+                        fileWhereCurrentDbStored = context.getDatabasePath(wishAppSdk.databaseName),
+                        progressListener = downloadProgressListener
                     )
                 }
             }.onSuccess {
@@ -254,12 +280,12 @@ internal class BackupViewModel @Inject constructor(
     }
 
     private fun handleNewBackupInfo(backupInfo: BackupInfo) {
+        currentBackupInfoHolder.updateBackupInfo(backupInfo)
         when (backupInfo) {
             is BackupInfo.None -> {
                 _loadingState.value = LoadingState.None
                 _viewState.value = BackupViewState.NoBackup(backupInfo)
             }
-
             is BackupInfo.Value -> {
                 launchSafe {
                     val newViewState = if (needToShowRestoreUseCase()) {
@@ -272,5 +298,28 @@ internal class BackupViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun getProgressEntity(
+        progress: Double,
+        currentBytesLoaded: Long
+    ): Progress? {
+        if (progress == 0.0) {
+            return null
+        }
+
+        val totalSizeBytes = (currentBytesLoaded / progress)
+            .toBigDecimal()
+            .setScale(1, RoundingMode.HALF_UP).toLong()
+
+        val loadedMegabytes = BytesSizeFormatter.format(currentBytesLoaded)
+        val totalMegabytes = BytesSizeFormatter.format(totalSizeBytes)
+
+        val progressBytesString = "$loadedMegabytes / $totalMegabytes"
+
+        return Progress(
+            progress = progress,
+            progressCurrentToTotalString = progressBytesString,
+        )
     }
 }

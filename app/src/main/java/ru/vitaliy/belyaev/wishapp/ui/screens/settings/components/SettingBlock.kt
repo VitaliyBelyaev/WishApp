@@ -35,14 +35,12 @@ fun SettingBlock(title: String, onClick: () -> Unit) {
         )
         ThemedIcon(
             painterResource(R.drawable.ic_arrow_forward_ios),
-            contentDescription = "Arrow",
-            modifier = Modifier
-                .size(16.dp)
-                .constrainAs(iconRef) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    end.linkTo(parent.end, margin = 16.dp)
-                }
+            contentDescription = "Arrow forward",
+            modifier = Modifier.constrainAs(iconRef) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                end.linkTo(parent.end, margin = 16.dp)
+            }
         )
     }
 }
