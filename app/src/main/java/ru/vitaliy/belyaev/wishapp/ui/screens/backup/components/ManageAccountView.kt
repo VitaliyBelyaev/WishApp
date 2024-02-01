@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.theme.AppButtonDefaults
 
 @Composable
 internal fun ManageAccountView(
@@ -32,7 +33,10 @@ internal fun ManageAccountView(
             )
         }
 
-        OutlinedButton(onClick = onSignOutClicked) {
+        OutlinedButton(
+            onClick = onSignOutClicked,
+            shape = AppButtonDefaults.defaultButtonShape(),
+        ) {
             Text(text = stringResource(R.string.backup_account_sing_out_button_text))
         }
 
@@ -42,7 +46,10 @@ internal fun ManageAccountView(
             text = stringResource(R.string.backup_account_disconnect_description),
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        OutlinedButton(onClick = onDisconnectAccountClicked) {
+        OutlinedButton(
+            onClick = onDisconnectAccountClicked,
+            shape = AppButtonDefaults.defaultButtonShape(),
+        ) {
             Text(text = stringResource(R.string.backup_account_disconnect_button_text))
         }
     }

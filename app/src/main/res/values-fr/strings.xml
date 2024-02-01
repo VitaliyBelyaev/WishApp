@@ -34,6 +34,7 @@
     <string name="delete_tag_title">Supprimer le libellé ?</string>
     <string name="delete_tag_description">Nous supprimerons ce libellé et le supprimerons de tous vos souhaits. Vos souhaits ne seront pas supprimés.</string>
     <string name="delete_wish_title">Supprimer le souhait ?</string>
+    <string name="delete_wish_image_title">Supprimer l\'image?</string>
     <string name="delete_wish_link_title">Supprimer le lien ?</string>
     <string name="delete_wishes_title">Supprimer les souhaits sélectionnés ?</string>
     <string name="fail_to_open_link">Impossible d\'ouvrir le lien</string>
@@ -90,4 +91,9 @@
     <string name="backup_account_sing_out_button_text">Se déconnecter</string>
     <string name="backup_account_disconnect_description">La déconnexion de votre compte vous déconnectera de votre compte et révoquera l\'autorisation d\'accéder à votre Google Drive.</string>
     <string name="backup_account_disconnect_button_text">Déconnecter le compte</string>
+    <string name="share_title">Partager en tant que…</string>
+    <string name="share_type_text_button_text">Texte (sans images)</string>
+    <string name="share_type_pdf_button_text">Fichier PDF (avec images)</string>
+    <string name="share_generating_pdf_button_text">Génération d\'un fichier PDF</string>
+
 </resources>

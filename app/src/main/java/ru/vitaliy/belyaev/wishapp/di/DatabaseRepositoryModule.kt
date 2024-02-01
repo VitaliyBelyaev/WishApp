@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishTagRelationRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
@@ -31,4 +32,10 @@ object DatabaseRepositoryModule {
     fun provideWishTagRelationRepository(
         wishAppSdk: WishAppSdk
     ): WishTagRelationRepository = wishAppSdk.databaseRepository
+
+    @Singleton
+    @Provides
+    fun provideImagesRepository(
+        wishAppSdk: WishAppSdk
+    ): ImagesRepository = wishAppSdk.databaseRepository
 }

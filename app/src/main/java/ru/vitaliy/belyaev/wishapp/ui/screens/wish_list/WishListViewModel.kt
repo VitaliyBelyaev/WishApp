@@ -1,6 +1,8 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list
 
+import android.content.Context
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.File
 import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -15,14 +17,17 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.domain.model.ShareData
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.WishListScreenShowEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListDeleteWishesConfirmedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListFilterByTagClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListFilterCompletedClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListFilterCurrentClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListGoToBackupScreenClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListShareClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListWishMovedEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.shared.domain.ShareWishListTextGenerator
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
@@ -34,6 +39,9 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.MoveDirection
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.ReorderButtonState
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.ScrollInfo
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishesFilter
+import ru.vitaliy.belyaev.wishapp.utils.ShareWishListPdfGenerator
+import ru.vitaliy.belyaev.wishapp.utils.createSharePdfDocumentIntent
+import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 import timber.log.Timber
 
 @ExperimentalCoroutinesApi
@@ -58,6 +66,9 @@ class WishListViewModel @Inject constructor(
 
     private val _showSnackFlow = MutableSharedFlow<Int>()
     val showSnackFlow: SharedFlow<Int> = _showSnackFlow.asSharedFlow()
+
+    private val _hideShareBottomSheetFlow = MutableSharedFlow<Unit>()
+    val hideShareBottomSheetFlow: SharedFlow<Unit> = _hideShareBottomSheetFlow.asSharedFlow()
 
     private val _scrollInfoFlow = MutableSharedFlow<ScrollInfo>(extraBufferCapacity = 64)
     val scrollInfoFlow: SharedFlow<ScrollInfo> = _scrollInfoFlow.asSharedFlow()
@@ -242,6 +253,61 @@ class WishListViewModel @Inject constructor(
 
     fun onGoToBackupScreenClicked() {
         analyticsRepository.trackEvent(WishListGoToBackupScreenClickedEvent)
+    }
+
+    fun onShareClick(
+        context: Context,
+        shareData: ShareData
+    ) {
+        trackShareClick(shareData)
+
+        when (shareData) {
+            is ShareData.Pdf -> {
+                launchSafe(Dispatchers.Default) {
+                    _uiState.value = uiState.value.copy(isShareAsPdfLoading = true)
+                    val pdfFile: File = ShareWishListPdfGenerator.generatePdfForWishList(
+                        titleResId = R.string.wish_list_title,
+                        wishes = shareData.wishesToShare,
+                        context = context
+                    )
+                    _uiState.value = uiState.value.copy(isShareAsPdfLoading = false)
+                    _hideShareBottomSheetFlow.emit(Unit)
+                    withContext(Dispatchers.Main) {
+                        context.startActivity(createSharePdfDocumentIntent(pdfFile, context))
+                    }
+                }
+            }
+            is ShareData.Text -> {
+                launchSafe(Dispatchers.Default) {
+                    val wishListAsFormattedText = ShareWishListTextGenerator.generateFormattedWishListText(
+                        title = context.getString(R.string.wish_list_title),
+                        wishes = shareData.wishesToShare
+                    )
+                    _hideShareBottomSheetFlow.emit(Unit)
+                    withContext(Dispatchers.Main) {
+                        context.startActivity(createSharePlainTextIntent(wishListAsFormattedText))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun trackShareClick(shareData: ShareData) {
+        val shareAnalyticsType = when (shareData) {
+            is ShareData.Pdf -> "pdf"
+            is ShareData.Text -> "text"
+        }
+
+        var imagesCount = 0
+        shareData.wishesToShare.forEach { wish ->
+            imagesCount += wish.images.size
+        }
+        val event = WishListShareClickedEvent(
+            shareAnalyticsType,
+            shareData.wishesToShare.size,
+            imagesCount,
+        )
+        analyticsRepository.trackEvent(event)
     }
 
     private fun launchObservingWishes() {

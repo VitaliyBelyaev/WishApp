@@ -2,11 +2,16 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 
 import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -15,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
@@ -23,9 +29,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,16 +37,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -54,12 +54,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -70,26 +74,33 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
+import androidx.exifinterface.media.ExifInterface
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import java.io.ByteArrayInputStream
 import java.util.Optional
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.utils.toValueOfNull
+import ru.vitaliy.belyaev.wishapp.domain.model.ImageData
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
+import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.tags.TagsBlock
+import ru.vitaliy.belyaev.wishapp.ui.model.WishImageClickData
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.components.WishDetailedBottomBar
+import ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed.components.WishDetailedTopBar
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTextFieldColors
 import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
+import ru.vitaliy.belyaev.wishapp.utils.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
@@ -98,6 +109,7 @@ import timber.log.Timber
 fun WishDetailedScreen(
     onBackPressed: () -> Unit,
     onWishTagsClicked: (String) -> Unit,
+    onWishImageClicked: (WishImageClickData) -> Unit,
     appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
     viewModel: WishDetailedViewModel = hiltViewModel()
 ) {
@@ -131,16 +143,38 @@ fun WishDetailedScreen(
         }
     }
 
+    val maxSelectionCount = 5
+    val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = maxSelectionCount),
+        onResult = { uris ->
+            val imagesData: List<ImageData> = uris.mapNotNull { uri ->
+                context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    val rawData = inputStream.readBytes()
+                    val rotationDegrees = ByteArrayInputStream(rawData).use {
+                        ExifInterface(it).rotationDegrees
+                    }
+                    ImageData(
+                        rawData = rawData,
+                        rotationDegrees = rotationDegrees
+                    )
+                }
+            }
+            viewModel.onImagesSelected(imagesData)
+        }
+    )
+
+    fun launchPhotoPicker() {
+        multiplePhotoPickerLauncher.launch(
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
+    }
+
     BackHandler { handleBackPressed() }
 
     trackScreenShow { viewModel.trackScreenShow() }
 
     val screenNavBarColor = MaterialTheme.colorScheme.surfaceColorAtElevation(BottomAppBarDefaults.ContainerElevation)
-    LaunchedEffect(key1 = Unit) {
-        systemUiController.setNavigationBarColor(
-            color = screenNavBarColor
-        )
-    }
+    systemUiController.setNavigationBarColor(color = screenNavBarColor)
 
     val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
@@ -148,18 +182,32 @@ fun WishDetailedScreen(
         topBar = {
             WishDetailedTopBar(
                 onBackPressed = handleBackPressed,
-                wishItem = wishItem.toValueOfNull(),
-                onWishTagsClicked = onWishTagsClicked,
                 onDeleteClicked = { openDeleteWishConfirmationDialog.value = wishItem },
                 scrollBehavior = topAppBarScrollBehavior
             )
         },
-        snackbarHost = {
-            SnackbarHost(
-                modifier = Modifier.padding(bottom = bottomBarHeight),
-                hostState = snackbarHostState
+        bottomBar = {
+            WishDetailedBottomBar(
+                wishItem = wishItem.toValueOfNull(),
+                bottomBarHeight = bottomBarHeight,
+                onWishTagsClicked = onWishTagsClicked,
+                onAddImageClicked = {
+                    viewModel.onAddImageClicked()
+                    launchPhotoPicker()
+                },
+                onWishCompletedClicked = { wishId, oldIsCompleted ->
+                    appViewModel.onCompleteWishButtonClicked(
+                        wishId = wishId,
+                        oldIsCompleted = oldIsCompleted
+                    )
+                    if (!oldIsCompleted) {
+                        appViewModel.showSnackMessageOnMain(context.getString(R.string.wish_done_snack_message))
+                        onBackPressed()
+                    }
+                }
             )
         },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         contentWindowInsets = WindowInsets.Companion.safeDrawing,
     ) { paddingValues ->
         if (!wishItem.isPresent) {
@@ -170,226 +218,220 @@ fun WishDetailedScreen(
         var comment: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.comment }) }
         val isCompleted: Boolean = wishItem.toValueOfNull()?.wish?.isCompleted ?: false
 
-        ConstraintLayout(
+        Column(
             modifier = Modifier
+                .verticalScroll(scrollState)
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            val (contentRef, bottomPanelRef) = createRefs()
-
-            Column(
+            val focusRequester = remember { FocusRequester() }
+            TextField(
                 modifier = Modifier
-                    .verticalScroll(scrollState)
-                    .constrainAs(contentRef) {
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        top.linkTo(parent.top)
-                        bottom.linkTo(bottomPanelRef.top)
-                        width = Dimension.fillToConstraints
-                        height = Dimension.fillToConstraints
-                    }
-            ) {
-                val focusRequester = remember { FocusRequester() }
-                TextField(
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester),
-                    value = title,
-                    textStyle = MaterialTheme.typography.headlineMedium.copy(
-                        textDecoration = if (isCompleted) TextDecoration.LineThrough else null
-                    ),
-                    onValueChange = { newValue ->
-                        title = newValue
-                        viewModel.onWishTitleChanged(newValue)
-                    },
-                    placeholder = {
-                        Text(
-                            text = stringResource(R.string.enter_title),
-                            style = MaterialTheme.typography.headlineMedium,
-                        )
-                    },
-                    colors = WishAppTextFieldColors.wishDetailedTextFieldColors(),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Sentences
+                    .padding(top = 8.dp)
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+                value = title,
+                textStyle = MaterialTheme.typography.headlineMedium.copy(
+                    textDecoration = if (isCompleted) TextDecoration.LineThrough else null
+                ),
+                onValueChange = { newValue ->
+                    title = newValue
+                    viewModel.onWishTitleChanged(newValue)
+                },
+                placeholder = {
+                    Text(
+                        text = stringResource(R.string.enter_title),
+                        style = MaterialTheme.typography.headlineMedium,
                     )
+                },
+                colors = WishAppTextFieldColors.wishDetailedTextFieldColors(),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences
                 )
-                DisposableEffect(title) {
-                    if (title.isBlank()) {
-                        focusRequester.requestFocus()
-                    }
-                    onDispose { }
+            )
+            DisposableEffect(title) {
+                if (title.isBlank()) {
+                    focusRequester.requestFocus()
                 }
+                onDispose { }
+            }
 
-                TextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = comment,
-                    onValueChange = { newValue ->
-                        comment = newValue
-                        viewModel.onWishCommentChanged(newValue)
-                    },
-                    placeholder = { Text(text = stringResource(R.string.enter_comment)) },
-                    colors = WishAppTextFieldColors.wishDetailedTextFieldColors(),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Sentences
-                    )
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = comment,
+                onValueChange = { newValue ->
+                    comment = newValue
+                    viewModel.onWishCommentChanged(newValue)
+                },
+                placeholder = { Text(text = stringResource(R.string.enter_comment)) },
+                colors = WishAppTextFieldColors.wishDetailedTextFieldColors(),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+            )
+            Spacer(modifier = Modifier.height(12.dp))
 
-                Divider()
-                TextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = link,
-                    onValueChange = { newValue ->
-                        link = newValue
-                        viewModel.onWishLinkChanged(newValue)
-                    },
-                    trailingIcon = {
-                        IconButton(
-                            onClick = {
-                                viewModel.onAddLinkClicked(link)
-                                link = ""
-                                viewModel.onWishLinkChanged(link)
-                            },
-                            enabled = viewModel.isLinkValid(link)
-                        ) {
-                            Icon(
-                                Icons.Default.Add,
-                                contentDescription = "Add Link",
-                                tint = MaterialTheme.colorScheme.secondary.copy(alpha = LocalContentAlpha.current)
-                            )
-                        }
-                    },
-                    singleLine = true,
-                    placeholder = { Text(text = stringResource(R.string.enter_link)) },
-                    colors = WishAppTextFieldColors.wishDetailedTextFieldColors(),
-                )
-                Divider()
-
-                for (linkItem in wishItem.toValueOfNull()?.wish?.links?.reversed() ?: emptyList()) {
-                    val annotatedLinkString: AnnotatedString = buildAnnotatedString {
-                        val linkHost: String = try {
-                            Uri.parse(linkItem).host ?: linkItem
-                        } catch (e: Exception) {
-                            linkItem
-                        }
-                        append(linkHost)
-                        addStyle(
-                            style = SpanStyle(
-                                color = MaterialTheme.colorScheme.primary,
-                                textDecoration = TextDecoration.Underline,
-                                fontWeight = FontWeight.Medium,
-                            ),
-                            start = 0,
-                            end = linkHost.length
-                        )
-                        addStringAnnotation(
-                            tag = "URL",
-                            annotation = linkItem,
-                            start = 0,
-                            end = linkHost.length
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(TextFieldDefaults.MinHeight)
-                            .padding(start = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+            Divider()
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = link,
+                onValueChange = { newValue ->
+                    link = newValue
+                    viewModel.onWishLinkChanged(newValue)
+                },
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            viewModel.onAddLinkClicked(link)
+                            link = ""
+                            viewModel.onWishLinkChanged(link)
+                        },
+                        enabled = viewModel.isLinkValid(link)
                     ) {
-                        ClickableText(
-                            style = LocalTextStyle.current,
-                            text = annotatedLinkString,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            onClick = {
-                                annotatedLinkString
-                                    .getStringAnnotations("URL", it, it)
-                                    .firstOrNull()?.let { stringAnnotation ->
-                                        viewModel.onLinkClicked()
-                                        openLink(stringAnnotation.item)
-                                    }
-                            }
+                        ThemedIcon(
+                            painterResource(R.drawable.ic_check),
+                            contentDescription = "Add Link",
+                            tint = MaterialTheme.colorScheme.primary.copy(alpha = LocalContentAlpha.current)
                         )
-
-                        IconButton(
-                            onClick = {
-                                viewModel.onDeleteLinkClicked()
-                                openDeleteLinkConfirmationDialog.value = Optional.of(linkItem)
-                            }
-                        ) {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = "Delete Link",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = LocalContentAlpha.current)
-                            )
-                        }
                     }
-                    Divider()
+                },
+                singleLine = true,
+                placeholder = { Text(text = stringResource(R.string.enter_link)) },
+                colors = WishAppTextFieldColors.wishDetailedTextFieldColors(),
+            )
+            Divider()
+
+            for (linkItem in wishItem.toValueOfNull()?.wish?.links?.reversed() ?: emptyList()) {
+                val annotatedLinkString: AnnotatedString = buildAnnotatedString {
+                    val linkHost: String = try {
+                        Uri.parse(linkItem).host ?: linkItem
+                    } catch (e: Exception) {
+                        linkItem
+                    }
+                    append(linkHost)
+                    addStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline,
+                            fontWeight = FontWeight.Medium,
+                        ),
+                        start = 0,
+                        end = linkHost.length
+                    )
+                    addStringAnnotation(
+                        tag = "URL",
+                        annotation = linkItem,
+                        start = 0,
+                        end = linkHost.length
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(TextFieldDefaults.MinHeight)
+                        .padding(start = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    ClickableText(
+                        style = LocalTextStyle.current,
+                        text = annotatedLinkString,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        onClick = {
+                            annotatedLinkString
+                                .getStringAnnotations("URL", it, it)
+                                .firstOrNull()?.let { stringAnnotation ->
+                                    viewModel.onLinkClicked()
+                                    openLink(stringAnnotation.item)
+                                }
+                        }
+                    )
 
-                val tags = wishItem.toValueOfNull()?.wish?.tags ?: emptyList()
+                    IconButton(
+                        onClick = {
+                            viewModel.onDeleteLinkClicked()
+                            openDeleteLinkConfirmationDialog.value = Optional.of(linkItem)
+                        }
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.ic_delete),
+                            contentDescription = "Delete Link",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = LocalContentAlpha.current)
+                        )
+                    }
+                }
+                Divider()
+            }
+
+            val images = wishItem.toValueOfNull()?.wish?.images ?: emptyList()
+            if (images.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(16.dp))
+                val itemsSpacing = 8.dp
+                val edgeHorizontalPadding = 12.dp
+                val imageHeight = 190.dp
+
+                val imagesScrollState = rememberScrollState()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(imageHeight)
+                        .horizontalScroll(imagesScrollState),
+                    horizontalArrangement = Arrangement.spacedBy(itemsSpacing),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    images.forEachIndexed { index, image ->
+                        val imageRequest = ImageRequest.Builder(LocalContext.current)
+                            .data(image.rawData)
+                            .memoryCacheKey(image.id)
+                            .crossfade(true)
+                            .build()
+
+                        val paddingStart = if (index == 0) edgeHorizontalPadding else 0.dp
+                        val paddingEnd = if (index == images.lastIndex) edgeHorizontalPadding else 0.dp
+
+                        val maxWidth =
+                            LocalConfiguration.current.screenWidthDp.dp - edgeHorizontalPadding - itemsSpacing
+                        AsyncImage(
+                            model = imageRequest,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .height(imageHeight)
+                                .sizeIn(maxWidth = maxWidth)
+                                .padding(start = paddingStart, end = paddingEnd)
+                                .clip(MaterialTheme.shapes.medium)
+                                .clickable {
+                                    wishItem.toValueOfNull()?.wish?.id?.let {
+                                        val data = WishImageClickData(
+                                            wishId = it,
+                                            wishImageId = image.id,
+                                            wishImageIndex = index
+                                        )
+                                        onWishImageClicked(data)
+                                    }
+                                },
+                            contentScale = ContentScale.FillHeight
+                        )
+                    }
+                }
+            }
+
+            val tags = wishItem.toValueOfNull()?.wish?.tags ?: emptyList()
+            if (tags.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(24.dp))
                 TagsBlock(
                     tags = tags,
-                    textSize = 16.sp,
+                    textSize = 14.sp,
                     onClick = {
-                        val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
-                        onWishTagsClicked(wishId)
-                    },
-                    onAddNewTagClick = {
                         val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
                         onWishTagsClicked(wishId)
                     },
                     modifier = Modifier.padding(start = 12.dp, end = 12.dp)
                 )
-                Spacer(modifier = Modifier.height(24.dp))
             }
 
-            val text = if (isCompleted) {
-                stringResource(R.string.wish_not_done)
-            } else {
-                stringResource(R.string.wish_done)
-            }
-            Surface(
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = BottomAppBarDefaults.ContainerElevation,
-                modifier = Modifier
-                    .constrainAs(bottomPanelRef) {
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        bottom.linkTo(parent.bottom)
-                        width = Dimension.fillToConstraints
-                        height = Dimension.value(bottomBarHeight)
-                    }
-            ) {
-                Box {
-                    TextButton(
-                        onClick = {
-                            val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TextButton
-                            appViewModel.onCompleteWishButtonClicked(
-                                wishId = wishId,
-                                oldIsCompleted = isCompleted
-                            )
-                            if (!isCompleted) {
-                                appViewModel.showSnackMessageOnMain(context.getString(R.string.wish_done_snack_message))
-                                onBackPressed()
-                            }
-                        },
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .padding(end = 8.dp)
-                    ) {
-                        Text(
-                            text = text,
-                            style = MaterialTheme.typography.labelLarge,
-                        )
-                    }
-                }
-            }
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 

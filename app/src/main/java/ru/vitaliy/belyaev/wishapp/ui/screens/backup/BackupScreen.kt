@@ -16,13 +16,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -44,6 +40,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -59,6 +56,8 @@ import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
 import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheetM3
+import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishappBottomSheetDefaults
+import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.SnackbarMessage
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.BackupSheetContent
@@ -69,6 +68,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.ForceUpdateAppDat
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.LoadingView
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.ManageAccountView
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.RestoreBackupView
+import ru.vitaliy.belyaev.wishapp.ui.theme.AppButtonDefaults
 import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
@@ -139,7 +139,7 @@ internal fun BackupScreen(
                         }
                     ) {
                         Icon(
-                            Icons.Filled.Info,
+                            painter = painterResource(R.drawable.ic_info),
                             contentDescription = "Backup info"
                         )
                     }
@@ -199,8 +199,14 @@ internal fun BackupScreen(
                             text = stringResource(R.string.backup_check_backup_error_message),
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
-                        Button(onClick = { viewModel.onRetryCheckBackupClicked() }) {
-                            Icon(Icons.Default.Refresh, contentDescription = null)
+                        Button(
+                            onClick = { viewModel.onRetryCheckBackupClicked() },
+                            shape = AppButtonDefaults.defaultButtonShape(),
+                        ) {
+                            ThemedIcon(
+                                painter = painterResource(R.drawable.ic_refresh),
+                                contentDescription = null
+                            )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(text = stringResource(R.string.backup_retry_check))
                         }
@@ -313,7 +319,7 @@ internal fun BackupScreen(
                 sheetState = modalBottomSheetState,
             ) {
                 BackupSheetContent(
-                    modifier = Modifier.padding(bottom = 48.dp)
+                    modifier = Modifier.padding(bottom = WishappBottomSheetDefaults.bottomPadding)
                 )
             }
         }

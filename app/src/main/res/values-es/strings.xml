@@ -34,6 +34,7 @@
     <string name="delete_tag_title">¿Eliminar etiqueta?</string>
     <string name="delete_tag_description">Borraremos esta etiqueta y la quitaremos de todos tus deseos. Tus deseos no serán eliminados.</string>
     <string name="delete_wish_title">¿Eliminar deseo?</string>
+    <string name="delete_wish_image_title">¿Eliminar Imagen?</string>
     <string name="delete_wish_link_title">¿Eliminar enlace?</string>
     <string name="delete_wishes_title">¿Eliminar los deseos seleccionados?</string>
     <string name="fail_to_open_link">No se pudo abrir el enlace</string>
@@ -90,4 +91,9 @@
     <string name="backup_account_sing_out_button_text">Cerrar sesión</string>
     <string name="backup_account_disconnect_description">Al desconectar su cuenta, se cerrará su sesión y se revocará el permiso para acceder a su Google Drive.</string>
     <string name="backup_account_disconnect_button_text">Desconectar cuenta</string>
+
+    <string name="share_title">Compartir como…</string>
+    <string name="share_type_text_button_text">Texto (sin imágenes)</string>
+    <string name="share_type_pdf_button_text">Archivo PDF (con imágenes)</string>
+    <string name="share_generating_pdf_button_text">Generando archivo PDF</string>
 </resources>

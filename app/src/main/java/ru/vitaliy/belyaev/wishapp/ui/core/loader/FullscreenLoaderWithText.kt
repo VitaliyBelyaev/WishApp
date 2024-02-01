@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ru.vitaliy.belyaev.wishapp.ui.screens.backup.Progress
 
 @Composable
 fun FullscreenLoaderWithText(
@@ -28,9 +30,12 @@ fun FullscreenLoaderWithText(
     text: String = "",
     isTranslucent: Boolean = false,
     isLinear: Boolean = true,
+    progress: Progress? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
+    val loaderWidth = 8.dp
+    val horizontalPadding = 32.dp
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -46,14 +51,14 @@ fun FullscreenLoaderWithText(
         if (!isLinear) {
             CircularProgressIndicator(
                 modifier = Modifier.size(60.dp),
-                strokeWidth = 6.dp,
+                strokeWidth = loaderWidth,
                 strokeCap = StrokeCap.Round,
             )
         }
 
         if (text.isNotBlank()) {
             Text(
-                modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp),
+                modifier = Modifier.padding(horizontal = horizontalPadding, vertical = 16.dp),
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 text = text
@@ -61,13 +66,30 @@ fun FullscreenLoaderWithText(
         }
 
         if (isLinear) {
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .height(6.dp)
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
-                strokeCap = StrokeCap.Round,
-            )
+            val sizeModifier = Modifier
+                .height(loaderWidth)
+                .sizeIn(maxWidth = 500.dp)
+                .fillMaxWidth()
+                .padding(horizontal = horizontalPadding)
+            if (progress != null) {
+                LinearProgressIndicator(
+                    progress = progress.progress.toFloat(),
+                    modifier = sizeModifier,
+                    strokeCap = StrokeCap.Round,
+                )
+
+                Text(
+                    modifier = Modifier.padding(horizontal = horizontalPadding, vertical = 16.dp),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.End,
+                    text = progress.progressCurrentToTotalString
+                )
+            } else {
+                LinearProgressIndicator(
+                    modifier = sizeModifier,
+                    strokeCap = StrokeCap.Round,
+                )
+            }
         }
     }
 }

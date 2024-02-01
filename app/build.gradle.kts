@@ -24,8 +24,8 @@ android {
         applicationId = "ru.vitaliy.belyaev.wishapp"
         minSdk = 23
         targetSdk = 34
-        versionCode = 21
-        versionName = "1.7.0"
+        versionCode = 22
+        versionName = "1.8.0"
 
         buildConfigField("String", amplitudeApiKey, apikeyProperties[amplitudeApiKey] as String)
 
@@ -106,6 +106,7 @@ dependencies {
     implementation(libs.androidx.webkit.webkit)
     implementation(libs.androidx.activity.activityCompose)
     implementation(libs.androidx.constraintlayout.constraintlayoutCompose)
+    implementation(libs.androidx.exifinterface.exifinterface)
 
     // Compose
     implementation(platform(libs.androidx.compose.composeBom))
@@ -162,8 +163,12 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:logging-interceptor")
 
-    // Coil
+    // Work with images
     implementation(libs.coilKt.coilCompose)
+    implementation(libs.saket.telephoto.zoomableImageCoil)
+
+    // Flexbox
+    implementation(libs.google.android.flexbox)
 
     // Timber
     implementation(libs.timber)
@@ -178,7 +183,6 @@ dependencies {
     // Mockito
     testImplementation(libs.mockito.mockitoCore)
     testImplementation(libs.mockito.mockitoInline)
-
 
     // Instrumentation
     androidTestImplementation(libs.androidx.test.runner)

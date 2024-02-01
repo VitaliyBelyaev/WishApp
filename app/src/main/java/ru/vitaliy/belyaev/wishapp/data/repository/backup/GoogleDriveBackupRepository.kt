@@ -5,6 +5,8 @@ import android.os.Build
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.googleapis.media.MediaHttpDownloader
+import com.google.api.client.googleapis.media.MediaHttpUploader
 import com.google.api.client.http.FileContent
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
@@ -20,6 +22,7 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.domain.model.error.GoogleSignInException
 import ru.vitaliy.belyaev.wishapp.domain.repository.BackupRepository
+import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupLoadProgressListener
 
 typealias DriveFile = com.google.api.services.drive.model.File
 
@@ -46,6 +49,7 @@ internal class GoogleDriveBackupRepository(
 
     override suspend fun uploadNewBackup(
         backupFile: File,
+        progressListener: BackupLoadProgressListener,
     ): BackupInfo.Value {
         val account = checkAccount(context)
         val drive = createDriveService(context, account)
@@ -58,28 +62,62 @@ internal class GoogleDriveBackupRepository(
         val mediaContent = FileContent(BACKUP_FILE_MIME_TYPE, backupFile)
 
         val backupInfo = checkExistingBackup()
-        val driveFile: DriveFile = if (backupInfo is BackupInfo.Value) {
+
+        val uploadRequest = if (backupInfo is BackupInfo.Value) {
             drive.Files().update(backupInfo.fileId, fileMetadata, mediaContent)
-                .setFields(FIELDS_TO_INCLUDE_IN_RESPONSE_FOR_BACKUP_FILE)
-                .execute()
         } else {
             fileMetadata.parents = listOf(FOLDER_NAME_FOR_PRIVATE_APP_STORAGE)
             drive.Files().create(fileMetadata, mediaContent)
-                .setFields(FIELDS_TO_INCLUDE_IN_RESPONSE_FOR_BACKUP_FILE)
-                .execute()
         }
+
+        val driveFile: DriveFile = uploadRequest
+            .setFields(FIELDS_TO_INCLUDE_IN_RESPONSE_FOR_BACKUP_FILE)
+            .apply { configureUploader(mediaHttpUploader, progressListener) }
+            .execute()
 
         return driveFile.toBackupInfo(account)
     }
 
+    private fun configureUploader(
+        uploader: MediaHttpUploader,
+        progressListener: BackupLoadProgressListener
+    ) {
+        uploader.isDirectUploadEnabled = false
+        uploader.chunkSize = LOAD_CHUNK_SIZE
+        uploader.setProgressListener {
+            if (it.progress == 0.0) {
+                return@setProgressListener
+            }
+            progressListener.onProgressChanged(it.progress, it.numBytesUploaded)
+        }
+    }
+
+    private fun configureDownloader(
+        downloader: MediaHttpDownloader,
+        progressListener: BackupLoadProgressListener
+    ) {
+        downloader.isDirectDownloadEnabled = false
+        downloader.chunkSize = LOAD_CHUNK_SIZE
+        downloader.setProgressListener {
+            if (it.progress == 0.0) {
+                return@setProgressListener
+            }
+            progressListener.onProgressChanged(it.progress, it.numBytesDownloaded)
+        }
+    }
+
     override suspend fun downloadBackup(
         fileId: String,
-        outputStream: OutputStream
+        outputStream: OutputStream,
+        progressListener: BackupLoadProgressListener,
     ) {
         val account = checkAccount(context)
         val drive = createDriveService(context, account)
 
-        drive.Files().get(fileId).executeMediaAndDownloadTo(outputStream)
+        drive.Files()
+            .get(fileId)
+            .apply { configureDownloader(mediaHttpDownloader, progressListener) }
+            .executeMediaAndDownloadTo(outputStream)
     }
 
     private fun checkAccount(context: Context): GoogleSignInAccount {
@@ -139,5 +177,7 @@ internal class GoogleDriveBackupRepository(
         private const val KEY_DEVICE = "device"
         private const val KEY_APP_VERSION_NAME = "appVersionName"
         private const val KEY_APP_VERSION_NUMBER = "appVersionNumber"
+
+        private const val LOAD_CHUNK_SIZE = MediaHttpUploader.MINIMUM_CHUNK_SIZE * 2 // 512 KB
     }
 }

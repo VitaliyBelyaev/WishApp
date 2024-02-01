@@ -5,6 +5,7 @@ import java.io.File
 import javax.inject.Inject
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.repository.BackupRepository
+import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupLoadProgressListener
 
 internal class RestoreBackupUseCase @Inject constructor(
     private val backupRepository: BackupRepository,
@@ -13,13 +14,15 @@ internal class RestoreBackupUseCase @Inject constructor(
 
     suspend operator fun invoke(
         backupFileId: String,
-        fileWhereCurrentDbStored: File
+        fileWhereCurrentDbStored: File,
+        progressListener: BackupLoadProgressListener,
     ) {
 
         val outputStream = ByteArrayOutputStream()
         backupRepository.downloadBackup(
             fileId = backupFileId,
-            outputStream = outputStream
+            outputStream = outputStream,
+            progressListener = progressListener
         )
 
         fileWhereCurrentDbStored.delete()

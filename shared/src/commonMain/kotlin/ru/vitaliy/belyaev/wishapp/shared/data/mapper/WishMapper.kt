@@ -1,5 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.shared.data.mapper
 
+import ru.vitaliy.belyaev.wishapp.shared.data.database.Image
 import ru.vitaliy.belyaev.wishapp.shared.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.shared.data.database.Wish
 import ru.vitaliy.belyaev.wishapp.shared.domain.LinksAdapter
@@ -7,7 +8,11 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 
 object WishMapper {
 
-    fun mapToDomain(wish: Wish, tags: List<Tag>): WishEntity {
+    fun mapToDomain(
+        wish: Wish,
+        tags: List<Tag>,
+        images: List<Image> = emptyList(),
+    ): WishEntity {
         return with(wish) {
             WishEntity(
                 wishId,
@@ -19,7 +24,8 @@ object WishMapper {
                 createdTimestamp,
                 updatedTimestamp,
                 position,
-                tags.map { TagMapper.mapToDomain(it.tagId, it.title) }
+                tags.map { TagMapper.mapToDomain(it.tagId, it.title) },
+                images.map { ImageMapper.mapToDomain(it) }
             )
         }
     }

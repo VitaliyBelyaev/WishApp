@@ -1,5 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -47,12 +48,14 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
-import ru.vitaliy.belyaev.wishapp.ui.core.bottombar.WishAppBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheetM3
+import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishappBottomSheetDefaults
 import ru.vitaliy.belyaev.wishapp.ui.core.loader.FullscreenLoaderWithText
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.EmptyWishesPlaceholder
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.ShareBottomSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.TagsSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.WishItemBlock
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.WishListBottomBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.WishListScreenTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.MainScreenState
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.MoveDirection
@@ -70,7 +73,6 @@ fun WishListScreen(
     openWishDetailed: (WishEntity) -> Unit,
     onAddWishClicked: () -> Unit,
     onSettingIconClicked: () -> Unit,
-    onShareClick: (List<WishEntity>) -> Unit,
     onEditTagClick: () -> Unit,
     onGoToBackupScreenClicked: () -> Unit,
     viewModel: WishListViewModel = hiltViewModel(),
@@ -90,8 +92,25 @@ fun WishListScreen(
     val context = LocalContext.current
     val systemUiController = rememberSystemUiController()
 
-    val modalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var showBottomSheet by remember { mutableStateOf(false) }
+    val modalNavBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showNavBottomSheet by remember { mutableStateOf(false) }
+    val closeNavBottomSheet: () -> Unit = {
+        scope.launch { modalNavBottomSheetState.hide() }.invokeOnCompletion {
+            if (!modalNavBottomSheetState.isVisible) {
+                showNavBottomSheet = false
+            }
+        }
+    }
+
+    val shareChooseBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showShareChooseBottomSheet by remember { mutableStateOf(false) }
+    val closeShareChooseBottomSheet: () -> Unit = {
+        scope.launch { shareChooseBottomSheetState.hide() }.invokeOnCompletion {
+            if (!shareChooseBottomSheetState.isVisible) {
+                showShareChooseBottomSheet = false
+            }
+        }
+    }
 
     trackScreenShow { viewModel.trackScreenShow() }
 
@@ -113,17 +132,19 @@ fun WishListScreen(
         }
     }
 
+    LaunchedEffect(key1 = Unit) {
+        viewModel.hideShareBottomSheetFlow.collect {
+            closeShareChooseBottomSheet()
+        }
+    }
+
     val mainScreenNavBarColor =
         MaterialTheme.colorScheme.surfaceColorAtElevation(BottomAppBarDefaults.ContainerElevation)
 
     systemUiController.setNavigationBarColor(color = mainScreenNavBarColor)
 
-    val closeBottomSheet: () -> Unit = {
-        scope.launch { modalBottomSheetState.hide() }.invokeOnCompletion {
-            if (!modalBottomSheetState.isVisible) {
-                showBottomSheet = false
-            }
-        }
+    BackHandler(state.wishesFilter != WishesFilter.All) {
+        viewModel.onNavItemSelected(WishesFilter.All)
     }
 
     val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -141,11 +162,13 @@ fun WishListScreen(
             )
         },
         bottomBar = {
-            WishAppBottomBar(
+            WishListBottomBar(
                 wishes = state.wishes,
                 wishesFilter = state.wishesFilter,
-                onShareClick = { onShareClick(state.wishes) },
-                onMenuClick = { showBottomSheet = true },
+                onShareClick = {
+                    showShareChooseBottomSheet = true
+                },
+                onMenuClick = { showNavBottomSheet = true },
                 reorderButtonState = state.reorderButtonState,
                 onReorderClick = { viewModel.onReorderIconClicked() },
                 onAddWishClicked = onAddWishClicked
@@ -197,7 +220,7 @@ fun WishListScreen(
                 WishItemBlock(
                     wishItem = wishItem,
                     isSelected = isSelected,
-                    horizontalPadding = 8.dp,
+                    horizontalOuterPadding = 8.dp,
                     onWishClicked = onWishClicked,
                     onWishLongPress = { wish -> viewModel.onWishLongPress(wish) },
                     state.reorderButtonState,
@@ -241,10 +264,10 @@ fun WishListScreen(
             )
         }
 
-        if (showBottomSheet) {
+        if (showNavBottomSheet) {
             WishAppBottomSheetM3(
-                onDismissRequest = { showBottomSheet = false },
-                sheetState = modalBottomSheetState,
+                onDismissRequest = { showNavBottomSheet = false },
+                sheetState = modalNavBottomSheetState,
             ) {
                 TagsSheetContent(
                     tagsWithWishCount = tagsWithWishCount,
@@ -252,14 +275,30 @@ fun WishListScreen(
                     currentWishesCount = currentWishesCount,
                     completedWishesCount = competedWishesCount,
                     onNavItemSelected = {
-                        closeBottomSheet()
+                        closeNavBottomSheet()
                         viewModel.onNavItemSelected(it)
                     },
                     onEditTagsClicked = {
-                        closeBottomSheet()
+                        closeNavBottomSheet()
                         onEditTagClick()
                     },
-                    modifier = Modifier.padding(bottom = 48.dp)
+                    modifier = Modifier.padding(bottom = WishappBottomSheetDefaults.bottomPadding)
+                )
+            }
+        }
+
+        if (showShareChooseBottomSheet) {
+            WishAppBottomSheetM3(
+                onDismissRequest = { showShareChooseBottomSheet = false },
+                sheetState = shareChooseBottomSheetState,
+            ) {
+                ShareBottomSheetContent(
+                    wishesToShare = state.wishes,
+                    onShareClick = { shareData ->
+                        viewModel.onShareClick(context, shareData)
+                    },
+                    isPdfShareButtonLoading = state.isShareAsPdfLoading,
+                    modifier = Modifier.padding(bottom = WishappBottomSheetDefaults.bottomPadding)
                 )
             }
         }
@@ -274,7 +313,6 @@ fun WishListScreen(
 @Composable
 fun MainScreenPreview() {
     WishListScreen(
-        {},
         {},
         {},
         {},

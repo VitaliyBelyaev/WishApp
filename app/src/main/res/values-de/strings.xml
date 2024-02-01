@@ -34,6 +34,7 @@
     <string name="delete_tag_title">Etikett löschen?</string>
     <string name="delete_tag_description">Wir löschen dieses Label und entfernen es aus allen Ihren Wünschen. Ihre Wünsche werden nicht gelöscht.</string>
     <string name="delete_wish_title">Wunsch löschen?</string>
+    <string name="delete_wish_image_title">Lösche Bild?</string>
     <string name="delete_wish_link_title">Link löschen?</string>
     <string name="delete_wishes_title">Ausgewählte Wünsche löschen?</string>
     <string name="fail_to_open_link">Link konnte nicht geöffnet werden</string>
@@ -90,4 +91,9 @@
     <string name="backup_account_sing_out_button_text">Ausloggen</string>
     <string name="backup_account_disconnect_description">Wenn Sie die Verbindung zu Ihrem Konto trennen, werden Sie von Ihrem Konto abgemeldet und die Berechtigung zum Zugriff auf Ihr Google Drive wird widerrufen</string>
     <string name="backup_account_disconnect_button_text">Konto trennen</string>
+    <string name="share_title">Teilen als…</string>
+    <string name="share_type_text_button_text">Text (ohne Bilder)</string>
+    <string name="share_type_pdf_button_text">PDF-Datei (mit Bildern)</string>
+    <string name="share_generating_pdf_button_text">Generieren einer PDF-Datei</string>
+
 </resources>

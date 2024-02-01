@@ -7,12 +7,6 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
-    versionCatalogs {
-        create("libs") {
-            from(files("libs.versions.toml"))
-        }
-    }
-
     repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     repositories {
         google()

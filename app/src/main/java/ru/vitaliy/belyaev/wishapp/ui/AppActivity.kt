@@ -10,8 +10,12 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
@@ -31,10 +35,9 @@ import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppRevi
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedRoute
+import ru.vitaliy.belyaev.wishapp.navigation.WishImagesViewerRoute
 import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
-import ru.vitaliy.belyaev.wishapp.shared.domain.ShareWishListTextGenerator
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
-import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -61,18 +64,14 @@ internal class AppActivity : AppCompatActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        if (savedInstanceState == null) {
-            sharedLinkFromAnotherApp = extractSharedLinkAndShowErrorIfInvalid(intent)
+
+        if(savedInstanceState == null) {
+            viewModel.onCreateWithoutSavedInstanceState(this)
         }
 
-        lifecycleScope.launch {
-            viewModel.wishListToShareFlow.collect {
-                val wishListAsFormattedText = ShareWishListTextGenerator.generateFormattedWishListText(
-                    title = getString(R.string.wish_list_title),
-                    wishes = it
-                )
-                startActivity(createSharePlainTextIntent(wishListAsFormattedText))
-            }
+
+        if (savedInstanceState == null) {
+            sharedLinkFromAnotherApp = extractSharedLinkAndShowErrorIfInvalid(intent)
         }
 
         lifecycleScope.launch {
@@ -95,13 +94,29 @@ internal class AppActivity : AppCompatActivity() {
 
         setContent {
             val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
+            val forceDark: MutableState<Boolean> = remember { mutableStateOf(false) }
+            val theme by remember {
+                derivedStateOf {
+                    if (forceDark.value) {
+                        Theme.DARK
+                    } else {
+                        selectedTheme
+                    }
+                }
+            }
+
             val navController = rememberNavController()
-            WishAppTheme(selectedTheme = selectedTheme) {
+            WishAppTheme(selectedTheme = theme) {
                 Navigation(
                     navController = navController,
-                    onShareClick = { viewModel.onShareWishListClicked(it) },
                     analyticsRepository = analyticsRepository,
                 )
+            }
+            navController.addOnDestinationChangedListener { _, destination, _ ->
+                val newForceDark = destination.route == WishImagesViewerRoute.VALUE
+                if (newForceDark != forceDark.value) {
+                    forceDark.value = newForceDark
+                }
             }
 
             sharedLinkFromAnotherApp?.let {
