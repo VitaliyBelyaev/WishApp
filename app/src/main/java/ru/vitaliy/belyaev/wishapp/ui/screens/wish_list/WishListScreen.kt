@@ -264,6 +264,7 @@ fun WishListScreen(
             )
         }
 
+        val navigationBottomPadding = WishappBottomSheetDefaults.navigationBottomPadding()
         if (showNavBottomSheet) {
             WishAppBottomSheetM3(
                 onDismissRequest = { showNavBottomSheet = false },
@@ -282,7 +283,7 @@ fun WishListScreen(
                         closeNavBottomSheet()
                         onEditTagClick()
                     },
-                    modifier = Modifier.padding(bottom = WishappBottomSheetDefaults.bottomPadding)
+                    modifier = Modifier.padding(bottom = navigationBottomPadding)
                 )
             }
         }
@@ -298,7 +299,7 @@ fun WishListScreen(
                         viewModel.onShareClick(context, shareData)
                     },
                     isPdfShareButtonLoading = state.isShareAsPdfLoading,
-                    modifier = Modifier.padding(bottom = WishappBottomSheetDefaults.bottomPadding)
+                    modifier = Modifier.padding(bottom = navigationBottomPadding)
                 )
             }
         }

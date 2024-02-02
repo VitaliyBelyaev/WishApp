@@ -313,13 +313,14 @@ internal fun BackupScreen(
             )
         }
 
+        val navigationBottomPadding = WishappBottomSheetDefaults.navigationBottomPadding()
         if (showBottomSheet) {
             WishAppBottomSheetM3(
                 onDismissRequest = { showBottomSheet = false },
                 sheetState = modalBottomSheetState,
             ) {
                 BackupSheetContent(
-                    modifier = Modifier.padding(bottom = WishappBottomSheetDefaults.bottomPadding)
+                    modifier = Modifier.padding(bottom = navigationBottomPadding)
                 )
             }
         }
