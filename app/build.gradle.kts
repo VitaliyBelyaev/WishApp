@@ -107,6 +107,7 @@ dependencies {
     implementation(libs.androidx.activity.activityCompose)
     implementation(libs.androidx.constraintlayout.constraintlayoutCompose)
     implementation(libs.androidx.exifinterface.exifinterface)
+    implementation(libs.androidx.glance.appwidget)
 
     // Compose
     implementation(platform(libs.androidx.compose.composeBom))
