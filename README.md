@@ -2,7 +2,7 @@
 
 https://wishapp.info/
 
-<a href='https://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width='225'/></a>
+<a href='https://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width='225'/></a>
 <a href='https://apps.apple.com/app/id6450624836'><img alt='Download on the App Store' src='https://github-production-user-asset-6210df.s3.amazonaws.com/21678329/261083041-baac00dd-7f84-49dd-a358-17ea4dc089ad.png' width='205'/></a>
 
 Multiplatform app for tracking wishes with ability to share wish list with other person in text format.<br/>
