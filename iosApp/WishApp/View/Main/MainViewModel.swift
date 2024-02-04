@@ -59,20 +59,64 @@ final class MainViewModel: ObservableObject {
     }
     
     func onAddTestWishClicked() {
-        if testWishes.isEmpty {
-            return
+        
+        
+        if let containerUrl = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents") {
+            if !FileManager.default.fileExists(atPath: containerUrl.path, isDirectory: nil) {
+                do {
+                    try FileManager.default.createDirectory(at: containerUrl, withIntermediateDirectories: true, attributes: nil)
+                }
+                catch {
+                    print(error.localizedDescription)
+                }
+            }
+            
+            let fileUrl = containerUrl.appendingPathComponent("TEST546464TTTTTT.txt")
+            
+            do {
+                try "Hello iCloud 333333!".write(to: fileUrl, atomically: true, encoding: .utf8)
+                let input = try String(contentsOf: fileUrl)
+                            print(input)
+            }
+            catch {
+                print(error.localizedDescription)
+            }
         }
-        let timestamp = Date.currentTimeStamp
         
-        let testWish: WishEntity = testWishes[testWishIndex % testWishes.count]
-            .createCopy(id: NSUUID().uuidString, createdTimestamp: timestamp, updatedTimestamp: timestamp)
-
-        createFuture(for: dbRepository.insertWish(wish: testWish))
-            .subscribe(on: DispatchQueue.global())
-            .sinkSilently()
-            .store(in: &subscriptions)
         
-        testWishIndex += 1
+        
+//        guard let driveURL = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents") else {
+//            print("Error get driveUrl")
+//            return
+//        }
+//        
+//        
+//        let data = Data("Test Message".utf8)
+//     let fileUrl = URL.documentsDirectory.appending(path: "message.txt")
+//        let fileUrl = driveURL.appending(path: "message.txt")
+//    
+//        do {
+//            try data.write(to: fileUrl, options: [.atomic, .completeFileProtection])
+//            let input = try String(contentsOf: fileUrl)
+//            print(input)
+//        } catch {
+//            print(error.localizedDescription)
+//        }
+        
+//        if testWishes.isEmpty {
+        //            return
+//        }
+//        let timestamp = Date.currentTimeStamp
+//        
+//        let testWish: WishEntity = testWishes[testWishIndex % testWishes.count]
+//            .createCopy(id: NSUUID().uuidString, createdTimestamp: timestamp, updatedTimestamp: timestamp)
+//
+//        createFuture(for: dbRepository.insertWish(wish: testWish))
+//            .subscribe(on: DispatchQueue.global())
+//            .sinkSilently()
+//            .store(in: &subscriptions)
+//        
+//        testWishIndex += 1
     }
     
     func onAddTagClicked() {

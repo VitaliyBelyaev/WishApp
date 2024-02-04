@@ -29,7 +29,8 @@ extension WishEntity {
             createdTimestamp: createdTimestamp,
             updatedTimestamp: updatedTimestamp,
             position: self.position,
-            tags: self.tags
+            tags: self.tags,
+            images: self.images
         )
     }
 }
