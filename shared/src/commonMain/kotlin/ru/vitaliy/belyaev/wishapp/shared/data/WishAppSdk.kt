@@ -6,20 +6,25 @@ import ru.vitaliy.belyaev.wishapp.shared.data.database.DatabaseDriverFactory
 import ru.vitaliy.belyaev.wishapp.shared.data.database.WishAppDb
 import ru.vitaliy.belyaev.wishapp.shared.data.repository.DatabaseRepository
 
-class WishAppSdk(databaseDriveFactory: DatabaseDriverFactory) {
+class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
 
     val databaseName: String = Config.DATABASE_NAME
 
-    val databaseRepository: DatabaseRepository
+    lateinit var databaseRepository: DatabaseRepository
 
-    private val sqlDriver: SqlDriver = databaseDriveFactory.createDatabaseDriver()
+    private lateinit var sqlDriver: SqlDriver
 
     init {
-        val database = WishAppDb(sqlDriver)
-        databaseRepository = DatabaseRepository(database, getDispatcherProvider())
+        reopenDatabase()
     }
 
     fun closeDatabase() {
         sqlDriver.close()
+    }
+
+    fun reopenDatabase() {
+        sqlDriver = databaseDriveFactory.createDatabaseDriver()
+        val database = WishAppDb(sqlDriver)
+        databaseRepository = DatabaseRepository(database, getDispatcherProvider())
     }
 }

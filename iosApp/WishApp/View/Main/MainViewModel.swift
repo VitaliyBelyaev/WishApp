@@ -58,43 +58,111 @@ final class MainViewModel: ObservableObject {
         
     }
     
-    func onAddTestWishClicked() {
-        
-        
-        if let containerUrl = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents") {
-            if !FileManager.default.fileExists(atPath: containerUrl.path, isDirectory: nil) {
+    func onRestoreClicked() {
+        if let containerUrl = FileManager.default.getAppContainerUrlInICloud() {
+            FileManager.default.createDirIfNotExists(dirUrl: containerUrl)
+            
+            let fileUrl = containerUrl.appendingPathComponent("wishapp.backup")
+            
+            var isDir:ObjCBool = false
+            if !FileManager.default.fileExists(atPath: fileUrl.path, isDirectory: &isDir) {
+                print("backup not exists in iCloud")
+                return
+            }
+            
+            let originFileUrl = URL.applicationSupportDirectory.appendingPathComponent("databases/ru_vitaliy_belyaev_wishapp.db")
+            
+            
+            
+            if FileManager.default.fileExists(atPath: originFileUrl.path, isDirectory: &isDir) {
                 do {
-                    try FileManager.default.createDirectory(at: containerUrl, withIntermediateDirectories: true, attributes: nil)
+                    try FileManager.default.removeItem(at: originFileUrl)
                 }
                 catch {
-                    print(error.localizedDescription)
+                    //Error handling
+                    print("Error in remove item")
                 }
             }
             
-            let fileUrl = containerUrl.appendingPathComponent("TEST546464TTTTTT.txt")
-            
             do {
-                try "Hello iCloud 333333!".write(to: fileUrl, atomically: true, encoding: .utf8)
-                let input = try String(contentsOf: fileUrl)
-                            print(input)
+                try FileManager.default.copyItem(at: fileUrl, to: originFileUrl)
+                print("Copy done")
             }
             catch {
-                print(error.localizedDescription)
+                //Error handling
+                print("Error in copy item:\(error.localizedDescription)")
             }
+        }
+    }
+    
+    func onAddTestWishClicked() {
+        
+        let originFileUrl = URL.applicationSupportDirectory.appendingPathComponent("databases")
+        do {
+            let items = try FileManager.default.contentsOfDirectory(atPath: originFileUrl.path)
+            
+            for item in items {
+                
+                
+                print("Found \(item)")
+            }
+        } catch {
+            // failed to read directory – bad permissions, perhaps?
         }
         
         
         
-//        guard let driveURL = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents") else {
-//            print("Error get driveUrl")
-//            return
+        // Рабочий код
+//        if let containerUrl = FileManager.default.getAppContainerUrlInICloud() {
+//            FileManager.default.createDirIfNotExists(dirUrl: containerUrl)
+//            
+//            let fileUrl = containerUrl.appendingPathComponent("wishapp.backup")
+//            let originFileUrl = URL.applicationSupportDirectory.appendingPathComponent("databases/ru_vitaliy_belyaev_wishapp.db")
+//            
+//            var isDir:ObjCBool = false
+//            
+//            if FileManager.default.fileExists(atPath: fileUrl.path, isDirectory: &isDir) {
+//                do {
+//                    try FileManager.default.removeItem(at: fileUrl)
+//                }
+//                catch {
+//                    //Error handling
+//                    print("Error in remove item")
+//                }
+//            }
+//            
+//            do {
+//                try FileManager.default.copyItem(at: originFileUrl, to: fileUrl)
+//                print("Copy done")
+//            }
+//            catch {
+//                //Error handling
+//                print("Error in copy item:\(error.localizedDescription)")
+//            }
 //        }
+        
+        
 //        
-//        
-//        let data = Data("Test Message".utf8)
-//     let fileUrl = URL.documentsDirectory.appending(path: "message.txt")
-//        let fileUrl = driveURL.appending(path: "message.txt")
-//    
+//        let data = Data("Test Message12131313131342fesrfsrgf".utf8)
+//        let fileUrl = URL.applicationSupportDirectory.appendingPathComponent("databases/ru_vitaliy_belyaev_wishapp.db")
+//        print(fileUrl.path())
+        
+        
+//        do {
+//            let items = try FileManager.default.contentsOfDirectory(atPath: fileUrl.path)
+//
+//            for item in items {
+//                
+//            
+//                print("Found \(item)")
+//            }
+//        } catch {
+//            // failed to read directory – bad permissions, perhaps?
+//        }
+        
+    
+    
+        
 //        do {
 //            try data.write(to: fileUrl, options: [.atomic, .completeFileProtection])
 //            let input = try String(contentsOf: fileUrl)
@@ -102,6 +170,12 @@ final class MainViewModel: ObservableObject {
 //        } catch {
 //            print(error.localizedDescription)
 //        }
+        
+        
+        
+        
+        
+        
         
 //        if testWishes.isEmpty {
         //            return
