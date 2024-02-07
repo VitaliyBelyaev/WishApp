@@ -16,7 +16,7 @@ final class AppViewModel: ObservableObject {
     private let sdk: WishAppSdk = WishAppSdkDiHelper().wishAppSdk
     private var dbRepository: DatabaseRepository {
         get {
-            return sdk.databaseRepository
+            return sdk.getDatabaseRepository()
         }
     }
     
@@ -32,6 +32,9 @@ final class AppViewModel: ObservableObject {
     }
    
     func deleteWish(id: String) {
+        
+        sdk.closeDatabase()
+        
         createFuture(for: dbRepository.deleteWishesByIds(ids: [id]))
             .subscribe(on: DispatchQueue.global())
             .sinkSilently()

@@ -173,6 +173,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		E3FBEFCE2B73AE0500D37845 /* Backup */ = {
+			isa = PBXGroup;
+			children = (
+				ED70B6852A433D3600E6786B /* BackupAndRestoreView.swift */,
+			);
+			path = Backup;
+			sourceTree = "<group>";
+		};
 		ED17508E2A373EFE00665949 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -284,6 +292,7 @@
 		ED6EFA312A2248E300CC1B13 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				E3FBEFCE2B73AE0500D37845 /* Backup */,
 				ED79141A2A4C95DE00E7FF0C /* Common */,
 				EDC2030D2A3C8D070076EAD0 /* UdpateWishTags */,
 				ED17508E2A373EFE00665949 /* Settings */,
@@ -372,7 +381,6 @@
 		ED70B6842A433D0100E6786B /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				ED70B6852A433D3600E6786B /* BackupAndRestoreView.swift */,
 				ED9CAD9A2A470E320079D814 /* SettingsItemView.swift */,
 				ED9CAD9E2A4721610079D814 /* MailView.swift */,
 				ED7914182A4C951A00E7FF0C /* PrivacyPolicyView.swift */,

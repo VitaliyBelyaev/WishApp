@@ -19,23 +19,23 @@ object DatabaseRepositoryModule {
     @Provides
     fun provideWishesRepositoryRepository(
         wishAppSdk: WishAppSdk
-    ): WishesRepository = wishAppSdk.databaseRepository
+    ): WishesRepository = wishAppSdk.getDatabaseRepository()
 
     @Singleton
     @Provides
     fun provideTagsRepositoryRepository(
         wishAppSdk: WishAppSdk
-    ): TagsRepository = wishAppSdk.databaseRepository
+    ): TagsRepository = wishAppSdk.getDatabaseRepository()
 
     @Singleton
     @Provides
     fun provideWishTagRelationRepository(
         wishAppSdk: WishAppSdk
-    ): WishTagRelationRepository = wishAppSdk.databaseRepository
+    ): WishTagRelationRepository = wishAppSdk.getDatabaseRepository()
 
     @Singleton
     @Provides
     fun provideImagesRepository(
         wishAppSdk: WishAppSdk
-    ): ImagesRepository = wishAppSdk.databaseRepository
+    ): ImagesRepository = wishAppSdk.getDatabaseRepository()
 }

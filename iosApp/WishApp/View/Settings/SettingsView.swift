@@ -38,14 +38,15 @@ struct SettingsView: View {
                 }
                 
                 Section {
-//                    NavigationLink(destination: PrivacyPolicyView()) {
-//                        Text("Settings.policy")
-//                    }
-                    
-//                    let driveURL = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents")
-                    
+                    NavigationLink(destination: PrivacyPolicyView()) {
+                        Text("Settings.policy")
+                    }
+                }
                 
-        
+                Section {
+                    NavigationLink(destination: BackupAndRestoreView()) {
+                        Text("Backup and restore")
+                    }
                 }
                 
                 Section{

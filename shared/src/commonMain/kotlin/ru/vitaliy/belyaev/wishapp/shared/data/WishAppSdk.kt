@@ -10,21 +10,27 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
 
     val databaseName: String = Config.DATABASE_NAME
 
-    lateinit var databaseRepository: DatabaseRepository
+    private var _databaseRepository: DatabaseRepository? = null
 
-    private lateinit var sqlDriver: SqlDriver
+    private var sqlDriver: SqlDriver? = null
 
     init {
         reopenDatabase()
     }
 
     fun closeDatabase() {
-        sqlDriver.close()
+        sqlDriver?.close()
+        sqlDriver = null
+        _databaseRepository = null
+    }
+
+    fun getDatabaseRepository(): DatabaseRepository {
+        return _databaseRepository?: reopenDatabase().let { _databaseRepository!! }
     }
 
     fun reopenDatabase() {
         sqlDriver = databaseDriveFactory.createDatabaseDriver()
-        val database = WishAppDb(sqlDriver)
-        databaseRepository = DatabaseRepository(database, getDispatcherProvider())
+        val database = WishAppDb(sqlDriver!!)
+        _databaseRepository = DatabaseRepository(database, getDispatcherProvider())
     }
 }

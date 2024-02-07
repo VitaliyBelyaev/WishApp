@@ -36,9 +36,9 @@ struct MainView: View {
                     viewModel.onDeleteTagClicked(tag: tag)
                 },
                 onSettingsClicked: { 
-                    viewModel.onRestoreClicked()
+//                    viewModel.onRestoreClicked()
                     
-//                    navigationModel.isSettingPresented = true
+                    navigationModel.isSettingPresented = true
                 },
                 onAddTestWishClicked: { viewModel.onAddTestWishClicked() }
             )
