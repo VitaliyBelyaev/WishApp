@@ -27,6 +27,7 @@ import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetai
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedDeleteWishConfirmedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedImagesSelectedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedLinkClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedSaveAndExitClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_LINK
@@ -84,6 +85,10 @@ class WishDetailedViewModel @Inject constructor(
 
     fun onAddImageClicked() {
         analyticsRepository.trackEvent(WishDetailedAddImagesClickedEvent)
+    }
+
+    fun onSaveAndExitClicked() {
+        analyticsRepository.trackEvent(WishDetailedSaveAndExitClickedEvent)
     }
 
     fun onImagesSelected(imagesRawData: List<ImageData>) {

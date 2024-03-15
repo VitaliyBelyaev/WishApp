@@ -11,7 +11,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -100,7 +99,7 @@ import ru.vitaliy.belyaev.wishapp.utils.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
@@ -181,8 +180,19 @@ fun WishDetailedScreen(
         modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         topBar = {
             WishDetailedTopBar(
+                wishItem = wishItem.toValueOfNull(),
                 onBackPressed = handleBackPressed,
                 onDeleteClicked = { openDeleteWishConfirmationDialog.value = wishItem },
+                onWishCompletedClicked = { wishId, oldIsCompleted ->
+                    appViewModel.onCompleteWishButtonClicked(
+                        wishId = wishId,
+                        oldIsCompleted = oldIsCompleted
+                    )
+                    if (!oldIsCompleted) {
+                        appViewModel.showSnackMessageOnMain(context.getString(R.string.wish_done_snack_message))
+                        onBackPressed()
+                    }
+                },
                 scrollBehavior = topAppBarScrollBehavior
             )
         },
@@ -195,15 +205,9 @@ fun WishDetailedScreen(
                     viewModel.onAddImageClicked()
                     launchPhotoPicker()
                 },
-                onWishCompletedClicked = { wishId, oldIsCompleted ->
-                    appViewModel.onCompleteWishButtonClicked(
-                        wishId = wishId,
-                        oldIsCompleted = oldIsCompleted
-                    )
-                    if (!oldIsCompleted) {
-                        appViewModel.showSnackMessageOnMain(context.getString(R.string.wish_done_snack_message))
-                        onBackPressed()
-                    }
+                onSaveAndExitClicked = {
+                    viewModel.onSaveAndExitClicked()
+                    handleBackPressed()
                 }
             )
         },
