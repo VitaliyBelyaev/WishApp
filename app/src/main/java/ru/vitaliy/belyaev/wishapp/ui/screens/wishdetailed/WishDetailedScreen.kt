@@ -425,7 +425,7 @@ fun WishDetailedScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 TagsBlock(
                     tags = tags,
-                    textSize = 14.sp,
+                    isForList = false,
                     onClick = {
                         val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
                         onWishTagsClicked(wishId)

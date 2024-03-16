@@ -220,7 +220,7 @@ fun WishItemBlock(
                         modifier = Modifier
                             .padding(horizontal = horizontalInnerPadding),
                         tags = wishItem.tags,
-                        textSize = 13.sp,
+                        isForList = true,
                         onClick = { onWishClicked(wishItem) }
                     )
                 }
