@@ -61,3 +61,10 @@ data class WishDetailedImagesSelectedEvent(
         "images_count" to imagesCount
     )
 }
+
+object WishDetailedSaveAndExitClickedEvent : AnalyticsEvent {
+
+    override val name: String = "Wish Detailed Screen - Save And Exit Clicked"
+
+    override val params: Map<String, Any?> = emptyMap()
+}

@@ -39,7 +39,9 @@ internal fun Navigation(
         composable(MainRoute.VALUE) {
             WishListScreen(
                 openWishDetailed = { navController.navigate(WishDetailedRoute.buildRoute(wishId = it.id)) },
-                onAddWishClicked = { navController.navigate(WishDetailedRoute.buildRoute()) },
+                onAddWishClicked = { tagId ->
+                    navController.navigate(WishDetailedRoute.buildRoute(tagId = tagId))
+                },
                 onSettingIconClicked = { navController.navigate(SettingsRoute.VALUE) },
                 onEditTagClick = { navController.navigate(EditTagRoute.VALUE) },
                 onGoToBackupScreenClicked = { navController.navigate(BackupAndRestoreRoute.VALUE) },

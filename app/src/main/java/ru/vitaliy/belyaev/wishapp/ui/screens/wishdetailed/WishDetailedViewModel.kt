@@ -27,13 +27,16 @@ import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetai
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedDeleteWishConfirmedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedImagesSelectedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedLinkClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedSaveAndExitClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.navigation.ARG_TAG_ID
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
 import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_LINK
 import ru.vitaliy.belyaev.wishapp.shared.domain.LinksAdapter
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.createEmptyWish
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishTagRelationRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
@@ -46,12 +49,14 @@ class WishDetailedViewModel @Inject constructor(
     private val wishesRepository: WishesRepository,
     private val analyticsRepository: AnalyticsRepository,
     private val imagesRepository: ImagesRepository,
+    private val wishTagRelationRepository: WishTagRelationRepository,
 ) : BaseViewModel() {
 
     val inputWishId: String = savedStateHandle[ARG_WISH_ID] ?: ""
     lateinit var wishId: String
 
     private val sharedLinkForNewWish: String = savedStateHandle[ARG_WISH_LINK] ?: ""
+    private val preselectedTagId: String? = savedStateHandle[ARG_TAG_ID]
 
     var linkInputString: String
         get() {
@@ -68,6 +73,12 @@ class WishDetailedViewModel @Inject constructor(
             wishId = inputWishId.ifBlank {
                 val wish = createEmptyWish()
                 wishesRepository.insertWish(wish)
+                preselectedTagId?.let { tagId ->
+                    wishTagRelationRepository.insertWishTagRelation(
+                        wishId = wish.id,
+                        tagId = tagId
+                    )
+                }
                 wish.id
             }
         }
@@ -84,6 +95,10 @@ class WishDetailedViewModel @Inject constructor(
 
     fun onAddImageClicked() {
         analyticsRepository.trackEvent(WishDetailedAddImagesClickedEvent)
+    }
+
+    fun onSaveAndExitClicked() {
+        analyticsRepository.trackEvent(WishDetailedSaveAndExitClickedEvent)
     }
 
     fun onImagesSelected(imagesRawData: List<ImageData>) {
