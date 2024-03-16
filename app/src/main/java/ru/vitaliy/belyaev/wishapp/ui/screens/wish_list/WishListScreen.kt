@@ -31,9 +31,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -90,6 +92,7 @@ fun WishListScreen(
     val openDeleteConfirmDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
     val systemUiController = rememberSystemUiController()
 
     val modalNavBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -191,6 +194,8 @@ fun WishListScreen(
             val movedLazyListItemInfo =
                 lazyListState.layoutInfo.visibleItemsInfo.find { info -> info.key == wishEntity.id }
 
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+
             viewModel.onMoveWish(
                 movedWish = wishEntity,
                 moveDirection = moveDirection,
@@ -225,7 +230,10 @@ fun WishListScreen(
                     isSelected = isSelected,
                     horizontalOuterPadding = 8.dp,
                     onWishClicked = onWishClicked,
-                    onWishLongPress = { wish -> viewModel.onWishLongPress(wish) },
+                    onWishLongPress = { wish ->
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        viewModel.onWishLongPress(wish)
+                    },
                     state.reorderButtonState,
                     onMoveItem = onMoveItem,
                     modifier = Modifier
