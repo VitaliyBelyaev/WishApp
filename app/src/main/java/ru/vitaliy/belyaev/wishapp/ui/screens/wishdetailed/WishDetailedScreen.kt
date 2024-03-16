@@ -25,12 +25,10 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material3.BottomAppBarDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -275,7 +273,8 @@ fun WishDetailedScreen(
             )
             Spacer(modifier = Modifier.height(12.dp))
 
-            Divider()
+            HorizontalDivider()
+
             TextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = link,
@@ -290,12 +289,12 @@ fun WishDetailedScreen(
                             link = ""
                             viewModel.onWishLinkChanged(link)
                         },
-                        enabled = viewModel.isLinkValid(link)
+                        enabled = viewModel.isLinkValid(link),
+                        modifier = Modifier.padding(end = 4.dp)
                     ) {
                         ThemedIcon(
-                            painterResource(R.drawable.ic_check),
+                            painterResource(R.drawable.ic_add_filled_rounded),
                             contentDescription = "Add Link",
-                            tint = MaterialTheme.colorScheme.primary.copy(alpha = LocalContentAlpha.current)
                         )
                     }
                 },
@@ -303,7 +302,7 @@ fun WishDetailedScreen(
                 placeholder = { Text(text = stringResource(R.string.enter_link)) },
                 colors = WishAppTextFieldColors.wishDetailedTextFieldColors(),
             )
-            Divider()
+            HorizontalDivider()
 
             for (linkItem in wishItem.toValueOfNull()?.wish?.links?.reversed() ?: emptyList()) {
                 val annotatedLinkString: AnnotatedString = buildAnnotatedString {
@@ -357,16 +356,16 @@ fun WishDetailedScreen(
                         onClick = {
                             viewModel.onDeleteLinkClicked()
                             openDeleteLinkConfirmationDialog.value = Optional.of(linkItem)
-                        }
+                        },
+                        modifier = Modifier.padding(end = 4.dp)
                     ) {
-                        Icon(
+                        ThemedIcon(
                             painterResource(R.drawable.ic_delete),
                             contentDescription = "Delete Link",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = LocalContentAlpha.current)
                         )
                     }
                 }
-                Divider()
+                HorizontalDivider()
             }
 
             val images = wishItem.toValueOfNull()?.wish?.images ?: emptyList()
