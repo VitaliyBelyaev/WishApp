@@ -24,7 +24,6 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -81,10 +81,10 @@ fun WishListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    val state: MainScreenState by viewModel.uiState.collectAsState()
-    val tagsWithWishCount: List<TagWithWishCount> by viewModel.tagsWithWishCount.collectAsState()
-    val currentWishesCount: Long by viewModel.currentWishesCount.collectAsState()
-    val competedWishesCount: Long by viewModel.completedWishesCount.collectAsState()
+    val state: MainScreenState by viewModel.uiState.collectAsStateWithLifecycle()
+    val tagsWithWishCount: List<TagWithWishCount> by viewModel.tagsWithWishCount.collectAsStateWithLifecycle()
+    val currentWishesCount: Long by viewModel.currentWishesCount.collectAsStateWithLifecycle()
+    val competedWishesCount: Long by viewModel.completedWishesCount.collectAsStateWithLifecycle()
 
     val lazyListState = rememberLazyListState()
     val openDeleteConfirmDialog: MutableState<Boolean> = remember { mutableStateOf(false) }

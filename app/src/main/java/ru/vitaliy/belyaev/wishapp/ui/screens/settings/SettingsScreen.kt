@@ -17,7 +17,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -27,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
@@ -51,7 +51,7 @@ fun SettingsScreen(
 
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
-    val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
+    val selectedTheme: Theme by viewModel.selectedTheme.collectAsStateWithLifecycle()
     val scrollState: ScrollState = rememberScrollState()
     val systemUiController = rememberSystemUiController()
 

@@ -11,7 +11,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.google.android.play.core.review.ReviewManagerFactory
@@ -93,7 +93,7 @@ internal class AppActivity : AppCompatActivity() {
         }
 
         setContent {
-            val selectedTheme: Theme by viewModel.selectedTheme.collectAsState()
+            val selectedTheme: Theme by viewModel.selectedTheme.collectAsStateWithLifecycle()
             val forceDark: MutableState<Boolean> = remember { mutableStateOf(false) }
             val theme by remember {
                 derivedStateOf {
