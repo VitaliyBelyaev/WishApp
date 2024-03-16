@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.R
@@ -99,9 +100,8 @@ private fun RowScope.Actions(
                 .align(Alignment.CenterVertically)
                 .padding(end = 8.dp)
         ) {
-            // todo: add localization
             Text(
-                text = "Save",
+                text = stringResource(R.string.wish_detailed_save_button_text),
                 style = MaterialTheme.typography.labelLarge,
             )
         }
