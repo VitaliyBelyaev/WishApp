@@ -71,7 +71,7 @@ import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 @Composable
 fun WishListScreen(
     openWishDetailed: (WishEntity) -> Unit,
-    onAddWishClicked: () -> Unit,
+    onAddWishClicked: (tagId: String?) -> Unit,
     onSettingIconClicked: () -> Unit,
     onEditTagClick: () -> Unit,
     onGoToBackupScreenClicked: () -> Unit,
@@ -171,7 +171,10 @@ fun WishListScreen(
                 onMenuClick = { showNavBottomSheet = true },
                 reorderButtonState = state.reorderButtonState,
                 onReorderClick = { viewModel.onReorderIconClicked() },
-                onAddWishClicked = onAddWishClicked
+                onAddWishClicked = {
+                    val tagId = (state.wishesFilter as? WishesFilter.ByTag)?.tag?.id
+                    onAddWishClicked.invoke(tagId)
+                }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
