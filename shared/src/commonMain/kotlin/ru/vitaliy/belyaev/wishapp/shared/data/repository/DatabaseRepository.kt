@@ -325,9 +325,9 @@ class DatabaseRepository(
         // We need this for reactive changes of tag content
         val tagFlow: Flow<Tag> = tagQueries.getById(tagId).asFlow().mapToOne(dispatcherProvider.io())
 
-        val wishesByTag: List<Wish> = wishesByTagQuery.executeAsList()
+        // We need this for reactive changes of images content in wish
         val imagesFlow: Flow<List<Image>> = imageQueries
-            .getByWishesIds(wishesByTag.map { it.wishId })
+            .getAll()
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
