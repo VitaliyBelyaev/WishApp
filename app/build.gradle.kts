@@ -1,4 +1,6 @@
+import com.android.build.api.dsl.ApplicationDefaultConfig
 import java.util.Properties
+import org.jetbrains.kotlin.daemon.common.trimQuotes
 
 plugins {
     alias(libs.plugins.androidApplication)
@@ -14,7 +16,11 @@ plugins {
 }
 
 val amplitudeApiKey = "AMPLITUDE_API_KEY"
-val apikeyProperties = readProperties(file("../apikey.properties"))
+val apikeyProperties = readProperties("../apikey.properties")
+val amplitudeApiKeyValue = apikeyProperties.getStringOrDefault(
+    key = amplitudeApiKey,
+    default = ""
+)
 
 android {
     namespace = "ru.vitaliy.belyaev.wishapp"
@@ -27,7 +33,7 @@ android {
         versionCode = 23
         versionName = "1.8.1"
 
-        buildConfigField("String", amplitudeApiKey, apikeyProperties[amplitudeApiKey] as String)
+        stringConfigField(amplitudeApiKey, amplitudeApiKeyValue)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -192,8 +198,20 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
 
-fun readProperties(propertiesFile: File) = Properties().apply {
-    propertiesFile.inputStream().use { fis ->
-        load(fis)
+fun readProperties(filePath: String) = Properties().apply {
+    try {
+        file(filePath).inputStream().use { fis ->
+            load(fis)
+        }
+    } catch (error: Throwable) {
+        println("Error reading properties file: $filePath, error: $error")
     }
+}
+
+fun Properties.getStringOrDefault(key: String, default: String): String {
+    return getProperty(key)?.trimQuotes() ?: default
+}
+
+fun ApplicationDefaultConfig.stringConfigField(name: String, value: String) {
+    buildConfigField("String", name, "\"$value\"")
 }

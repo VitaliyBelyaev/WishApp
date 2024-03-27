@@ -11,9 +11,14 @@ object AmplitudeWrapper {
     var amplitude: Amplitude? = null
 
     fun init(context: Context) {
+        val apiKey = BuildConfig.AMPLITUDE_API_KEY
+        if (apiKey.isBlank()) {
+            return
+        }
+
         amplitude = Amplitude(
             Configuration(
-                apiKey = BuildConfig.AMPLITUDE_API_KEY,
+                apiKey = apiKey,
                 context = context,
                 defaultTracking = DefaultTrackingOptions(
                     sessions = true,
