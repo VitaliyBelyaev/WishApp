@@ -12,8 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -21,7 +23,7 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 fun TagsBlock(
     modifier: Modifier = Modifier,
     tags: List<TagEntity>,
-    textSize: TextUnit,
+    isForList: Boolean = false,
     onClick: () -> Unit,
 ) {
     val itemsSpacing = 8.dp
@@ -32,24 +34,60 @@ fun TagsBlock(
     ) {
         val shape = MaterialTheme.shapes.small
         val tagBgColor: Color = MaterialTheme.colorScheme.surfaceVariant
-        val verticalPadding = (textSize.value * 3 / 4).dp
-        val horizontalPadding = (textSize.value / 2).dp
+        val verticalPadding = 6.dp
+        val horizontalPadding = if (isForList) 8.dp else 10.dp
+        val textStyle = if (isForList) {
+            MaterialTheme.typography.labelMedium.copy(
+                fontWeight = FontWeight.Normal,
+                fontSize = 13.sp
+            )
+        } else {
+            MaterialTheme.typography.labelLarge
+        }
 
         repeat(tags.size) {
             Text(
                 text = tags[it].title,
-                fontSize = textSize,
+                style = textStyle,
                 modifier = Modifier
                     .background(color = tagBgColor, shape = shape)
                     .clip(shape)
                     .clickable { onClick() }
                     .padding(
-                        start = verticalPadding,
-                        end = verticalPadding,
-                        top = horizontalPadding,
-                        bottom = horizontalPadding
+                        start = horizontalPadding,
+                        end = horizontalPadding,
+                        top = verticalPadding,
+                        bottom = verticalPadding
                     )
             )
         }
     }
+}
+
+@Composable
+@Preview
+private fun TagsBlockPreviewForList() {
+    TagsBlock(
+        tags = listOf(
+            TagEntity("id1", "Tag 1"),
+            TagEntity("id2", "Tag 2fjeefjke"),
+
+            ),
+        isForList = true,
+        onClick = {}
+    )
+}
+
+@Composable
+@Preview
+private fun TagsBlockPreviewForWish() {
+    TagsBlock(
+        tags = listOf(
+            TagEntity("id1", "Tag 1"),
+            TagEntity("id2", "Tag 2fjeefjke"),
+
+            ),
+        isForList = false,
+        onClick = {}
+    )
 }

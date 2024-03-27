@@ -11,7 +11,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -26,12 +25,10 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material3.BottomAppBarDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -45,7 +42,6 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -76,6 +72,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.exifinterface.media.ExifInterface
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -100,7 +97,7 @@ import ru.vitaliy.belyaev.wishapp.utils.toValueOfNull
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
@@ -117,7 +114,7 @@ fun WishDetailedScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
-    val wishItem: Optional<WishItem> by viewModel.uiState.collectAsState()
+    val wishItem: Optional<WishItem> by viewModel.uiState.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current
     val handleBackPressed: () -> Unit = {
         keyboardController?.hide()
@@ -181,8 +178,19 @@ fun WishDetailedScreen(
         modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         topBar = {
             WishDetailedTopBar(
+                wishItem = wishItem.toValueOfNull(),
                 onBackPressed = handleBackPressed,
                 onDeleteClicked = { openDeleteWishConfirmationDialog.value = wishItem },
+                onWishCompletedClicked = { wishId, oldIsCompleted ->
+                    appViewModel.onCompleteWishButtonClicked(
+                        wishId = wishId,
+                        oldIsCompleted = oldIsCompleted
+                    )
+                    if (!oldIsCompleted) {
+                        appViewModel.showSnackMessageOnMain(context.getString(R.string.wish_done_snack_message))
+                        onBackPressed()
+                    }
+                },
                 scrollBehavior = topAppBarScrollBehavior
             )
         },
@@ -195,15 +203,9 @@ fun WishDetailedScreen(
                     viewModel.onAddImageClicked()
                     launchPhotoPicker()
                 },
-                onWishCompletedClicked = { wishId, oldIsCompleted ->
-                    appViewModel.onCompleteWishButtonClicked(
-                        wishId = wishId,
-                        oldIsCompleted = oldIsCompleted
-                    )
-                    if (!oldIsCompleted) {
-                        appViewModel.showSnackMessageOnMain(context.getString(R.string.wish_done_snack_message))
-                        onBackPressed()
-                    }
+                onSaveAndExitClicked = {
+                    viewModel.onSaveAndExitClicked()
+                    handleBackPressed()
                 }
             )
         },
@@ -271,7 +273,8 @@ fun WishDetailedScreen(
             )
             Spacer(modifier = Modifier.height(12.dp))
 
-            Divider()
+            HorizontalDivider()
+
             TextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = link,
@@ -286,12 +289,12 @@ fun WishDetailedScreen(
                             link = ""
                             viewModel.onWishLinkChanged(link)
                         },
-                        enabled = viewModel.isLinkValid(link)
+                        enabled = viewModel.isLinkValid(link),
+                        modifier = Modifier.padding(end = 4.dp)
                     ) {
                         ThemedIcon(
-                            painterResource(R.drawable.ic_check),
+                            painterResource(R.drawable.ic_add_filled_rounded),
                             contentDescription = "Add Link",
-                            tint = MaterialTheme.colorScheme.primary.copy(alpha = LocalContentAlpha.current)
                         )
                     }
                 },
@@ -299,7 +302,7 @@ fun WishDetailedScreen(
                 placeholder = { Text(text = stringResource(R.string.enter_link)) },
                 colors = WishAppTextFieldColors.wishDetailedTextFieldColors(),
             )
-            Divider()
+            HorizontalDivider()
 
             for (linkItem in wishItem.toValueOfNull()?.wish?.links?.reversed() ?: emptyList()) {
                 val annotatedLinkString: AnnotatedString = buildAnnotatedString {
@@ -353,16 +356,16 @@ fun WishDetailedScreen(
                         onClick = {
                             viewModel.onDeleteLinkClicked()
                             openDeleteLinkConfirmationDialog.value = Optional.of(linkItem)
-                        }
+                        },
+                        modifier = Modifier.padding(end = 4.dp)
                     ) {
-                        Icon(
+                        ThemedIcon(
                             painterResource(R.drawable.ic_delete),
                             contentDescription = "Delete Link",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = LocalContentAlpha.current)
                         )
                     }
                 }
-                Divider()
+                HorizontalDivider()
             }
 
             val images = wishItem.toValueOfNull()?.wish?.images ?: emptyList()
@@ -422,7 +425,7 @@ fun WishDetailedScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 TagsBlock(
                     tags = tags,
-                    textSize = 14.sp,
+                    isForList = false,
                     onClick = {
                         val wishId = wishItem.toValueOfNull()?.wish?.id ?: return@TagsBlock
                         onWishTagsClicked(wishId)

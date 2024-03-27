@@ -1,14 +1,18 @@
 package ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet
 
-import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 
-object WishappBottomSheetDefaults{
+object WishappBottomSheetDefaults {
 
-
-    // Uses for M3 bottom sheet content bottom padding, because default windowInsets for M3 bottom sheet
-    // with nav bar inset is ugly and animation is not smooth. I try make bottom padding with inset
-    // like Modifier.windowInsetsPadding(WindowInsets.navigationBars) but it doesn't work on emulator and
-    // Samsung, but just raw padding works fine. Only downside is that it hardcoded as height of biggest 3 button
-    // navbar and on gesture nav bars it looks big.
-    val bottomPadding = 48.dp
+    // We need call this outside of sheet content, because M3 bottom sheet window consumes insets
+    @Composable
+    fun navigationBottomPadding(): Dp {
+        return with(LocalDensity.current) {
+            WindowInsets.navigationBars.getBottom(LocalDensity.current).toDp()
+        }
+    }
 }

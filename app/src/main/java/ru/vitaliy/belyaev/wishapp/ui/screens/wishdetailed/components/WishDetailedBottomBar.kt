@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.isEmpty
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
 
@@ -41,7 +42,7 @@ fun WishDetailedBottomBar(
     bottomBarHeight: Dp,
     onWishTagsClicked: (String) -> Unit,
     onAddImageClicked: () -> Unit,
-    onWishCompletedClicked: (String, Boolean) -> Unit,
+    onSaveAndExitClicked: () -> Unit,
 ) {
 
     BottomAppBar(
@@ -54,7 +55,7 @@ fun WishDetailedBottomBar(
                 wishItem = wishItem,
                 onWishTagsClicked = onWishTagsClicked,
                 onAddImageClicked = onAddImageClicked,
-                onWishCompletedClicked = onWishCompletedClicked,
+                onSaveAndExitClicked = onSaveAndExitClicked
             )
         },
     )
@@ -65,7 +66,7 @@ private fun RowScope.Actions(
     wishItem: WishItem?,
     onWishTagsClicked: (String) -> Unit,
     onAddImageClicked: () -> Unit,
-    onWishCompletedClicked: (String, Boolean) -> Unit,
+    onSaveAndExitClicked: () -> Unit,
 ) {
 
     IconButton(
@@ -91,22 +92,16 @@ private fun RowScope.Actions(
 
     Spacer(Modifier.weight(1f, true))
 
-    wishItem?.let {
-        val isCompleted = it.wish.isCompleted
-        val text = if (isCompleted) {
-            stringResource(R.string.wish_not_done)
-        } else {
-            stringResource(R.string.wish_done)
-        }
-
+    val isWishEmpty = wishItem?.wish?.isEmpty() ?: true
+    if (!isWishEmpty) {
         TextButton(
-            onClick = { onWishCompletedClicked(it.wish.id, isCompleted) },
+            onClick = onSaveAndExitClicked,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .padding(end = 8.dp)
         ) {
             Text(
-                text = text,
+                text = stringResource(R.string.wish_detailed_save_button_text),
                 style = MaterialTheme.typography.labelLarge,
             )
         }

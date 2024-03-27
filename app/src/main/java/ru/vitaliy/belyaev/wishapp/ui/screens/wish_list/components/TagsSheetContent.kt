@@ -51,7 +51,7 @@ fun TagsSheetContent(
     modifier: Modifier = Modifier
 ) {
 
-    ConstraintLayout(modifier = modifier) {
+    ConstraintLayout(modifier = modifier.padding(bottom = 8.dp)) {
         val (scrollableRef, staticRef) = createRefs()
 
         LazyColumn(

@@ -24,7 +24,6 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,13 +31,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -71,7 +73,7 @@ import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 @Composable
 fun WishListScreen(
     openWishDetailed: (WishEntity) -> Unit,
-    onAddWishClicked: () -> Unit,
+    onAddWishClicked: (tagId: String?) -> Unit,
     onSettingIconClicked: () -> Unit,
     onEditTagClick: () -> Unit,
     onGoToBackupScreenClicked: () -> Unit,
@@ -81,15 +83,16 @@ fun WishListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    val state: MainScreenState by viewModel.uiState.collectAsState()
-    val tagsWithWishCount: List<TagWithWishCount> by viewModel.tagsWithWishCount.collectAsState()
-    val currentWishesCount: Long by viewModel.currentWishesCount.collectAsState()
-    val competedWishesCount: Long by viewModel.completedWishesCount.collectAsState()
+    val state: MainScreenState by viewModel.uiState.collectAsStateWithLifecycle()
+    val tagsWithWishCount: List<TagWithWishCount> by viewModel.tagsWithWishCount.collectAsStateWithLifecycle()
+    val currentWishesCount: Long by viewModel.currentWishesCount.collectAsStateWithLifecycle()
+    val competedWishesCount: Long by viewModel.completedWishesCount.collectAsStateWithLifecycle()
 
     val lazyListState = rememberLazyListState()
     val openDeleteConfirmDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
     val systemUiController = rememberSystemUiController()
 
     val modalNavBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -171,7 +174,10 @@ fun WishListScreen(
                 onMenuClick = { showNavBottomSheet = true },
                 reorderButtonState = state.reorderButtonState,
                 onReorderClick = { viewModel.onReorderIconClicked() },
-                onAddWishClicked = onAddWishClicked
+                onAddWishClicked = {
+                    val tagId = (state.wishesFilter as? WishesFilter.ByTag)?.tag?.id
+                    onAddWishClicked.invoke(tagId)
+                }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -187,6 +193,8 @@ fun WishListScreen(
         val onMoveItem: (WishEntity, MoveDirection) -> Unit = { wishEntity, moveDirection ->
             val movedLazyListItemInfo =
                 lazyListState.layoutInfo.visibleItemsInfo.find { info -> info.key == wishEntity.id }
+
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
 
             viewModel.onMoveWish(
                 movedWish = wishEntity,
@@ -222,7 +230,10 @@ fun WishListScreen(
                     isSelected = isSelected,
                     horizontalOuterPadding = 8.dp,
                     onWishClicked = onWishClicked,
-                    onWishLongPress = { wish -> viewModel.onWishLongPress(wish) },
+                    onWishLongPress = { wish ->
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        viewModel.onWishLongPress(wish)
+                    },
                     state.reorderButtonState,
                     onMoveItem = onMoveItem,
                     modifier = Modifier
@@ -264,6 +275,7 @@ fun WishListScreen(
             )
         }
 
+        val navigationBottomPadding = WishappBottomSheetDefaults.navigationBottomPadding()
         if (showNavBottomSheet) {
             WishAppBottomSheetM3(
                 onDismissRequest = { showNavBottomSheet = false },
@@ -282,7 +294,7 @@ fun WishListScreen(
                         closeNavBottomSheet()
                         onEditTagClick()
                     },
-                    modifier = Modifier.padding(bottom = WishappBottomSheetDefaults.bottomPadding)
+                    modifier = Modifier.padding(bottom = navigationBottomPadding)
                 )
             }
         }
@@ -298,7 +310,7 @@ fun WishListScreen(
                         viewModel.onShareClick(context, shareData)
                     },
                     isPdfShareButtonLoading = state.isShareAsPdfLoading,
-                    modifier = Modifier.padding(bottom = WishappBottomSheetDefaults.bottomPadding)
+                    modifier = Modifier.padding(bottom = navigationBottomPadding)
                 )
             }
         }
