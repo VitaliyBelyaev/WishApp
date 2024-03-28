@@ -32,10 +32,10 @@ For access Flows from shared module in iOS app was used `KMP-NativeCoroutines` l
 
 ## Android app
 
-<image src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/92a968ac-8746-4c2a-b6b4-36f229397bc6" width="220"/>
-<image src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/3e621942-5d5e-4cba-b86f-f8a28b49307e" width="220"/>
-<image src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/aee00174-2879-4ad1-91f7-8bf19fb565f1" width="220"/>
-<image src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/f4c5935f-5dfe-45bc-944f-bc1e45cdcc2d" width="220"/>
+<img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/7098f2d4-705e-4847-929b-0ab3764c14c9" width="220"/>
+<img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/9a755b13-0a82-4dff-b446-ef3f231e19e0" width="220"/>
+<img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/31f3dfe5-5641-417a-9c5e-e2a9b6ed7d13" width="220"/>
+<img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/1d0f1911-7c37-4af5-8232-bcffd79028d2" width="220"/>
 
 <br/>
 <br/>
