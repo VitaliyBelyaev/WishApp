@@ -12,6 +12,8 @@ Written with Kotlin Multiplatform for Android and iOS platforms.<br/>
 
 Wishes and labels stored in SQLite database through SQLDelight, that placed in shared module and used by both Android and iOS apps.<br/>
 
+For access Flows from shared module in iOS app was used `KMP-NativeCoroutines` library with Swift Combine.<br/>
+
 ## Kotlin Multiplatform stack and libs:
 - [SQLDelight](https://github.com/cashapp/sqldelight)
 - [KMP-NativeCoroutines](https://github.com/rickclephas/KMP-NativeCoroutines)
