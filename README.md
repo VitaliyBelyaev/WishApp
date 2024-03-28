@@ -1,5 +1,12 @@
 # Wishapp / Хотелки
 
+<p align="center">
+ <img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/92a968ac-8746-4c2a-b6b4-36f229397bc6" width="220"/>
+ <img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/3e621942-5d5e-4cba-b86f-f8a28b49307e" width="220"/>
+ <img width="220" alt="2" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/5b548b65-6dee-45ec-8bfb-da0c64853bb7">
+ <img width="220" alt="7" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/33c5a7f6-7e6e-4398-a26f-8da453e77f8b">
+</p>
+
 https://wishapp.info/<br/>
 
 <a href='https://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width='225'/></a>
