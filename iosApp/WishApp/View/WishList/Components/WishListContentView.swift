@@ -102,9 +102,9 @@ struct WishListContentView: View {
 struct WishListContentView_Previews: PreviewProvider {
     
     private static var wishes = [
-        WishEntity(id: "1", title: "iPhone 15", link: "Some link", links:["Some link"], comment: "Some commmment", isCompleted: false, createdTimestamp: 0, updatedTimestamp: 0, position: 0, tags: []),
-        WishEntity(id: "2", title: "Робот пылесос", link: "Some link", links:["Some link"], comment: "Some commmment", isCompleted: false, createdTimestamp: 0, updatedTimestamp: 0, position: 1, tags: []),
-        WishEntity(id: "3", title: "Механическая клавиатура", link: "Some link", links:["Some link"], comment: "Some commmment", isCompleted: false, createdTimestamp: 0, updatedTimestamp: 0, position: 2, tags: []),
+        WishEntity(id: "1", title: "iPhone 15", link: "Some link", links:["Some link"], comment: "Some commmment", isCompleted: false, createdTimestamp: 0, updatedTimestamp: 0, position: 0, tags: [], images: []),
+        WishEntity(id: "2", title: "Робот пылесос", link: "Some link", links:["Some link"], comment: "Some commmment", isCompleted: false, createdTimestamp: 0, updatedTimestamp: 0, position: 1, tags: [], images: []),
+        WishEntity(id: "3", title: "Механическая клавиатура", link: "Some link", links:["Some link"], comment: "Some commmment", isCompleted: false, createdTimestamp: 0, updatedTimestamp: 0, position: 2, tags: [], images: []),
         
     ]
     
