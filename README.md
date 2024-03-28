@@ -39,8 +39,6 @@ For access Flows from shared module in iOS app was used `KMP-NativeCoroutines` l
 <img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/9a755b13-0a82-4dff-b446-ef3f231e19e0" width="220"/>
 </p>
 
-<br/>
-<br/>
 Fully written with Jetpack Compose with Material You(Material 3) theming and dynamic colors support for Android 12 and higher.
 
 ### Tech stack:
@@ -61,8 +59,6 @@ Fully written with Jetpack Compose with Material You(Material 3) theming and dyn
 <img width="220" alt="3-min" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/b91616c9-8fc9-4bd6-b40f-68e64f743c4c">
 </p>
 
-<br/>
-<br/>
 Written with SwiftUI with using new version of NavigationStack with NavPath values and persisting NavPath after app relaunch.
 
 ### Tech stack:
