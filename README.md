@@ -1,10 +1,10 @@
 # Wishapp / Хотелки
 
 <p align="center">
- <img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/92a968ac-8746-4c2a-b6b4-36f229397bc6" width="220"/>
- <img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/3e621942-5d5e-4cba-b86f-f8a28b49307e" width="220"/>
- <img width="220" alt="2" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/5b548b65-6dee-45ec-8bfb-da0c64853bb7">
- <img width="220" alt="7" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/33c5a7f6-7e6e-4398-a26f-8da453e77f8b">
+ <img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/1d0f1911-7c37-4af5-8232-bcffd79028d2" width="220"/>
+ <img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/31f3dfe5-5641-417a-9c5e-e2a9b6ed7d13" width="220"/>
+ <img width="220" alt="2-min" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/5aad8585-b8a3-4aaf-bada-21ebf2b00ecc">
+ <img width="220" alt="1-min" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/e7c0ab9f-ae06-4838-b1a8-6f570041a19b">
 </p>
 
 https://wishapp.info/<br/>
@@ -32,10 +32,12 @@ For access Flows from shared module in iOS app was used `KMP-NativeCoroutines` l
 
 ## Android app
 
-<img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/7098f2d4-705e-4847-929b-0ab3764c14c9" width="220"/>
-<img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/9a755b13-0a82-4dff-b446-ef3f231e19e0" width="220"/>
+<p align="center">
 <img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/31f3dfe5-5641-417a-9c5e-e2a9b6ed7d13" width="220"/>
 <img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/1d0f1911-7c37-4af5-8232-bcffd79028d2" width="220"/>
+<img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/7098f2d4-705e-4847-929b-0ab3764c14c9" width="220"/>
+<img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/9a755b13-0a82-4dff-b446-ef3f231e19e0" width="220"/>
+</p>
 
 <br/>
 <br/>
@@ -52,12 +54,12 @@ Fully written with Jetpack Compose with Material You(Material 3) theming and dyn
 
 ## iOS app
 
-
-<img width="220" alt="5" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/1dcc54c0-c46e-45a5-aafc-1b80d70b637a">
-<img width="220" alt="7" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/33c5a7f6-7e6e-4398-a26f-8da453e77f8b">
-<img width="220" alt="2" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/5b548b65-6dee-45ec-8bfb-da0c64853bb7">
-<img width="220" alt="3" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/e898d46d-cac0-4395-a1f0-f57cc4ebfc02">
-
+<p align="center">
+<img width="220" alt="1-min" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/e7c0ab9f-ae06-4838-b1a8-6f570041a19b">
+<img width="220" alt="2-min" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/5aad8585-b8a3-4aaf-bada-21ebf2b00ecc">
+<img width="220" alt="5-min" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/9d1b7425-1324-4921-8143-7267678a8d98">
+<img width="220" alt="3-min" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/b91616c9-8fc9-4bd6-b40f-68e64f743c4c">
+</p>
 
 <br/>
 <br/>
