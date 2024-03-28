@@ -1,10 +1,10 @@
 # Wishapp / Хотелки
 
 <p align="center">
- <img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/1d0f1911-7c37-4af5-8232-bcffd79028d2" width="220"/>
- <img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/31f3dfe5-5641-417a-9c5e-e2a9b6ed7d13" width="220"/>
- <img width="220" alt="2-min" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/5aad8585-b8a3-4aaf-bada-21ebf2b00ecc">
- <img width="220" alt="1-min" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/e7c0ab9f-ae06-4838-b1a8-6f570041a19b">
+ <img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/1d0f1911-7c37-4af5-8232-bcffd79028d2" width="180"/>
+ <img src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/31f3dfe5-5641-417a-9c5e-e2a9b6ed7d13" width="180"/>
+ <img width="180" alt="2-min" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/5aad8585-b8a3-4aaf-bada-21ebf2b00ecc">
+ <img width="180" alt="1-min" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/e7c0ab9f-ae06-4838-b1a8-6f570041a19b">
 </p>
 
 https://wishapp.info/<br/>
