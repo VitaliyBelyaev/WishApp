@@ -1,0 +1,48 @@
+{
+    "project_info": {
+        "project_number": "852419007298",
+        "project_id": "wishapp-debug",
+        "storage_bucket": "wishapp-debug.appspot.com"
+    },
+    "client": [
+        {
+            "client_info": {
+                "mobilesdk_app_id": "1:852419007298:android:4a041fcbe06ff222bcaedb",
+                "android_client_info": {
+                    "package_name": "ru.vitaliy.belyaev.wishapp"
+                }
+            },
+            "oauth_client": [],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyAQQbA2Y48PP6YDr0HHnFzjMECnzG5etbw"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": []
+                }
+            }
+        },
+        {
+            "client_info": {
+                "mobilesdk_app_id": "1:852419007298:android:0e95bbcb0156c4babcaedb",
+                "android_client_info": {
+                    "package_name": "ru.vitaliy.belyaev.wishapp.debug"
+                }
+            },
+            "oauth_client": [],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyAQQbA2Y48PP6YDr0HHnFzjMECnzG5etbw"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": []
+                }
+            }
+        }
+    ],
+    "configuration_version": "1"
+}
