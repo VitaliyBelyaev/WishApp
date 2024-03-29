@@ -7,24 +7,6 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-kotlin.sourceSets.all {
-    // For KMP-NativeCoroutines https://github.com/rickclephas/KMP-NativeCoroutines#kotlin
-    languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
-}
-
-android {
-    namespace = "ru.vitaliy.belyaev.wishapp.shared"
-    compileSdk = 33
-    defaultConfig {
-        minSdk = 23
-        targetSdk = 33
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-}
-
 kotlin {
     androidTarget()
 
@@ -38,7 +20,6 @@ kotlin {
         }
     }
     cocoapods {
-
         version = "1.0"
         summary = "WishAppSdk"
         homepage = "https://github.com/VitaliyBelyaev/WishApp"
@@ -48,67 +29,63 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                // Coroutines
-                implementation(libs.kotlin.coroutines.core)
 
-                // Date time
-                implementation(libs.kotlin.dateTime)
-
-                // SQLDelight
-                implementation(libs.sqlDelight.runtime)
-                implementation(libs.sqlDelight.extensions.coroutines)
-
-                // UUID
-                implementation(libs.kmmUuid)
-
-                // DI
-                implementation(libs.koin.core)
-
-                // Logging
-                implementation(libs.napier)
-            }
+        all {
+            // For KMP-NativeCoroutines https://github.com/rickclephas/KMP-NativeCoroutines#kotlin
+            languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(libs.kotlin.test)
-            }
-        }
-        val androidMain by getting {
-            dependencies {
-                // SQLDelight
-                implementation(libs.sqlDelight.driver.android)
-            }
-        }
-        val androidUnitTest by getting
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
 
-            dependencies {
-                // SQLDelight
-                implementation(libs.sqlDelight.driver.native)
-            }
+        commonMain.dependencies {
+            // Coroutines
+            implementation(libs.kotlin.coroutines.core)
+
+            // Date time
+            implementation(libs.kotlin.dateTime)
+
+            // SQLDelight
+            implementation(libs.sqlDelight.runtime)
+            implementation(libs.sqlDelight.extensions.coroutines)
+
+            // UUID
+            implementation(libs.kmmUuid)
+
+            // DI
+            implementation(libs.koin.core)
+
+            // Logging
+            implementation(libs.napier)
         }
-        val iosX64Test by getting
-        val iosArm64Test by getting
-        val iosSimulatorArm64Test by getting
-        val iosTest by creating {
-            dependsOn(commonTest)
-            iosX64Test.dependsOn(this)
-            iosArm64Test.dependsOn(this)
-            iosSimulatorArm64Test.dependsOn(this)
+
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
+
+        androidMain.dependencies {
+            // SQLDelight
+            implementation(libs.sqlDelight.driver.android)
+        }
+
+        iosMain.dependencies {
+            // SQLDelight
+            implementation(libs.sqlDelight.driver.native)
         }
     }
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions.jvmTarget = "11"
+    }
+}
+
+android {
+    namespace = "ru.vitaliy.belyaev.wishapp.shared"
+    compileSdk = 33
+    defaultConfig {
+        minSdk = 23
+        targetSdk = 33
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 

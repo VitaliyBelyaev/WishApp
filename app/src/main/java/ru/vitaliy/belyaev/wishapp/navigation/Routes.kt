@@ -4,6 +4,7 @@ const val ARG_WISH_ID = "wishId"
 const val ARG_WISH_LINK = "wishLink"
 const val ARG_WISH_IMAGE_ID = "wishImageId"
 const val ARG_WISH_IMAGE_INDEX = "wishImageIndex"
+const val ARG_TAG_ID = "tagId"
 
 object MainRoute {
     const val VALUE = "main"
@@ -11,11 +12,13 @@ object MainRoute {
 
 object WishDetailedRoute {
 
-    const val VALUE = "wish_detailed?$ARG_WISH_ID={$ARG_WISH_ID}&$ARG_WISH_LINK={$ARG_WISH_LINK}"
+    const val VALUE =
+        "wish_detailed?$ARG_WISH_ID={$ARG_WISH_ID}&$ARG_WISH_LINK={$ARG_WISH_LINK}&$ARG_TAG_ID={$ARG_TAG_ID}"
 
     fun buildRoute(
         wishId: String? = null,
-        wishLink: String? = null
+        wishLink: String? = null,
+        tagId: String? = null
     ): String {
         return StringBuilder().apply {
             append("wish_detailed")
@@ -25,9 +28,11 @@ object WishDetailedRoute {
                 append("$separator$ARG_WISH_ID=$wishId")
                 separator = "&"
             }
-
             if (!wishLink.isNullOrBlank()) {
                 append("$separator$ARG_WISH_LINK=$wishLink")
+            }
+            if (!tagId.isNullOrBlank()) {
+                append("$separator$ARG_TAG_ID=$tagId")
             }
         }.toString()
     }
@@ -62,7 +67,8 @@ object WishTagsRoute {
 }
 
 object WishImagesViewerRoute {
-    const val VALUE = "wish_images_viewer?$ARG_WISH_ID={$ARG_WISH_ID}&$ARG_WISH_IMAGE_ID={$ARG_WISH_IMAGE_ID}&$ARG_WISH_IMAGE_INDEX={$ARG_WISH_IMAGE_INDEX}"
+    const val VALUE =
+        "wish_images_viewer?$ARG_WISH_ID={$ARG_WISH_ID}&$ARG_WISH_IMAGE_ID={$ARG_WISH_IMAGE_ID}&$ARG_WISH_IMAGE_INDEX={$ARG_WISH_IMAGE_INDEX}"
 
     fun build(
         wishId: String,

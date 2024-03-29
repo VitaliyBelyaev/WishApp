@@ -102,5 +102,5 @@ fastlane/test_output
 
 iOSInjectionProject/
 /iosApp/Pods/
-/iosApp/WishApp/GoogleService-Info.plist
-/iosApp/WishApp/AppKeys.plist
+#/iosApp/WishApp/GoogleService-Info.plist
+#/iosApp/WishApp/AppKeys.plist

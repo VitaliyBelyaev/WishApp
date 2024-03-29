@@ -95,5 +95,6 @@
     <string name="share_type_text_button_text">Texte (sans images)</string>
     <string name="share_type_pdf_button_text">Fichier PDF (avec images)</string>
     <string name="share_generating_pdf_button_text">Génération d\'un fichier PDF</string>
+    <string name="wish_detailed_save_button_text">Sauvegarder</string>
 
 </resources>

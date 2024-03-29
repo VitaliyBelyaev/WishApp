@@ -1,4 +1,6 @@
+import com.android.build.api.dsl.ApplicationDefaultConfig
 import java.util.Properties
+import org.jetbrains.kotlin.daemon.common.trimQuotes
 
 plugins {
     alias(libs.plugins.androidApplication)
@@ -14,7 +16,11 @@ plugins {
 }
 
 val amplitudeApiKey = "AMPLITUDE_API_KEY"
-val apikeyProperties = readProperties(file("../apikey.properties"))
+val apikeyProperties = readProperties("../apikey.properties")
+val amplitudeApiKeyValue = apikeyProperties.getStringOrDefault(
+    key = amplitudeApiKey,
+    default = ""
+)
 
 android {
     namespace = "ru.vitaliy.belyaev.wishapp"
@@ -24,10 +30,10 @@ android {
         applicationId = "ru.vitaliy.belyaev.wishapp"
         minSdk = 23
         targetSdk = 34
-        versionCode = 22
-        versionName = "1.8.0"
+        versionCode = 23
+        versionName = "1.8.1"
 
-        buildConfigField("String", amplitudeApiKey, apikeyProperties[amplitudeApiKey] as String)
+        stringConfigField(amplitudeApiKey, amplitudeApiKeyValue)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -47,7 +53,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
-    packagingOptions {
+    packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "META-INF/DEPENDENCIES"
@@ -101,6 +107,7 @@ dependencies {
     implementation(libs.androidx.core.coreSplashscreen)
     implementation(libs.androidx.lifecycle.lifecycleExtensions)
     implementation(libs.androidx.lifecycle.lifecycleRuntimeKtx)
+    implementation(libs.androidx.lifecycle.lifecycleRuntimeCompose)
     implementation(libs.androidx.datastore.datastorePreferences)
     implementation(libs.androidx.appcompat.appcompat)
     implementation(libs.androidx.webkit.webkit)
@@ -110,11 +117,11 @@ dependencies {
 
     // Compose
     implementation(platform(libs.androidx.compose.composeBom))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.foundation:foundation")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material")
-    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation(libs.androidx.compose.ui.ui)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.ui.toolingPreview)
 
     // Compose Navigation
     implementation(libs.androidx.navigation.navigationCompose)
@@ -129,9 +136,9 @@ dependencies {
 
     // Google Firebase
     implementation(platform(libs.firebase.bom))
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("com.google.firebase:firebase-crashlytics-ktx")
-    implementation("com.google.firebase:firebase-perf-ktx")
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.perf)
 
     // GMS
     implementation(libs.google.android.gms.playServices.ossLicenses)
@@ -159,9 +166,9 @@ dependencies {
     kapt(libs.hilt.android.compiler)
 
     // Okhttp
-    implementation(platform(libs.okhttp.bom))
-    implementation("com.squareup.okhttp3:okhttp")
-    implementation("com.squareup.okhttp3:logging-interceptor")
+    implementation(platform(libs.squareup.okhttp3.okhttpBom))
+    implementation(libs.squareup.okhttp3.okhttp)
+    implementation(libs.squareup.okhttp3.logging)
 
     // Work with images
     implementation(libs.coilKt.coilCompose)
@@ -187,12 +194,24 @@ dependencies {
     // Instrumentation
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-tooling")
+    androidTestImplementation(libs.androidx.compose.ui.testJunit4)
+    debugImplementation(libs.androidx.compose.ui.tooling)
 }
 
-fun readProperties(propertiesFile: File) = Properties().apply {
-    propertiesFile.inputStream().use { fis ->
-        load(fis)
+fun readProperties(filePath: String) = Properties().apply {
+    try {
+        file(filePath).inputStream().use { fis ->
+            load(fis)
+        }
+    } catch (error: Throwable) {
+        println("Error reading properties file: $filePath, error: $error")
     }
+}
+
+fun Properties.getStringOrDefault(key: String, default: String): String {
+    return getProperty(key)?.trimQuotes() ?: default
+}
+
+fun ApplicationDefaultConfig.stringConfigField(name: String, value: String) {
+    buildConfigField("String", name, "\"$value\"")
 }

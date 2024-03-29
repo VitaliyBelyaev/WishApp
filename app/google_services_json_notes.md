@@ -1,0 +1,1 @@
+ `app/src/google-services.json` take precedence over `app/google-services.json` if both are present.
