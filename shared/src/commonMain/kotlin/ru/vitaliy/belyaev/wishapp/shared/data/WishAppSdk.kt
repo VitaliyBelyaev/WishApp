@@ -1,6 +1,8 @@
 package ru.vitaliy.belyaev.wishapp.shared.data
 
 import app.cash.sqldelight.db.SqlDriver
+import io.github.aakira.napier.DebugAntilog
+import io.github.aakira.napier.Napier
 import ru.vitaliy.belyaev.wishapp.shared.data.coroutines.getDispatcherProvider
 import ru.vitaliy.belyaev.wishapp.shared.data.database.DatabaseDriverFactory
 import ru.vitaliy.belyaev.wishapp.shared.data.database.WishAppDb
@@ -15,20 +17,27 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
     private var sqlDriver: SqlDriver? = null
 
     init {
+
+        Napier.d("WishAppSdk init")
         reopenDatabase()
     }
 
     fun closeDatabase() {
+        Napier.d("closeDatabase")
         sqlDriver?.close()
         sqlDriver = null
         _databaseRepository = null
     }
 
     fun getDatabaseRepository(): DatabaseRepository {
+        Napier.d("getDatabaseRepository")
+
         return _databaseRepository ?: reopenDatabase().let { _databaseRepository!! }
     }
 
     fun reopenDatabase() {
+
+        Napier.d("Reopen database")
         closeDatabase()
         sqlDriver = databaseDriveFactory.createDatabaseDriver()
         val database = WishAppDb(sqlDriver!!)

@@ -11,6 +11,7 @@
 		E325B4652A926CFD005DD35D /* ApiKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = E325B4642A926CFD005DD35D /* ApiKeys.swift */; };
 		E325B4672A92726E005DD35D /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E325B4662A92726E005DD35D /* Errors.swift */; };
 		E33256B12BB5944600794A58 /* AppKeys.plist in Resources */ = {isa = PBXBuildFile; fileRef = E33256B02BB5944600794A58 /* AppKeys.plist */; };
+		E345104A2BB6F212008E7A65 /* BackupAndRestoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34510492BB6F212008E7A65 /* BackupAndRestoreViewModel.swift */; };
 		E3C579742B24A12B000BC70A /* KMPNativeCoroutinesCombine in Frameworks */ = {isa = PBXBuildFile; productRef = E3C579732B24A12B000BC70A /* KMPNativeCoroutinesCombine */; };
 		E3DD74C12B6FD5A800A937BF /* FileManagerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3DD74C02B6FD5A800A937BF /* FileManagerExtensions.swift */; };
 		ED1750902A373F1000665949 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED17508F2A373F1000665949 /* SettingsView.swift */; };
@@ -77,10 +78,10 @@
 		CE82C3BFCB066E79A9355667 /* Pods_WishApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WishApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E30783EB2B6FB26500E04C9E /* WishApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WishApp.entitlements; sourceTree = "<group>"; };
 		E30783F02B6FCB3A00E04C9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		E325B4622A926CA8005DD35D /* AppKeys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = AppKeys.plist; sourceTree = "<group>"; };
 		E325B4642A926CFD005DD35D /* ApiKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiKeys.swift; sourceTree = "<group>"; };
 		E325B4662A92726E005DD35D /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		E33256B02BB5944600794A58 /* AppKeys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = AppKeys.plist; sourceTree = "<group>"; };
+		E34510492BB6F212008E7A65 /* BackupAndRestoreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAndRestoreViewModel.swift; sourceTree = "<group>"; };
 		E3DD74C02B6FD5A800A937BF /* FileManagerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerExtensions.swift; sourceTree = "<group>"; };
 		ED17508F2A373F1000665949 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		ED1750912A37452900665949 /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
@@ -178,6 +179,7 @@
 			isa = PBXGroup;
 			children = (
 				ED70B6852A433D3600E6786B /* BackupAndRestoreView.swift */,
+				E34510492BB6F212008E7A65 /* BackupAndRestoreViewModel.swift */,
 			);
 			path = Backup;
 			sourceTree = "<group>";
@@ -575,6 +577,7 @@
 				ED6EFA4A2A2256D200CC1B13 /* MainItems.swift in Sources */,
 				ED9CAD9D2A4720CE0079D814 /* NavigationLinkExtension.swift in Sources */,
 				ED6EFA3B2A22495200CC1B13 /* MainView.swift in Sources */,
+				E345104A2BB6F212008E7A65 /* BackupAndRestoreViewModel.swift in Sources */,
 				ED1750922A37452900665949 /* MainContentView.swift in Sources */,
 				EDEC6A162A58809B003DA87A /* UserActionsEvents.swift in Sources */,
 				E325B4672A92726E005DD35D /* Errors.swift in Sources */,

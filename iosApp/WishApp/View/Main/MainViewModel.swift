@@ -58,139 +58,22 @@ final class MainViewModel: ObservableObject {
         
     }
     
-    func onRestoreClicked() {
-        if let containerUrl = FileManager.default.getAppContainerUrlInICloud() {
-            FileManager.default.createDirIfNotExists(dirUrl: containerUrl)
-            
-            let fileUrl = containerUrl.appendingPathComponent("wishapp.backup")
-            
-            var isDir:ObjCBool = false
-            if !FileManager.default.fileExists(atPath: fileUrl.path, isDirectory: &isDir) {
-                print("backup not exists in iCloud")
-                return
-            }
-            
-            let originFileUrl = URL.applicationSupportDirectory.appendingPathComponent("databases/ru_vitaliy_belyaev_wishapp.db")
-            
-            
-            
-            if FileManager.default.fileExists(atPath: originFileUrl.path, isDirectory: &isDir) {
-                do {
-                    try FileManager.default.removeItem(at: originFileUrl)
-                }
-                catch {
-                    //Error handling
-                    print("Error in remove item")
-                }
-            }
-            
-            do {
-                try FileManager.default.copyItem(at: fileUrl, to: originFileUrl)
-                print("Copy done")
-            }
-            catch {
-                //Error handling
-                print("Error in copy item:\(error.localizedDescription)")
-            }
-        }
-    }
     
     func onAddTestWishClicked() {
-        
-        let originFileUrl = URL.applicationSupportDirectory.appendingPathComponent("databases")
-        do {
-            let items = try FileManager.default.contentsOfDirectory(atPath: originFileUrl.path)
-            
-            for item in items {
-                
-                
-                print("Found \(item)")
-            }
-        } catch {
-            // failed to read directory – bad permissions, perhaps?
+        if testWishes.isEmpty {
+            return
         }
+        let timestamp = Date.currentTimeStamp
         
+        let testWish: WishEntity = testWishes[testWishIndex % testWishes.count]
+            .createCopy(id: NSUUID().uuidString, createdTimestamp: timestamp, updatedTimestamp: timestamp)
         
+        createFuture(for: dbRepository.insertWish(wish: testWish))
+            .subscribe(on: DispatchQueue.global())
+            .sinkSilently()
+            .store(in: &subscriptions)
         
-        // Рабочий код
-//        if let containerUrl = FileManager.default.getAppContainerUrlInICloud() {
-//            FileManager.default.createDirIfNotExists(dirUrl: containerUrl)
-//            
-//            let fileUrl = containerUrl.appendingPathComponent("wishapp.backup")
-//            let originFileUrl = URL.applicationSupportDirectory.appendingPathComponent("databases/ru_vitaliy_belyaev_wishapp.db")
-//            
-//            var isDir:ObjCBool = false
-//            
-//            if FileManager.default.fileExists(atPath: fileUrl.path, isDirectory: &isDir) {
-//                do {
-//                    try FileManager.default.removeItem(at: fileUrl)
-//                }
-//                catch {
-//                    //Error handling
-//                    print("Error in remove item")
-//                }
-//            }
-//            
-//            do {
-//                try FileManager.default.copyItem(at: originFileUrl, to: fileUrl)
-//                print("Copy done")
-//            }
-//            catch {
-//                //Error handling
-//                print("Error in copy item:\(error.localizedDescription)")
-//            }
-//        }
-        
-        
-//        
-//        let data = Data("Test Message12131313131342fesrfsrgf".utf8)
-//        let fileUrl = URL.applicationSupportDirectory.appendingPathComponent("databases/ru_vitaliy_belyaev_wishapp.db")
-//        print(fileUrl.path())
-        
-        
-//        do {
-//            let items = try FileManager.default.contentsOfDirectory(atPath: fileUrl.path)
-//
-//            for item in items {
-//                
-//            
-//                print("Found \(item)")
-//            }
-//        } catch {
-//            // failed to read directory – bad permissions, perhaps?
-//        }
-        
-    
-    
-        
-//        do {
-//            try data.write(to: fileUrl, options: [.atomic, .completeFileProtection])
-//            let input = try String(contentsOf: fileUrl)
-//            print(input)
-//        } catch {
-//            print(error.localizedDescription)
-//        }
-        
-        
-        
-        
-        
-        
-        
-//        if testWishes.isEmpty {
-        //            return
-//        }
-//        let timestamp = Date.currentTimeStamp
-//        
-//        let testWish: WishEntity = testWishes[testWishIndex % testWishes.count]
-//            .createCopy(id: NSUUID().uuidString, createdTimestamp: timestamp, updatedTimestamp: timestamp)
-//
-//        createFuture(for: dbRepository.insertWish(wish: testWish))
-//            .subscribe(on: DispatchQueue.global())
-//            .sinkSilently()
-//            .store(in: &subscriptions)
-//        
-//        testWishIndex += 1
+        testWishIndex += 1
     }
     
     func onAddTagClicked() {
@@ -198,6 +81,10 @@ final class MainViewModel: ObservableObject {
             .subscribe(on: DispatchQueue.global())
             .sinkSilently()
             .store(in: &subscriptions)
+    }
+    
+    enum SomeError: Error {
+        case subsError
     }
     
     private func subscribeOnMainItems() {
@@ -221,11 +108,20 @@ final class MainViewModel: ObservableObject {
                 }
                 return MainViewState(commonItems: commonItems, tagItems: tagItems, currentCount: currentCountInt, completedCount: completedCountInt)
             }
-            .catch { error in
-                Just(MainViewState(commonItems: [], tagItems: [], currentCount: 0, completedCount: 0))
-            }
+        //            .catch { error in
+        //                Just(MainViewState(commonItems: [], tagItems: [], currentCount: 0, completedCount: 0))
+        //
+        //            }
             .receive(on: DispatchQueue.main)
-            .assign(to: \.state, on: self)
+            .sink(receiveCompletion: { completion in
+                print("receiveCompletion: \(completion)")
+            }, receiveValue: { [weak self] value in
+                print("receiveValue: \(value)")
+                if let self = self {
+                    self.state = value
+                }
+            })
+        //            .assign(to: \.state, on: self)
             .store(in: &subscriptions)
     }
     

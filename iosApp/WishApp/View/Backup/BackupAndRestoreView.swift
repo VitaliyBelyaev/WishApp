@@ -8,6 +8,15 @@
 import SwiftUI
 
 struct BackupAndRestoreView: View {
+    
+    @EnvironmentObject private var navigationModel: NavigationModel
+    
+    @StateObject private var viewModel: BackupAndRestoreViewModel
+    
+    init() {
+        _viewModel = StateObject(wrappedValue: { BackupAndRestoreViewModel() }())
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
             
@@ -16,7 +25,8 @@ struct BackupAndRestoreView: View {
                 .padding(.bottom)
         
             Button {
-                
+                print("onCreateBackupClicked")
+                viewModel.onCreateBackupClicked()
             } label: {
                 HStack {
                     Text("Create backup")
@@ -30,7 +40,8 @@ struct BackupAndRestoreView: View {
                 .padding(.vertical)
         
             Button {
-                
+                print("onRestoreClicked")
+                viewModel.onRestoreClicked()
             } label: {
                 HStack {
                     Text("Restore backup")
