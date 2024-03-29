@@ -46,10 +46,10 @@ Fully written with Jetpack Compose with Material You(Material 3) theming and dyn
 ## iOS app
 
 <p align="center">
-<img width="220" alt="ios_1" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/e7c0ab9f-ae06-4838-b1a8-6f570041a19b">
-<img width="220" alt="ios_2" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/5aad8585-b8a3-4aaf-bada-21ebf2b00ecc">
-<img width="220" alt="ios_3" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/9d1b7425-1324-4921-8143-7267678a8d98">
-<img width="220" alt="ios_4" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/b91616c9-8fc9-4bd6-b40f-68e64f743c4c">
+<img width="180" alt="ios_1" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/e7c0ab9f-ae06-4838-b1a8-6f570041a19b">
+<img width="180" alt="ios_2" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/5aad8585-b8a3-4aaf-bada-21ebf2b00ecc">
+<img width="180" alt="ios_3" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/9d1b7425-1324-4921-8143-7267678a8d98">
+<img width="180" alt="ios_4" src="https://github.com/VitaliyBelyaev/WishApp/assets/21678329/b91616c9-8fc9-4bd6-b40f-68e64f743c4c">
 </p>
 
 Written with SwiftUI with using new version of NavigationStack with NavPath values and persisting NavPath after app relaunch.
