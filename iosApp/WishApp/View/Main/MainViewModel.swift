@@ -9,8 +9,6 @@ import Foundation
 import shared
 import Combine
 import KMPNativeCoroutinesCombine
-import FirebaseAnalytics
-import Amplitude
 
 @MainActor
 final class MainViewModel: ObservableObject {

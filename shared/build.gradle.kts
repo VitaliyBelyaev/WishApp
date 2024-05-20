@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.kotlinCocoapods)
     alias(libs.plugins.sqlDelight)
     alias(libs.plugins.kmpNativeCoroutines)
     alias(libs.plugins.ksp)
@@ -17,15 +16,8 @@ kotlin {
     ).forEach {
         it.binaries.framework {
             baseName = "shared"
+            isStatic = false
         }
-    }
-    cocoapods {
-        version = "1.0"
-        summary = "WishAppSdk"
-        homepage = "https://github.com/VitaliyBelyaev/WishApp"
-        ios.deploymentTarget = "16.0"
-
-        podfile = project.file("../iosApp/Podfile")
     }
 
     sourceSets {

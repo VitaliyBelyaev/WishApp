@@ -7,18 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DBBCD02E2D8F4C219DBA6628 /* Pods_WishApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE82C3BFCB066E79A9355667 /* Pods_WishApp.framework */; };
 		E325B4652A926CFD005DD35D /* ApiKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = E325B4642A926CFD005DD35D /* ApiKeys.swift */; };
 		E325B4672A92726E005DD35D /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E325B4662A92726E005DD35D /* Errors.swift */; };
 		E33256B12BB5944600794A58 /* AppKeys.plist in Resources */ = {isa = PBXBuildFile; fileRef = E33256B02BB5944600794A58 /* AppKeys.plist */; };
+		E3389BAD2BFBA80400A01BE0 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = E3389BAC2BFBA80400A01BE0 /* SwiftUIIntrospect */; };
+		E3389BB02BFBA81200A01BE0 /* SwiftUIFlowLayout in Frameworks */ = {isa = PBXBuildFile; productRef = E3389BAF2BFBA81200A01BE0 /* SwiftUIFlowLayout */; };
+		E3389BB32BFBA88E00A01BE0 /* KMPNativeCoroutinesAsync in Frameworks */ = {isa = PBXBuildFile; productRef = E3389BB22BFBA88E00A01BE0 /* KMPNativeCoroutinesAsync */; };
+		E3389BB52BFBA88E00A01BE0 /* KMPNativeCoroutinesCombine in Frameworks */ = {isa = PBXBuildFile; productRef = E3389BB42BFBA88E00A01BE0 /* KMPNativeCoroutinesCombine */; };
+		E3389BB72BFBA88E00A01BE0 /* KMPNativeCoroutinesCore in Frameworks */ = {isa = PBXBuildFile; productRef = E3389BB62BFBA88E00A01BE0 /* KMPNativeCoroutinesCore */; };
+		E3389BBA2BFBA8B100A01BE0 /* Amplitude in Frameworks */ = {isa = PBXBuildFile; productRef = E3389BB92BFBA8B100A01BE0 /* Amplitude */; };
 		E345104A2BB6F212008E7A65 /* BackupAndRestoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34510492BB6F212008E7A65 /* BackupAndRestoreViewModel.swift */; };
-		E3C579742B24A12B000BC70A /* KMPNativeCoroutinesCombine in Frameworks */ = {isa = PBXBuildFile; productRef = E3C579732B24A12B000BC70A /* KMPNativeCoroutinesCombine */; };
 		E3DD74C12B6FD5A800A937BF /* FileManagerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3DD74C02B6FD5A800A937BF /* FileManagerExtensions.swift */; };
 		ED1750902A373F1000665949 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED17508F2A373F1000665949 /* SettingsView.swift */; };
 		ED1750922A37452900665949 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1750912A37452900665949 /* MainContentView.swift */; };
 		ED1750952A38C97C00665949 /* WishListContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1750942A38C97C00665949 /* WishListContentView.swift */; };
 		ED17509A2A38D09B00665949 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1750992A38D09B00665949 /* AppViewModel.swift */; };
-		ED21B4B52A4F292000E2A989 /* Amplitude in Frameworks */ = {isa = PBXBuildFile; productRef = ED21B4B42A4F292000E2A989 /* Amplitude */; };
 		ED21B4B82A4F2D0500E2A989 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED21B4B72A4F2D0500E2A989 /* Analytics.swift */; };
 		ED21B4BC2A55DEF100E2A989 /* AnalyticsEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED21B4BB2A55DEF100E2A989 /* AnalyticsEvent.swift */; };
 		ED232D4C2A1F85B000C51DB7 /* WishEntityExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED232D4B2A1F85B000C51DB7 /* WishEntityExt.swift */; };
@@ -32,8 +35,6 @@
 		ED48EB0A2A6911410092B8B6 /* NeedToRequestReviewUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48EB092A6911410092B8B6 /* NeedToRequestReviewUseCase.swift */; };
 		ED48EB0C2A691C330092B8B6 /* AppActionsEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48EB0B2A691C330092B8B6 /* AppActionsEvents.swift */; };
 		ED48EB0E2A6E56590092B8B6 /* UpdateWishTagsContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48EB0D2A6E56590092B8B6 /* UpdateWishTagsContentView.swift */; };
-		ED5383F72A66FA3600BFAFB2 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = ED5383F62A66FA3600BFAFB2 /* SwiftUIIntrospect */; };
-		ED5383FA2A66FBED00BFAFB2 /* SwiftUIFlowLayout in Frameworks */ = {isa = PBXBuildFile; productRef = ED5383F92A66FBED00BFAFB2 /* SwiftUIFlowLayout */; };
 		ED5383FC2A6701B000BFAFB2 /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5383FB2A6701B000BFAFB2 /* ViewExtension.swift */; };
 		ED6DB19829B4F21F00A11CA3 /* WishApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6DB19729B4F21F00A11CA3 /* WishApp.swift */; };
 		ED6DB19C29B4F21F00A11CA3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED6DB19B29B4F21F00A11CA3 /* Assets.xcassets */; };
@@ -54,8 +55,6 @@
 		ED7914192A4C951A00E7FF0C /* PrivacyPolicyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7914182A4C951A00E7FF0C /* PrivacyPolicyView.swift */; };
 		ED79141C2A4C95EE00E7FF0C /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED79141B2A4C95EE00E7FF0C /* WebView.swift */; };
 		ED7914222A4DDA9400E7FF0C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED7914212A4DDA9400E7FF0C /* GoogleService-Info.plist */; };
-		ED7914262A4DE7DA00E7FF0C /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = ED7914252A4DE7DA00E7FF0C /* FirebaseAnalytics */; };
-		ED7914282A4DE7DA00E7FF0C /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = ED7914272A4DE7DA00E7FF0C /* FirebaseCrashlytics */; };
 		ED9CAD9B2A470E320079D814 /* SettingsItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9CAD9A2A470E320079D814 /* SettingsItemView.swift */; };
 		ED9CAD9D2A4720CE0079D814 /* NavigationLinkExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9CAD9C2A4720CE0079D814 /* NavigationLinkExtension.swift */; };
 		ED9CAD9F2A4721610079D814 /* MailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9CAD9E2A4721610079D814 /* MailView.swift */; };
@@ -73,9 +72,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		09C1248ADD095BAC97F25AF2 /* Pods-WishApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WishApp.debug.xcconfig"; path = "Target Support Files/Pods-WishApp/Pods-WishApp.debug.xcconfig"; sourceTree = "<group>"; };
-		2571903193AD706D91A31376 /* Pods-WishApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WishApp.release.xcconfig"; path = "Target Support Files/Pods-WishApp/Pods-WishApp.release.xcconfig"; sourceTree = "<group>"; };
-		CE82C3BFCB066E79A9355667 /* Pods_WishApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WishApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E30783EB2B6FB26500E04C9E /* WishApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WishApp.entitlements; sourceTree = "<group>"; };
 		E30783F02B6FCB3A00E04C9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E325B4642A926CFD005DD35D /* ApiKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiKeys.swift; sourceTree = "<group>"; };
@@ -145,36 +141,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ED7914282A4DE7DA00E7FF0C /* FirebaseCrashlytics in Frameworks */,
-				ED7914262A4DE7DA00E7FF0C /* FirebaseAnalytics in Frameworks */,
-				ED5383FA2A66FBED00BFAFB2 /* SwiftUIFlowLayout in Frameworks */,
-				ED21B4B52A4F292000E2A989 /* Amplitude in Frameworks */,
-				E3C579742B24A12B000BC70A /* KMPNativeCoroutinesCombine in Frameworks */,
-				ED5383F72A66FA3600BFAFB2 /* SwiftUIIntrospect in Frameworks */,
-				DBBCD02E2D8F4C219DBA6628 /* Pods_WishApp.framework in Frameworks */,
+				E3389BBA2BFBA8B100A01BE0 /* Amplitude in Frameworks */,
+				E3389BB02BFBA81200A01BE0 /* SwiftUIFlowLayout in Frameworks */,
+				E3389BB72BFBA88E00A01BE0 /* KMPNativeCoroutinesCore in Frameworks */,
+				E3389BB52BFBA88E00A01BE0 /* KMPNativeCoroutinesCombine in Frameworks */,
+				E3389BAD2BFBA80400A01BE0 /* SwiftUIIntrospect in Frameworks */,
+				E3389BB32BFBA88E00A01BE0 /* KMPNativeCoroutinesAsync in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		6EAD93FD4FD82134DA083FDA /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				09C1248ADD095BAC97F25AF2 /* Pods-WishApp.debug.xcconfig */,
-				2571903193AD706D91A31376 /* Pods-WishApp.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
-		A4191BFF3551F9A241B8BC5E /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				CE82C3BFCB066E79A9355667 /* Pods_WishApp.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		E3FBEFCE2B73AE0500D37845 /* Backup */ = {
 			isa = PBXGroup;
 			children = (
@@ -252,8 +230,6 @@
 			children = (
 				ED6DB19629B4F21F00A11CA3 /* WishApp */,
 				ED6DB19529B4F21F00A11CA3 /* Products */,
-				6EAD93FD4FD82134DA083FDA /* Pods */,
-				A4191BFF3551F9A241B8BC5E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -441,11 +417,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = ED6DB1A229B4F21F00A11CA3 /* Build configuration list for PBXNativeTarget "WishApp" */;
 			buildPhases = (
-				24EB4C37C69C6782079FF015 /* [CP] Check Pods Manifest.lock */,
+				E3389BBB2BFBA93500A01BE0 /* ShellScript */,
 				ED6DB19029B4F21F00A11CA3 /* Sources */,
 				ED6DB19129B4F21F00A11CA3 /* Frameworks */,
 				ED6DB19229B4F21F00A11CA3 /* Resources */,
-				1BD4AE511C359344A2D059D9 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -453,12 +428,12 @@
 			);
 			name = WishApp;
 			packageProductDependencies = (
-				ED7914252A4DE7DA00E7FF0C /* FirebaseAnalytics */,
-				ED7914272A4DE7DA00E7FF0C /* FirebaseCrashlytics */,
-				ED21B4B42A4F292000E2A989 /* Amplitude */,
-				ED5383F62A66FA3600BFAFB2 /* SwiftUIIntrospect */,
-				ED5383F92A66FBED00BFAFB2 /* SwiftUIFlowLayout */,
-				E3C579732B24A12B000BC70A /* KMPNativeCoroutinesCombine */,
+				E3389BAC2BFBA80400A01BE0 /* SwiftUIIntrospect */,
+				E3389BAF2BFBA81200A01BE0 /* SwiftUIFlowLayout */,
+				E3389BB22BFBA88E00A01BE0 /* KMPNativeCoroutinesAsync */,
+				E3389BB42BFBA88E00A01BE0 /* KMPNativeCoroutinesCombine */,
+				E3389BB62BFBA88E00A01BE0 /* KMPNativeCoroutinesCore */,
+				E3389BB92BFBA8B100A01BE0 /* Amplitude */,
 			);
 			productName = WishApp;
 			productReference = ED6DB19429B4F21F00A11CA3 /* WishApp.app */;
@@ -490,11 +465,10 @@
 			);
 			mainGroup = ED6DB18B29B4F21E00A11CA3;
 			packageReferences = (
-				ED7914242A4DE7DA00E7FF0C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				ED21B4B32A4F292000E2A989 /* XCRemoteSwiftPackageReference "Amplitude-iOS" */,
-				ED5383F52A66FA3600BFAFB2 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
-				ED5383F82A66FBED00BFAFB2 /* XCRemoteSwiftPackageReference "swiftui-flow-layout" */,
-				E3C579722B24A12B000BC70A /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */,
+				E3389BAB2BFBA80400A01BE0 /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
+				E3389BAE2BFBA81200A01BE0 /* XCRemoteSwiftPackageReference "swiftui-flow-layout" */,
+				E3389BB12BFBA88E00A01BE0 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */,
+				E3389BB82BFBA8B100A01BE0 /* XCRemoteSwiftPackageReference "Amplitude-iOS" */,
 			);
 			productRefGroup = ED6DB19529B4F21F00A11CA3 /* Products */;
 			projectDirPath = "";
@@ -523,25 +497,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1BD4AE511C359344A2D059D9 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 12;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-WishApp/Pods-WishApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-WishApp/Pods-WishApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-WishApp/Pods-WishApp-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		24EB4C37C69C6782079FF015 /* [CP] Check Pods Manifest.lock */ = {
+		E3389BBB2BFBA93500A01BE0 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -549,19 +505,14 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
 			);
-			name = "[CP] Check Pods Manifest.lock";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-WishApp-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
+			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -773,7 +724,6 @@
 		};
 		ED6DB1A329B4F21F00A11CA3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 09C1248ADD095BAC97F25AF2 /* Pods-WishApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -785,6 +735,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"WishApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 7K525734CM;
 				ENABLE_PREVIEWS = YES;
+				"FRAMEWORK_SEARCH_PATHS[arch=*]" = "$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WishApp/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
@@ -809,7 +760,6 @@
 		};
 		ED6DB1A429B4F21F00A11CA3 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2571903193AD706D91A31376 /* Pods-WishApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -820,6 +770,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"WishApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 7K525734CM;
 				ENABLE_PREVIEWS = YES;
+				"FRAMEWORK_SEARCH_PATHS[arch=*]" = "$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WishApp/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
@@ -866,31 +817,15 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		E3C579722B24A12B000BC70A /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */ = {
+		E3389BAB2BFBA80400A01BE0 /* XCRemoteSwiftPackageReference "swiftui-introspect" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/rickclephas/KMP-NativeCoroutines.git";
+			repositoryURL = "https://github.com/siteline/swiftui-introspect";
 			requirement = {
 				kind = exactVersion;
-				version = "1.0.0-ALPHA-22";
+				version = 1.1.4;
 			};
 		};
-		ED21B4B32A4F292000E2A989 /* XCRemoteSwiftPackageReference "Amplitude-iOS" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/amplitude/Amplitude-iOS";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-		ED5383F52A66FA3600BFAFB2 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect";
-			requirement = {
-				kind = exactVersion;
-				version = 0.9.1;
-			};
-		};
-		ED5383F82A66FBED00BFAFB2 /* XCRemoteSwiftPackageReference "swiftui-flow-layout" */ = {
+		E3389BAE2BFBA81200A01BE0 /* XCRemoteSwiftPackageReference "swiftui-flow-layout" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/globulus/swiftui-flow-layout";
 			requirement = {
@@ -898,46 +833,54 @@
 				version = 1.0.5;
 			};
 		};
-		ED7914242A4DE7DA00E7FF0C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+		E3389BB12BFBA88E00A01BE0 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			repositoryURL = "https://github.com/rickclephas/KMP-NativeCoroutines.git";
 			requirement = {
 				kind = exactVersion;
-				version = 10.11.0;
+				version = "1.0.0-ALPHA-22-spm-no-deps";
+			};
+		};
+		E3389BB82BFBA8B100A01BE0 /* XCRemoteSwiftPackageReference "Amplitude-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/amplitude/Amplitude-iOS";
+			requirement = {
+				kind = exactVersion;
+				version = 8.19.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		E3C579732B24A12B000BC70A /* KMPNativeCoroutinesCombine */ = {
+		E3389BAC2BFBA80400A01BE0 /* SwiftUIIntrospect */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = E3C579722B24A12B000BC70A /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
-			productName = KMPNativeCoroutinesCombine;
-		};
-		ED21B4B42A4F292000E2A989 /* Amplitude */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = ED21B4B32A4F292000E2A989 /* XCRemoteSwiftPackageReference "Amplitude-iOS" */;
-			productName = Amplitude;
-		};
-		ED5383F62A66FA3600BFAFB2 /* SwiftUIIntrospect */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = ED5383F52A66FA3600BFAFB2 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
+			package = E3389BAB2BFBA80400A01BE0 /* XCRemoteSwiftPackageReference "swiftui-introspect" */;
 			productName = SwiftUIIntrospect;
 		};
-		ED5383F92A66FBED00BFAFB2 /* SwiftUIFlowLayout */ = {
+		E3389BAF2BFBA81200A01BE0 /* SwiftUIFlowLayout */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = ED5383F82A66FBED00BFAFB2 /* XCRemoteSwiftPackageReference "swiftui-flow-layout" */;
+			package = E3389BAE2BFBA81200A01BE0 /* XCRemoteSwiftPackageReference "swiftui-flow-layout" */;
 			productName = SwiftUIFlowLayout;
 		};
-		ED7914252A4DE7DA00E7FF0C /* FirebaseAnalytics */ = {
+		E3389BB22BFBA88E00A01BE0 /* KMPNativeCoroutinesAsync */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = ED7914242A4DE7DA00E7FF0C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalytics;
+			package = E3389BB12BFBA88E00A01BE0 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesAsync;
 		};
-		ED7914272A4DE7DA00E7FF0C /* FirebaseCrashlytics */ = {
+		E3389BB42BFBA88E00A01BE0 /* KMPNativeCoroutinesCombine */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = ED7914242A4DE7DA00E7FF0C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseCrashlytics;
+			package = E3389BB12BFBA88E00A01BE0 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesCombine;
+		};
+		E3389BB62BFBA88E00A01BE0 /* KMPNativeCoroutinesCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E3389BB12BFBA88E00A01BE0 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesCore;
+		};
+		E3389BB92BFBA8B100A01BE0 /* Amplitude */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E3389BB82BFBA8B100A01BE0 /* XCRemoteSwiftPackageReference "Amplitude-iOS" */;
+			productName = Amplitude;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

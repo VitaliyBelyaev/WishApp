@@ -8,14 +8,14 @@
 import SwiftUI
 import shared
 import Combine
-import FirebaseCore
+//import FirebaseCore
 import Amplitude
-import FirebaseCrashlytics
+//import FirebaseCrashlytics
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         KoinKt.doInitKoin()
-        FirebaseApp.configure()
+//        FirebaseApp.configure()
         
         NapierProxyKt().debugBuild()
         
@@ -24,7 +24,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             Amplitude.instance().initializeApiKey(amplitudeApiKey)
         } else {
             let error = AmplitudeNotInitializedError()
-            Crashlytics.crashlytics().record(error: error)
+//            Crashlytics.crashlytics().record(error: error)
             print(error)
         }
         
