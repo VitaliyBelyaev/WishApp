@@ -20,7 +20,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         NapierProxyKt().debugBuild()
         
         if let amplitudeApiKey = valueForAPIKey(named: "AMPLITUDE_API_KEY") {
-            Amplitude.instance().trackingSessionEvents = true
+            Amplitude.instance().defaultTracking.sessions = true
             Amplitude.instance().initializeApiKey(amplitudeApiKey)
         } else {
             let error = AmplitudeNotInitializedError()
