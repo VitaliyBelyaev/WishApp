@@ -7,6 +7,6 @@ import timber.log.Timber
 class LogAnalyticsRepository : AnalyticsRepository {
 
     override fun trackEvent(event: AnalyticsEvent) {
-        Timber.tag("Analytics").d("Track event:${event.name}, params:${event.params}")
+        Timber.tag("Analytics").d("Track event: ${event.name}, params:${event.params}")
     }
 }
