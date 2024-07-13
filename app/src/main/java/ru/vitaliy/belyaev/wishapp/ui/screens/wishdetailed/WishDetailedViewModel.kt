@@ -134,7 +134,7 @@ class WishDetailedViewModel @Inject constructor(
     }
 
     fun isLinkValid(link: String): Boolean {
-        return Patterns.WEB_URL.matcher(link).matches()
+        return link.isNotBlank()
     }
 
     fun onAddLinkClicked(link: String) {
