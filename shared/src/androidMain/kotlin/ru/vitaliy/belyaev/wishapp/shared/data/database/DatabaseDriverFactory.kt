@@ -8,11 +8,11 @@ import ru.vitaliy.belyaev.wishapp.shared.data.Config
 
 actual class DatabaseDriverFactory(private val context: Context) {
 
-    actual fun createDatabaseDriver(): SqlDriver {
+    actual fun createDatabaseDriver(databaseName: String): SqlDriver {
         return AndroidSqliteDriver(
             schema = WishAppDb.Schema,
             context = context,
-            name = Config.DATABASE_NAME,
+            name = databaseName,
             callback = AndroidSqliteDriver.Callback(
                 schema = WishAppDb.Schema,
                 AfterVersion(1) { DatabaseMigrator.updateWishPositionsAfterMigrationFrom1To2(it) },

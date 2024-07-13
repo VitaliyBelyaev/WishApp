@@ -32,9 +32,6 @@ final class AppViewModel: ObservableObject {
     }
    
     func deleteWish(id: String) {
-        
-        sdk.closeDatabase()
-        
         createFuture(for: dbRepository.deleteWishesByIds(ids: [id]))
             .subscribe(on: DispatchQueue.global())
             .sinkSilently()

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftUIFlowLayout
+import shared
 
 struct UpdateWishTagsContentView: View {
     
@@ -69,8 +70,15 @@ struct UpdateWishTagsContentView: View {
 
 struct UpdateWishTagsContentView_Previews: PreviewProvider {
     static var previews: some View {
+        
+        let items = [
+            TagItem(tag: TagEntity(
+                id: "id", title: "Tilte"
+            ), isSelected: true)
+        ]
+        
         UpdateWishTagsContentView(
-            query: Binding(get: { return ""}, set: {_ in }), state: ScreenState(createItem: nil, tagItems: []), onCreateTagClicked: {_ in}, onTagSelectedChanged: {_ in}, onCloseClicked: {}
+            query: Binding(get: { return ""}, set: {_ in }), state: ScreenState(createItem: nil, tagItems: items), onCreateTagClicked: {_ in}, onTagSelectedChanged: {_ in}, onCloseClicked: {}
         )
     }
 }

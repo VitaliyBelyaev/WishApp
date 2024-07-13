@@ -2,18 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CLIENT_ID</key>
+	<string>49710368182-2cmj3p1h1ljp9790e2abcjgocdp0npe8.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.49710368182-2cmj3p1h1ljp9790e2abcjgocdp0npe8</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBusTfkIW9kbVvkA0y9gTTxh6i2fbyC_O0</string>
+	<string>AIzaSyC9LXKnuJjWtoOSv7HK1QmOEF6NtatBrl4</string>
 	<key>GCM_SENDER_ID</key>
-	<string>852419007298</string>
+	<string>49710368182</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.vitaliy.belyaev.WishApp</string>
 	<key>PROJECT_ID</key>
-	<string>wishapp-debug</string>
+	<string>wishapp-2244c</string>
 	<key>STORAGE_BUCKET</key>
-	<string>wishapp-debug.appspot.com</string>
+	<string>wishapp-2244c.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:852419007298:ios:e0a99e55228442eabcaedb</string>
+	<string>1:49710368182:ios:9ed907fa4daace066dad17</string>
 </dict>
 </plist>

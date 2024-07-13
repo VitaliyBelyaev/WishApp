@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E319C8DF2C2824CF00B690C1 /* DBFilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E319C8DE2C2824CF00B690C1 /* DBFilesManager.swift */; };
 		E325B4652A926CFD005DD35D /* ApiKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = E325B4642A926CFD005DD35D /* ApiKeys.swift */; };
 		E325B4672A92726E005DD35D /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E325B4662A92726E005DD35D /* Errors.swift */; };
 		E33256B12BB5944600794A58 /* AppKeys.plist in Resources */ = {isa = PBXBuildFile; fileRef = E33256B02BB5944600794A58 /* AppKeys.plist */; };
@@ -74,6 +75,7 @@
 /* Begin PBXFileReference section */
 		E30783EB2B6FB26500E04C9E /* WishApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WishApp.entitlements; sourceTree = "<group>"; };
 		E30783F02B6FCB3A00E04C9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		E319C8DE2C2824CF00B690C1 /* DBFilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBFilesManager.swift; sourceTree = "<group>"; };
 		E325B4642A926CFD005DD35D /* ApiKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiKeys.swift; sourceTree = "<group>"; };
 		E325B4662A92726E005DD35D /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		E33256B02BB5944600794A58 /* AppKeys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = AppKeys.plist; sourceTree = "<group>"; };
@@ -158,6 +160,7 @@
 			children = (
 				ED70B6852A433D3600E6786B /* BackupAndRestoreView.swift */,
 				E34510492BB6F212008E7A65 /* BackupAndRestoreViewModel.swift */,
+				E319C8DE2C2824CF00B690C1 /* DBFilesManager.swift */,
 			);
 			path = Backup;
 			sourceTree = "<group>";
@@ -528,6 +531,7 @@
 				ED6EFA4A2A2256D200CC1B13 /* MainItems.swift in Sources */,
 				ED9CAD9D2A4720CE0079D814 /* NavigationLinkExtension.swift in Sources */,
 				ED6EFA3B2A22495200CC1B13 /* MainView.swift in Sources */,
+				E319C8DF2C2824CF00B690C1 /* DBFilesManager.swift in Sources */,
 				E345104A2BB6F212008E7A65 /* BackupAndRestoreViewModel.swift in Sources */,
 				ED1750922A37452900665949 /* MainContentView.swift in Sources */,
 				EDEC6A162A58809B003DA87A /* UserActionsEvents.swift in Sources */,

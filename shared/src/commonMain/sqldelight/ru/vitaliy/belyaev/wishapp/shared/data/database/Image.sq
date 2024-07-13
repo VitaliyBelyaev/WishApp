@@ -40,3 +40,11 @@ deleteById:
 DELETE FROM Image
 WHERE id = ?;
 
+insertOrReplace:
+INSERT OR REPLACE INTO Image(id, wishId, rawData)
+VALUES (?,?,?);
+
+getAllForBackup:
+SELECT *
+FROM Image;
+

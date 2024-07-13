@@ -29,3 +29,11 @@ WHERE tagId IN ?;
 
 clear:
 DELETE FROM Tag;
+
+insertOrReplace:
+INSERT OR REPLACE INTO Tag(tagId, title)
+VALUES (?,?);
+
+getAllForBackup:
+SELECT *
+FROM Tag;

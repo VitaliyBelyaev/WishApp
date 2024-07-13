@@ -13,67 +13,17 @@ final class BackupAndRestoreViewModel: ObservableObject {
     
     private let sdk: WishAppSdk = WishAppSdkDiHelper().wishAppSdk
     
-    private let localBackupsDirName = "local_backups"
-    private let localBackupDbName = "backup.db"
+    private let dbFilesManager = DBFilesManager()
     
-    
-    init() {
-       logDirContents()
-    }
-    
+    @Published var wishes: [WishEntity] = []
+    @Published var title: String = ""
+        
     func onRestoreClicked() {
-        restoreBackupFromLocal()
+        dbFilesManager.restoreBackup(originDbName: sdk.databaseName, sdk: sdk)
     }
     
     func onCreateBackupClicked() {
-        createBackupToLocalFileSystem()
-    }
-    
-    private func createBackupToLocalFileSystem() {
-        print("createBackupToLocalFileSystem START")
-        logDirContents()
-        
-        let localBackupDirUrl = URL.applicationSupportDirectory.appendingPathComponent(localBackupsDirName)
-        FileManager.default.createDirIfNotExists(dirUrl: localBackupDirUrl)
-        
-        print("localBackupDirUrl: \(localBackupDirUrl)")
-        
-        let timestamp = NSDate().timeIntervalSince1970
-        let backupFileUrl = localBackupDirUrl.appendingPathComponent(localBackupDbName)
-        print("backupFileUrl: \(backupFileUrl)")
-        
-        let originFileUrl = URL.applicationSupportDirectory.appendingPathComponent("databases/ru_vitaliy_belyaev_wishapp.db")
-        print("originFileUrl: \(originFileUrl)")
-        
-        var isDir: ObjCBool = false
-        
-        if FileManager.default.fileExists(atPath: backupFileUrl.path, isDirectory: &isDir) {
-            print("Backup file exists in local, backupFileUrl: \(backupFileUrl)")
-            
-            do {
-                print("Try to remove backup from local backupFileUrl: \(backupFileUrl)")
-                try FileManager.default.removeItem(at: backupFileUrl)
-            }
-            catch {
-                //Error handling
-                print("Error remove backup from local backupFileUrl: \(backupFileUrl)")
-            }
-        }
-        
-        
-        do {
-            print("Try to copy backup from app to local storage")
-            try FileManager.default.copyItem(at: originFileUrl, to: backupFileUrl)
-            print("copy backup from app to local storage done")
-        }
-        catch {
-            //Error handling
-            print("Error in copy item:\(error.localizedDescription)")
-        }
-        
-        logDirContents()
-        
-        print("createBackupToLocalFileSystem END")
+        dbFilesManager.crateBackup(deleteExisting: true, originDbName: sdk.databaseName)
     }
     
     private func createBackupToICloud() {
@@ -118,62 +68,6 @@ final class BackupAndRestoreViewModel: ObservableObject {
         }
     }
     
-    private func restoreBackupFromLocal() {
-        print("restoreBackupFromLocal START")
-        
-        let localBackupDirUrl = URL.applicationSupportDirectory.appendingPathComponent(localBackupsDirName)
-        FileManager.default.createDirIfNotExists(dirUrl: localBackupDirUrl)
-        
-        print("localBackupDirUrl: \(localBackupDirUrl)")
-        
-        let backupFileUrl = localBackupDirUrl.appendingPathComponent(localBackupDbName)
-        print("backupFileUrl: \(backupFileUrl)")
-        
-        let originFileUrl = URL.applicationSupportDirectory.appendingPathComponent("databases/ru_vitaliy_belyaev_wishapp.db")
-        print("originFileUrl: \(originFileUrl)")
-        
-        let backupFileUrlInDbDir = URL.applicationSupportDirectory.appendingPathComponent("databases/\(localBackupDbName)")
-        print("backupFileUrlInDbDir: \(backupFileUrlInDbDir)")
-        
-            do {
-                // copy backup db to database dir
-                try FileManager.default.copyItem(at: backupFileUrl, to: backupFileUrlInDbDir)
-                
-                print("!!!!Copy local db to current databases dir done")
-                logDirContents()
-    
-                // copy contents of backup db to current db
-                let isSuccess = sdk.doCopyContentFromBackupDatabase(backupDbName: localBackupDbName)
-                print("!!!!Copy contents of backup db to current db done, isSuccess:\(isSuccess)")
-                
-                
-                print("Try to remove localDbFile in databases dir")
-                try FileManager.default.removeItem(at: backupFileUrlInDbDir)
-                
-                logDirContents()
-            } catch let error{
-                //Error handling
-                print("Error in resotre backup:\(error)")
-            }
-        
-        
-//        do {
-//            print("Try to copy backup from cloud to local")
-//            try FileManager.default.copyItem(at: localBackupDirUrl, to: originFileUrl)
-//            print("Copy done")
-//            logDirContents()
-//            
-//            sdk.reopenDatabase()
-//        }
-//        catch {
-//            //Error handling
-//            print("Error in copy item:\(error.localizedDescription)")
-//        }
-        
-        print("restoreBackupFromLocal END")
-    
-    }
-    
     private func restoreBackupFromICloud() {
         if let containerUrl = FileManager.default.getAppContainerUrlInICloud() {
             
@@ -209,7 +103,7 @@ final class BackupAndRestoreViewModel: ObservableObject {
                     try FileManager.default.removeItem(at: originFileUrl)
                     
                     print("remove originFileUrl: \(originFileUrl) DONE")
-                    logDirContents()
+                   
                 }
                 catch {
                     //Error handling
@@ -221,7 +115,7 @@ final class BackupAndRestoreViewModel: ObservableObject {
                 print("Try to copy backup from cloud to local")
                 try FileManager.default.copyItem(at: cloudFileUrl, to: originFileUrl)
                 print("Copy done")
-                logDirContents()
+               
                 
                 sdk.reopenDatabase()
             }
@@ -234,69 +128,6 @@ final class BackupAndRestoreViewModel: ObservableObject {
         }
     }
     
-    private func logDirContents() {
-        do {
-            
-            let suppDirUrl = URL.applicationSupportDirectory
-            
-            let suppItems = try FileManager.default.contentsOfDirectory(atPath: suppDirUrl.path)
-            
-            for supItem in suppItems {
-                print("Found support item: \(supItem)")
-            }
-            
-            let localBackupsDirUrl = URL.applicationSupportDirectory.appendingPathComponent(localBackupsDirName)
-            let localBackupsItems = try FileManager.default.contentsOfDirectory(atPath: localBackupsDirUrl.path)
-            for backupItem in localBackupsItems {
-                print("Found local backup item: \(backupItem)")
-                
-                if backupItem == "backup.db" {
-                    do {
-                        let fileUrl = localBackupsDirUrl.appendingPathComponent(backupItem)
-                        
-                        let map = try FileManager.default
-                            .attributesOfItem(atPath: fileUrl.path)
-                            .sorted() { $0.key.rawValue < $1.key.rawValue }
-                        
-                        map.forEach { (key: FileAttributeKey, value: Any) in
-                            print("local backup file attr, key: \(key), value: \(value)")
-                        }
-                    } catch {
-                        
-                    }
-                }
-                
-                
-            }
-            
-            let dbDirUrl = URL.applicationSupportDirectory.appendingPathComponent("databases")
-            let dbItems = try FileManager.default.contentsOfDirectory(atPath: dbDirUrl.path)
-            for dbItem in dbItems {
-                
-                print("Found db item: \(dbItem)")
-                
-                if dbItem == "ru_vitaliy_belyaev_wishapp.db" {
-                    do {
-                        let dbFileUrl = dbDirUrl.appendingPathComponent(dbItem)
-                        
-                        let map = try FileManager.default
-                            .attributesOfItem(atPath: dbFileUrl.path)
-                            .sorted() { $0.key.rawValue < $1.key.rawValue }
-                    
-                    
-                        map.forEach { (key: FileAttributeKey, value: Any) in
-                            print("dbFileUrl attr, key: \(key), value: \(value)")
-                        }
-                        
-                    } catch {
-                        
-                    }
-                }
-            }
-        } catch {
-            // failed to read directory – bad permissions, perhaps?
-        }
-    }
     
     func someExp() {
         let originFileUrl = URL.applicationSupportDirectory.appendingPathComponent("databases")
@@ -374,4 +205,128 @@ final class BackupAndRestoreViewModel: ObservableObject {
         //        }
         
     }
+    
+    //    private func createBackupToLocalFileSystem() {
+    //        print("createBackupToLocalFileSystem START")
+    //        logDirContents()
+    //
+    //        let localBackupDirUrl = URL.applicationSupportDirectory.appendingPathComponent(localBackupsDirName)
+    //        FileManager.default.createDirIfNotExists(dirUrl: localBackupDirUrl)
+    //
+    //        print("localBackupDirUrl: \(localBackupDirUrl)")
+    //
+    //        let backupFileUrl = localBackupDirUrl.appendingPathComponent(localBackupDbName)
+    //
+    //        print("backupFileUrl: \(backupFileUrl)")
+    //
+    //        let backupFileShmUrl = localBackupDirUrl.appendingPathComponent(getShmFileName(baseName: localBackupDbName))
+    //        let backupFileWalUrl = localBackupDirUrl.appendingPathComponent(getWalFileName(baseName: localBackupDbName))
+    //
+    //        let originFileUrl = URL.applicationSupportDirectory.appendingPathComponent("databases/\(sdk.databaseName)")
+    //        print("originFileUrl: \(originFileUrl)")
+    //
+    //        let originFileShmUrl = URL.applicationSupportDirectory.appendingPathComponent("databases/\(getShmFileName(baseName: sdk.databaseName))")
+    //        let originFileWalUrl = URL.applicationSupportDirectory.appendingPathComponent("databases/\(getWalFileName(baseName: sdk.databaseName))")
+    //
+    //        var isDir: ObjCBool = false
+    //
+    //        if FileManager.default.fileExists(atPath: backupFileUrl.path, isDirectory: &isDir) {
+    //            print("Backup file exists in local, backupFileUrl: \(backupFileUrl)")
+    //
+    //            do {
+    //                print("Try to remove backup from local backupFileUrl: \(backupFileUrl)")
+    //                try FileManager.default.removeItem(at: backupFileUrl)
+    //                try FileManager.default.removeItem(at: backupFileShmUrl)
+    //                try FileManager.default.removeItem(at: backupFileWalUrl)
+    //            }
+    //            catch {
+    //                //Error handling
+    //                print("Error remove backup from local backupFileUrl: \(backupFileUrl)")
+    //            }
+    //        }
+    //
+    //
+    //        do {
+    //            print("Try to copy backup from app to local storage")
+    //            try FileManager.default.copyItem(at: originFileUrl, to: backupFileUrl)
+    //            try FileManager.default.copyItem(at: originFileShmUrl, to: backupFileShmUrl)
+    //            try FileManager.default.copyItem(at: originFileWalUrl, to: backupFileWalUrl)
+    //            print("copy backup from app to local storage done")
+    //        }
+    //        catch {
+    //            //Error handling
+    //            print("Error in copy item:\(error.localizedDescription)")
+    //        }
+    //
+    //        logDirContents()
+    //
+    //        print("createBackupToLocalFileSystem END")
+    //    }
+    
+    //    private func restoreBackupFromLocalFileSystem() {
+    //        print("restoreBackupFromLocal START")
+    //
+    //        let localBackupDirUrl = URL.applicationSupportDirectory.appendingPathComponent(localBackupsDirName)
+    //        FileManager.default.createDirIfNotExists(dirUrl: localBackupDirUrl)
+    //
+    //        //print("localBackupDirUrl: \(localBackupDirUrl)")
+    //
+    //        let backupFileUrl = localBackupDirUrl.appendingPathComponent(localBackupDbName)
+    //        //print("backupFileUrl: \(backupFileUrl)")
+    //        let backupFileShmUrl = localBackupDirUrl.appendingPathComponent(getShmFileName(baseName: localBackupDbName))
+    //        let backupFileWalUrl = localBackupDirUrl.appendingPathComponent(getWalFileName(baseName: localBackupDbName))
+    //
+    //        //let originFileUrl = URL.applicationSupportDirectory.appendingPathComponent("databases/ru_vitaliy_belyaev_wishapp.db")
+    //        //print("originFileUrl: \(originFileUrl)")
+    //
+    //        let backupFileUrlInDbDir = URL.applicationSupportDirectory.appendingPathComponent("databases/\(localBackupDbName)")
+    //        let backupFileUrlInDbDirShm = URL.applicationSupportDirectory.appendingPathComponent("databases/\(getShmFileName(baseName: localBackupDbName))")
+    //        let backupFileUrlInDbDirWal = URL.applicationSupportDirectory.appendingPathComponent("databases/\(getWalFileName(baseName: localBackupDbName))")
+    //
+    //        //print("backupFileUrlInDbDir: \(backupFileUrlInDbDir)")
+    //
+    //        do {
+    //            // copy backup db to database dir
+    //            try FileManager.default.copyItem(at: backupFileUrl, to: backupFileUrlInDbDir)
+    //            try FileManager.default.copyItem(at: backupFileShmUrl, to: backupFileUrlInDbDirShm)
+    //            try FileManager.default.copyItem(at: backupFileWalUrl, to: backupFileUrlInDbDirWal)
+    //
+    //            print("!!!!Copy local db to current databases dir done")
+    //            logDirContents()
+    //
+    //            // copy contents of backup db to current db
+    //            let isSuccess = sdk.doCopyContentFromBackupDatabase(backupDbName: localBackupDbName)
+    //            print("!!!!Copy contents of backup db to current db done, isSuccess:\(isSuccess)")
+    //
+    //
+    //            print("Try to remove localDbFile s in databases dir")
+    //            try FileManager.default.removeItem(at: backupFileUrlInDbDir)
+    //            try FileManager.default.removeItem(at: backupFileUrlInDbDirWal)
+    //            try FileManager.default.removeItem(at: backupFileUrlInDbDirShm)
+    //
+    //
+    //            print("All done, log contents")
+    //            logDirContents()
+    //        } catch let error{
+    //            //Error handling
+    //            print("Error in resotre backup:\(error)")
+    //        }
+    //
+    //
+    //        //        do {
+    //        //            print("Try to copy backup from cloud to local")
+    //        //            try FileManager.default.copyItem(at: localBackupDirUrl, to: originFileUrl)
+    //        //            print("Copy done")
+    //        //            logDirContents()
+    //        //
+    //        //            sdk.reopenDatabase()
+    //        //        }
+    //        //        catch {
+    //        //            //Error handling
+    //        //            print("Error in copy item:\(error.localizedDescription)")
+    //        //        }
+    //
+    //        print("restoreBackupFromLocal END")
+    //
+    //    }
 }

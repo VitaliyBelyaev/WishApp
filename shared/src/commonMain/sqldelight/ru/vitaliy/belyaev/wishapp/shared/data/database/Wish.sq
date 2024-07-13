@@ -15,9 +15,6 @@ insert:
 INSERT INTO Wish(wishId, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, position)
 VALUES (?,?,?,?,?,?,?, ?);
 
-insertFromBackupDb:
-INSERT INTO Wish SELECT * FROM backupDb.Wish;
-
 updateTitle:
 UPDATE Wish
 SET title = ?,
@@ -105,3 +102,11 @@ WHERE position > ?;
 
 clear:
 DELETE FROM Wish;
+
+insertOrReplace:
+INSERT OR REPLACE INTO Wish(wishId, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, position)
+VALUES (?,?,?,?,?,?,?, ?);
+
+getAllForBackup:
+SELECT *
+FROM Wish;

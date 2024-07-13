@@ -4,10 +4,14 @@ import app.cash.sqldelight.db.SqlDriver
 import io.github.aakira.napier.Napier
 import ru.vitaliy.belyaev.wishapp.shared.data.coroutines.getDispatcherProvider
 import ru.vitaliy.belyaev.wishapp.shared.data.database.DatabaseDriverFactory
+import ru.vitaliy.belyaev.wishapp.shared.data.database.Image
 import ru.vitaliy.belyaev.wishapp.shared.data.database.ImageQueries
+import ru.vitaliy.belyaev.wishapp.shared.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.shared.data.database.TagQueries
+import ru.vitaliy.belyaev.wishapp.shared.data.database.Wish
 import ru.vitaliy.belyaev.wishapp.shared.data.database.WishAppDb
 import ru.vitaliy.belyaev.wishapp.shared.data.database.WishQueries
+import ru.vitaliy.belyaev.wishapp.shared.data.database.WishTagRelation
 import ru.vitaliy.belyaev.wishapp.shared.data.database.WishTagRelationQueries
 import ru.vitaliy.belyaev.wishapp.shared.data.repository.DatabaseRepository
 
@@ -34,16 +38,8 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
         get() = database?.imageQueries
 
     init {
-
         Napier.d("WishAppSdk init")
         reopenDatabase()
-    }
-
-    fun closeDatabase() {
-        Napier.d("closeDatabase")
-        sqlDriver?.close()
-        sqlDriver = null
-        _databaseRepository = null
     }
 
     fun getDatabaseRepository(): DatabaseRepository {
@@ -53,10 +49,7 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
     }
 
     fun reopenDatabase() {
-
-        Napier.d("Reopen database")
-        closeDatabase()
-        sqlDriver = databaseDriveFactory.createDatabaseDriver()
+        sqlDriver = databaseDriveFactory.createDatabaseDriver(Config.DATABASE_NAME)
         val database = WishAppDb(sqlDriver!!).also {
             this.database = it
         }
@@ -66,46 +59,60 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
     fun copyContentFromBackupDatabase(backupDbName: String): Boolean {
         Napier.d("copyContentFromBackupDatabase, backupDbName: $backupDbName")
 
+        var sqlDriverTemp: SqlDriver? = null
 
         return try {
-            attachBackupDatabase(backupDbName)
 
-            wishQueries?.transaction {
-                wishQueries?.insertFromBackupDb()
+            sqlDriverTemp = databaseDriveFactory.createDatabaseDriver(backupDbName)
+            val databaseTemp = WishAppDb(sqlDriverTemp)
+
+            val allWishes: List<Wish> = databaseTemp.wishQueries.getAllForBackup().executeAsList()
+            allWishes.forEach { wish ->
+                wishQueries?.insertOrReplace(
+                    wishId = wish.wishId,
+                    title = wish.title,
+                    link = wish.link,
+                    comment = wish.comment,
+                    isCompleted = wish.isCompleted,
+                    createdTimestamp = wish.createdTimestamp,
+                    updatedTimestamp = wish.updatedTimestamp,
+                    position = wish.position
+                )
             }
 
-            detachBackupDatabase()
+            val allTags: List<Tag> = databaseTemp.tagQueries.getAllForBackup().executeAsList()
+            allTags.forEach { tag ->
+                tagQueries?.insertOrReplace(
+                    tagId = tag.tagId,
+                    title = tag.title
+                )
+            }
+
+            val allImages: List<Image> = databaseTemp.imageQueries.getAllForBackup().executeAsList()
+            allImages.forEach { image ->
+                imageQueries?.insertOrReplace(
+                    id = image.id,
+                    wishId = image.wishId,
+                    rawData = image.rawData
+                )
+            }
+
+            val allRelations: List<WishTagRelation> = databaseTemp.wishTagRelationQueries
+                .getAllForBackup().executeAsList()
+            allRelations.forEach { relation ->
+                wishTagRelationQueries?.insertOrReplace(
+                    wishId = relation.wishId,
+                    tagId = relation.tagId
+                )
+            }
+
+            sqlDriverTemp.close()
             true
         } catch (error: Throwable) {
             Napier.e(message = "Error while copying content from backup database", throwable = error)
             false
+        } finally {
+            sqlDriverTemp?.close()
         }
-    }
-
-    fun attachBackupDatabase(backupDbName: String) {
-        Napier.d("attachBackupDatabase, backupDbName: $backupDbName")
-
-        sqlDriver!!.execute(
-            identifier = null,
-            sql = "ATTACH DATABASE ? AS $BACKUP_DATABASE_SCHEMA_NAME",
-            parameters = 1
-        ) {
-            bindString(0, backupDbName)
-        }
-    }
-
-    fun detachBackupDatabase() {
-        Napier.d("detachBackupDatabase")
-
-        sqlDriver!!.execute(
-            identifier = null,
-            sql = "DETACH DATABASE $BACKUP_DATABASE_SCHEMA_NAME",
-            parameters = 0
-        )
-    }
-
-    companion object {
-
-        private const val BACKUP_DATABASE_SCHEMA_NAME = "backupDb"
     }
 }
