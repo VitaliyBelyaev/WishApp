@@ -132,7 +132,8 @@ dependencies {
 
     // Google Android
     implementation(libs.google.android.material)
-    implementation(libs.google.android.play.core)
+    implementation(libs.google.android.play.review)
+    implementation(libs.google.android.play.reviewKtx)
 
     // Google Firebase
     implementation(platform(libs.firebase.bom))
