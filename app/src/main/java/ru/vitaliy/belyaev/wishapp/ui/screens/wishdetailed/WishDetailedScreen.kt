@@ -144,7 +144,9 @@ fun WishDetailedScreen(
     val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = maxSelectionCount),
         onResult = { uris ->
-            val imagesData: List<ImageData> = uris.mapNotNull { uri ->
+            val imagesData: List<ImageData> = uris
+                .take(maxSelectionCount)
+                .mapNotNull { uri ->
                 context.contentResolver.openInputStream(uri)?.use { inputStream ->
                     val rawData = inputStream.readBytes()
                     val rotationDegrees = ByteArrayInputStream(rawData).use {

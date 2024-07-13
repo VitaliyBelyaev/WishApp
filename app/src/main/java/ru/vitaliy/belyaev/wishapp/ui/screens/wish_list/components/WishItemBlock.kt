@@ -191,7 +191,6 @@ fun WishItemBlock(
                                 .crossfade(true)
                                 .build()
 
-
                             val paddingStart = if (index == 0) horizontalInnerPadding else 0.dp
                             val paddingEnd = if (index == wishItem.images.lastIndex) horizontalInnerPadding else 0.dp
 
