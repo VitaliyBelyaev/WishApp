@@ -117,7 +117,6 @@ final class BackupAndRestoreViewModel: ObservableObject {
                 print("Copy done")
                
                 
-                sdk.reopenDatabase()
             }
             catch {
                 //Error handling
@@ -319,7 +318,6 @@ final class BackupAndRestoreViewModel: ObservableObject {
     //        //            print("Copy done")
     //        //            logDirContents()
     //        //
-    //        //            sdk.reopenDatabase()
     //        //        }
     //        //        catch {
     //        //            //Error handling

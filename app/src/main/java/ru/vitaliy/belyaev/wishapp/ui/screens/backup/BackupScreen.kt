@@ -19,6 +19,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -212,7 +213,7 @@ internal fun BackupScreen(
                         }
                     }
 
-                    Divider(modifier = Modifier.padding(vertical = 16.dp))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
                     ManageAccountView(
                         accountEmail = null,
@@ -236,7 +237,7 @@ internal fun BackupScreen(
                         },
                         onRefreshBackupInfoClicked = { viewModel.onRefreshBackupInfoClicked() }
                     )
-                    Divider(modifier = Modifier.padding(vertical = 16.dp))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
                     when (state) {
                         is BackupViewState.CurrentBackup.WithRestore -> {
@@ -258,7 +259,7 @@ internal fun BackupScreen(
                         }
                     }
 
-                    Divider(modifier = Modifier.padding(vertical = 16.dp))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
                     ManageAccountView(
                         accountEmail = state.backupInfo.accountEmail,

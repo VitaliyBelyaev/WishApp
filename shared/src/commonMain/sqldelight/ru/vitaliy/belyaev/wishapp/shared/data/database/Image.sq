@@ -40,6 +40,9 @@ deleteById:
 DELETE FROM Image
 WHERE id = ?;
 
+clear:
+DELETE FROM Image;
+
 insertOrReplace:
 INSERT OR REPLACE INTO Image(id, wishId, rawData)
 VALUES (?,?,?);

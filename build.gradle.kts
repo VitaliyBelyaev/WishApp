@@ -6,7 +6,6 @@ plugins {
     alias(libs.plugins.kotlinParcelize).apply(false)
     alias(libs.plugins.kotlinSerialization).apply(false)
     alias(libs.plugins.kotlinMultiplatform).apply(false)
-    alias(libs.plugins.kapt).apply(false)
     alias(libs.plugins.sqlDelight).apply(false)
     alias(libs.plugins.hilt).apply(false)
     alias(libs.plugins.googleServices).apply(false)

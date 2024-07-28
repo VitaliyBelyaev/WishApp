@@ -39,16 +39,16 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
 
     init {
         Napier.d("WishAppSdk init")
-        reopenDatabase()
+        createDatabase()
     }
 
     fun getDatabaseRepository(): DatabaseRepository {
         Napier.d("getDatabaseRepository")
 
-        return _databaseRepository ?: reopenDatabase().let { _databaseRepository!! }
+        return _databaseRepository ?: createDatabase().let { _databaseRepository!! }
     }
 
-    fun reopenDatabase() {
+    private fun createDatabase() {
         sqlDriver = databaseDriveFactory.createDatabaseDriver(Config.DATABASE_NAME)
         val database = WishAppDb(sqlDriver!!).also {
             this.database = it
@@ -66,6 +66,8 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
             sqlDriverTemp = databaseDriveFactory.createDatabaseDriver(backupDbName)
             val databaseTemp = WishAppDb(sqlDriverTemp)
 
+
+            wishQueries?.clear()
             val allWishes: List<Wish> = databaseTemp.wishQueries.getAllForBackup().executeAsList()
             allWishes.forEach { wish ->
                 wishQueries?.insertOrReplace(
@@ -80,6 +82,7 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
                 )
             }
 
+            tagQueries?.clear()
             val allTags: List<Tag> = databaseTemp.tagQueries.getAllForBackup().executeAsList()
             allTags.forEach { tag ->
                 tagQueries?.insertOrReplace(
@@ -88,6 +91,7 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
                 )
             }
 
+            imageQueries?.clear()
             val allImages: List<Image> = databaseTemp.imageQueries.getAllForBackup().executeAsList()
             allImages.forEach { image ->
                 imageQueries?.insertOrReplace(
@@ -97,6 +101,7 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
                 )
             }
 
+            wishTagRelationQueries?.clear()
             val allRelations: List<WishTagRelation> = databaseTemp.wishTagRelationQueries
                 .getAllForBackup().executeAsList()
             allRelations.forEach { relation ->

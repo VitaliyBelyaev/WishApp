@@ -56,7 +56,6 @@ final class MainViewModel: ObservableObject {
         
     }
     
-    
     func onAddTestWishClicked() {
         if testWishes.isEmpty {
             return
@@ -106,20 +105,12 @@ final class MainViewModel: ObservableObject {
                 }
                 return MainViewState(commonItems: commonItems, tagItems: tagItems, currentCount: currentCountInt, completedCount: completedCountInt)
             }
-        //            .catch { error in
-        //                Just(MainViewState(commonItems: [], tagItems: [], currentCount: 0, completedCount: 0))
-        //
-        //            }
+            .catch { error in
+                Just(MainViewState(commonItems: [], tagItems: [], currentCount: 0, completedCount: 0))
+                
+            }
             .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { completion in
-                print("receiveCompletion: \(completion)")
-            }, receiveValue: { [weak self] value in
-                print("receiveValue: \(value)")
-                if let self = self {
-                    self.state = value
-                }
-            })
-        //            .assign(to: \.state, on: self)
+            .assign(to: \.state, on: self)
             .store(in: &subscriptions)
     }
     

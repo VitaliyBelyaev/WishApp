@@ -1,28 +1,27 @@
 [versions]
-kotlin = "1.9.21"
-kotlinCoroutines = "1.7.3"
+kotlin = "1.9.24"
+kotlinCoroutines = "1.8.1"
 kotlinDateTime = "0.5.0"
 kotlinSerialization = "1.6.2"
-compose = "1.5.6"
-compose-compiler = "1.5.6"
+compose-compiler = "1.5.14"
 sqlDelight = "2.0.0"
-hilt = "2.49"
+hilt = "2.51.1"
 koin = "3.4.2"
 koin-compose = "3.4.1"
 accompanist = "0.32.0"
 kmpNativeCoroutines = "1.0.0-ALPHA-22"
 mockito = "3.11.2"
-coil = "2.5.0"
-androidXLyfecycleRuntime = "2.7.0"
-composeBom = "2024.02.02"
-firebaseBom = "32.7.4"
+coil = "2.6.0"
+androidXLyfecycleRuntime = "2.8.4"
+composeBom = "2024.06.00"
+firebaseBom = "33.1.2"
 googlePlayReview = "2.0.1"
 
 #Plugins versions only
 androidGradle = "8.2.2"
-ksp = "1.9.21-1.0.15"
-googleServices = "4.4.1"
-firebaseCrashlyticsPlugin = "2.9.9"
+ksp = "1.9.24-1.0.20"
+googleServices = "4.4.2"
+firebaseCrashlyticsPlugin = "3.0.2"
 firebasePerfPlugin = "1.4.2"
 
 [libraries]
@@ -33,15 +32,15 @@ kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializat
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 
 #AndroidX
-androidx-appcompat-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
-androidx-core-coreKtx = { module = "androidx.core:core-ktx", version = "1.12.0" }
+androidx-appcompat-appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.0" }
+androidx-core-coreKtx = { module = "androidx.core:core-ktx", version = "1.13.1" }
 androidx-core-coreSplashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
 androidx-lifecycle-lifecycleExtensions = { module = "androidx.lifecycle:lifecycle-extensions", version = "2.2.0" }
 androidx-lifecycle-lifecycleRuntimeKtx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidXLyfecycleRuntime" }
 androidx-lifecycle-lifecycleRuntimeCompose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidXLyfecycleRuntime" }
-androidx-datastore-datastorePreferences = { module = "androidx.datastore:datastore-preferences", version = "1.0.0" }
-androidx-webkit-webkit = { module = "androidx.webkit:webkit", version = "1.10.0" }
-androidx-activity-activityCompose = { module = "androidx.activity:activity-compose", version = "1.8.2" }
+androidx-datastore-datastorePreferences = { module = "androidx.datastore:datastore-preferences", version = "1.1.1" }
+androidx-webkit-webkit = { module = "androidx.webkit:webkit", version = "1.11.0" }
+androidx-activity-activityCompose = { module = "androidx.activity:activity-compose", version = "1.9.1" }
 androidx-constraintlayout-constraintlayoutCompose = { module = "androidx.constraintlayout:constraintlayout-compose", version = "1.0.1" }
 androidx-navigation-navigationCompose = { module = "androidx.navigation:navigation-compose", version = "2.7.7" }
 androidx-hilt-hiltNavigationCompose = { module = "androidx.hilt:hilt-navigation-compose", version = "1.2.0" }
@@ -75,11 +74,11 @@ sqlDelight-driver-native = { module = "app.cash.sqldelight:native-driver", versi
 accompanist-systemUiController = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 
 #Google
-google-android-material = { module = "com.google.android.material:material", version = "1.11.0" }
+google-android-material = { module = "com.google.android.material:material", version = "1.12.0" }
 google-android-play-review = { module = "com.google.android.play:review", version.ref = "googlePlayReview" }
 google-android-play-reviewKtx = { module = "com.google.android.play:review-ktx", version.ref = "googlePlayReview" }
-google-android-gms-playServices-ossLicenses = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.1" }
-google-android-gms-playServices-auth = { module = "com.google.android.gms:play-services-auth", version = "21.0.0" }
+google-android-gms-playServices-ossLicenses = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.1.0" }
+google-android-gms-playServices-auth = { module = "com.google.android.gms:play-services-auth", version = "21.2.0" }
 
 #Google drive
 google-api-client-android = { module = "com.google.api-client:google-api-client-android", version = "2.2.0" }
@@ -122,7 +121,6 @@ androidLibrary = { id = "com.android.library", version.ref = "androidGradle" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kmpNativeCoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version.ref = "kmpNativeCoroutines" }
 sqlDelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }

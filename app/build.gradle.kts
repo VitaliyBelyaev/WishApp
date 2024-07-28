@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.daemon.common.trimQuotes
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
-    alias(libs.plugins.kapt)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.hilt)
@@ -91,6 +91,7 @@ android {
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             resValue("string", "release_app_name", "@string/app_name")
+            signingConfig = signingConfigs.getByName("signingTest")
         }
     }
 }
@@ -164,7 +165,7 @@ dependencies {
     // DI
     implementation(libs.koin.android.compose)
     implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
+    ksp(libs.hilt.android.compiler)
 
     // Okhttp
     implementation(platform(libs.squareup.okhttp3.okhttpBom))
