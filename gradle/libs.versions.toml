@@ -16,6 +16,7 @@ coil = "2.5.0"
 androidXLyfecycleRuntime = "2.7.0"
 composeBom = "2024.02.02"
 firebaseBom = "32.7.4"
+googlePlayReview = "2.0.1"
 
 #Plugins versions only
 androidGradle = "8.2.2"
@@ -73,8 +74,10 @@ sqlDelight-driver-native = { module = "app.cash.sqldelight:native-driver", versi
 #Accompanist
 accompanist-systemUiController = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 
+#Google
 google-android-material = { module = "com.google.android.material:material", version = "1.11.0" }
-google-android-play-core = { module = "com.google.android.play:core", version = "1.10.3" }
+google-android-play-review = { module = "com.google.android.play:review", version.ref = "googlePlayReview" }
+google-android-play-reviewKtx = { module = "com.google.android.play:review-ktx", version.ref = "googlePlayReview" }
 google-android-gms-playServices-ossLicenses = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.1" }
 google-android-gms-playServices-auth = { module = "com.google.android.gms:play-services-auth", version = "21.0.0" }
 

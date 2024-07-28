@@ -64,11 +64,9 @@ internal class AppActivity : AppCompatActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
 
-
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             viewModel.onCreateWithoutSavedInstanceState(this)
         }
-
 
         if (savedInstanceState == null) {
             sharedLinkFromAnotherApp = extractSharedLinkAndShowErrorIfInvalid(intent)

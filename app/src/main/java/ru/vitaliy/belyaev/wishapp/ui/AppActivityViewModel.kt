@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
@@ -38,7 +39,7 @@ class AppActivityViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider
 ) : BaseViewModel() {
 
-    private val _requestReviewFlow: MutableSharedFlow<Unit> = MutableSharedFlow(extraBufferCapacity = 2)
+    private val _requestReviewFlow: MutableSharedFlow<Unit> = MutableSharedFlow(extraBufferCapacity = 13)
     val requestReviewFlow: SharedFlow<Unit> = _requestReviewFlow.asSharedFlow()
 
     private val _selectedTheme: MutableStateFlow<Theme> = MutableStateFlow(Theme.SYSTEM)
@@ -63,9 +64,10 @@ class AppActivityViewModel @Inject constructor(
             ) { positiveActionsCount, reviewRequestShownCount ->
                 val needShowReviewRequest = positiveActionsCount != 0 &&
                         reviewRequestShownCount != positiveActionsCount &&
-                        positiveActionsCount % 10 == 0
+                        positiveActionsCount % 5 == 0
                 needShowReviewRequest to positiveActionsCount
             }
+                .distinctUntilChanged()
                 .collect { (needShowReviewRequest, positiveActionsCount) ->
                     if (needShowReviewRequest) {
                         dataStoreRepository.updateReviewRequestShownCount(positiveActionsCount)
@@ -106,6 +108,9 @@ class AppActivityViewModel @Inject constructor(
         analyticsRepository.trackEvent(WishDetailedChangeWishCompletenessClickedEvent)
         launchSafe {
             wishesRepository.updateWishIsCompleted(!oldIsCompleted, wishId)
+            if (!oldIsCompleted) {
+                dataStoreRepository.incrementPositiveActionsCount()
+            }
         }
     }
 

@@ -30,8 +30,8 @@ android {
         applicationId = "ru.vitaliy.belyaev.wishapp"
         minSdk = 23
         targetSdk = 34
-        versionCode = 23
-        versionName = "1.8.1"
+        versionCode = 24
+        versionName = "1.8.2"
 
         stringConfigField(amplitudeApiKey, amplitudeApiKeyValue)
 
@@ -132,7 +132,8 @@ dependencies {
 
     // Google Android
     implementation(libs.google.android.material)
-    implementation(libs.google.android.play.core)
+    implementation(libs.google.android.play.review)
+    implementation(libs.google.android.play.reviewKtx)
 
     // Google Firebase
     implementation(platform(libs.firebase.bom))
