@@ -174,11 +174,15 @@ final class DBICloudFilesManager {
     
     private func getDeviceNameString() -> String {
         let device = Device.current
-        return if let name = device.name {
-            name
+        return if isiOSAppOnMac() {
+            "Desktop device on macOS"
         } else {
             device.safeDescription
         }
+    }
+    
+    private func isiOSAppOnMac() -> Bool {
+        return ProcessInfo.processInfo.isiOSAppOnMac
     }
     
     private func removeFiles(urls: [URL]) {

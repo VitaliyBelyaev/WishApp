@@ -22,27 +22,24 @@ struct BackupAndRestoreContentView: View {
         
         return dateFormatter.string(from: date)
     }
-        
+    
     var body: some View {
         
         Form  {
             Section {
-                
-                
                 if let data = state.backupData {
                     LabeledContent("Creation date", value: getFormattedDate(date: data.updateDate))
                     
-                
                     LabeledContent("Size", value: data.sizeFormattedString)
-                    
-                    if Device.current.isPhone {
-                        LabeledContent("Device", value: data.deviceName)
-                    }
-                    
+                    LabeledContent("Device", value: data.deviceName)
                 } else {
                     Text("No backup found")
                 }
-                
+            } header: {
+                Text("Last backup in iCloud")
+            }
+            
+            Section {
                 Button {
                     print("onCreateBackupClicked")
                     onCreateBackupClicked()
@@ -50,7 +47,9 @@ struct BackupAndRestoreContentView: View {
                     Text("Create backup")
                 }
             } header: {
-                Text("Last backup")
+                Text("Create")
+            } footer: {
+                Text("Creating backup will rewrite existing backup in iCloud with data from the app.")
             }
             
             if state.haveBackup {
@@ -62,6 +61,8 @@ struct BackupAndRestoreContentView: View {
                     }
                 } header: {
                     Text("Restore")
+                } footer: {
+                    Text("Restore backup will rewrite current app data with data from iCloud.")
                 }
             }
             
