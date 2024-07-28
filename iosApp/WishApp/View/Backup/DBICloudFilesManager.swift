@@ -7,12 +7,16 @@
 
 import Foundation
 import shared
+import DeviceKit
 
 final class DBICloudFilesManager {
     
     private let localBackupDbName = "backup.db"
     private let localBackupsDirName = "local_backups"
+    private let backupMetaInfoFileName = "backup_meta_info.json"
     
+    private let jsonDecoder = JSONDecoder()
+    private let jsonEncoder = JSONEncoder()
     
     func crateBackup(
         originDbName: String
@@ -23,6 +27,10 @@ final class DBICloudFilesManager {
         let originFileUrl: URL = getDatabaseUrlWithAppending(originDbName)
         let originFileShmUrl: URL = getDatabaseUrlWithAppending(getShmFileName(originDbName))
         let originFileWalUrl: URL = getDatabaseUrlWithAppending(getWalFileName(originDbName))
+        
+        let updateTimestamp: Int64 = Int64(Date.now.timeIntervalSince1970)
+        let deviceName: String = getDeviceNameString()
+        let metaInfo: BackupMetaInfo = BackupMetaInfo(updateTimestamp: updateTimestamp, deviceNameString: deviceName)
         
         if let containerUrl: URL = FileManager.default.getAppContainerUrlInICloud() {
             
@@ -39,9 +47,10 @@ final class DBICloudFilesManager {
             FileManager.default.createDirIfNotExists(dirUrl: containerUrl)
             
             // Create files URLs
-            let backupFileUrl: URL = containerUrl.appendingPathComponent(localBackupDbName)
-            let backupFileShmUrl: URL = containerUrl.appendingPathComponent(getShmFileName(localBackupDbName))
-            let backupFileWalUrl: URL = containerUrl.appendingPathComponent(getWalFileName(localBackupDbName))
+            let backupFileUrl: URL = containerUrl.getURLWithAppendingPath(localBackupDbName)
+            let backupFileShmUrl: URL = containerUrl.getURLWithAppendingPath(getShmFileName(localBackupDbName))
+            let backupFileWalUrl: URL = containerUrl.getURLWithAppendingPath(getWalFileName(localBackupDbName))
+            let backupMetaInfoUrl: URL = containerUrl.getURLWithAppendingPath(backupMetaInfoFileName)
             
             // Copy files to iCloud
             do {
@@ -49,6 +58,14 @@ final class DBICloudFilesManager {
                 try FileManager.default.copyItem(at: originFileUrl, to: backupFileUrl)
                 try FileManager.default.copyItem(at: originFileShmUrl, to: backupFileShmUrl)
                 try FileManager.default.copyItem(at: originFileWalUrl, to: backupFileWalUrl)
+                
+                let metaInfoData: Data = try jsonEncoder.encode(metaInfo)
+                
+                
+                try metaInfoData.write(to: backupMetaInfoUrl, options: [.atomic, .completeFileProtection])
+                
+                
+                
                 print("copy backup from app to iCloud storage done")
             }
             catch {
@@ -74,9 +91,9 @@ final class DBICloudFilesManager {
         if let containerUrl: URL = FileManager.default.getAppContainerUrlInICloud() {
             
             // Backup files urls in iCloud dir
-            let backupFileUrl: URL = containerUrl.appendingPathComponent(localBackupDbName)
-            let backupFileShmUrl: URL = containerUrl.appendingPathComponent(getShmFileName(localBackupDbName))
-            let backupFileWalUrl: URL = containerUrl.appendingPathComponent(getWalFileName(localBackupDbName))
+            let backupFileUrl: URL = containerUrl.getURLWithAppendingPath(localBackupDbName)
+            let backupFileShmUrl: URL = containerUrl.getURLWithAppendingPath(getShmFileName(localBackupDbName))
+            let backupFileWalUrl: URL = containerUrl.getURLWithAppendingPath(getWalFileName(localBackupDbName))
             
             // Backup temp files urls in app databases dir
             let backupFileUrlInDbDir = getDatabaseUrlWithAppending(localBackupDbName)
@@ -111,8 +128,6 @@ final class DBICloudFilesManager {
             }
             
             print("End restore backup")
-            logDirContents()
-            
         } else {
             let error = ResoreBackupError.iCloudContainerNotExists
             print("\(error)")
@@ -120,18 +135,49 @@ final class DBICloudFilesManager {
         }
     }
     
-    func isBackupExistsInICloud() -> Bool {
+    func getBackupData() -> BackupData? {
         if let containerUrl: URL = FileManager.default.getAppContainerUrlInICloud() {
             
-            let backupFileUrl: URL = containerUrl.appendingPathComponent(localBackupDbName)
-            let backupFileShmUrl: URL = containerUrl.appendingPathComponent(getShmFileName(localBackupDbName))
-            let backupFileWalUrl: URL = containerUrl.appendingPathComponent(getWalFileName(localBackupDbName))
+            let backupFileUrl: URL = containerUrl.getURLWithAppendingPath(localBackupDbName)
+            let backupFileShmUrl: URL = containerUrl.getURLWithAppendingPath(getShmFileName(localBackupDbName))
+            let backupFileWalUrl: URL = containerUrl.getURLWithAppendingPath(getWalFileName(localBackupDbName))
             
-            return FileManager.default.fileExists(atPath: backupFileUrl.path) &&
-                FileManager.default.fileExists(atPath: backupFileShmUrl.path) &&
-                FileManager.default.fileExists(atPath: backupFileWalUrl.path)
+            let backupMetaInfoUrl: URL = containerUrl.getURLWithAppendingPath(backupMetaInfoFileName)
+            
+            do {
+                let backupFileAttrs = try FileManager.default.attributesOfItem(atPath: backupFileUrl.path) as NSDictionary
+                let backupFileShmAttrs = try FileManager.default.attributesOfItem(atPath: backupFileShmUrl.path) as NSDictionary
+                let backupFileWalAttrs = try FileManager.default.attributesOfItem(atPath: backupFileWalUrl.path) as NSDictionary
+                
+                let totalSizeBytes: UInt64 = backupFileAttrs.fileSize() + backupFileShmAttrs.fileSize() + backupFileWalAttrs.fileSize()
+                let totalSizeString: String = ByteCountFormatter.string(fromByteCount: Int64(totalSizeBytes), countStyle: .file)
+                
+                guard let metaInfoData: Data = FileManager.default.contents(atPath: backupMetaInfoUrl.path) else {
+                    return nil
+                }
+                
+                let metaInfo: BackupMetaInfo = try jsonDecoder.decode(BackupMetaInfo.self, from: metaInfoData)
+                let modificationDate: Date = Date(timeIntervalSince1970: TimeInterval(metaInfo.updateTimestamp))
+                
+                return BackupData(
+                    updateDate: modificationDate,
+                    sizeFormattedString: totalSizeString,
+                    deviceName: metaInfo.deviceNameString
+                )
+            } catch {
+                return nil
+            }
         } else {
-            return false
+            return nil
+        }
+    }
+    
+    private func getDeviceNameString() -> String {
+        let device = Device.current
+        return if let name = device.name {
+            name
+        } else {
+            device.safeDescription
         }
     }
     
@@ -153,76 +199,12 @@ final class DBICloudFilesManager {
     
     
     private func getDatabaseUrlWithAppending(_ component: String) -> URL {
-        return URL.applicationSupportDirectory.appendingPathComponent("databases/\(component)")
+        return URL.applicationSupportDirectory.getURLWithAppendingPath("databases/\(component)")
     }
     
     private func isFileExists(path: String) -> Bool {
         var isDir: ObjCBool = false
         return FileManager.default.fileExists(atPath: path, isDirectory: &isDir)
-    }
-    
-    private func logDirContents() {
-        do {
-            
-            let suppDirUrl = URL.applicationSupportDirectory
-            
-            let suppItems = try FileManager.default.contentsOfDirectory(atPath: suppDirUrl.path)
-            
-            for supItem in suppItems {
-                print("Found support item: \(supItem)")
-            }
-            
-            let localBackupsDirUrl = URL.applicationSupportDirectory.appendingPathComponent(localBackupsDirName)
-            let localBackupsItems = try FileManager.default.contentsOfDirectory(atPath: localBackupsDirUrl.path)
-            for backupItem in localBackupsItems {
-                print("Found local backup item: \(backupItem)")
-                
-                if backupItem == "backup.db" {
-                    do {
-                        let fileUrl = localBackupsDirUrl.appendingPathComponent(backupItem)
-                        
-                        let map = try FileManager.default
-                            .attributesOfItem(atPath: fileUrl.path)
-                            .sorted() { $0.key.rawValue < $1.key.rawValue }
-                        
-                        map.forEach { (key: FileAttributeKey, value: Any) in
-                            print("local backup file attr, key: \(key), value: \(value)")
-                        }
-                    } catch {
-                        
-                    }
-                }
-                
-                
-            }
-            
-            let dbDirUrl = URL.applicationSupportDirectory.appendingPathComponent("databases")
-            let dbItems = try FileManager.default.contentsOfDirectory(atPath: dbDirUrl.path)
-            for dbItem in dbItems {
-                
-                print("Found db item: \(dbItem)")
-                
-                if dbItem == "ru_vitaliy_belyaev_wishapp.db" {
-                    do {
-                        let dbFileUrl = dbDirUrl.appendingPathComponent(dbItem)
-                        
-                        let map = try FileManager.default
-                            .attributesOfItem(atPath: dbFileUrl.path)
-                            .sorted() { $0.key.rawValue < $1.key.rawValue }
-                        
-                        
-                        map.forEach { (key: FileAttributeKey, value: Any) in
-                            print("dbFileUrl attr, key: \(key), value: \(value)")
-                        }
-                        
-                    } catch {
-                        
-                    }
-                }
-            }
-        } catch {
-            // failed to read directory – bad permissions, perhaps?
-        }
     }
 }
 

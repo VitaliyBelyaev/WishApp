@@ -9,6 +9,12 @@
 /* Begin PBXBuildFile section */
 		E3054FBA2C56431800112227 /* DBICloudFilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3054FB92C56431800112227 /* DBICloudFilesManager.swift */; };
 		E3054FBC2C5646E500112227 /* BackupErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3054FBB2C5646E500112227 /* BackupErrors.swift */; };
+		E3054FBE2C56597800112227 /* BackupViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3054FBD2C56597800112227 /* BackupViewState.swift */; };
+		E3054FC02C5661F600112227 /* BackupAndRestoreContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3054FBF2C5661F600112227 /* BackupAndRestoreContentView.swift */; };
+		E3054FC32C56769100112227 /* BackupMetaInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3054FC22C56769100112227 /* BackupMetaInfo.swift */; };
+		E3054FC62C5678B900112227 /* DeviceKit in Frameworks */ = {isa = PBXBuildFile; productRef = E3054FC52C5678B900112227 /* DeviceKit */; };
+		E3054FC82C567D8C00112227 /* BackupData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3054FC72C567D8C00112227 /* BackupData.swift */; };
+		E3054FCA2C56840A00112227 /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3054FC92C56840A00112227 /* URLExtension.swift */; };
 		E319C8DF2C2824CF00B690C1 /* DBLocalFilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E319C8DE2C2824CF00B690C1 /* DBLocalFilesManager.swift */; };
 		E325B4652A926CFD005DD35D /* ApiKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = E325B4642A926CFD005DD35D /* ApiKeys.swift */; };
 		E325B4672A92726E005DD35D /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E325B4662A92726E005DD35D /* Errors.swift */; };
@@ -77,6 +83,11 @@
 /* Begin PBXFileReference section */
 		E3054FB92C56431800112227 /* DBICloudFilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBICloudFilesManager.swift; sourceTree = "<group>"; };
 		E3054FBB2C5646E500112227 /* BackupErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupErrors.swift; sourceTree = "<group>"; };
+		E3054FBD2C56597800112227 /* BackupViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupViewState.swift; sourceTree = "<group>"; };
+		E3054FBF2C5661F600112227 /* BackupAndRestoreContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAndRestoreContentView.swift; sourceTree = "<group>"; };
+		E3054FC22C56769100112227 /* BackupMetaInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupMetaInfo.swift; sourceTree = "<group>"; };
+		E3054FC72C567D8C00112227 /* BackupData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupData.swift; sourceTree = "<group>"; };
+		E3054FC92C56840A00112227 /* URLExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLExtension.swift; sourceTree = "<group>"; };
 		E30783EB2B6FB26500E04C9E /* WishApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WishApp.entitlements; sourceTree = "<group>"; };
 		E30783F02B6FCB3A00E04C9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E319C8DE2C2824CF00B690C1 /* DBLocalFilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBLocalFilesManager.swift; sourceTree = "<group>"; };
@@ -151,6 +162,7 @@
 				E3389BB02BFBA81200A01BE0 /* SwiftUIFlowLayout in Frameworks */,
 				E3389BB72BFBA88E00A01BE0 /* KMPNativeCoroutinesCore in Frameworks */,
 				E3389BB52BFBA88E00A01BE0 /* KMPNativeCoroutinesCombine in Frameworks */,
+				E3054FC62C5678B900112227 /* DeviceKit in Frameworks */,
 				E3389BAD2BFBA80400A01BE0 /* SwiftUIIntrospect in Frameworks */,
 				E3389BB32BFBA88E00A01BE0 /* KMPNativeCoroutinesAsync in Frameworks */,
 			);
@@ -159,14 +171,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E3054FC12C56767100112227 /* Entity */ = {
+			isa = PBXGroup;
+			children = (
+				E3054FBD2C56597800112227 /* BackupViewState.swift */,
+				E3054FBB2C5646E500112227 /* BackupErrors.swift */,
+				E3054FC22C56769100112227 /* BackupMetaInfo.swift */,
+				E3054FC72C567D8C00112227 /* BackupData.swift */,
+			);
+			path = Entity;
+			sourceTree = "<group>";
+		};
 		E3FBEFCE2B73AE0500D37845 /* Backup */ = {
 			isa = PBXGroup;
 			children = (
+				E3054FC12C56767100112227 /* Entity */,
 				ED70B6852A433D3600E6786B /* BackupAndRestoreView.swift */,
 				E34510492BB6F212008E7A65 /* BackupAndRestoreViewModel.swift */,
 				E319C8DE2C2824CF00B690C1 /* DBLocalFilesManager.swift */,
 				E3054FB92C56431800112227 /* DBICloudFilesManager.swift */,
-				E3054FBB2C5646E500112227 /* BackupErrors.swift */,
+				E3054FBF2C5661F600112227 /* BackupAndRestoreContentView.swift */,
 			);
 			path = Backup;
 			sourceTree = "<group>";
@@ -344,6 +368,7 @@
 				ED5383FB2A6701B000BFAFB2 /* ViewExtension.swift */,
 				E325B4642A926CFD005DD35D /* ApiKeys.swift */,
 				E3DD74C02B6FD5A800A937BF /* FileManagerExtensions.swift */,
+				E3054FC92C56840A00112227 /* URLExtension.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -443,6 +468,7 @@
 				E3389BB42BFBA88E00A01BE0 /* KMPNativeCoroutinesCombine */,
 				E3389BB62BFBA88E00A01BE0 /* KMPNativeCoroutinesCore */,
 				E3389BB92BFBA8B100A01BE0 /* Amplitude */,
+				E3054FC52C5678B900112227 /* DeviceKit */,
 			);
 			productName = WishApp;
 			productReference = ED6DB19429B4F21F00A11CA3 /* WishApp.app */;
@@ -478,6 +504,7 @@
 				E3389BAE2BFBA81200A01BE0 /* XCRemoteSwiftPackageReference "swiftui-flow-layout" */,
 				E3389BB12BFBA88E00A01BE0 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */,
 				E3389BB82BFBA8B100A01BE0 /* XCRemoteSwiftPackageReference "Amplitude-iOS" */,
+				E3054FC42C5678B900112227 /* XCRemoteSwiftPackageReference "DeviceKit" */,
 			);
 			productRefGroup = ED6DB19529B4F21F00A11CA3 /* Products */;
 			projectDirPath = "";
@@ -532,6 +559,7 @@
 			files = (
 				E3054FBC2C5646E500112227 /* BackupErrors.swift in Sources */,
 				ED3194612A30CAA90070CDE4 /* WishDetailedView.swift in Sources */,
+				E3054FBE2C56597800112227 /* BackupViewState.swift in Sources */,
 				ED1750952A38C97C00665949 /* WishListContentView.swift in Sources */,
 				ED6EFA3D2A22495F00CC1B13 /* WishListView.swift in Sources */,
 				ED48EB0A2A6911410092B8B6 /* NeedToRequestReviewUseCase.swift in Sources */,
@@ -552,24 +580,28 @@
 				ED70B67F2A408D7D00E6786B /* WishItemView.swift in Sources */,
 				E3DD74C12B6FD5A800A937BF /* FileManagerExtensions.swift in Sources */,
 				E325B4652A926CFD005DD35D /* ApiKeys.swift in Sources */,
+				E3054FCA2C56840A00112227 /* URLExtension.swift in Sources */,
 				EDAE5D1F2A3B5AE50072EB31 /* SectionHeaderView.swift in Sources */,
 				ED6EFA4C2A225A7400CC1B13 /* WishListMode.swift in Sources */,
 				EDC203152A3C94760076EAD0 /* UpdateWishTagsView.swift in Sources */,
 				EDC203092A3C61FC0076EAD0 /* LinkInfo.swift in Sources */,
 				ED9CAD9B2A470E320079D814 /* SettingsItemView.swift in Sources */,
 				ED17509A2A38D09B00665949 /* AppViewModel.swift in Sources */,
+				E3054FC32C56769100112227 /* BackupMetaInfo.swift in Sources */,
 				ED70B6812A41E27500E6786B /* DateExtension.swift in Sources */,
 				ED48EB082A690BFB0092B8B6 /* UserDefaultsKeys.swift in Sources */,
 				ED9CAD9F2A4721610079D814 /* MailView.swift in Sources */,
 				ED6DB19829B4F21F00A11CA3 /* WishApp.swift in Sources */,
 				EDAE5D1B2A3A05FD0072EB31 /* MainNavSegment.swift in Sources */,
 				EDC203132A3C94540076EAD0 /* UpdateWishTagsViewModel.swift in Sources */,
+				E3054FC02C5661F600112227 /* BackupAndRestoreContentView.swift in Sources */,
 				ED48EB0C2A691C330092B8B6 /* AppActionsEvents.swift in Sources */,
 				ED70B6862A433D3600E6786B /* BackupAndRestoreView.swift in Sources */,
 				ED2555BC2A2A34A700678E7C /* TagItemView.swift in Sources */,
 				EDAE5D1D2A3B50F20072EB31 /* CommonItemView.swift in Sources */,
 				ED7102D92A49E5F500E24E3D /* UIDeviceExtension.swift in Sources */,
 				E3054FBA2C56431800112227 /* DBICloudFilesManager.swift in Sources */,
+				E3054FC82C567D8C00112227 /* BackupData.swift in Sources */,
 				ED6EFA472A224B8700CC1B13 /* NavigationModel.swift in Sources */,
 				ED21B4B82A4F2D0500E2A989 /* Analytics.swift in Sources */,
 				ED6EFA3F2A22498700CC1B13 /* WishListViewModel.swift in Sources */,
@@ -833,6 +865,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		E3054FC42C5678B900112227 /* XCRemoteSwiftPackageReference "DeviceKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/devicekit/DeviceKit.git";
+			requirement = {
+				kind = exactVersion;
+				version = 5.4.0;
+			};
+		};
 		E3389BAB2BFBA80400A01BE0 /* XCRemoteSwiftPackageReference "swiftui-introspect" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/siteline/swiftui-introspect";
@@ -868,6 +908,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		E3054FC52C5678B900112227 /* DeviceKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E3054FC42C5678B900112227 /* XCRemoteSwiftPackageReference "DeviceKit" */;
+			productName = DeviceKit;
+		};
 		E3389BAC2BFBA80400A01BE0 /* SwiftUIIntrospect */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E3389BAB2BFBA80400A01BE0 /* XCRemoteSwiftPackageReference "swiftui-introspect" */;

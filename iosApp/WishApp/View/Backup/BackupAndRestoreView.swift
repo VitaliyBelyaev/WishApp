@@ -18,46 +18,12 @@ struct BackupAndRestoreView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading) {
-            
-            Text("Last backup")
-                .font(.headline)
-                .padding(.bottom)
-            
-            Text("is exists: \(viewModel.isBackupExistsInICloud)")
-                .padding(.bottom)
         
-            Button {
-                print("onCreateBackupClicked")
-                viewModel.onCreateBackupClicked()
-            } label: {
-                HStack {
-                    Text("Create backup")
-                    Spacer()
-                }
-            }
-            
-        
-            Text("Restore")
-                .font(.headline)
-                .padding(.vertical)
-        
-            Button {
-                print("onRestoreClicked")
-                viewModel.onRestoreClicked()
-            } label: {
-                HStack {
-                    Text("Restore backup")
-                    Spacer()
-                }
-            }.disabled(!viewModel.isBackupExistsInICloud)
-            
-            Spacer()
-        }
-        .padding()
-        .navigationTitle("Backup and restore")
-        .navigationBarTitleDisplayMode(.inline)
-        
+        BackupAndRestoreContentView(
+            state: viewModel.state,
+            onCreateBackupClicked: { viewModel.onCreateBackupClicked() },
+            onRestoreBackupClicked: { viewModel.onRestoreClicked() }
+        )        
     }
 }
 

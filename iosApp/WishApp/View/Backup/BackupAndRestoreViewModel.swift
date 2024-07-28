@@ -15,16 +15,18 @@ final class BackupAndRestoreViewModel: ObservableObject {
     
     private let dbFilesManager = DBLocalFilesManager()
     private let dbICloudFilesManager = DBICloudFilesManager()
-        
-    @Published var isBackupExistsInICloud: Bool = false
+    
+    @Published var state: BackupViewState = BackupViewState()
     
     init() {
-        self.isBackupExistsInICloud = dbICloudFilesManager.isBackupExistsInICloud()
+        updateState()
     }
-        
+    
     func onRestoreClicked() {
         do {
             try dbICloudFilesManager.restoreBackup(originDbName: sdk.databaseName, sdk: sdk)
+            
+            updateState()
         } catch {
             print("Error restore backup: \(error)")
         }
@@ -33,8 +35,18 @@ final class BackupAndRestoreViewModel: ObservableObject {
     func onCreateBackupClicked() {
         do {
             try dbICloudFilesManager.crateBackup(originDbName: sdk.databaseName)
+            
+            updateState()
         } catch {
             print("Error create backup: \(error)")
+        }
+    }
+    
+    private func updateState() {
+        if let backupData: BackupData = dbICloudFilesManager.getBackupData() {
+            self.state = BackupViewState(haveBackup: true, backupData: backupData)
+        } else {
+            self.state = BackupViewState()
         }
     }
     
@@ -115,7 +127,7 @@ final class BackupAndRestoreViewModel: ObservableObject {
                     try FileManager.default.removeItem(at: originFileUrl)
                     
                     print("remove originFileUrl: \(originFileUrl) DONE")
-                   
+                    
                 }
                 catch {
                     //Error handling
@@ -127,7 +139,7 @@ final class BackupAndRestoreViewModel: ObservableObject {
                 print("Try to copy backup from cloud to local")
                 try FileManager.default.copyItem(at: cloudFileUrl, to: originFileUrl)
                 print("Copy done")
-               
+                
                 
             }
             catch {

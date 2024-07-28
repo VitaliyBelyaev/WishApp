@@ -1,5 +1,5 @@
 {
-  "originHash" : "5e782664f355154d0ec81562c8a5fb65eb3f275e1575fc859e4dbeebbc859281",
+  "originHash" : "0aa922173b4194cd645605ea3071fef3a587520db8ec93f589fe3b19b9bb391f",
   "pins" : [
     {
       "identity" : "amplitude-ios",
@@ -17,6 +17,15 @@
       "state" : {
         "revision" : "e2ca17ac735bcbc48b13062484541702ef45153d",
         "version" : "1.0.3"
+      }
+    },
+    {
+      "identity" : "devicekit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/devicekit/DeviceKit.git",
+      "state" : {
+        "revision" : "5757447e9f92c476ee2ca41ead7eb6db07936430",
+        "version" : "5.4.0"
       }
     },
     {
