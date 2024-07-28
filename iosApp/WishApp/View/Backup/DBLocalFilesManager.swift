@@ -8,7 +8,7 @@
 import Foundation
 import shared
 
-final class DBFilesManager {
+final class DBLocalFilesManager {
     
     private let localBackupDbName = "backup.db"
     private let localBackupsDirName = "local_backups"

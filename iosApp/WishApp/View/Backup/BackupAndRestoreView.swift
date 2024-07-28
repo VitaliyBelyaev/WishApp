@@ -23,6 +23,9 @@ struct BackupAndRestoreView: View {
             Text("Last backup")
                 .font(.headline)
                 .padding(.bottom)
+            
+            Text("is exists: \(viewModel.isBackupExistsInICloud)")
+                .padding(.bottom)
         
             Button {
                 print("onCreateBackupClicked")
@@ -47,7 +50,7 @@ struct BackupAndRestoreView: View {
                     Text("Restore backup")
                     Spacer()
                 }
-            }
+            }.disabled(!viewModel.isBackupExistsInICloud)
             
             Spacer()
         }

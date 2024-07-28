@@ -13,17 +13,29 @@ final class BackupAndRestoreViewModel: ObservableObject {
     
     private let sdk: WishAppSdk = WishAppSdkDiHelper().wishAppSdk
     
-    private let dbFilesManager = DBFilesManager()
+    private let dbFilesManager = DBLocalFilesManager()
+    private let dbICloudFilesManager = DBICloudFilesManager()
+        
+    @Published var isBackupExistsInICloud: Bool = false
     
-    @Published var wishes: [WishEntity] = []
-    @Published var title: String = ""
+    init() {
+        self.isBackupExistsInICloud = dbICloudFilesManager.isBackupExistsInICloud()
+    }
         
     func onRestoreClicked() {
-        dbFilesManager.restoreBackup(originDbName: sdk.databaseName, sdk: sdk)
+        do {
+            try dbICloudFilesManager.restoreBackup(originDbName: sdk.databaseName, sdk: sdk)
+        } catch {
+            print("Error restore backup: \(error)")
+        }
     }
     
     func onCreateBackupClicked() {
-        dbFilesManager.crateBackup(deleteExisting: true, originDbName: sdk.databaseName)
+        do {
+            try dbICloudFilesManager.crateBackup(originDbName: sdk.databaseName)
+        } catch {
+            print("Error create backup: \(error)")
+        }
     }
     
     private func createBackupToICloud() {
