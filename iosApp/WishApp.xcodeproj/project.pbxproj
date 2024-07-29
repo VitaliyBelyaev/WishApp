@@ -25,6 +25,7 @@
 		E3389BB52BFBA88E00A01BE0 /* KMPNativeCoroutinesCombine in Frameworks */ = {isa = PBXBuildFile; productRef = E3389BB42BFBA88E00A01BE0 /* KMPNativeCoroutinesCombine */; };
 		E3389BB72BFBA88E00A01BE0 /* KMPNativeCoroutinesCore in Frameworks */ = {isa = PBXBuildFile; productRef = E3389BB62BFBA88E00A01BE0 /* KMPNativeCoroutinesCore */; };
 		E3389BBA2BFBA8B100A01BE0 /* Amplitude in Frameworks */ = {isa = PBXBuildFile; productRef = E3389BB92BFBA8B100A01BE0 /* Amplitude */; };
+		E33DA82F2C57796D00F9A2B2 /* FullscreenLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E33DA82E2C57796D00F9A2B2 /* FullscreenLoadingView.swift */; };
 		E345104A2BB6F212008E7A65 /* BackupAndRestoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34510492BB6F212008E7A65 /* BackupAndRestoreViewModel.swift */; };
 		E3DD74C12B6FD5A800A937BF /* FileManagerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3DD74C02B6FD5A800A937BF /* FileManagerExtensions.swift */; };
 		ED1750902A373F1000665949 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED17508F2A373F1000665949 /* SettingsView.swift */; };
@@ -94,6 +95,7 @@
 		E325B4642A926CFD005DD35D /* ApiKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiKeys.swift; sourceTree = "<group>"; };
 		E325B4662A92726E005DD35D /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		E33256B02BB5944600794A58 /* AppKeys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = AppKeys.plist; sourceTree = "<group>"; };
+		E33DA82E2C57796D00F9A2B2 /* FullscreenLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenLoadingView.swift; sourceTree = "<group>"; };
 		E34510492BB6F212008E7A65 /* BackupAndRestoreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAndRestoreViewModel.swift; sourceTree = "<group>"; };
 		E3DD74C02B6FD5A800A937BF /* FileManagerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerExtensions.swift; sourceTree = "<group>"; };
 		ED17508F2A373F1000665949 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -405,6 +407,7 @@
 			isa = PBXGroup;
 			children = (
 				ED79141B2A4C95EE00E7FF0C /* WebView.swift */,
+				E33DA82E2C57796D00F9A2B2 /* FullscreenLoadingView.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -593,6 +596,7 @@
 				ED9CAD9F2A4721610079D814 /* MailView.swift in Sources */,
 				ED6DB19829B4F21F00A11CA3 /* WishApp.swift in Sources */,
 				EDAE5D1B2A3A05FD0072EB31 /* MainNavSegment.swift in Sources */,
+				E33DA82F2C57796D00F9A2B2 /* FullscreenLoadingView.swift in Sources */,
 				EDC203132A3C94540076EAD0 /* UpdateWishTagsViewModel.swift in Sources */,
 				E3054FC02C5661F600112227 /* BackupAndRestoreContentView.swift in Sources */,
 				ED48EB0C2A691C330092B8B6 /* AppActionsEvents.swift in Sources */,

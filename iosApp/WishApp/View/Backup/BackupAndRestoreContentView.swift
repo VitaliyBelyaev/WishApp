@@ -25,50 +25,57 @@ struct BackupAndRestoreContentView: View {
     
     var body: some View {
         
-        Form  {
-            Section {
-                if let data = state.backupData {
-                    LabeledContent("Creation date", value: getFormattedDate(date: data.updateDate))
-                    
-                    LabeledContent("Size", value: data.sizeFormattedString)
-                    LabeledContent("Device", value: data.deviceName)
-                } else {
-                    Text("No backup found")
-                }
-            } header: {
-                Text("Last backup in iCloud")
-            }
-            
-            Section {
-                Button {
-                    print("onCreateBackupClicked")
-                    onCreateBackupClicked()
-                } label: {
-                    Text("Create backup")
-                }
-            } header: {
-                Text("Create")
-            } footer: {
-                Text("Creating backup will rewrite existing backup in iCloud with data from the app.")
-            }
-            
-            if state.haveBackup {
+        
+        ZStack {
+            Form  {
                 Section {
-                    Button {
-                        onRestoreBackupClicked()
-                    } label: {
-                        Text("Restore backup")
+                    if let data = state.backupData {
+                        LabeledContent("Creation date", value: getFormattedDate(date: data.updateDate))
+                        
+                        LabeledContent("Size", value: data.sizeFormattedString)
+                        LabeledContent("Device", value: data.deviceName)
+                    } else {
+                        Text("No backup found")
                     }
                 } header: {
-                    Text("Restore")
-                } footer: {
-                    Text("Restore backup will rewrite current app data with data from iCloud.")
+                    Text("Last backup in iCloud")
                 }
+                
+                Section {
+                    Button {
+                        print("onCreateBackupClicked")
+                        onCreateBackupClicked()
+                    } label: {
+                        Text("Create backup")
+                    }
+                } header: {
+                    Text("Create")
+                } footer: {
+                    Text("Creating backup will rewrite existing backup in iCloud with data from the app.")
+                }
+                
+                if state.haveBackup {
+                    Section {
+                        Button {
+                            onRestoreBackupClicked()
+                        } label: {
+                            Text("Restore backup")
+                        }
+                    } header: {
+                        Text("Restore")
+                    } footer: {
+                        Text("Restore backup will rewrite current app data with data from iCloud.")
+                    }
+                }
+                
             }
             
+            FullscreenLoadingView(loadingText: "Loading", isTransparent: true, transparentOpacity: 0.7)
         }
         .navigationTitle("Backup and restore")
         .navigationBarTitleDisplayMode(.inline)
+
+        
     }
 }
 

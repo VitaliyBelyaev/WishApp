@@ -34,9 +34,12 @@ final class DBICloudFilesManager {
         
         if let containerUrl: URL = FileManager.default.getAppContainerUrlInICloud() {
             
-            // Remove whole dir with contents in iCloud
+            // Remove all files in dir with content in iCloud
             do {
-                try FileManager.default.removeItem(at: containerUrl)
+                for filePath in try FileManager.default.contentsOfDirectory(atPath: containerUrl.path) {
+                    let fileURL: URL = containerUrl.getURLWithAppendingPath(filePath)
+                    try FileManager.default.removeItem(at: fileURL)
+                }
             } catch {
                 let customError = CreateBackupError.removeOldBackupInICloudError(error)
                 print("\(customError.localizedDescription)")
