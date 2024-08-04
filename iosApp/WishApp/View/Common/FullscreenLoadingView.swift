@@ -9,6 +9,8 @@ import SwiftUI
 
 struct FullscreenLoadingView: View {
     
+    @Environment(\.colorScheme) var colorScheme
+    
     let loadingText: String?
     let isTransparent: Bool
     let transparentOpacity: Double
@@ -36,24 +38,42 @@ struct FullscreenLoadingView: View {
             opaqueOpacity
         }
         
-        VStack {
-            Spacer()
-            if loadingText != nil {
-                Text(loadingText!)
-                    .padding(.horizontal, 32)
-                    .padding(.bottom, 8)
+        ZStack {
+            VStack {
+                if loadingText != nil {
+                    Text(loadingText!)
+                        .lineLimit(2)
+                        .padding(.bottom, 4)
+                }
+                
+                ProgressView()
+                    .progressViewStyle(.circular)
+                
             }
-           
-            ProgressView()
-                .progressViewStyle(.circular)
-            
-            Spacer()
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
+            .padding(.bottom, 14)
+            .background {
+                let color: Color = if colorScheme == .dark {
+                    Color(uiColor: UIColor.systemGray5)
+                } else {
+                    Color(uiColor: UIColor.systemBackground)
+                }
+                
+                if isTransparent {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(color.shadow(.drop(radius: 20)))
+                } else {
+                    Color.clear
+                }
+            }
+            .frame(maxWidth: 350)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(.background.opacity(opacity))
     }
 }
 
 #Preview {
-    FullscreenLoadingView(loadingText: "Loading", isTransparent: true)
+    FullscreenLoadingView(loadingText: "Restoring data from backup...", isTransparent: true)
 }

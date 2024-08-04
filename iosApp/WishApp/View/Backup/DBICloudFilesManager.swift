@@ -20,7 +20,7 @@ final class DBICloudFilesManager {
     
     func crateBackup(
         originDbName: String
-    ) throws {
+    ) async throws {
         
         print("Start create backup")
         
@@ -88,7 +88,7 @@ final class DBICloudFilesManager {
     func restoreBackup(
         originDbName: String,
         sdk: WishAppSdk
-    ) throws {
+    ) async throws {
         print("Start restore backup")
         
         if let containerUrl: URL = FileManager.default.getAppContainerUrlInICloud() {
@@ -138,7 +138,7 @@ final class DBICloudFilesManager {
         }
     }
     
-    func getBackupData() -> BackupData? {
+    func getBackupData() async -> BackupData? {
         if let containerUrl: URL = FileManager.default.getAppContainerUrlInICloud() {
             
             let backupFileUrl: URL = containerUrl.getURLWithAppendingPath(localBackupDbName)

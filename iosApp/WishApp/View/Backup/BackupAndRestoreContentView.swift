@@ -12,6 +12,8 @@ struct BackupAndRestoreContentView: View {
     
     let state: BackupViewState
     
+    let loadingState: BackupLoadingState
+    
     let onCreateBackupClicked: () -> ()
     let onRestoreBackupClicked: () -> ()
     
@@ -24,7 +26,6 @@ struct BackupAndRestoreContentView: View {
     }
     
     var body: some View {
-        
         
         ZStack {
             Form  {
@@ -59,7 +60,7 @@ struct BackupAndRestoreContentView: View {
                         Button {
                             onRestoreBackupClicked()
                         } label: {
-                            Text("Restore backup")
+                            Text("Restore data from backup")
                         }
                     } header: {
                         Text("Restore")
@@ -67,15 +68,18 @@ struct BackupAndRestoreContentView: View {
                         Text("Restore backup will rewrite current app data with data from iCloud.")
                     }
                 }
-                
             }
             
-            FullscreenLoadingView(loadingText: "Loading", isTransparent: true, transparentOpacity: 0.7)
+            if loadingState.showLoader() {
+                let isTransparent = state.haveBackup
+                let loadingText = loadingState.loaderText()
+                
+                FullscreenLoadingView(loadingText: loadingText, isTransparent: isTransparent, transparentOpacity: 0.8)
+            }
+            
         }
         .navigationTitle("Backup and restore")
         .navigationBarTitleDisplayMode(.inline)
-
-        
     }
 }
 
@@ -92,6 +96,7 @@ struct BackupAndRestoreContentView_Previews: PreviewProvider {
         NavigationStack {
             BackupAndRestoreContentView(
                 state: backupState,
+                loadingState: BackupLoadingState.none,
                 onCreateBackupClicked: { },
                 onRestoreBackupClicked: {}
             )

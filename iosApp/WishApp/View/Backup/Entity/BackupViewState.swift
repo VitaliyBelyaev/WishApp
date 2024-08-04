@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 struct BackupViewState {
     
     let haveBackup: Bool

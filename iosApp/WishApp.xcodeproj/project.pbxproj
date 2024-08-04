@@ -28,6 +28,7 @@
 		E33DA82F2C57796D00F9A2B2 /* FullscreenLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E33DA82E2C57796D00F9A2B2 /* FullscreenLoadingView.swift */; };
 		E345104A2BB6F212008E7A65 /* BackupAndRestoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34510492BB6F212008E7A65 /* BackupAndRestoreViewModel.swift */; };
 		E3DD74C12B6FD5A800A937BF /* FileManagerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3DD74C02B6FD5A800A937BF /* FileManagerExtensions.swift */; };
+		E3E5D9CC2C5FB25800A680CC /* BackupLoadingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3E5D9CB2C5FB25800A680CC /* BackupLoadingState.swift */; };
 		ED1750902A373F1000665949 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED17508F2A373F1000665949 /* SettingsView.swift */; };
 		ED1750922A37452900665949 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1750912A37452900665949 /* MainContentView.swift */; };
 		ED1750952A38C97C00665949 /* WishListContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1750942A38C97C00665949 /* WishListContentView.swift */; };
@@ -98,6 +99,7 @@
 		E33DA82E2C57796D00F9A2B2 /* FullscreenLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenLoadingView.swift; sourceTree = "<group>"; };
 		E34510492BB6F212008E7A65 /* BackupAndRestoreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAndRestoreViewModel.swift; sourceTree = "<group>"; };
 		E3DD74C02B6FD5A800A937BF /* FileManagerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerExtensions.swift; sourceTree = "<group>"; };
+		E3E5D9CB2C5FB25800A680CC /* BackupLoadingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupLoadingState.swift; sourceTree = "<group>"; };
 		ED17508F2A373F1000665949 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		ED1750912A37452900665949 /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
 		ED1750942A38C97C00665949 /* WishListContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishListContentView.swift; sourceTree = "<group>"; };
@@ -180,6 +182,7 @@
 				E3054FBB2C5646E500112227 /* BackupErrors.swift */,
 				E3054FC22C56769100112227 /* BackupMetaInfo.swift */,
 				E3054FC72C567D8C00112227 /* BackupData.swift */,
+				E3E5D9CB2C5FB25800A680CC /* BackupLoadingState.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -602,6 +605,7 @@
 				ED48EB0C2A691C330092B8B6 /* AppActionsEvents.swift in Sources */,
 				ED70B6862A433D3600E6786B /* BackupAndRestoreView.swift in Sources */,
 				ED2555BC2A2A34A700678E7C /* TagItemView.swift in Sources */,
+				E3E5D9CC2C5FB25800A680CC /* BackupLoadingState.swift in Sources */,
 				EDAE5D1D2A3B50F20072EB31 /* CommonItemView.swift in Sources */,
 				ED7102D92A49E5F500E24E3D /* UIDeviceExtension.swift in Sources */,
 				E3054FBA2C56431800112227 /* DBICloudFilesManager.swift in Sources */,

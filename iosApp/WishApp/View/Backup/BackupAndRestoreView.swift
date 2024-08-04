@@ -21,6 +21,7 @@ struct BackupAndRestoreView: View {
         
         BackupAndRestoreContentView(
             state: viewModel.state,
+            loadingState: viewModel.loadingState,
             onCreateBackupClicked: { viewModel.onCreateBackupClicked() },
             onRestoreBackupClicked: { viewModel.onRestoreClicked() }
         )        
