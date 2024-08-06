@@ -7,12 +7,19 @@
 
 import SwiftUI
 import DeviceKit
+import SwiftUISnackbar
 
 struct BackupAndRestoreContentView: View {
     
     let state: BackupViewState
     
     let loadingState: BackupLoadingState
+    
+    let snackbarState: SnackbarState
+    
+    var showSnackbarBinding: Binding<Bool>
+    
+    @Environment(\.colorScheme) var colorScheme
     
     let onCreateBackupClicked: () -> ()
     let onRestoreBackupClicked: () -> ()
@@ -78,6 +85,12 @@ struct BackupAndRestoreContentView: View {
             }
             
         }
+        .snackbar(
+            isShowing: showSnackbarBinding,
+            title: Text(snackbarState.text()).font(.body).foregroundColor(snackbarState.textColor(isDarkMode: colorScheme == .dark)),
+            style: .custom(snackbarState.backgroundColor(isDarkMode: colorScheme == .dark)),
+            dismissAfter: 1.5
+        )
         .navigationTitle("Backup and restore")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -93,10 +106,14 @@ struct BackupAndRestoreContentView_Previews: PreviewProvider {
             haveBackup: true,
             backupData: BackupData(updateDate: Date(timeIntervalSince1970: TimeInterval(424434344)), sizeFormattedString: "1223", deviceName: "fefefe"))
         
+        @State var showSnackbar = true
+        
         NavigationStack {
             BackupAndRestoreContentView(
                 state: backupState,
                 loadingState: BackupLoadingState.none,
+                snackbarState: SnackbarState.error("Backup created successfully"),
+                showSnackbarBinding: $showSnackbar,
                 onCreateBackupClicked: { },
                 onRestoreBackupClicked: {}
             )

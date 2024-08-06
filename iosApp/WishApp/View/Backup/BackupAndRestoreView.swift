@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftUISnackbar
 
 struct BackupAndRestoreView: View {
     
@@ -18,10 +19,12 @@ struct BackupAndRestoreView: View {
     }
     
     var body: some View {
-        
+
         BackupAndRestoreContentView(
             state: viewModel.state,
             loadingState: viewModel.loadingState,
+            snackbarState: viewModel.snackbarState,
+            showSnackbarBinding: $viewModel.showSnackbar,
             onCreateBackupClicked: { viewModel.onCreateBackupClicked() },
             onRestoreBackupClicked: { viewModel.onRestoreClicked() }
         )        

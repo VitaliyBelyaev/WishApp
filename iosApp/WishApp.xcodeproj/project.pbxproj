@@ -29,6 +29,8 @@
 		E345104A2BB6F212008E7A65 /* BackupAndRestoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34510492BB6F212008E7A65 /* BackupAndRestoreViewModel.swift */; };
 		E3DD74C12B6FD5A800A937BF /* FileManagerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3DD74C02B6FD5A800A937BF /* FileManagerExtensions.swift */; };
 		E3E5D9CC2C5FB25800A680CC /* BackupLoadingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3E5D9CB2C5FB25800A680CC /* BackupLoadingState.swift */; };
+		E3E5D9CF2C612B9300A680CC /* SwiftUISnackbar in Frameworks */ = {isa = PBXBuildFile; productRef = E3E5D9CE2C612B9300A680CC /* SwiftUISnackbar */; };
+		E3E5D9D12C612DBD00A680CC /* SnackbarState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3E5D9D02C612DBD00A680CC /* SnackbarState.swift */; };
 		ED1750902A373F1000665949 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED17508F2A373F1000665949 /* SettingsView.swift */; };
 		ED1750922A37452900665949 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1750912A37452900665949 /* MainContentView.swift */; };
 		ED1750952A38C97C00665949 /* WishListContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1750942A38C97C00665949 /* WishListContentView.swift */; };
@@ -100,6 +102,7 @@
 		E34510492BB6F212008E7A65 /* BackupAndRestoreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAndRestoreViewModel.swift; sourceTree = "<group>"; };
 		E3DD74C02B6FD5A800A937BF /* FileManagerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerExtensions.swift; sourceTree = "<group>"; };
 		E3E5D9CB2C5FB25800A680CC /* BackupLoadingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupLoadingState.swift; sourceTree = "<group>"; };
+		E3E5D9D02C612DBD00A680CC /* SnackbarState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnackbarState.swift; sourceTree = "<group>"; };
 		ED17508F2A373F1000665949 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		ED1750912A37452900665949 /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
 		ED1750942A38C97C00665949 /* WishListContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishListContentView.swift; sourceTree = "<group>"; };
@@ -169,6 +172,7 @@
 				E3054FC62C5678B900112227 /* DeviceKit in Frameworks */,
 				E3389BAD2BFBA80400A01BE0 /* SwiftUIIntrospect in Frameworks */,
 				E3389BB32BFBA88E00A01BE0 /* KMPNativeCoroutinesAsync in Frameworks */,
+				E3E5D9CF2C612B9300A680CC /* SwiftUISnackbar in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -411,6 +415,7 @@
 			children = (
 				ED79141B2A4C95EE00E7FF0C /* WebView.swift */,
 				E33DA82E2C57796D00F9A2B2 /* FullscreenLoadingView.swift */,
+				E3E5D9D02C612DBD00A680CC /* SnackbarState.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -475,6 +480,7 @@
 				E3389BB62BFBA88E00A01BE0 /* KMPNativeCoroutinesCore */,
 				E3389BB92BFBA8B100A01BE0 /* Amplitude */,
 				E3054FC52C5678B900112227 /* DeviceKit */,
+				E3E5D9CE2C612B9300A680CC /* SwiftUISnackbar */,
 			);
 			productName = WishApp;
 			productReference = ED6DB19429B4F21F00A11CA3 /* WishApp.app */;
@@ -511,6 +517,7 @@
 				E3389BB12BFBA88E00A01BE0 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */,
 				E3389BB82BFBA8B100A01BE0 /* XCRemoteSwiftPackageReference "Amplitude-iOS" */,
 				E3054FC42C5678B900112227 /* XCRemoteSwiftPackageReference "DeviceKit" */,
+				E3E5D9CD2C612B9300A680CC /* XCRemoteSwiftPackageReference "SwiftUISnackbar" */,
 			);
 			productRefGroup = ED6DB19529B4F21F00A11CA3 /* Products */;
 			projectDirPath = "";
@@ -588,6 +595,7 @@
 				E325B4652A926CFD005DD35D /* ApiKeys.swift in Sources */,
 				E3054FCA2C56840A00112227 /* URLExtension.swift in Sources */,
 				EDAE5D1F2A3B5AE50072EB31 /* SectionHeaderView.swift in Sources */,
+				E3E5D9D12C612DBD00A680CC /* SnackbarState.swift in Sources */,
 				ED6EFA4C2A225A7400CC1B13 /* WishListMode.swift in Sources */,
 				EDC203152A3C94760076EAD0 /* UpdateWishTagsView.swift in Sources */,
 				EDC203092A3C61FC0076EAD0 /* LinkInfo.swift in Sources */,
@@ -913,6 +921,14 @@
 				version = 8.19.2;
 			};
 		};
+		E3E5D9CD2C612B9300A680CC /* XCRemoteSwiftPackageReference "SwiftUISnackbar" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/zaniluca/SwiftUISnackbar";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -950,6 +966,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E3389BB82BFBA8B100A01BE0 /* XCRemoteSwiftPackageReference "Amplitude-iOS" */;
 			productName = Amplitude;
+		};
+		E3E5D9CE2C612B9300A680CC /* SwiftUISnackbar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E3E5D9CD2C612B9300A680CC /* XCRemoteSwiftPackageReference "SwiftUISnackbar" */;
+			productName = SwiftUISnackbar;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

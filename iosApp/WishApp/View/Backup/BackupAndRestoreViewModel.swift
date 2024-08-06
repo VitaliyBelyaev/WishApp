@@ -7,12 +7,15 @@
 
 import Foundation
 import shared
+import SwiftUISnackbar
 
 @MainActor
 final class BackupAndRestoreViewModel: ObservableObject {
     
     @Published var state: BackupViewState = BackupViewState()
     @Published var loadingState: BackupLoadingState = BackupLoadingState.none
+    @Published var snackbarState: SnackbarState = SnackbarState.none
+    @Published var showSnackbar: Bool = false
     
     private let sdk: WishAppSdk = WishAppSdkDiHelper().wishAppSdk
     
@@ -57,12 +60,19 @@ final class BackupAndRestoreViewModel: ObservableObject {
             do {
                 self.loadingState = BackupLoadingState.createBackup
                 
+                try? await Task.sleep(nanoseconds: 20000000)
+                
+                throw CreateBackupError.removeOldBackupInICloudError(nil)
+                
                 try await dbICloudFilesManager.crateBackup(originDbName: sdk.databaseName)
                 await updateState()
                 
                 self.loadingState = BackupLoadingState.none
+                
+                showSnackbar(text: "Backup created successfully", isError: false)
             } catch {
                 self.loadingState = BackupLoadingState.none
+                showSnackbar(text: "Error creating backup", isError: true)
                 print("Error create backup: \(error)")
             }
         }
@@ -74,5 +84,15 @@ final class BackupAndRestoreViewModel: ObservableObject {
         } else {
             self.state = BackupViewState()
         }
+    }
+    
+    private func showSnackbar(text: String, isError: Bool) {
+        let snackbar = if isError {
+            SnackbarState.error(text)
+        } else {
+            SnackbarState.info(text)
+        }
+        self.snackbarState = snackbar
+        self.showSnackbar = true
     }
 }

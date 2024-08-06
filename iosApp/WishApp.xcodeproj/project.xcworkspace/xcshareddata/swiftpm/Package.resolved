@@ -1,5 +1,5 @@
 {
-  "originHash" : "0aa922173b4194cd645605ea3071fef3a587520db8ec93f589fe3b19b9bb391f",
+  "originHash" : "13c99231856edd24a9734484db81efe8635d72ed50565a36c415ae5e954d1cfb",
   "pins" : [
     {
       "identity" : "amplitude-ios",
@@ -53,6 +53,15 @@
       "state" : {
         "revision" : "7dc5b287f8040e4ad5038739850b758e78f77808",
         "version" : "1.1.4"
+      }
+    },
+    {
+      "identity" : "swiftuisnackbar",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/zaniluca/SwiftUISnackbar",
+      "state" : {
+        "revision" : "3867cd0082a0071fdf48e8c49b5748471e7dc196",
+        "version" : "1.0.0"
       }
     }
   ],
