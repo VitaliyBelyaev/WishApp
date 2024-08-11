@@ -40,6 +40,7 @@ struct WishApp: App {
     @AppStorage("navigationData") private var navigationData: Data?
     @AppStorage(wrappedValue: 0, UserDefaultsKeys.positiveActionsCount) private var positiveActionsCount: Int
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.colorScheme) var colorScheme
     
     @StateObject private var navigationModel = NavigationModel()
     @StateObject private var appViewModel: AppViewModel
@@ -52,7 +53,17 @@ struct WishApp: App {
     
     var body: some Scene {
         WindowGroup {
+            
+            let snackbarState = appViewModel.snackbarState
+            
             MainView()
+                .snackbar(
+                    isShowing: $appViewModel.showSnackbar,
+                    title: Text(snackbarState.text()).font(.body).foregroundColor(snackbarState.textColor(colorScheme)),
+                    style: .custom(snackbarState.backgroundColor(colorScheme)),
+                    dismissAfter: nil,
+                    extraBottomPadding: 16
+                )
                 .environmentObject(appViewModel)
                 .environmentObject(navigationModel)
                 .onChange(of: navigationModel.mainPath) { [oldMainPath = navigationModel.mainPath] newMainPath in

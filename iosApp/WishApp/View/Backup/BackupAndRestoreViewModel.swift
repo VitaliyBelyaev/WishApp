@@ -48,8 +48,10 @@ final class BackupAndRestoreViewModel: ObservableObject {
                 try await dbICloudFilesManager.restoreBackup(originDbName: sdk.databaseName, sdk: sdk)
                 
                 self.loadingState = BackupLoadingState.none
+                showSnackbar(SnackbarState.success("Backup restored successfully"))
             } catch {
                 self.loadingState = BackupLoadingState.none
+                showSnackbar(SnackbarState.error("Error while restoring backup, try again"))
                 print("Error restore backup: \(error)")
             }
         }
@@ -59,20 +61,16 @@ final class BackupAndRestoreViewModel: ObservableObject {
         createBackupTask = Task {
             do {
                 self.loadingState = BackupLoadingState.createBackup
-                
-                try? await Task.sleep(nanoseconds: 20000000)
-                
-                throw CreateBackupError.removeOldBackupInICloudError(nil)
-                
+                                
                 try await dbICloudFilesManager.crateBackup(originDbName: sdk.databaseName)
                 await updateState()
                 
                 self.loadingState = BackupLoadingState.none
                 
-                showSnackbar(text: "Backup created successfully", isError: false)
+                showSnackbar(SnackbarState.success("Backup created successfully"))
             } catch {
                 self.loadingState = BackupLoadingState.none
-                showSnackbar(text: "Error creating backup", isError: true)
+                showSnackbar(SnackbarState.error("Error while creating backup, try again"))
                 print("Error create backup: \(error)")
             }
         }
@@ -86,13 +84,8 @@ final class BackupAndRestoreViewModel: ObservableObject {
         }
     }
     
-    private func showSnackbar(text: String, isError: Bool) {
-        let snackbar = if isError {
-            SnackbarState.error(text)
-        } else {
-            SnackbarState.info(text)
-        }
-        self.snackbarState = snackbar
+    private func showSnackbar(_ snackbarState: SnackbarState) {
+        self.snackbarState = snackbarState
         self.showSnackbar = true
     }
 }

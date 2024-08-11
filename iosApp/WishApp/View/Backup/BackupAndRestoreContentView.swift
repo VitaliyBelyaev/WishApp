@@ -85,12 +85,13 @@ struct BackupAndRestoreContentView: View {
             }
             
         }
-        .snackbar(
-            isShowing: showSnackbarBinding,
-            title: Text(snackbarState.text()).font(.body).foregroundColor(snackbarState.textColor(isDarkMode: colorScheme == .dark)),
-            style: .custom(snackbarState.backgroundColor(isDarkMode: colorScheme == .dark)),
-            dismissAfter: 1.5
-        )
+        .alert(Text(snackbarState.text()), isPresented: showSnackbarBinding) {
+            Button("OK") {}
+        } message: {
+            if snackbarState.isError() {
+                Text("Please try again")
+            }
+        }
         .navigationTitle("Backup and restore")
         .navigationBarTitleDisplayMode(.inline)
     }
