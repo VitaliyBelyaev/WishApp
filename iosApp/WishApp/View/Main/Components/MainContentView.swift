@@ -83,6 +83,8 @@ struct MainContentView: View {
                 WishListView(mode: mode)
             case let .WishDetailed(wishId, tagId):
                 WishDetailedView(wishId: wishId, tagId: tagId)
+            case let .UpdateWishTags(wishId):
+                UpdateWishTagsView(wishId: wishId)
             }
         }
     }

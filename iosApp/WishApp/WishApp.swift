@@ -105,6 +105,8 @@ struct WishApp: App {
             return true
         case .WishList(_):
             return false
+        case .UpdateWishTags(_):
+            return false
         case .none:
             return false
         }
