@@ -174,12 +174,14 @@ internal fun BackupScreen(
             when (val state = viewState) {
                 is BackupViewState.None -> {
                 }
+
                 is BackupViewState.DrivePermissionRationale -> {
                     DrivePermissionRationaleView {
                         analyticsRepository.trackEvent(BackupGiveDrivePermissionClickedEvent)
                         drivePermissionLauncher.launch(viewModel.signInIntent)
                     }
                 }
+
                 is BackupViewState.NoBackup -> {
                     CurrentBackupView(
                         onCreateBackupClicked = { viewModel.onCreateBackupClicked(context) },
@@ -194,6 +196,7 @@ internal fun BackupScreen(
                         onDisconnectAccountClicked = { viewModel.onDisconnectAccountClicked() }
                     )
                 }
+
                 is BackupViewState.CheckBackupError -> {
                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                         ContentText(
@@ -221,6 +224,7 @@ internal fun BackupScreen(
                         onDisconnectAccountClicked = { viewModel.onDisconnectAccountClicked() }
                     )
                 }
+
                 is BackupViewState.CurrentBackup -> {
                     CurrentBackupView(
                         backupInfo = state.backupInfo,
@@ -314,15 +318,12 @@ internal fun BackupScreen(
             )
         }
 
-        val navigationBottomPadding = WishappBottomSheetDefaults.navigationBottomPadding()
         if (showBottomSheet) {
             WishAppBottomSheetM3(
                 onDismissRequest = { showBottomSheet = false },
                 sheetState = modalBottomSheetState,
             ) {
-                BackupSheetContent(
-                    modifier = Modifier.padding(bottom = navigationBottomPadding)
-                )
+                BackupSheetContent()
             }
         }
 

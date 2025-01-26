@@ -1,7 +1,5 @@
 package ru.vitaliy.belyaev.wishapp.ui.theme
 
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults

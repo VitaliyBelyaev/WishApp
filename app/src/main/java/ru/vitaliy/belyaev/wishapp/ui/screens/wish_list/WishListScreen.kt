@@ -5,6 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
@@ -275,7 +276,6 @@ fun WishListScreen(
             )
         }
 
-        val navigationBottomPadding = WishappBottomSheetDefaults.navigationBottomPadding()
         if (showNavBottomSheet) {
             WishAppBottomSheetM3(
                 onDismissRequest = { showNavBottomSheet = false },
@@ -294,7 +294,6 @@ fun WishListScreen(
                         closeNavBottomSheet()
                         onEditTagClick()
                     },
-                    modifier = Modifier.padding(bottom = navigationBottomPadding)
                 )
             }
         }
@@ -310,7 +309,6 @@ fun WishListScreen(
                         viewModel.onShareClick(context, shareData)
                     },
                     isPdfShareButtonLoading = state.isShareAsPdfLoading,
-                    modifier = Modifier.padding(bottom = navigationBottomPadding)
                 )
             }
         }
