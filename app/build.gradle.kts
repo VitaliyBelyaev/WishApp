@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.kotlinComposeCompilerPlugin)
     alias(libs.plugins.hilt)
     alias(libs.plugins.googleServices)
     alias(libs.plugins.firebase.crashlytics)
@@ -49,9 +50,6 @@ android {
     }
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
     packaging {
         resources {

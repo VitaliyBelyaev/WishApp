@@ -1,28 +1,31 @@
 [versions]
-kotlin = "1.9.24"
+# Следить чтобы версии kotlin и ksp совпадали
+kotlin = "2.1.0"
 kotlinCoroutines = "1.8.1"
 kotlinDateTime = "0.5.0"
 kotlinSerialization = "1.6.2"
 compose-compiler = "1.5.14"
-sqlDelight = "2.0.0"
-hilt = "2.51.1"
+sqlDelight = "2.0.2"
+hilt = "2.55"
 koin = "3.4.2"
 koin-compose = "3.4.1"
 accompanist = "0.32.0"
 kmpNativeCoroutines = "1.0.0-ALPHA-22"
 mockito = "3.11.2"
-coil = "2.6.0"
+coil = "2.7.0"
 androidXLyfecycleRuntime = "2.8.4"
 composeBom = "2024.06.00"
 firebaseBom = "33.1.2"
 googlePlayReview = "2.0.1"
 
 #Plugins versions only
-androidGradle = "8.2.2"
-ksp = "1.9.24-1.0.20"
+androidGradle = "8.7.2"
+# Следить чтобы версии kotlin и ksp совпадали
+ksp = "2.1.0-1.0.29"
 googleServices = "4.4.2"
 firebaseCrashlyticsPlugin = "3.0.2"
 firebasePerfPlugin = "1.4.2"
+sqlDelightPlugin = "2.0.2"
 
 [libraries]
 #Kotlin
@@ -122,8 +125,9 @@ kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinComposeCompilerPlugin = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kmpNativeCoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version.ref = "kmpNativeCoroutines" }
-sqlDelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
+sqlDelight = { id = "app.cash.sqldelight", version.ref = "sqlDelightPlugin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
