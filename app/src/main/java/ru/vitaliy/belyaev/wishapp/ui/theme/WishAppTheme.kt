@@ -1,13 +1,17 @@
 package ru.vitaliy.belyaev.wishapp.ui.theme
 
+import android.graphics.Color
+import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
+import androidx.activity.compose.LocalActivity
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.utils.isAndroidVersionSOrAbove
 
@@ -27,19 +31,27 @@ fun WishAppTheme(selectedTheme: Theme, content: @Composable () -> Unit) {
         else -> LightColors
     }
 
-    val systemUiController = rememberSystemUiController()
+    val activity = LocalActivity.current as? ComponentActivity
+    LaunchedEffect(key1 = isDark) {
+        if (isDark) {
+            activity?.enableEdgeToEdge(
+                statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+                navigationBarStyle = SystemBarStyle.dark(DefaultDarkScrim)
+            )
+        } else {
+            activity?.enableEdgeToEdge(
+                statusBarStyle = SystemBarStyle.light(scrim = Color.TRANSPARENT, darkScrim = Color.TRANSPARENT),
+                navigationBarStyle = SystemBarStyle.light(scrim = DefaultLightScrim, darkScrim = DefaultDarkScrim)
+            )
+        }
 
-    systemUiController.setStatusBarColor(
-        color = Color.Transparent,
-        darkIcons = !isDark
-    )
-    systemUiController.setNavigationBarColor(
-        color = CommonColors.navBarColor(colorScheme),
-        darkIcons = !isDark
-    )
+    }
 
     MaterialTheme(
         colorScheme = colorScheme,
         content = content
     )
 }
+
+private val DefaultLightScrim = Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+private val DefaultDarkScrim = Color.argb(0x80, 0x1b, 0x1b, 0x1b)

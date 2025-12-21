@@ -1,6 +1,6 @@
 [versions]
 # Следить чтобы версии kotlin и ksp совпадали
-kotlin = "2.2.0"
+kotlin = "2.2.21"
 kotlinCoroutines = "1.10.2"
 kotlinDateTime = "0.7.1"
 kotlinSerialization = "1.9.0"
@@ -8,7 +8,6 @@ sqlDelight = "2.2.1"
 hilt = "2.57.2"
 koin = "3.4.2"
 koin-compose = "3.4.1"
-accompanist = "0.36.0"
 kmpNativeCoroutines = "1.0.0-ALPHA-22"
 mockito = "3.11.2"
 coil = "2.7.0"
@@ -20,7 +19,7 @@ googlePlayReview = "2.0.2"
 #Plugins versions only
 androidGradle = "8.13.2"
 # Следить чтобы версии kotlin и ksp совпадали
-ksp = "2.2.0-2.0.2"
+ksp = "2.2.21-2.0.4"
 googleServices = "4.4.4"
 firebaseCrashlyticsPlugin = "3.0.6"
 firebasePerfPlugin = "2.0.2"
@@ -72,9 +71,6 @@ sqlDelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sq
 sqlDelight-extensions-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelight" }
 sqlDelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
 sqlDelight-driver-native = { module = "app.cash.sqldelight:native-driver", version.ref = "sqlDelight" }
-
-#Accompanist
-accompanist-systemUiController = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 
 #Google
 google-android-material = { module = "com.google.android.material:material", version = "1.13.0" }

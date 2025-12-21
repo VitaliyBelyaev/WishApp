@@ -12,16 +12,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -42,7 +39,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
@@ -93,7 +89,6 @@ fun WishListScreen(
 
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
-    val systemUiController = rememberSystemUiController()
 
     val modalNavBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showNavBottomSheet by remember { mutableStateOf(false) }
@@ -140,11 +135,6 @@ fun WishListScreen(
             closeShareChooseBottomSheet()
         }
     }
-
-    val mainScreenNavBarColor =
-        MaterialTheme.colorScheme.surfaceColorAtElevation(BottomAppBarDefaults.ContainerElevation)
-
-    systemUiController.setNavigationBarColor(color = mainScreenNavBarColor)
 
     BackHandler(state.wishesFilter != WishesFilter.All) {
         viewModel.onNavItemSelected(WishesFilter.All)

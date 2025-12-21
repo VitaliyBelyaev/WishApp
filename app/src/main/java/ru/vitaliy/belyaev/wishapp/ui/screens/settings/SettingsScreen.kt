@@ -29,13 +29,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.SettingBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.components.ThemeSettingBlock
-import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 import ru.vitaliy.belyaev.wishapp.utils.openGooglePlay
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
@@ -56,11 +54,8 @@ fun SettingsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val selectedTheme: Theme by viewModel.selectedTheme.collectAsStateWithLifecycle()
     val scrollState: ScrollState = rememberScrollState()
-    val systemUiController = rememberSystemUiController()
 
     trackScreenShow { viewModel.trackScreenShow() }
-
-    systemUiController.setNavigationBarColor(color = CommonColors.navBarColor())
 
     val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(

@@ -133,9 +133,6 @@ dependencies {
     implementation(libs.androidx.navigation.navigationCompose)
     implementation(libs.androidx.hilt.lifecycleViewmodelCompose)
 
-    // Google Accompanist
-    implementation(libs.accompanist.systemUiController)
-
     // Google Android
     implementation(libs.google.android.material)
     implementation(libs.google.android.play.review)

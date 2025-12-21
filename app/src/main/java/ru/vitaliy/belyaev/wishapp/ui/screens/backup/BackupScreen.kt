@@ -45,7 +45,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.BackupScreenShowEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupForceUpdateAppDataClickedEvent
@@ -57,7 +56,6 @@ import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
 import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheetM3
-import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishappBottomSheetDefaults
 import ru.vitaliy.belyaev.wishapp.ui.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.SnackbarMessage
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
@@ -70,7 +68,6 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.LoadingView
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.ManageAccountView
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.components.RestoreBackupView
 import ru.vitaliy.belyaev.wishapp.ui.theme.AppButtonDefaults
-import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 
@@ -93,7 +90,6 @@ internal fun BackupScreen(
 
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
-    val systemUiController = rememberSystemUiController()
     val scrollState: ScrollState = rememberScrollState()
 
     val openCreateBackupConfirmationDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
@@ -104,8 +100,6 @@ internal fun BackupScreen(
     var showBottomSheet by remember { mutableStateOf(false) }
 
     trackScreenShow { analyticsRepository.trackEvent(BackupScreenShowEvent) }
-
-    systemUiController.setNavigationBarColor(color = CommonColors.navBarColor())
 
     val drivePermissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
