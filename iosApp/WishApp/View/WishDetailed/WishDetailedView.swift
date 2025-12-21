@@ -17,7 +17,6 @@ struct WishDetailedView: View {
     @EnvironmentObject private var navigationModel: NavigationModel
     @StateObject private var viewModel: WishDetailedViewModel
     @State private var isDeleteWishConfirmationPresented = false
-    @State private var isUpdateWishTagsSheetPresented = false
     @State private var becomeFirstResponder = true
     @State private var isKeyboardPresented = false
     
@@ -85,13 +84,12 @@ struct WishDetailedView: View {
                 }
                 
                 Section {
-                    Button {
-                        WishAppAnalytics.logEvent(WishDetailedAddTagTextButtonClickedEvent())
-                        isUpdateWishTagsSheetPresented = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "plus")
-                            Text("WishDetailed.addTags")
+                    NavigationLink(value: MainNavSegment.UpdateWishTags(viewModel.wish.id)) {
+                        Button {} label: {
+                            HStack {
+                                Image(systemName: "plus")
+                                Text("WishDetailed.addTags")
+                            }
                         }
                     }
                     
@@ -101,9 +99,6 @@ struct WishDetailedView: View {
                             let isOn: Binding<Bool> = Binding(
                                 get: {return true },
                                 set: {value, tr in
-                                    if !value {
-                                        isUpdateWishTagsSheetPresented = true
-                                    }
                                 }
                             )
                             
@@ -167,30 +162,15 @@ struct WishDetailedView: View {
             }
             ToolbarItemGroup(placement: .bottomBar) {
                 Spacer()
-                Button {
-                    WishAppAnalytics.logEvent(WishDetailedAddTagIconButtonClickedEvent())
-                    isUpdateWishTagsSheetPresented = true
-                } label: {
+                NavigationLink(value: MainNavSegment.UpdateWishTags(viewModel.wish.id)) {
                     Image(systemName: "tag")
                 }
             }
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
-                Button {
-                    WishAppAnalytics.logEvent(WishDetailedAddTagIconButtonClickedEvent())
-                    isUpdateWishTagsSheetPresented = true
-                } label: {
+                NavigationLink(value: MainNavSegment.UpdateWishTags(viewModel.wish.id)) {
                     Image(systemName: "tag")
                 }
-            }
-        }
-        .sheet(isPresented: $isUpdateWishTagsSheetPresented) {
-            UpdateWishTagsView(
-                wishId: viewModel.wish.id,
-                onCloseClicked: { isUpdateWishTagsSheetPresented = false }
-            )
-            .onAppear {
-                WishAppAnalytics.logEvent(UpdateWishTagsScreenShowEvent())
             }
         }
         .onAppear {
@@ -217,6 +197,8 @@ struct WishDetailedView: View {
             fromScreen = "Wish List \(mode.analyticsString)"
         case .some(.WishDetailed(_, _)):
             fromScreen = "Wish Detailed"
+        case .some(.UpdateWishTags(_)):
+            fromScreen = ""
         }
         
         let event = WishDetailedScreenShowEvent(
@@ -228,9 +210,9 @@ struct WishDetailedView: View {
     }
 }
 
-struct WishDetailedView_Previews: PreviewProvider {
-    
-    static var previews: some View {
-        WishDetailedView(wishId: nil, tagId: nil)
-    }
-}
+//struct WishDetailedView_Previews: PreviewProvider {
+//    
+//    static var previews: some View {
+//        WishDetailedView(wishId: nil, tagId: nil)
+//    }
+//}

@@ -97,10 +97,8 @@ fun WishImagesViewerScreen(
                 .padding(contentPadding)
                 .fillMaxSize(),
             state = pagerState,
-            beyondBoundsPageCount = 1,
             flingBehavior = PagerDefaults.flingBehavior(
                 state = pagerState,
-                snapVelocityThreshold = 600.dp
             ),
         ) { page ->
             ZoomableContent(

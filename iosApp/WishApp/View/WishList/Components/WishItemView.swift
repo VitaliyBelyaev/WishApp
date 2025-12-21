@@ -23,8 +23,6 @@ struct WishItemView: View {
     
     @State private var isDeleteWishConfirmationPresented = false
     
-    
-    
     var body: some View {
         VStack(alignment: .leading) {
             if wish.title.isEmpty {

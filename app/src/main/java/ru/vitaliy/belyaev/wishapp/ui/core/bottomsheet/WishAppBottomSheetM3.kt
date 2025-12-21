@@ -2,6 +2,8 @@ package ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
@@ -31,12 +33,12 @@ fun WishAppBottomSheetM3(
     tonalElevation: Dp = BottomSheetDefaults.Elevation,
     scrimColor: Color = BottomSheetDefaults.ScrimColor,
     dragHandle: @Composable (() -> Unit)? = { BottomSheetDefaults.DragHandle() },
-    windowInsets: WindowInsets = WindowInsets.statusBars,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
-        modifier = modifier,
+        modifier = modifier
+            .then(Modifier.padding(top = WishappBottomSheetDefaults.statusBarPadding())),
         sheetState = sheetState,
         shape = shape,
         containerColor = containerColor,
@@ -44,7 +46,6 @@ fun WishAppBottomSheetM3(
         tonalElevation = tonalElevation,
         scrimColor = scrimColor,
         dragHandle = dragHandle,
-        windowInsets = windowInsets,
         content = content
     )
 }

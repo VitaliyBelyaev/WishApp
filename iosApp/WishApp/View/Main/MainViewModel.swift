@@ -9,8 +9,6 @@ import Foundation
 import shared
 import Combine
 import KMPNativeCoroutinesCombine
-import FirebaseAnalytics
-import Amplitude
 
 @MainActor
 final class MainViewModel: ObservableObject {
@@ -18,7 +16,7 @@ final class MainViewModel: ObservableObject {
     private let sdk: WishAppSdk = WishAppSdkDiHelper().wishAppSdk
     private var dbRepository: DatabaseRepository {
         get {
-            return sdk.databaseRepository
+            return sdk.getDatabaseRepository()
         }
     }
     
@@ -66,7 +64,7 @@ final class MainViewModel: ObservableObject {
         
         let testWish: WishEntity = testWishes[testWishIndex % testWishes.count]
             .createCopy(id: NSUUID().uuidString, createdTimestamp: timestamp, updatedTimestamp: timestamp)
-
+        
         createFuture(for: dbRepository.insertWish(wish: testWish))
             .subscribe(on: DispatchQueue.global())
             .sinkSilently()
@@ -80,6 +78,10 @@ final class MainViewModel: ObservableObject {
             .subscribe(on: DispatchQueue.global())
             .sinkSilently()
             .store(in: &subscriptions)
+    }
+    
+    enum SomeError: Error {
+        case subsError
     }
     
     private func subscribeOnMainItems() {
@@ -105,6 +107,7 @@ final class MainViewModel: ObservableObject {
             }
             .catch { error in
                 Just(MainViewState(commonItems: [], tagItems: [], currentCount: 0, completedCount: 0))
+                
             }
             .receive(on: DispatchQueue.main)
             .assign(to: \.state, on: self)

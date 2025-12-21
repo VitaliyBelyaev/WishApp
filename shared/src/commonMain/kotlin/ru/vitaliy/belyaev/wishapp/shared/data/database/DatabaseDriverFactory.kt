@@ -4,5 +4,5 @@ import app.cash.sqldelight.db.SqlDriver
 
 expect class DatabaseDriverFactory {
 
-    fun createDatabaseDriver(): SqlDriver
+    fun createDatabaseDriver(databaseName: String): SqlDriver
 }

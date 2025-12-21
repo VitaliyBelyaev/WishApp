@@ -49,3 +49,14 @@ WHERE tagId IN ?;
 deleteByWishIds:
 DELETE FROM WishTagRelation
 WHERE wishId IN ?;
+
+clear:
+DELETE FROM WishTagRelation;
+
+insertOrReplace:
+INSERT OR REPLACE INTO WishTagRelation(wishId, tagId)
+VALUES (?,?);
+
+getAllForBackup:
+SELECT *
+FROM WishTagRelation;

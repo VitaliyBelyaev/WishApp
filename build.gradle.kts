@@ -6,9 +6,8 @@ plugins {
     alias(libs.plugins.kotlinParcelize).apply(false)
     alias(libs.plugins.kotlinSerialization).apply(false)
     alias(libs.plugins.kotlinMultiplatform).apply(false)
-    alias(libs.plugins.kapt).apply(false)
+    alias(libs.plugins.kotlinComposeCompilerPlugin).apply(false)
     alias(libs.plugins.sqlDelight).apply(false)
-    alias(libs.plugins.kotlinCocoapods).apply(false)
     alias(libs.plugins.hilt).apply(false)
     alias(libs.plugins.googleServices).apply(false)
     alias(libs.plugins.firebase.crashlytics).apply(false)
@@ -24,6 +23,7 @@ buildscript {
         gradlePluginPortal()
         maven("https://plugins.gradle.org/m2/")
         maven("https://jitpack.io")
+        maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
     }
 
     dependencies {

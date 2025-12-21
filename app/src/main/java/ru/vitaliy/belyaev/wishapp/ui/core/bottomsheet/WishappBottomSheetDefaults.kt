@@ -1,7 +1,10 @@
 package ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet
 
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
@@ -13,6 +16,13 @@ object WishappBottomSheetDefaults {
     fun navigationBottomPadding(): Dp {
         return with(LocalDensity.current) {
             WindowInsets.navigationBars.getBottom(LocalDensity.current).toDp()
+        }
+    }
+
+    @Composable
+    fun statusBarPadding(): Dp {
+        return with(LocalDensity.current) {
+            WindowInsets.safeDrawing.only(WindowInsetsSides.Top).getTop(LocalDensity.current).toDp()
         }
     }
 }

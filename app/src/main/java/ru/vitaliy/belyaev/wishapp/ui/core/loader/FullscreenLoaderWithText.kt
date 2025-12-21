@@ -73,7 +73,7 @@ fun FullscreenLoaderWithText(
                 .padding(horizontal = horizontalPadding)
             if (progress != null) {
                 LinearProgressIndicator(
-                    progress = progress.progress.toFloat(),
+                    progress = { progress.progress.toFloat() },
                     modifier = sizeModifier,
                     strokeCap = StrokeCap.Round,
                 )

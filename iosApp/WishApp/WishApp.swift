@@ -8,21 +8,23 @@
 import SwiftUI
 import shared
 import Combine
-import FirebaseCore
+//import FirebaseCore
 import Amplitude
-import FirebaseCrashlytics
+//import FirebaseCrashlytics
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         KoinKt.doInitKoin()
-        FirebaseApp.configure()
+//        FirebaseApp.configure()
+        
+        NapierProxyKt().debugBuild()
         
         if let amplitudeApiKey = valueForAPIKey(named: "AMPLITUDE_API_KEY") {
-            Amplitude.instance().trackingSessionEvents = true
+            Amplitude.instance().defaultTracking.sessions = true
             Amplitude.instance().initializeApiKey(amplitudeApiKey)
         } else {
             let error = AmplitudeNotInitializedError()
-            Crashlytics.crashlytics().record(error: error)
+//            Crashlytics.crashlytics().record(error: error)
             print(error)
         }
         
@@ -38,6 +40,7 @@ struct WishApp: App {
     @AppStorage("navigationData") private var navigationData: Data?
     @AppStorage(wrappedValue: 0, UserDefaultsKeys.positiveActionsCount) private var positiveActionsCount: Int
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.colorScheme) var colorScheme
     
     @StateObject private var navigationModel = NavigationModel()
     @StateObject private var appViewModel: AppViewModel
@@ -50,7 +53,17 @@ struct WishApp: App {
     
     var body: some Scene {
         WindowGroup {
+            
+            let snackbarState = appViewModel.snackbarState
+            
             MainView()
+                .snackbar(
+                    isShowing: $appViewModel.showSnackbar,
+                    title: Text(snackbarState.text()).font(.body).foregroundColor(snackbarState.textColor(colorScheme)),
+                    style: .custom(snackbarState.backgroundColor(colorScheme)),
+                    dismissAfter: nil,
+                    extraBottomPadding: 16
+                )
                 .environmentObject(appViewModel)
                 .environmentObject(navigationModel)
                 .onChange(of: navigationModel.mainPath) { [oldMainPath = navigationModel.mainPath] newMainPath in
@@ -91,6 +104,8 @@ struct WishApp: App {
         case .WishDetailed(.none, .none):
             return true
         case .WishList(_):
+            return false
+        case .UpdateWishTags(_):
             return false
         case .none:
             return false

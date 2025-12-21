@@ -13,10 +13,13 @@ import KMPNativeCoroutinesCombine
 @MainActor
 final class AppViewModel: ObservableObject {
     
+    @Published var snackbarState: SnackbarState = SnackbarState.none
+    @Published var showSnackbar: Bool = false
+    
     private let sdk: WishAppSdk = WishAppSdkDiHelper().wishAppSdk
     private var dbRepository: DatabaseRepository {
         get {
-            return sdk.databaseRepository
+            return sdk.getDatabaseRepository()
         }
     }
     
@@ -27,7 +30,20 @@ final class AppViewModel: ObservableObject {
     func onWishCompletnessChangeButtonClicked(wishId: String, newIsCompleted: Bool) {
         createFuture(for: dbRepository.updateWishIsCompleted(newValue: newIsCompleted, wishId: wishId))
             .subscribe(on: DispatchQueue.global())
-            .sinkSilently()
+            .sinkIgnoringReceivedValue { [weak self] completion in
+                switch completion {
+                case .finished:
+                    if newIsCompleted {
+                        self?.snackbarState = SnackbarState.info("Wish moved to completed")
+                        self?.showSnackbar = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                            self?.snackbarState = SnackbarState.none
+                            self?.showSnackbar = false
+                        }
+                    }
+                case .failure(_): break
+                }
+            }
             .store(in: &subscriptions)
     }
    

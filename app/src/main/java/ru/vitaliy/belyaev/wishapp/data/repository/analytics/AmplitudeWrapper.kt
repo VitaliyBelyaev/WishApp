@@ -5,6 +5,7 @@ import com.amplitude.android.Amplitude
 import com.amplitude.android.Configuration
 import com.amplitude.android.DefaultTrackingOptions
 import ru.vitaliy.belyaev.wishapp.BuildConfig
+import timber.log.Timber
 
 object AmplitudeWrapper {
 
@@ -13,6 +14,7 @@ object AmplitudeWrapper {
     fun init(context: Context) {
         val apiKey = BuildConfig.AMPLITUDE_API_KEY
         if (apiKey.isBlank()) {
+            Timber.e("Amplitude API key is not set")
             return
         }
 

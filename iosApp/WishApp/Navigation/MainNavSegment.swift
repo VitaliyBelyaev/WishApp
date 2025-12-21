@@ -11,6 +11,7 @@ import Foundation
 enum MainNavSegment: Codable, Hashable {
     case WishList(WishListMode)
     case WishDetailed(String?, String?)
+    case UpdateWishTags(String)
 }
 
 extension MainNavSegment {

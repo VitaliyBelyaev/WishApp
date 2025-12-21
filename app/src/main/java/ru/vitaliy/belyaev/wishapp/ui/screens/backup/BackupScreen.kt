@@ -19,6 +19,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -173,12 +174,14 @@ internal fun BackupScreen(
             when (val state = viewState) {
                 is BackupViewState.None -> {
                 }
+
                 is BackupViewState.DrivePermissionRationale -> {
                     DrivePermissionRationaleView {
                         analyticsRepository.trackEvent(BackupGiveDrivePermissionClickedEvent)
                         drivePermissionLauncher.launch(viewModel.signInIntent)
                     }
                 }
+
                 is BackupViewState.NoBackup -> {
                     CurrentBackupView(
                         onCreateBackupClicked = { viewModel.onCreateBackupClicked(context) },
@@ -193,6 +196,7 @@ internal fun BackupScreen(
                         onDisconnectAccountClicked = { viewModel.onDisconnectAccountClicked() }
                     )
                 }
+
                 is BackupViewState.CheckBackupError -> {
                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                         ContentText(
@@ -212,7 +216,7 @@ internal fun BackupScreen(
                         }
                     }
 
-                    Divider(modifier = Modifier.padding(vertical = 16.dp))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
                     ManageAccountView(
                         accountEmail = null,
@@ -220,6 +224,7 @@ internal fun BackupScreen(
                         onDisconnectAccountClicked = { viewModel.onDisconnectAccountClicked() }
                     )
                 }
+
                 is BackupViewState.CurrentBackup -> {
                     CurrentBackupView(
                         backupInfo = state.backupInfo,
@@ -236,7 +241,7 @@ internal fun BackupScreen(
                         },
                         onRefreshBackupInfoClicked = { viewModel.onRefreshBackupInfoClicked() }
                     )
-                    Divider(modifier = Modifier.padding(vertical = 16.dp))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
                     when (state) {
                         is BackupViewState.CurrentBackup.WithRestore -> {
@@ -258,7 +263,7 @@ internal fun BackupScreen(
                         }
                     }
 
-                    Divider(modifier = Modifier.padding(vertical = 16.dp))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
                     ManageAccountView(
                         accountEmail = state.backupInfo.accountEmail,
@@ -313,15 +318,12 @@ internal fun BackupScreen(
             )
         }
 
-        val navigationBottomPadding = WishappBottomSheetDefaults.navigationBottomPadding()
         if (showBottomSheet) {
             WishAppBottomSheetM3(
                 onDismissRequest = { showBottomSheet = false },
                 sheetState = modalBottomSheetState,
             ) {
-                BackupSheetContent(
-                    modifier = Modifier.padding(bottom = navigationBottomPadding)
-                )
+                BackupSheetContent()
             }
         }
 

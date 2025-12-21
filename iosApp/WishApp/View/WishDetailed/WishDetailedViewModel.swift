@@ -26,7 +26,7 @@ final class WishDetailedViewModel: ObservableObject {
     private let sdk: WishAppSdk = WishAppSdkDiHelper().wishAppSdk
     private var dbRepository: DatabaseRepository {
         get {
-            return sdk.databaseRepository
+            return sdk.getDatabaseRepository()
         }
     }
     

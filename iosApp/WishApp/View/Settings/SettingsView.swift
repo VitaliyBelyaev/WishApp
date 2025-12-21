@@ -43,6 +43,12 @@ struct SettingsView: View {
                     }
                 }
                 
+                Section {
+                    NavigationLink(destination: BackupAndRestoreView()) {
+                        Text("Backup and restore")
+                    }
+                }
+                
                 Section{
                     Text("Settings.description")
                         .font(.body)

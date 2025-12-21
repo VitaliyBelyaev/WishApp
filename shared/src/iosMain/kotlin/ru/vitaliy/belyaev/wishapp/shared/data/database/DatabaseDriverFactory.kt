@@ -9,10 +9,10 @@ import ru.vitaliy.belyaev.wishapp.shared.data.Config
 
 actual class DatabaseDriverFactory {
 
-    actual fun createDatabaseDriver(): SqlDriver {
+    actual fun createDatabaseDriver(databaseName: String): SqlDriver {
         return NativeSqliteDriver(
             configuration = DatabaseConfiguration(
-                name = Config.DATABASE_NAME,
+                name = databaseName,
                 version = WishAppDb.Schema.version.toInt(),
                 create = { connection ->
                     wrapConnection(connection) { WishAppDb.Schema.create(it) }
