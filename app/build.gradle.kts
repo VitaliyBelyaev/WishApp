@@ -133,6 +133,10 @@ dependencies {
     implementation(libs.androidx.navigation.navigationCompose)
     implementation(libs.androidx.hilt.lifecycleViewmodelCompose)
 
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+
     // Google Android
     implementation(libs.google.android.material)
     implementation(libs.google.android.play.review)
