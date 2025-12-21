@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinMultiplatform)
@@ -7,7 +9,11 @@ plugins {
 }
 
 kotlin {
-    androidTarget()
+    androidTarget {
+        compilerOptions {
+            jvmTarget = JvmTarget.fromTarget("11")
+        }
+    }
 
     listOf(
         iosX64(),
@@ -62,18 +68,16 @@ kotlin {
             implementation(libs.sqlDelight.driver.native)
         }
     }
-
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "11"
-    }
 }
 
 android {
     namespace = "ru.vitaliy.belyaev.wishapp.shared"
-    compileSdk = 33
+    compileSdk {
+        version = release(36)
+    }
     defaultConfig {
         minSdk = 23
-        targetSdk = 33
+        targetSdk = 36
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
