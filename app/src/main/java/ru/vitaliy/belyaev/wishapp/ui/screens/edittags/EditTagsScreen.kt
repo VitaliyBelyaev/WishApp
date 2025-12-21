@@ -15,7 +15,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,9 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.util.Optional
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
@@ -35,7 +33,6 @@ import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAl
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.components.EditTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.edittags.entity.EditTagItem
-import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 
 @ExperimentalMaterial3Api
@@ -60,14 +57,6 @@ fun EditTagsScreen(
 
     trackScreenShow { viewModel.trackScreenShow() }
 
-    val systemUiController = rememberSystemUiController()
-    val navBarColor = CommonColors.navBarColor()
-    LaunchedEffect(key1 = Unit) {
-        systemUiController.setNavigationBarColor(
-            color = navBarColor,
-        )
-    }
-
     val onTagClick: (TagEntity) -> Unit = {
         viewModel.onTagClicked(it)
     }
@@ -81,7 +70,7 @@ fun EditTagsScreen(
     val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
         modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
-        contentWindowInsets = WindowInsets.Companion.safeDrawing,
+        contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
             WishAppTopBar(
                 title = stringResource(R.string.edit_tags),

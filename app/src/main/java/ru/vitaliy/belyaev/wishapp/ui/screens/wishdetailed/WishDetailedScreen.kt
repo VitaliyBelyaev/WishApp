@@ -25,7 +25,6 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
@@ -38,7 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
@@ -69,13 +67,11 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.exifinterface.media.ExifInterface
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.io.ByteArrayInputStream
 import java.util.Optional
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -126,7 +122,6 @@ fun WishDetailedScreen(
         remember { mutableStateOf(Optional.empty()) }
     val openDeleteLinkConfirmationDialog: MutableState<Optional<String>> = remember { mutableStateOf(Optional.empty()) }
     val scrollState: ScrollState = rememberScrollState()
-    val systemUiController = rememberSystemUiController()
     val bottomBarHeight = 56.dp
 
     val openLink: (String) -> Unit = { link ->
@@ -147,17 +142,17 @@ fun WishDetailedScreen(
             val imagesData: List<ImageData> = uris
                 .take(maxSelectionCount)
                 .mapNotNull { uri ->
-                context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                    val rawData = inputStream.readBytes()
-                    val rotationDegrees = ByteArrayInputStream(rawData).use {
-                        ExifInterface(it).rotationDegrees
+                    context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                        val rawData = inputStream.readBytes()
+                        val rotationDegrees = ByteArrayInputStream(rawData).use {
+                            ExifInterface(it).rotationDegrees
+                        }
+                        ImageData(
+                            rawData = rawData,
+                            rotationDegrees = rotationDegrees
+                        )
                     }
-                    ImageData(
-                        rawData = rawData,
-                        rotationDegrees = rotationDegrees
-                    )
                 }
-            }
             viewModel.onImagesSelected(imagesData)
         }
     )
@@ -171,9 +166,6 @@ fun WishDetailedScreen(
     BackHandler { handleBackPressed() }
 
     trackScreenShow { viewModel.trackScreenShow() }
-
-    val screenNavBarColor = MaterialTheme.colorScheme.surfaceColorAtElevation(BottomAppBarDefaults.ContainerElevation)
-    systemUiController.setNavigationBarColor(color = screenNavBarColor)
 
     val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(

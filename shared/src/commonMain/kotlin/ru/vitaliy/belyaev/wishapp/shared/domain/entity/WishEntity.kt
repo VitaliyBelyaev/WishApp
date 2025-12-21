@@ -1,7 +1,8 @@
 package ru.vitaliy.belyaev.wishapp.shared.domain.entity
 
 import com.benasher44.uuid.uuid4
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import ru.vitaliy.belyaev.wishapp.shared.utils.nowEpochMillis
 
 data class WishEntity(
@@ -18,6 +19,7 @@ data class WishEntity(
     val images: List<ImageEntity> = emptyList(),
 )
 
+@OptIn(ExperimentalTime::class)
 fun createEmptyWish(): WishEntity {
     val currentMillis = Clock.System.nowEpochMillis()
     return WishEntity(

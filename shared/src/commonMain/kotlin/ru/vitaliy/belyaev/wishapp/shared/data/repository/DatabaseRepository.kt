@@ -6,13 +6,12 @@ import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
 import com.benasher44.uuid.uuid4
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
 import ru.vitaliy.belyaev.wishapp.shared.data.coroutines.DispatcherProvider
 import ru.vitaliy.belyaev.wishapp.shared.data.database.Image
 import ru.vitaliy.belyaev.wishapp.shared.data.database.ImageQueries
@@ -36,6 +35,7 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishTagRelationReposi
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.shared.utils.nowEpochMillis
 
+@OptIn(ExperimentalTime::class)
 class DatabaseRepository(
     database: WishAppDb,
     private val dispatcherProvider: DispatcherProvider

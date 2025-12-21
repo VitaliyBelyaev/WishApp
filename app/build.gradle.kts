@@ -1,6 +1,7 @@
 import com.android.build.api.dsl.ApplicationDefaultConfig
 import java.util.Properties
 import org.jetbrains.kotlin.daemon.common.trimQuotes
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.androidApplication)
@@ -23,14 +24,22 @@ val amplitudeApiKeyValue = apikeyProperties.getStringOrDefault(
     default = ""
 )
 
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.fromTarget("11")
+    }
+}
+
 android {
     namespace = "ru.vitaliy.belyaev.wishapp"
-    compileSdk = 35
+    compileSdk {
+        version = release(36)
+    }
 
     defaultConfig {
         applicationId = "ru.vitaliy.belyaev.wishapp"
         minSdk = 23
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 24
         versionName = "1.8.2"
 
@@ -44,9 +53,6 @@ android {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
     }
     buildFeatures {
         compose = true
@@ -121,13 +127,11 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.ui.toolingPreview)
+    implementation(libs.androidx.compose.materialIconsCore)
 
     // Compose Navigation
     implementation(libs.androidx.navigation.navigationCompose)
-    implementation(libs.androidx.hilt.hiltNavigationCompose)
-
-    // Google Accompanist
-    implementation(libs.accompanist.systemUiController)
+    implementation(libs.androidx.hilt.lifecycleViewmodelCompose)
 
     // Google Android
     implementation(libs.google.android.material)

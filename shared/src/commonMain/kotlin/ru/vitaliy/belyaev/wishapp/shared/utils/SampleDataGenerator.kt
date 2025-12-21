@@ -1,10 +1,12 @@
 package ru.vitaliy.belyaev.wishapp.shared.utils
 
 import com.benasher44.uuid.uuid4
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 
+@OptIn(ExperimentalTime::class)
 object SampleDataGenerator {
 
     fun createRuWishes(): List<WishEntity> {

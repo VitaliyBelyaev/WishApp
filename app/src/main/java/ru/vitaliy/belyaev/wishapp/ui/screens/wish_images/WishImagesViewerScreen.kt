@@ -24,9 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import coil.request.ImageRequest
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.util.Optional
 import me.saket.telephoto.zoomable.ZoomSpec
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
@@ -38,7 +36,6 @@ import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAl
 import ru.vitaliy.belyaev.wishapp.ui.core.dropdown.DeleteDropDownItem
 import ru.vitaliy.belyaev.wishapp.ui.core.dropdown.MenuMoreWithDropDown
 import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
-import ru.vitaliy.belyaev.wishapp.ui.theme.CommonColors
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -50,12 +47,6 @@ fun WishImagesViewerScreen(
 ) {
 
     val snackbarHostState = remember { SnackbarHostState() }
-
-    val systemUiController = rememberSystemUiController()
-    val screenNavBarColor = CommonColors.navBarColor()
-    LaunchedEffect(key1 = Unit) {
-        systemUiController.setNavigationBarColor(color = screenNavBarColor)
-    }
 
     val openDeleteImageConfirmationDialog: MutableState<Optional<String>> =
         remember { mutableStateOf(Optional.empty()) }
