@@ -41,6 +41,7 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
 import ru.vitaliy.belyaev.wishapp.utils.toValueOfNull
+import timber.log.Timber
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
@@ -69,6 +70,8 @@ class WishDetailedViewModel @Inject constructor(
     val uiState: MutableStateFlow<Optional<WishItem>> = MutableStateFlow(Optional.empty())
 
     init {
+
+        Timber.tag("RTRT").d("input wishId:$inputWishId")
         val wishIdSetJob = launchSafe {
             wishId = inputWishId.ifBlank {
                 val wish = createEmptyWish()

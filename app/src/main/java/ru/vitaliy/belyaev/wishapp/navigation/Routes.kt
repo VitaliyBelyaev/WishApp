@@ -1,10 +1,50 @@
 package ru.vitaliy.belyaev.wishapp.navigation
 
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
+
 const val ARG_WISH_ID = "wishId"
 const val ARG_WISH_LINK = "wishLink"
 const val ARG_WISH_IMAGE_ID = "wishImageId"
 const val ARG_WISH_IMAGE_INDEX = "wishImageIndex"
 const val ARG_TAG_ID = "tagId"
+
+@Serializable
+data object MainRoute2 : NavKey
+
+@Serializable
+data class WishDetailedRoute2(
+    val wishId: String? = null,
+    val wishLink: String? = null,
+    val tagId: String? = null
+) : NavKey
+
+@Serializable
+data object SettingsRoute2 : NavKey
+
+@Serializable
+data object BackupAndRestoreRoute2 : NavKey
+
+@Serializable
+data object AboutAppRoute2 : NavKey
+
+@Serializable
+data object PrivacyPolicyRoute2 : NavKey
+
+@Serializable
+data object EditTagRoute2 : NavKey
+
+@Serializable
+data class WishTagsRoute2(
+    val wishId: String,
+) : NavKey
+
+@Serializable
+data class WishImagesViewerRoute2(
+    val wishId: String,
+    val wishImageId: String,
+    val wishImageIndex: Int
+) : NavKey
 
 object MainRoute {
     const val VALUE = "main"
