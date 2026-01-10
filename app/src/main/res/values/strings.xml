@@ -98,4 +98,11 @@
     <string name="share_generating_pdf_button_text">Generating PDF file</string>
 
     <string name="wish_detailed_save_button_text">Save</string>
+
+    <string name="sort_title">Sort by</string>
+    <string name="sort_default">Default (by position)</string>
+    <string name="sort_created_newest">Newest first</string>
+    <string name="sort_created_oldest">Oldest first</string>
+    <string name="sort_title_az">Title A-Z</string>
+    <string name="sort_title_za">Title Z-A</string>
 </resources>

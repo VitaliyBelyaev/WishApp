@@ -29,6 +29,7 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishSortMode
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishTagRelationRepository
@@ -247,8 +248,14 @@ class DatabaseRepository(
     }
 
     @NativeCoroutines
-    override fun observeAllWishes(isCompleted: Boolean): Flow<List<WishEntity>> {
-        val wishesQuery: Query<Wish> = wishQueries.getAll(isCompleted)
+    override fun observeAllWishes(isCompleted: Boolean, sortMode: WishSortMode): Flow<List<WishEntity>> {
+        val wishesQuery: Query<Wish> = when (sortMode) {
+            WishSortMode.Default -> wishQueries.getAll(isCompleted)
+            WishSortMode.CreatedDateNewest -> wishQueries.getAllByCreatedTimestampDesc(isCompleted)
+            WishSortMode.CreatedDateOldest -> wishQueries.getAllByCreatedTimestampAsc(isCompleted)
+            WishSortMode.TitleAZ -> wishQueries.getAllByTitleAsc(isCompleted)
+            WishSortMode.TitleZA -> wishQueries.getAllByTitleDesc(isCompleted)
+        }
 
         val wishesFlow: Flow<List<Wish>> = wishesQuery
             .asFlow()
@@ -317,8 +324,14 @@ class DatabaseRepository(
     }
 
     @NativeCoroutines
-    override fun observeWishesByTag(tagId: String): Flow<List<WishEntity>> {
-        val wishesByTagQuery: Query<Wish> = wishTagRelationQueries.getAllWishesByTag(tagId)
+    override fun observeWishesByTag(tagId: String, sortMode: WishSortMode): Flow<List<WishEntity>> {
+        val wishesByTagQuery: Query<Wish> = when (sortMode) {
+            WishSortMode.Default -> wishTagRelationQueries.getAllWishesByTag(tagId)
+            WishSortMode.CreatedDateNewest -> wishTagRelationQueries.getAllWishesByTagCreatedDesc(tagId)
+            WishSortMode.CreatedDateOldest -> wishTagRelationQueries.getAllWishesByTagCreatedAsc(tagId)
+            WishSortMode.TitleAZ -> wishTagRelationQueries.getAllWishesByTagTitleAsc(tagId)
+            WishSortMode.TitleZA -> wishTagRelationQueries.getAllWishesByTagTitleDesc(tagId)
+        }
 
         val wishesByTagFlow: Flow<List<Wish>> = wishesByTagQuery
             .asFlow()

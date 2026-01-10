@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.BuildConfig
@@ -30,6 +31,7 @@ import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.ShareWishListTextGenerator
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishSortMode
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.shared.utils.SampleDataGenerator
@@ -74,6 +76,7 @@ class WishListViewModel @Inject constructor(
     val scrollInfoFlow: SharedFlow<ScrollInfo> = _scrollInfoFlow.asSharedFlow()
 
     private val wishesFilterFlow = MutableStateFlow<WishesFilter>(WishesFilter.All)
+    private val sortModeFlow = MutableStateFlow<WishSortMode>(WishSortMode.Default)
 
     private val testWishes = createTestWishes(true)
     private var testWishIndex = 0
@@ -137,6 +140,9 @@ class WishListViewModel @Inject constructor(
     }
 
     fun onReorderIconClicked() {
+        // Reorder is only available when sort mode is Default
+        if (sortModeFlow.value !is WishSortMode.Default) return
+
         val oldReorderButtonState = uiState.value.reorderButtonState as? ReorderButtonState.Visible ?: return
         val newIsReorderEnabled = !oldReorderButtonState.isEnabled
         val selectedIds = if (newIsReorderEnabled) {
@@ -148,6 +154,22 @@ class WishListViewModel @Inject constructor(
             reorderButtonState = oldReorderButtonState.copy(isEnabled = newIsReorderEnabled),
             selectedIds = selectedIds
         )
+    }
+
+    fun onSortModeChanged(sortMode: WishSortMode) {
+        sortModeFlow.value = sortMode
+        val isDefaultSort = sortMode is WishSortMode.Default
+        val oldReorderButtonState = uiState.value.reorderButtonState
+        val reorderButtonState = if (oldReorderButtonState is ReorderButtonState.Visible) {
+            oldReorderButtonState.copy(isEnabled = if (isDefaultSort) oldReorderButtonState.isEnabled else false)
+        } else {
+            oldReorderButtonState
+        }
+        _uiState.value = _uiState.value.copy(
+            sortMode = sortMode,
+            reorderButtonState = reorderButtonState
+        )
+        scrollInfo = ScrollInfo(position = 0, offset = 0)
     }
 
     fun onAddTestWishClicked() {
@@ -313,18 +335,18 @@ class WishListViewModel @Inject constructor(
     private fun launchObservingWishes() {
         launchSafe {
             runCatching {
-                wishesFilterFlow
-                    .flatMapLatest {
+                combine(wishesFilterFlow, sortModeFlow) { filter, sortMode -> filter to sortMode }
+                    .flatMapLatest { (filter, sortMode) ->
                         withContext(Dispatchers.IO) {
-                            when (it) {
+                            when (filter) {
                                 is WishesFilter.ByTag -> {
-                                    wishesRepository.observeWishesByTag(it.tag.id)
+                                    wishesRepository.observeWishesByTag(filter.tag.id, sortMode)
                                 }
                                 is WishesFilter.All -> {
-                                    wishesRepository.observeAllWishes(isCompleted = false)
+                                    wishesRepository.observeAllWishes(isCompleted = false, sortMode = sortMode)
                                 }
                                 is WishesFilter.Completed -> {
-                                    wishesRepository.observeAllWishes(isCompleted = true)
+                                    wishesRepository.observeAllWishes(isCompleted = true, sortMode = sortMode)
                                 }
                             }
                         }

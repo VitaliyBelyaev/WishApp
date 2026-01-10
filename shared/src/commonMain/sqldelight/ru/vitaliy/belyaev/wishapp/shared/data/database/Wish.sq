@@ -65,6 +65,30 @@ FROM Wish
 WHERE isCompleted = ?
 ORDER BY position DESC;
 
+getAllByCreatedTimestampDesc:
+SELECT *
+FROM Wish
+WHERE isCompleted = ?
+ORDER BY createdTimestamp DESC;
+
+getAllByCreatedTimestampAsc:
+SELECT *
+FROM Wish
+WHERE isCompleted = ?
+ORDER BY createdTimestamp ASC;
+
+getAllByTitleAsc:
+SELECT *
+FROM Wish
+WHERE isCompleted = ?
+ORDER BY title COLLATE NOCASE ASC;
+
+getAllByTitleDesc:
+SELECT *
+FROM Wish
+WHERE isCompleted = ?
+ORDER BY title COLLATE NOCASE DESC;
+
 getAllNotCompleted:
 SELECT *
 FROM Wish

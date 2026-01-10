@@ -97,4 +97,10 @@
     <string name="share_generating_pdf_button_text">Gerando arquivo PDF</string>
     <string name="wish_detailed_save_button_text">Salvar</string>
 
+    <string name="sort_title">Ordenar por</string>
+    <string name="sort_default">Padrão (por posição)</string>
+    <string name="sort_created_newest">Mais recentes primeiro</string>
+    <string name="sort_created_oldest">Mais antigos primeiro</string>
+    <string name="sort_title_az">Título A-Z</string>
+    <string name="sort_title_za">Título Z-A</string>
 </resources>

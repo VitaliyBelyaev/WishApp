@@ -3,6 +3,7 @@ package ru.vitaliy.belyaev.wishapp.shared.domain.repository
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.flow.Flow
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishSortMode
 
 interface WishesRepository {
 
@@ -49,7 +50,7 @@ interface WishesRepository {
     suspend fun getWishById(id: String): WishEntity
 
     @NativeCoroutines
-    fun observeAllWishes(isCompleted: Boolean): Flow<List<WishEntity>>
+    fun observeAllWishes(isCompleted: Boolean, sortMode: WishSortMode = WishSortMode.Default): Flow<List<WishEntity>>
 
     @NativeCoroutines
     suspend fun getAllWishes(isCompleted: Boolean): List<WishEntity>
@@ -61,7 +62,7 @@ interface WishesRepository {
     suspend fun getWishesCount(isCompleted: Boolean): Long
 
     @NativeCoroutines
-    fun observeWishesByTag(tagId: String): Flow<List<WishEntity>>
+    fun observeWishesByTag(tagId: String, sortMode: WishSortMode = WishSortMode.Default): Flow<List<WishEntity>>
 
     @NativeCoroutines
     suspend fun deleteWishesByIds(ids: List<String>)

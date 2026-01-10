@@ -98,4 +98,10 @@
     <string name="share_generating_pdf_button_text">Создаём PDF файл</string>
     <string name="wish_detailed_save_button_text">Сохранить</string>
 
+    <string name="sort_title">Сортировать</string>
+    <string name="sort_default">По умолчанию (по позиции)</string>
+    <string name="sort_created_newest">Сначала новые</string>
+    <string name="sort_created_oldest">Сначала старые</string>
+    <string name="sort_title_az">По названию (алфавитный порядок)</string>
+    <string name="sort_title_za">По названию (обратный алфавитный порядок)</string>
 </resources>

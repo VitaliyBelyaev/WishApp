@@ -51,6 +51,7 @@ import ru.vitaliy.belyaev.wishapp.ui.core.bottomsheet.WishAppBottomSheetM3
 import ru.vitaliy.belyaev.wishapp.ui.core.loader.FullscreenLoaderWithText
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.EmptyWishesPlaceholder
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.ShareBottomSheetContent
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.SortBottomSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.TagsSheetContent
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.WishItemBlock
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.components.WishListBottomBar
@@ -110,6 +111,16 @@ fun WishListScreen(
         }
     }
 
+    val sortBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showSortBottomSheet by remember { mutableStateOf(false) }
+    val closeSortBottomSheet: () -> Unit = {
+        scope.launch { sortBottomSheetState.hide() }.invokeOnCompletion {
+            if (!sortBottomSheetState.isVisible) {
+                showSortBottomSheet = false
+            }
+        }
+    }
+
     trackScreenShow { viewModel.trackScreenShow() }
 
     LaunchedEffect(key1 = Unit) {
@@ -158,10 +169,12 @@ fun WishListScreen(
             WishListBottomBar(
                 wishes = state.wishes,
                 wishesFilter = state.wishesFilter,
+                sortMode = state.sortMode,
                 onShareClick = {
                     showShareChooseBottomSheet = true
                 },
                 onMenuClick = { showNavBottomSheet = true },
+                onSortClick = { showSortBottomSheet = true },
                 reorderButtonState = state.reorderButtonState,
                 onReorderClick = { viewModel.onReorderIconClicked() },
                 onAddWishClicked = {
@@ -298,6 +311,21 @@ fun WishListScreen(
                         viewModel.onShareClick(context, shareData)
                     },
                     isPdfShareButtonLoading = state.isShareAsPdfLoading,
+                )
+            }
+        }
+
+        if (showSortBottomSheet) {
+            WishAppBottomSheetM3(
+                onDismissRequest = { showSortBottomSheet = false },
+                sheetState = sortBottomSheetState,
+            ) {
+                SortBottomSheetContent(
+                    currentSortMode = state.sortMode,
+                    onSortModeSelected = { sortMode ->
+                        closeSortBottomSheet()
+                        viewModel.onSortModeChanged(sortMode)
+                    }
                 )
             }
         }

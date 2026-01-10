@@ -30,6 +30,34 @@ JOIN WishTagRelation relation
 ON wish.isCompleted = 0 AND wish.wishId = relation.wishId AND relation.tagId = ?
 ORDER BY wish.position DESC;
 
+getAllWishesByTagCreatedDesc:
+SELECT wish.wishId, wish.title, wish.link, wish.comment, wish.isCompleted, wish.createdTimestamp, wish.updatedTimestamp, wish.position
+FROM Wish wish
+JOIN WishTagRelation relation
+ON wish.isCompleted = 0 AND wish.wishId = relation.wishId AND relation.tagId = ?
+ORDER BY wish.createdTimestamp DESC;
+
+getAllWishesByTagCreatedAsc:
+SELECT wish.wishId, wish.title, wish.link, wish.comment, wish.isCompleted, wish.createdTimestamp, wish.updatedTimestamp, wish.position
+FROM Wish wish
+JOIN WishTagRelation relation
+ON wish.isCompleted = 0 AND wish.wishId = relation.wishId AND relation.tagId = ?
+ORDER BY wish.createdTimestamp ASC;
+
+getAllWishesByTagTitleAsc:
+SELECT wish.wishId, wish.title, wish.link, wish.comment, wish.isCompleted, wish.createdTimestamp, wish.updatedTimestamp, wish.position
+FROM Wish wish
+JOIN WishTagRelation relation
+ON wish.isCompleted = 0 AND wish.wishId = relation.wishId AND relation.tagId = ?
+ORDER BY wish.title COLLATE NOCASE ASC;
+
+getAllWishesByTagTitleDesc:
+SELECT wish.wishId, wish.title, wish.link, wish.comment, wish.isCompleted, wish.createdTimestamp, wish.updatedTimestamp, wish.position
+FROM Wish wish
+JOIN WishTagRelation relation
+ON wish.isCompleted = 0 AND wish.wishId = relation.wishId AND relation.tagId = ?
+ORDER BY wish.title COLLATE NOCASE DESC;
+
 getWishTags:
 SELECT tag.tagId, tag.title
 FROM Tag tag
