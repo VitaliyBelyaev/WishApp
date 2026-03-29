@@ -29,9 +29,6 @@ import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetai
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedLinkClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedSaveAndExitClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.navigation.ARG_TAG_ID
-import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
-import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_LINK
 import ru.vitaliy.belyaev.wishapp.shared.domain.LinksAdapter
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.createEmptyWish
@@ -53,11 +50,14 @@ class WishDetailedViewModel @Inject constructor(
     private val wishTagRelationRepository: WishTagRelationRepository,
 ) : BaseViewModel() {
 
-    val inputWishId: String = savedStateHandle[ARG_WISH_ID] ?: ""
-    lateinit var wishId: String
+    var inputWishId: String = ""
+        private set
+    var wishId: String = ""
+        private set
 
-    private val sharedLinkForNewWish: String = savedStateHandle[ARG_WISH_LINK] ?: ""
-    private val preselectedTagId: String? = savedStateHandle[ARG_TAG_ID]
+    private var sharedLinkForNewWish: String = ""
+    private var preselectedTagId: String? = null
+    private var isInitialized = false
 
     var linkInputString: String
         get() {
@@ -69,11 +69,21 @@ class WishDetailedViewModel @Inject constructor(
 
     val uiState: MutableStateFlow<Optional<WishItem>> = MutableStateFlow(Optional.empty())
 
-    init {
+    fun initialize(wishId: String?, wishLink: String?, tagId: String?) {
+        if (isInitialized) return
+        isInitialized = true
+
+        inputWishId = wishId ?: ""
+        sharedLinkForNewWish = wishLink ?: ""
+        preselectedTagId = tagId
 
         Timber.tag("RTRT").d("input wishId:$inputWishId")
+        launchObserving()
+    }
+
+    private fun launchObserving() {
         val wishIdSetJob = launchSafe {
-            wishId = inputWishId.ifBlank {
+            this@WishDetailedViewModel.wishId = inputWishId.ifBlank {
                 val wish = createEmptyWish()
                 wishesRepository.insertWish(wish)
                 preselectedTagId?.let { tagId ->
@@ -89,7 +99,7 @@ class WishDetailedViewModel @Inject constructor(
         launchSafe {
             wishIdSetJob.join()
             wishesRepository
-                .observeWishById(wishId)
+                .observeWishById(this@WishDetailedViewModel.wishId)
                 .collect {
                     uiState.value = Optional.of(WishItem(it, false))
                 }

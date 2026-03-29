@@ -64,17 +64,20 @@ internal fun Navigation(
                 onGoToBackupScreenClicked = { navigator.navigate(BackupAndRestoreRoute2) },
             )
         }
-        entry<WishDetailedRoute2> {
+        entry<WishDetailedRoute2> { route ->
             WishDetailedScreen(
+                wishId = route.wishId,
+                wishLink = route.wishLink,
+                tagId = route.tagId,
                 onBackPressed = popBackStack,
                 onWishTagsClicked = { navigator.navigate(WishTagsRoute2(it)) },
                 onWishImageClicked = {
-                    val route = WishImagesViewerRoute2(
+                    val imageRoute = WishImagesViewerRoute2(
                         wishId = it.wishId,
                         wishImageId = it.wishImageId,
                         wishImageIndex = it.wishImageIndex,
                     )
-                    navigator.navigate(route)
+                    navigator.navigate(imageRoute)
                 }
             )
         }

@@ -2,6 +2,7 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 
 import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -39,6 +40,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -100,12 +102,19 @@ import timber.log.Timber
 @ExperimentalCoroutinesApi
 @Composable
 fun WishDetailedScreen(
+    wishId: String?,
+    wishLink: String?,
+    tagId: String?,
     onBackPressed: () -> Unit,
     onWishTagsClicked: (String) -> Unit,
     onWishImageClicked: (WishImageClickData) -> Unit,
-    appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
+    appViewModel: AppActivityViewModel = hiltViewModel(LocalActivity.current as AppActivity),
     viewModel: WishDetailedViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(Unit) {
+        Timber.tag("RTRT").d("Enter WishDetailedScreen, viewModel:$viewModel, wishId:$wishId, wishLink:$wishLink, tagId:$tagId")
+        viewModel.initialize(wishId, wishLink, tagId)
+    }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
