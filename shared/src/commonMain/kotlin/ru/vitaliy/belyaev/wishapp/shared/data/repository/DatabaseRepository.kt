@@ -248,7 +248,35 @@ class DatabaseRepository(
     }
 
     @NativeCoroutines
-    override fun observeAllWishes(isCompleted: Boolean, sortMode: WishSortMode): Flow<List<WishEntity>> {
+    override suspend fun getWishByIdOrNull(id: String): WishEntity? {
+        return withContext(dispatcherProvider.io()) {
+            val wishDto: Wish = wishQueries
+                .getById(id)
+                .executeAsOneOrNull()
+                ?: return@withContext null
+
+            val tags: List<Tag> = wishTagRelationQueries
+                .getWishTags(id)
+                .executeAsList()
+
+            val images: List<Image> = imageQueries
+                .getByWishId(id)
+                .executeAsList()
+
+            WishMapper.mapToDomain(wishDto, tags, images)
+        }
+    }
+
+    @NativeCoroutines
+    override fun observeAllWishes(isCompleted: Boolean): Flow<List<WishEntity>> {
+        return observeAllWishesSorted(isCompleted, WishSortMode.Default)
+    }
+
+    @NativeCoroutines
+    override fun observeAllWishesSorted(
+        isCompleted: Boolean,
+        sortMode: WishSortMode,
+    ): Flow<List<WishEntity>> {
         val wishesQuery: Query<Wish> = when (sortMode) {
             WishSortMode.Default -> wishQueries.getAll(isCompleted)
             WishSortMode.CreatedDateNewest -> wishQueries.getAllByCreatedTimestampDesc(isCompleted)
@@ -277,7 +305,7 @@ class DatabaseRepository(
             .mapToList(dispatcherProvider.io())
 
         return combine(wishesFlow, wishTagRelationsFlow, tagsFlow, imagesFlow) { wishes, _, _, allImages ->
-            wishes.map {
+            val wishEntities = wishes.map {
                 val tags: List<Tag> = wishTagRelationQueries
                     .getWishTags(it.wishId)
                     .executeAsList()
@@ -285,6 +313,7 @@ class DatabaseRepository(
                 val images = allImages.filter { image -> image.wishId == it.wishId }
                 WishMapper.mapToDomain(it, tags, images)
             }
+            sortWishesByTitle(wishEntities, sortMode)
         }
     }
 
@@ -324,7 +353,15 @@ class DatabaseRepository(
     }
 
     @NativeCoroutines
-    override fun observeWishesByTag(tagId: String, sortMode: WishSortMode): Flow<List<WishEntity>> {
+    override fun observeWishesByTag(tagId: String): Flow<List<WishEntity>> {
+        return observeWishesByTagSorted(tagId, WishSortMode.Default)
+    }
+
+    @NativeCoroutines
+    override fun observeWishesByTagSorted(
+        tagId: String,
+        sortMode: WishSortMode,
+    ): Flow<List<WishEntity>> {
         val wishesByTagQuery: Query<Wish> = when (sortMode) {
             WishSortMode.Default -> wishTagRelationQueries.getAllWishesByTag(tagId)
             WishSortMode.CreatedDateNewest -> wishTagRelationQueries.getAllWishesByTagCreatedDesc(tagId)
@@ -347,7 +384,7 @@ class DatabaseRepository(
             .mapToList(dispatcherProvider.io())
 
         return combine(wishesByTagFlow, tagFlow, imagesFlow) { wishes, _, allImages ->
-            wishes.map {
+            val wishEntities = wishes.map {
                 val tags: List<Tag> = wishTagRelationQueries
                     .getWishTags(it.wishId)
                     .executeAsList()
@@ -355,6 +392,27 @@ class DatabaseRepository(
                 val images = allImages.filter { image -> image.wishId == it.wishId }
                 WishMapper.mapToDomain(it, tags, images)
             }
+            sortWishesByTitle(wishEntities, sortMode)
+        }
+    }
+
+    // SQLite COLLATE NOCASE сравнивает без регистра только латиницу. Для
+    // кириллицы сравнение идёт по коду символа, поэтому заглавные буквы
+    // оказываются раньше строчных: "Яблоко" встаёт перед "арбуз". Сортируем
+    // уже готовый список по lowercase, чтобы исправить регистр без миграции БД.
+    // Это не полноценная locale-aware сортировка, но убирает основной
+    // практический баг.
+    private fun sortWishesByTitle(
+        wishes: List<WishEntity>,
+        sortMode: WishSortMode,
+    ): List<WishEntity> {
+        val comparator = compareBy<WishEntity> { it.title.lowercase() }
+            .thenBy { it.title }
+
+        return when (sortMode) {
+            WishSortMode.TitleAZ -> wishes.sortedWith(comparator)
+            WishSortMode.TitleZA -> wishes.sortedWith(comparator.reversed())
+            else -> wishes
         }
     }
 

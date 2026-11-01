@@ -50,7 +50,16 @@ interface WishesRepository {
     suspend fun getWishById(id: String): WishEntity
 
     @NativeCoroutines
-    fun observeAllWishes(isCompleted: Boolean, sortMode: WishSortMode = WishSortMode.Default): Flow<List<WishEntity>>
+    suspend fun getWishByIdOrNull(id: String): WishEntity?
+
+    @NativeCoroutines
+    fun observeAllWishes(isCompleted: Boolean): Flow<List<WishEntity>>
+
+    @NativeCoroutines
+    fun observeAllWishesSorted(
+        isCompleted: Boolean,
+        sortMode: WishSortMode,
+    ): Flow<List<WishEntity>>
 
     @NativeCoroutines
     suspend fun getAllWishes(isCompleted: Boolean): List<WishEntity>
@@ -62,7 +71,13 @@ interface WishesRepository {
     suspend fun getWishesCount(isCompleted: Boolean): Long
 
     @NativeCoroutines
-    fun observeWishesByTag(tagId: String, sortMode: WishSortMode = WishSortMode.Default): Flow<List<WishEntity>>
+    fun observeWishesByTag(tagId: String): Flow<List<WishEntity>>
+
+    @NativeCoroutines
+    fun observeWishesByTagSorted(
+        tagId: String,
+        sortMode: WishSortMode,
+    ): Flow<List<WishEntity>>
 
     @NativeCoroutines
     suspend fun deleteWishesByIds(ids: List<String>)

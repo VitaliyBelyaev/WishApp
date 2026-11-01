@@ -194,6 +194,7 @@ dependencies {
     // JUnit
     testImplementation(libs.junit.junit)
     testImplementation(libs.hamcrest.hamcrestJunit)
+    testImplementation(libs.kotlin.coroutines.test)
 
     // Mockito
     testImplementation(libs.mockito.mockitoCore)

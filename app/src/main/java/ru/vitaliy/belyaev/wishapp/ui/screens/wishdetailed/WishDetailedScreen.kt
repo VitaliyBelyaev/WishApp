@@ -40,7 +40,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -77,6 +76,7 @@ import coil.request.ImageRequest
 import java.io.ByteArrayInputStream
 import java.util.Optional
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.ImageData
@@ -109,23 +109,27 @@ fun WishDetailedScreen(
     onWishTagsClicked: (String) -> Unit,
     onWishImageClicked: (WishImageClickData) -> Unit,
     appViewModel: AppActivityViewModel = hiltViewModel(LocalActivity.current as AppActivity),
-    viewModel: WishDetailedViewModel = hiltViewModel()
+    viewModel: WishDetailedViewModel =
+        hiltViewModel<WishDetailedViewModel, WishDetailedViewModel.Factory> { factory ->
+            factory.create(wishId, wishLink, tagId)
+        }
 ) {
-    LaunchedEffect(Unit) {
-        Timber.tag("RTRT").d("Enter WishDetailedScreen, viewModel:$viewModel, wishId:$wishId, wishLink:$wishLink, tagId:$tagId")
-        viewModel.initialize(wishId, wishLink, tagId)
-    }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
     val wishItem: Optional<WishItem> by viewModel.uiState.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current
+    var exitJob: Job? by remember { mutableStateOf(null) }
     val handleBackPressed: () -> Unit = {
-        keyboardController?.hide()
-        viewModel.onBackPressed()
-        appViewModel.onWishScreenExit(viewModel.wishId, viewModel.inputWishId.isBlank())
-        onBackPressed()
+        if (exitJob?.isActive != true) {
+            keyboardController?.hide()
+            exitJob = scope.launch {
+                val wishId = viewModel.prepareForExit()
+                appViewModel.onWishScreenExit(wishId, viewModel.inputWishId.isBlank())
+                onBackPressed()
+            }
+        }
     }
     val openDeleteWishConfirmationDialog: MutableState<Optional<WishItem>> =
         remember { mutableStateOf(Optional.empty()) }
@@ -411,7 +415,6 @@ fun WishDetailedScreen(
                                     wishItem.toValueOfNull()?.wish?.id?.let {
                                         val data = WishImageClickData(
                                             wishId = it,
-                                            wishImageId = image.id,
                                             wishImageIndex = index
                                         )
                                         onWishImageClicked(data)
@@ -449,7 +452,7 @@ fun WishDetailedScreen(
             confirmClick = {
                 openDeleteWishConfirmationDialog.value = Optional.empty()
                 viewModel.onDeleteWishConfirmed()
-                appViewModel.onDeleteWishConfirmed(viewModel.wishId)
+                appViewModel.onDeleteWishConfirmed(viewModel.currentWishId)
                 onBackPressed()
             },
         )

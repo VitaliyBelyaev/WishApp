@@ -273,6 +273,8 @@ iosApp/WishApp/
 
 - фильтр `WishesFilter`: `All`, `Completed`, `ByTag`;
 - сортировка `WishSortMode`: `Default`, `CreatedDateNewest`, `CreatedDateOldest`, `TitleAZ`, `TitleZA`;
+  - `TitleAZ/TitleZA` дополнительно сортируются в Kotlin по `lowercase()`,
+    потому что SQLite `COLLATE NOCASE` не учитывает регистр кириллицы;
 - режим множественного выбора по long press + удаление выбранных;
 - перемещение вверх/вниз доступно только в `Default`-сортировке;
 - шаринг: текст (`ShareWishListTextGenerator`) или PDF (`ShareWishListPdfGenerator`);
@@ -388,9 +390,9 @@ iosApp/WishApp/
 Используется **Navigation 3**:
 
 - `navigation/Routes.kt` — `@Serializable` `NavKey`-классы:
-  `MainRoute2`, `WishDetailedRoute2`, `SettingsRoute2`, `BackupAndRestoreRoute2`,
-  `AboutAppRoute2`, `PrivacyPolicyRoute2`, `EditTagRoute2`, `WishTagsRoute2`,
-  `WishImagesViewerRoute2`.
+  `MainRoute`, `WishDetailedRoute`, `SettingsRoute`, `BackupAndRestoreRoute`,
+  `AboutAppRoute`, `PrivacyPolicyRoute`, `EditTagRoute`, `WishTagsRoute`,
+  `WishImagesViewerRoute`.
 - `navigation/Navigation.kt` — `NavDisplay` + `entryProvider`, здесь собираются экраны.
 - `navigation/NavigationState.kt` — back stack-и, сохранение состояния.
 - `navigation/Navigator.kt` — `navigate()` / `goBack()`.
@@ -401,14 +403,8 @@ iosApp/WishApp/
 Глубокие ссылки:
 
 - `AppActivity` ловит `Intent.ACTION_SEND` с `text/plain`;
-- валидирует URL и открывает `WishDetailedRoute2(wishLink = ...)`;
+- валидирует URL и открывает `WishDetailedRoute(wishLink = ...)`;
 - `onNewIntent` обрабатывает повторный шаринг без перезапуска.
-
-Легаси (не использовать как пример):
-
-- старые строковые `MainRoute`, `WishDetailedRoute`, `SettingsRoute` и т.д.;
-- `WishAppAnimatedNavHost.kt`;
-- закомментированные фрагменты `AppActivity`, связанные со старым `NavController`.
 
 ### iOS
 
@@ -574,7 +570,7 @@ iOS `Wish List Screen - Show` с другим набором параметро�
   - на Android 12+ используются dynamic colors (Material You);
   - выбранная тема хранится в DataStore.
 - Для изображений экрана просмотра принудительно включается тёмная тема
-  (`WishImagesViewerRoute2` → `forceDark`).
+  (`NavigationState.currentRoute is WishImagesViewerRoute` → `Theme.DARK`).
 
 ### iOS
 
@@ -672,8 +668,8 @@ open iosApp/WishApp.xcodeproj
 
 1. Создай пакет в `ui/screens/<name>/`.
 2. Добавь `<Name>Screen.kt` и `<Name>ViewModel.kt` (наследник `BaseViewModel`).
-3. Добавь `@Serializable data object/class <Name>Route2 : NavKey` в `navigation/Routes.kt`.
-4. Зарегистрируй `entry<<Name>Route2>` в `navigation/Navigation.kt`.
+3. Добавь `@Serializable data object/class <Name>Route : NavKey` в `navigation/Routes.kt`.
+4. Зарегистрируй `entry<<Name>Route>` в `navigation/Navigation.kt`.
 5. Добавь строки в `res/values*/strings.xml`.
 6. Если нужен экран-показ — добавь analytics-событие и `trackScreenShow`.
 
@@ -726,10 +722,8 @@ open iosApp/WishApp.xcodeproj
   - выбор темы — только Android;
   - бэкап — Google Drive на Android, iCloud на iOS.
 - **Мёртвый/легаси-код:**
-  - старые строковые маршруты в `navigation/Routes.kt`;
-  - `navigation/WishAppAnimatedNavHost.kt`;
   - старый `iosApp/WishApp/ui/MainScreen/` (пустой/неиспользуемый);
-  - закомментированные участки в `AppActivity`, `UseCaseProvideModule`, Firebase на iOS.
+  - закомментированные участки в `UseCaseProvideModule`, Firebase на iOS.
 - **Две DI-системы:** Hilt на Android, Koin в `shared`/iOS. Android не вызывает Koin.
 - **`Pods/` не в git** — iOS-зависимости через SPM.
 - **Тестов мало:** `shared` — `LinksAdapterTest`, `app` — `BytesSizeFormatterTest` и

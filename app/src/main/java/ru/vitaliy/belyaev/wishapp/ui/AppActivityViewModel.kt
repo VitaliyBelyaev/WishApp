@@ -79,7 +79,7 @@ class AppActivityViewModel @Inject constructor(
 
     fun onWishScreenExit(wishId: String, isNewWish: Boolean) {
         launchSafe(dispatcherProvider.io()) {
-            val wish: WishEntity = wishesRepository.getWishById(wishId)
+            val wish: WishEntity = wishesRepository.getWishByIdOrNull(wishId) ?: return@launchSafe
             if (wish.isEmpty()) {
                 wishesRepository.deleteWishesByIds(listOf(wishId))
                 return@launchSafe

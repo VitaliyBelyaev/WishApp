@@ -158,6 +158,9 @@ class WishListViewModel @Inject constructor(
 
     fun onSortModeChanged(sortMode: WishSortMode) {
         sortModeFlow.value = sortMode
+        // Ручной порядок имеет смысл только в Default. При другой сортировке
+        // reorder выключается и после возврата в Default не включается сам —
+        // пользователь делает это вручную. Текущее поведение считаем ожидаемым.
         val isDefaultSort = sortMode is WishSortMode.Default
         val oldReorderButtonState = uiState.value.reorderButtonState
         val reorderButtonState = if (oldReorderButtonState is ReorderButtonState.Visible) {
@@ -340,13 +343,13 @@ class WishListViewModel @Inject constructor(
                         withContext(Dispatchers.IO) {
                             when (filter) {
                                 is WishesFilter.ByTag -> {
-                                    wishesRepository.observeWishesByTag(filter.tag.id, sortMode)
+                                    wishesRepository.observeWishesByTagSorted(filter.tag.id, sortMode)
                                 }
                                 is WishesFilter.All -> {
-                                    wishesRepository.observeAllWishes(isCompleted = false, sortMode = sortMode)
+                                    wishesRepository.observeAllWishesSorted(isCompleted = false, sortMode = sortMode)
                                 }
                                 is WishesFilter.Completed -> {
-                                    wishesRepository.observeAllWishes(isCompleted = true, sortMode = sortMode)
+                                    wishesRepository.observeAllWishesSorted(isCompleted = true, sortMode = sortMode)
                                 }
                             }
                         }

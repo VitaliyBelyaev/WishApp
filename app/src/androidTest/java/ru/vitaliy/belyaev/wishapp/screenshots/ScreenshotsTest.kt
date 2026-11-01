@@ -1,8 +1,10 @@
 package ru.vitaliy.belyaev.wishapp.screenshots
 
-import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
+import android.view.View
+import android.view.ViewGroup
+import android.webkit.WebView
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
@@ -10,6 +12,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onAllNodesWithContentDescription
@@ -17,17 +21,21 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.hasSetTextAction
-import androidx.compose.ui.test.onNodeWithText
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.analytics
+import com.google.firebase.crashlytics.crashlytics
 import java.io.File
 import java.io.OutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 import java.time.LocalDateTime
 import java.util.UUID
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -38,7 +46,11 @@ import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.RuleChain
+import org.junit.rules.TestRule
+import org.junit.runners.model.Statement
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AmplitudeWrapper
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.CurrentBackupInfoHolder
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
@@ -51,6 +63,7 @@ import ru.vitaliy.belyaev.wishapp.domain.use_case.IsUserSignedInToBackupServiceU
 import ru.vitaliy.belyaev.wishapp.domain.use_case.NeedToShowRestoreUseCase
 import ru.vitaliy.belyaev.wishapp.domain.use_case.RestoreBackupUseCase
 import ru.vitaliy.belyaev.wishapp.shared.data.repository.DatabaseRepository
+import ru.vitaliy.belyaev.wishapp.shared.utils.PrivacyPolicy
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupLoadProgressListener
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupScreen
@@ -61,8 +74,9 @@ import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
  * Снимает скриншоты всех экранов Android-приложения. Запускается через
  * `scripts/take_screenshots.sh` на отдельном AVD.
  *
- * Тест стирает базу приложения, поэтому без аргумента `-e screenshots true`
- * он пропускается и не трогает данные при обычном `connectedAndroidTest`.
+ * Тест стирает базу приложения, поэтому без аргумента `-e screenshots true` он
+ * пропускается ещё до запуска активности. Это не спасает от самого
+ * `connectedAndroidTest`: после прогона он удаляет debug-приложение вместе с данными.
  */
 @OptIn(
     ExperimentalFoundationApi::class,
@@ -72,8 +86,10 @@ import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
 )
 internal class ScreenshotsTest {
 
-    @get:Rule
     val rule = createAndroidComposeRule<AppActivity>()
+
+    @get:Rule
+    val rules: TestRule = RuleChain.outerRule(screenshotsModeRule).around(rule)
 
     private val device: UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
@@ -84,10 +100,6 @@ internal class ScreenshotsTest {
 
     @Before
     fun setUp() {
-        assumeTrue(
-            "Запускайте через scripts/take_screenshots.sh",
-            InstrumentationRegistry.getArguments().getString("screenshots") == "true"
-        )
         demoData = DemoData(language = rule.activity.resources.configuration.locales[0].language)
         runBlocking { demoData.seed(repository) }
     }
@@ -244,8 +256,7 @@ internal class ScreenshotsTest {
         shot("41_about_app")
 
         clickString(R.string.privacy_policy)
-        // WebView грузит политику из сети, а не из ресурсов приложения
-        SystemClock.sleep(WEB_PAGE_LOAD_MILLIS)
+        waitForPrivacyPolicyLoaded()
         shot("42_privacy_policy")
     }
 
@@ -322,6 +333,7 @@ internal class ScreenshotsTest {
     @Test
     fun backupUploading() {
         showBackupScreen(checkBackup = { BackupInfo.None(FAKE_ACCOUNT_EMAIL) })
+        waitForText(string(R.string.backup_create_backup_button_text))
         clickString(R.string.backup_create_backup_button_text)
         waitForText(string(R.string.backup_create_backup_loader_text))
         shot("60_backup_uploading")
@@ -330,6 +342,7 @@ internal class ScreenshotsTest {
     @Test
     fun backupRestoring() {
         showBackupScreen(checkBackup = { fakeBackupInfo })
+        waitForText(string(R.string.backup_restore_button_text))
         clickString(R.string.backup_restore_button_text)
         clickLastText(string(R.string.backup_restore_backup_confirm_dialog_positive_text))
         waitForText(string(R.string.backup_restore_backup_loader_text))
@@ -431,10 +444,42 @@ internal class ScreenshotsTest {
     private fun openFirstWish() {
         waitForText(demoData.firstWishTitle)
         rule.onAllNodesWithText(demoData.firstWishTitle).onFirst().performClick()
-        waitForText(demoData.firstWishComment)
+        // Комментарий есть и на карточке в списке, поэтому ждём именно поле ввода
+        val commentField = hasSetTextAction() and hasText(demoData.firstWishComment)
+        rule.waitUntil(WAIT_TIMEOUT_MILLIS) {
+            rule.onAllNodes(commentField).fetchSemanticsNodes().isNotEmpty()
+        }
+        // Пока картинка не декодирована, её ширина нулевая и клик по ней не попадёт
+        rule.waitUntil(WAIT_TIMEOUT_MILLIS) {
+            rule.onAllNodes(imageMatcher).fetchSemanticsNodes().firstOrNull()?.let { it.size.width > 0 } ?: false
+        }
     }
 
-    private fun string(resId: Int): String = (rule.activity as Context).getString(resId)
+    /** На странице с ошибкой WebView тоже дойдёт до 100%, поэтому сначала проверяем сам адрес. */
+    private fun waitForPrivacyPolicyLoaded() {
+        val connection = URL(PrivacyPolicy.url).openConnection() as HttpURLConnection
+        val responseCode = try {
+            connection.responseCode
+        } finally {
+            connection.disconnect()
+        }
+        assertTrue("Политика недоступна, HTTP $responseCode", responseCode in 200..299)
+
+        rule.waitUntil(WEB_PAGE_TIMEOUT_MILLIS) {
+            rule.runOnUiThread {
+                val webView = findWebView(rule.activity.window.decorView)
+                webView != null && webView.progress == 100 && webView.contentHeight > 0
+            }
+        }
+    }
+
+    private fun findWebView(view: View): WebView? = when (view) {
+        is WebView -> view
+        is ViewGroup -> (0 until view.childCount).firstNotNullOfOrNull { findWebView(view.getChildAt(it)) }
+        else -> null
+    }
+
+    private fun string(resId: Int): String = rule.activity.getString(resId)
 
     private fun clickString(resId: Int) {
         rule.onNodeWithText(string(resId)).performClick()
@@ -466,10 +511,30 @@ internal class ScreenshotsTest {
     }
 
     private companion object {
+
+        /**
+         * Пропускает тест без `-e screenshots true`, а иначе до запуска активности
+         * выключает отправку аналитики, чтобы демо-данные и фейковые ошибки не попали в отчёты.
+         */
+        val screenshotsModeRule = TestRule { base, _ ->
+            object : Statement() {
+                override fun evaluate() {
+                    assumeTrue(
+                        "Запускайте через scripts/take_screenshots.sh",
+                        InstrumentationRegistry.getArguments().getString("screenshots") == "true"
+                    )
+                    Firebase.analytics.setAnalyticsCollectionEnabled(false)
+                    Firebase.crashlytics.isCrashlyticsCollectionEnabled = false
+                    AmplitudeWrapper.amplitude?.configuration?.optOut = true
+                    base.evaluate()
+                }
+            }
+        }
+
         const val WAIT_TIMEOUT_MILLIS = 10_000L
         const val BACKUP_SIGN_IN_TIMEOUT_MILLIS = 30_000L
         const val SETTLE_MILLIS = 700L
-        const val WEB_PAGE_LOAD_MILLIS = 5_000L
+        const val WEB_PAGE_TIMEOUT_MILLIS = 30_000L
         const val FAKE_ACCOUNT_EMAIL = "user@example.com"
         const val FAKE_PROGRESS = 0.42
         const val FAKE_LOADED_BYTES = 1_012_924L

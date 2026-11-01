@@ -61,7 +61,6 @@
 7. **Не редактируй** `build/`, `shared/build/`, `Pods/`.
 8. **Не коммить** `local.properties`, `apikey.properties`, keystore; не свети ключи.
 9. **Android-навигация — только Navigation3** (`Routes.kt` / `Navigation.kt`).
-   Старые строковые route и `WishAppAnimatedNavHost` не использовать.
 10. **Помни, что iOS на паузе, но `shared` — общий.** Не ломай сборку/работу
     iOS-приложения; при изменениях общего кода проверяй `iosApp` хотя бы на
     уровне компиляции, если это не требует много времени.
@@ -138,8 +137,7 @@ CI в репозитории **нет** — проверяй вручную.
 - На iOS Firebase фактически отключён — используется только Amplitude.
 - Тестов мало (`LinksAdapterTest`, `BytesSizeFormatterTest`).
 - Release на Android подписан тестовым keystore — это не production-подпись.
-- Легаси: старые строковые route, `WishAppAnimatedNavHost`, пустой
-  `iosApp/WishApp/ui/MainScreen/`.
+- Легаси: пустой `iosApp/WishApp/ui/MainScreen/`.
 - `WishDetailedViewModel` сразу создаёт пустое желание; при выходе пустая запись
   удаляется (`AppActivityViewModel.onWishScreenExit`).
 - После изменения публичного API `shared` пересобери iOS-фреймворк и проверь

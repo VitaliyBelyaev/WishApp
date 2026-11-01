@@ -15,16 +15,20 @@ import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun WishImagesViewerScreenRoute(
+    wishId: String,
+    initialWishImageIndex: Int,
     onBackPressed: () -> Unit,
-    viewModel: WishImagesViewerViewModel = hiltViewModel(),
+    viewModel: WishImagesViewerViewModel =
+        hiltViewModel<WishImagesViewerViewModel, WishImagesViewerViewModel.Factory> { factory ->
+            factory.create(wishId)
+        },
     appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
 ) {
-
     val images: List<ImageEntity> by viewModel.images.collectAsStateWithLifecycle()
 
     WishImagesViewerScreen(
         onBackPressed = onBackPressed,
-        initialWishImageIndex = viewModel.initialWishImageIndex,
+        initialWishImageIndex = initialWishImageIndex,
         images = images,
         onDeleteImageConfirmed = appViewModel::onDeleteWishImageConfirmed,
     )

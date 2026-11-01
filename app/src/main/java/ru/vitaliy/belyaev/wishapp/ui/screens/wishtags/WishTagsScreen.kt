@@ -50,8 +50,12 @@ import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 @ExperimentalComposeUiApi
 @Composable
 fun WishTagsScreen(
+    wishId: String,
     onBackPressed: () -> Unit,
-    viewModel: WishTagsViewModel = hiltViewModel()
+    viewModel: WishTagsViewModel =
+        hiltViewModel<WishTagsViewModel, WishTagsViewModel.Factory> { factory ->
+            factory.create(wishId)
+        }
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     var query: String by remember { mutableStateOf("") }
@@ -164,6 +168,7 @@ fun WishTagsScreen(
 @Composable
 fun WishTagsScreenPreview() {
     WishTagsScreen(
-        { }
+        wishId = "preview",
+        onBackPressed = {}
     )
 }

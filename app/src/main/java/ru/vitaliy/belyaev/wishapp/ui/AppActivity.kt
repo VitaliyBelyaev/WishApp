@@ -1,10 +1,8 @@
 package ru.vitaliy.belyaev.wishapp.ui
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Patterns
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -13,17 +11,12 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation3.runtime.entryProvider
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,14 +29,12 @@ import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppReviewRequestedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppReviewShowEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.navigation.MainRoute2
+import ru.vitaliy.belyaev.wishapp.navigation.MainRoute
 import ru.vitaliy.belyaev.wishapp.navigation.Navigation
 import ru.vitaliy.belyaev.wishapp.navigation.NavigationState
 import ru.vitaliy.belyaev.wishapp.navigation.Navigator
 import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedRoute
-import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedRoute2
 import ru.vitaliy.belyaev.wishapp.navigation.WishImagesViewerRoute
-import ru.vitaliy.belyaev.wishapp.navigation.WishImagesViewerRoute2
 import ru.vitaliy.belyaev.wishapp.navigation.rememberNavigationState
 import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
@@ -101,22 +92,18 @@ internal class AppActivity : AppCompatActivity() {
 
         setContent {
             val selectedTheme: Theme by viewModel.selectedTheme.collectAsStateWithLifecycle()
-            val forceDark: MutableState<Boolean> = remember { mutableStateOf(false) }
-            val theme by remember {
-                derivedStateOf {
-                    if (forceDark.value) {
-                        Theme.DARK
-                    } else {
-                        selectedTheme
-                    }
-                }
-            }
 
             val navigationState: NavigationState = rememberNavigationState(
-                startRoute = MainRoute2,
-                topLevelRoutes = setOf(MainRoute2)
+                startRoute = MainRoute,
+                topLevelRoutes = setOf(MainRoute)
             )
             val navigator = remember { Navigator(navigationState) }
+            val theme = if (navigationState.currentRoute is WishImagesViewerRoute) {
+                Theme.DARK
+            } else {
+                selectedTheme
+            }
+
             WishAppTheme(selectedTheme = theme) {
                 Navigation(
                     analyticsRepository = analyticsRepository,
@@ -124,34 +111,19 @@ internal class AppActivity : AppCompatActivity() {
                 )
             }
 
-            val newForceDark2 = navigationState.topLevelRoute is WishImagesViewerRoute2
-            if (newForceDark2 != forceDark.value) {
-                forceDark.value = newForceDark2
-            }
-//            navController.addOnDestinationChangedListener { _, destination, _ ->
-//                val newForceDark = destination.route == WishImagesViewerRoute.VALUE
-//                if (newForceDark != forceDark.value) {
-//                    forceDark.value = newForceDark
-//                }
-//            }
-
-            sharedLinkFromAnotherApp?.let {
-//                navController.navigate(WishDetailedRoute.buildRoute(wishLink = it))
-                navigator.navigate(WishDetailedRoute2(wishLink = it))
-                sharedLinkFromAnotherApp = null
+            LaunchedEffect(key1 = Unit) {
+                sharedLinkFromAnotherApp?.let { link ->
+                    navigator.navigate(WishDetailedRoute(wishLink = link))
+                    sharedLinkFromAnotherApp = null
+                }
             }
 
             LaunchedEffect(key1 = Unit) {
-                shareLinkFlow.collect {
-
-                    if (navigationState.topLevelRoute != MainRoute2) {
-                        navigator.goBack(MainRoute2)
+                shareLinkFlow.collect { link ->
+                    if (navigationState.currentRoute != MainRoute) {
+                        navigator.goBack(MainRoute)
                     }
-//                    if (navController.currentDestination?.id != navController.graph.startDestinationId) {
-//                        navController.popBackStack(navController.graph.startDestinationId, false)
-//                    }
-//                    navController.navigate(WishDetailedRoute.buildRoute(wishLink = it))
-                    navigator.navigate(WishDetailedRoute2(wishLink = it))
+                    navigator.navigate(WishDetailedRoute(wishLink = link))
                 }
             }
         }

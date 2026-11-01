@@ -7,14 +7,17 @@ import android.graphics.Matrix
 import android.util.Patterns
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.ByteArrayOutputStream
 import java.math.RoundingMode
 import java.util.Optional
 import java.util.UUID
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
@@ -38,11 +41,13 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.entity.WishItem
 import ru.vitaliy.belyaev.wishapp.utils.toValueOfNull
-import timber.log.Timber
 
 @ExperimentalCoroutinesApi
-@HiltViewModel
-class WishDetailedViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = WishDetailedViewModel.Factory::class)
+class WishDetailedViewModel @AssistedInject constructor(
+    @Assisted("wishId") wishId: String?,
+    @Assisted("wishLink") wishLink: String?,
+    @Assisted("tagId") tagId: String?,
     private val savedStateHandle: SavedStateHandle,
     private val wishesRepository: WishesRepository,
     private val analyticsRepository: AnalyticsRepository,
@@ -50,14 +55,22 @@ class WishDetailedViewModel @Inject constructor(
     private val wishTagRelationRepository: WishTagRelationRepository,
 ) : BaseViewModel() {
 
-    var inputWishId: String = ""
-        private set
-    var wishId: String = ""
+    val inputWishId: String = wishId ?: ""
+    var currentWishId: String = ""
         private set
 
-    private var sharedLinkForNewWish: String = ""
-    private var preselectedTagId: String? = null
-    private var isInitialized = false
+    private val sharedLinkForNewWish: String = wishLink ?: ""
+    private val preselectedTagId: String? = tagId
+    private val isNewWish: Boolean = wishId.isNullOrBlank()
+
+    private val restoredWishId: String? =
+        savedStateHandle.get<String>(KEY_CURRENT_WISH_ID)?.takeIf { it.isNotBlank() }
+    private val newWish = if (isNewWish && restoredWishId == null) {
+        createEmptyWish()
+    } else {
+        null
+    }
+    private var insertJob: Job? = null
 
     var linkInputString: String
         get() {
@@ -69,41 +82,61 @@ class WishDetailedViewModel @Inject constructor(
 
     val uiState: MutableStateFlow<Optional<WishItem>> = MutableStateFlow(Optional.empty())
 
-    fun initialize(wishId: String?, wishLink: String?, tagId: String?) {
-        if (isInitialized) return
-        isInitialized = true
-
-        inputWishId = wishId ?: ""
-        sharedLinkForNewWish = wishLink ?: ""
-        preselectedTagId = tagId
-
-        Timber.tag("RTRT").d("input wishId:$inputWishId")
+    init {
+        currentWishId = when {
+            !wishId.isNullOrBlank() -> wishId
+            restoredWishId != null -> restoredWishId
+            else -> checkNotNull(newWish).id
+        }
+        savedStateHandle[KEY_CURRENT_WISH_ID] = currentWishId
         launchObserving()
     }
 
     private fun launchObserving() {
-        val wishIdSetJob = launchSafe {
-            this@WishDetailedViewModel.wishId = inputWishId.ifBlank {
-                val wish = createEmptyWish()
-                wishesRepository.insertWish(wish)
-                preselectedTagId?.let { tagId ->
-                    wishTagRelationRepository.insertWishTagRelation(
-                        wishId = wish.id,
-                        tagId = tagId
-                    )
+        insertJob = if (isNewWish) {
+            launchSafe {
+                if (newWish != null) {
+                    wishesRepository.insertWish(newWish)
+                    insertPreselectedTag()
+                } else if (wishesRepository.getWishByIdOrNull(currentWishId) == null) {
+                    wishesRepository.insertWish(createEmptyWish().copy(id = currentWishId))
+                    insertPreselectedTag()
                 }
-                wish.id
             }
+        } else {
+            null
         }
 
         launchSafe {
-            wishIdSetJob.join()
+            insertJob?.join()
             wishesRepository
-                .observeWishById(this@WishDetailedViewModel.wishId)
+                .observeWishById(currentWishId)
                 .collect {
                     uiState.value = Optional.of(WishItem(it, false))
                 }
         }
+    }
+
+    private suspend fun insertPreselectedTag() {
+        preselectedTagId?.let { tagId ->
+            wishTagRelationRepository.insertWishTagRelation(
+                wishId = currentWishId,
+                tagId = tagId
+            )
+        }
+    }
+
+    suspend fun awaitWishPersisted() {
+        insertJob?.join()
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            @Assisted("wishId") wishId: String?,
+            @Assisted("wishLink") wishLink: String?,
+            @Assisted("tagId") tagId: String?
+        ): WishDetailedViewModel
     }
 
     fun onAddImageClicked() {
@@ -121,7 +154,7 @@ class WishDetailedViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 val images = imagesRawData.map { imageRawData ->
                     val downscaledImageRawData = decreaseImageSizeIfNeeded(imageRawData)
-                    ImageEntity(UUID.randomUUID().toString(), wishId, downscaledImageRawData)
+                    ImageEntity(UUID.randomUUID().toString(), currentWishId, downscaledImageRawData)
                 }
                 imagesRepository.insertImages(images)
             }
@@ -136,9 +169,16 @@ class WishDetailedViewModel @Inject constructor(
         viewModelScope.cancel()
     }
 
+    suspend fun prepareForExit(): String {
+        awaitWishPersisted()
+        val wishId = currentWishId
+        onBackPressed()
+        return wishId
+    }
+
     fun onWishTitleChanged(newValue: String) {
         launchSafe {
-            wishesRepository.updateWishTitle(newValue, wishId)
+            wishesRepository.updateWishTitle(newValue, currentWishId)
         }
     }
 
@@ -156,13 +196,13 @@ class WishDetailedViewModel @Inject constructor(
 
         launchSafe {
             val newLinkString = LinksAdapter.addLinkAndGetAccumulatedString(link, currentLinks)
-            wishesRepository.updateWishLink(newLinkString, wishId)
+            wishesRepository.updateWishLink(newLinkString, currentWishId)
         }
     }
 
     fun onWishCommentChanged(newValue: String) {
         launchSafe {
-            wishesRepository.updateWishComment(newValue, wishId)
+            wishesRepository.updateWishComment(newValue, currentWishId)
         }
     }
 
@@ -176,7 +216,7 @@ class WishDetailedViewModel @Inject constructor(
         val currentLinks = uiState.value.toValueOfNull()?.wish?.links ?: return
         launchSafe {
             val newLinkString = LinksAdapter.removeLinkAndGetAccumulatedString(link, currentLinks)
-            wishesRepository.updateWishLink(newLinkString, wishId)
+            wishesRepository.updateWishLink(newLinkString, currentWishId)
         }
     }
 
@@ -246,6 +286,7 @@ class WishDetailedViewModel @Inject constructor(
     companion object {
 
         private const val KEY_LINK_INPUT_STRING = "KEY_LINK_INPUT_STRING"
+        private const val KEY_CURRENT_WISH_ID = "KEY_CURRENT_WISH_ID"
         private const val IMAGE_BIGGER_SIDE_PIXELS_LIMIT = 1280
 
         // Выбрано такое значения из рассчета, что семплированная картинка

@@ -25,6 +25,8 @@ SDK_DIR="${ANDROID_HOME:-$(sed -n 's/^sdk.dir=//p' "$ROOT_DIR/local.properties")
 ADB="$SDK_DIR/platform-tools/adb"
 EMULATOR="$SDK_DIR/emulator/emulator"
 AVDMANAGER="$SDK_DIR/cmdline-tools/latest/bin/avdmanager"
+AVD_CONFIG="${ANDROID_AVD_HOME:-$HOME/.android/avd}/$AVD_NAME.avd/config.ini"
+BOOT_TIMEOUT_SECONDS=300
 
 device_adb() {
     "$ADB" -s "$SERIAL" "$@"
@@ -41,11 +43,18 @@ create_avd_if_needed() {
         --name "$AVD_NAME" \
         --device pixel_7 \
         --package "system-images;android-36;google_apis_playstore;$abi"
-    # Аппаратная клавиатура: экранная не перекрывает экраны с полями ввода
-    echo "hw.keyboard=yes" >>"$HOME/.android/avd/$AVD_NAME.avd/config.ini"
+}
+
+# Аппаратная клавиатура: экранная не перекрывает экраны с полями ввода
+enable_hardware_keyboard() {
+    grep -v '^hw\.keyboard=' "$AVD_CONFIG" >"$AVD_CONFIG.tmp" || true
+    echo "hw.keyboard=yes" >>"$AVD_CONFIG.tmp"
+    mv "$AVD_CONFIG.tmp" "$AVD_CONFIG"
 }
 
 emulator_started_here=false
+emulator_pid=""
+emulator_log=""
 
 stop_emulator() {
     if [ "$emulator_started_here" = true ]; then
@@ -54,16 +63,44 @@ stop_emulator() {
 }
 trap stop_emulator EXIT
 
+# Тест стирает данные приложения, поэтому чужой эмулятор на этом порту использовать нельзя
+check_running_avd() {
+    local running_avd
+    running_avd="$(device_adb emu avd name | sed -n 1p | tr -d '\r')"
+    if [ "$running_avd" != "$AVD_NAME" ]; then
+        echo "На $SERIAL запущен AVD '$running_avd', а нужен $AVD_NAME" >&2
+        exit 1
+    fi
+}
+
 start_emulator_if_needed() {
     if device_adb get-state >/dev/null 2>&1; then
+        check_running_avd
+        wait_for_boot
         return
     fi
     echo "Запускаю $AVD_NAME"
+    enable_hardware_keyboard
+    emulator_log="$(mktemp)"
     "$EMULATOR" -avd "$AVD_NAME" -port "$EMULATOR_PORT" \
-        -no-window -no-audio -no-boot-anim -no-snapshot-save >/dev/null 2>&1 &
+        -no-window -no-audio -no-boot-anim -no-snapshot-save >"$emulator_log" 2>&1 &
+    emulator_pid=$!
     emulator_started_here=true
-    device_adb wait-for-device
+    wait_for_boot
+}
+
+wait_for_boot() {
+    local started_at="$SECONDS"
     until [ "$(device_adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; do
+        if [ -n "$emulator_pid" ] && ! kill -0 "$emulator_pid" 2>/dev/null; then
+            echo "Эмулятор завершился при запуске. Возможно, $AVD_NAME уже открыт на другом порту:" >&2
+            tail -n 20 "$emulator_log" >&2
+            exit 1
+        fi
+        if [ $((SECONDS - started_at)) -ge "$BOOT_TIMEOUT_SECONDS" ]; then
+            echo "$SERIAL не загрузился за $BOOT_TIMEOUT_SECONDS с" >&2
+            exit 1
+        fi
         sleep 2
     done
 }

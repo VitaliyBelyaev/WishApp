@@ -1,14 +1,8 @@
 package ru.vitaliy.belyaev.wishapp.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
@@ -16,15 +10,9 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.unit.IntOffset
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
@@ -53,79 +41,79 @@ internal fun Navigation(
         navigator.goBack()
     }
     val entryProvider = entryProvider {
-        entry<MainRoute2> {
+        entry<MainRoute> {
             WishListScreen(
-                openWishDetailed = { navigator.navigate(WishDetailedRoute2(wishId = it.id)) },
+                openWishDetailed = { navigator.navigate(WishDetailedRoute(wishId = it.id)) },
                 onAddWishClicked = { tagId ->
-                    navigator.navigate(WishDetailedRoute2(tagId = tagId))
+                    navigator.navigate(WishDetailedRoute(tagId = tagId))
                 },
-                onSettingIconClicked = { navigator.navigate(SettingsRoute2) },
-                onEditTagClick = { navigator.navigate(EditTagRoute2) },
-                onGoToBackupScreenClicked = { navigator.navigate(BackupAndRestoreRoute2) },
+                onSettingIconClicked = { navigator.navigate(SettingsRoute) },
+                onEditTagClick = { navigator.navigate(EditTagRoute) },
+                onGoToBackupScreenClicked = { navigator.navigate(BackupAndRestoreRoute) },
             )
         }
-        entry<WishDetailedRoute2> { route ->
+        entry<WishDetailedRoute> { route ->
             WishDetailedScreen(
                 wishId = route.wishId,
                 wishLink = route.wishLink,
                 tagId = route.tagId,
                 onBackPressed = popBackStack,
-                onWishTagsClicked = { navigator.navigate(WishTagsRoute2(it)) },
+                onWishTagsClicked = { navigator.navigate(WishTagsRoute(it)) },
                 onWishImageClicked = {
-                    val imageRoute = WishImagesViewerRoute2(
+                    val imageRoute = WishImagesViewerRoute(
                         wishId = it.wishId,
-                        wishImageId = it.wishImageId,
                         wishImageIndex = it.wishImageIndex,
                     )
                     navigator.navigate(imageRoute)
                 }
             )
         }
-        entry<SettingsRoute2> {
+        entry<SettingsRoute> {
             SettingsScreen(
                 onBackPressed = popBackStack,
-                onAboutAppClicked = { navigator.navigate(AboutAppRoute2) },
-                onBackupAndRestoreClicked = { navigator.navigate(BackupAndRestoreRoute2) },
+                onAboutAppClicked = { navigator.navigate(AboutAppRoute) },
+                onBackupAndRestoreClicked = { navigator.navigate(BackupAndRestoreRoute) },
             )
         }
-        entry<BackupAndRestoreRoute2> {
+        entry<BackupAndRestoreRoute> {
             BackupScreen(
                 onBackPressed = popBackStack,
                 analyticsRepository = analyticsRepository,
             )
         }
-        entry<AboutAppRoute2> {
+        entry<AboutAppRoute> {
             AboutAppScreen(
                 onBackPressed = popBackStack,
-                onPrivacyPolicyClicked = { navigator.navigate(PrivacyPolicyRoute2) }
+                onPrivacyPolicyClicked = { navigator.navigate(PrivacyPolicyRoute) }
             )
         }
-        entry<PrivacyPolicyRoute2> {
+        entry<PrivacyPolicyRoute> {
             PrivacyPolicyScreen(
                 onBackPressed = popBackStack
             )
         }
-        entry<WishTagsRoute2> {
+        entry<WishTagsRoute> { route ->
             WishTagsScreen(
+                wishId = route.wishId,
                 onBackPressed = popBackStack
             )
         }
-        entry<EditTagRoute2> {
+        entry<EditTagRoute> {
             EditTagsScreen(
                 onBackPressed = popBackStack
             )
         }
-        entry<WishImagesViewerRoute2> {
+        entry<WishImagesViewerRoute> { route ->
             WishImagesViewerScreenRoute(
+                wishId = route.wishId,
+                initialWishImageIndex = route.wishImageIndex,
                 onBackPressed = popBackStack
             )
         }
     }
 
     val animDuration = 400
-    val animStiffness = 800f
     val tweenEasing = FastOutSlowInEasing
-//    val animSpec = spring<IntOffset>(stiffness = animStiffness)
     val animSpec = tween<IntOffset>(
         durationMillis = animDuration,
         easing = tweenEasing

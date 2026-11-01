@@ -1,8 +1,9 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishtags
 
-import androidx.lifecycle.SavedStateHandle
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -10,23 +11,20 @@ import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.WishTagsScreenShowEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishTagsAddNewTagClickedEvent
-import ru.vitaliy.belyaev.wishapp.navigation.ARG_WISH_ID
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishTagRelationRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.TagItem
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishtags.entity.toTagItem
 
-@HiltViewModel
-class WishTagsViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+@HiltViewModel(assistedFactory = WishTagsViewModel.Factory::class)
+class WishTagsViewModel @AssistedInject constructor(
+    @Assisted private val wishId: String,
     private val tagsRepository: TagsRepository,
     private val wishTagRelationRepository: WishTagRelationRepository,
     private val dataStoreRepository: DataStoreRepository,
     private val analyticsRepository: AnalyticsRepository
 ) : BaseViewModel() {
-
-    private val wishId: String = savedStateHandle[ARG_WISH_ID] ?: ""
 
     private var currentQuery: String = ""
     private var originTagItems: List<TagItem> = emptyList()
@@ -46,6 +44,11 @@ class WishTagsViewModel @Inject constructor(
                     _uiState.value = prepareTagItems()
                 }
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(wishId: String): WishTagsViewModel
     }
 
     fun trackScreenShow() {
