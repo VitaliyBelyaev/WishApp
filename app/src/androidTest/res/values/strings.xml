@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- На неё ссылается resValue release_app_name из debug-сборки, он попадает и в тестовый APK -->
+    <string name="debug_app_name" translatable="false">WishApp Test</string>
+</resources>

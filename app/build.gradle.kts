@@ -202,6 +202,9 @@ dependencies {
     // Instrumentation
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.uiautomator)
+    androidTestImplementation(libs.kotlin.coroutines.test)
+    androidTestImplementation(platform(libs.androidx.compose.composeBom))
     androidTestImplementation(libs.androidx.compose.ui.testJunit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
