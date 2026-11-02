@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.File
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -48,6 +49,8 @@ class AppActivityViewModel @Inject constructor(
     private val _showSnackOnMainFlow = Channel<String>(capacity = Channel.BUFFERED)
     val showSnackOnMainFlow: Flow<String> = _showSnackOnMainFlow.receiveAsFlow()
 
+    private val countedNewWishIds: MutableSet<String> = mutableSetOf()
+
     init {
         launchSafe {
             dataStoreRepository
@@ -78,6 +81,8 @@ class AppActivityViewModel @Inject constructor(
     }
 
     fun onWishScreenExit(wishId: String, isNewWish: Boolean) {
+        // Повторный «назад» во время анимации выхода не должен считаться вторым действием
+        val isFirstExitOfNewWish = isNewWish && countedNewWishIds.add(wishId)
         launchSafe(dispatcherProvider.io()) {
             val wish: WishEntity = wishesRepository.getWishByIdOrNull(wishId) ?: return@launchSafe
             if (wish.isEmpty()) {
@@ -85,8 +90,21 @@ class AppActivityViewModel @Inject constructor(
                 return@launchSafe
             }
 
-            if (isNewWish) {
+            if (isFirstExitOfNewWish) {
                 dataStoreRepository.incrementPositiveActionsCount()
+            }
+        }
+    }
+
+    /** Убирает пустые желания, когда WishDetailed закрылся без обычного выхода с экрана. */
+    fun deleteEmptyWishes(): Job {
+        return launchSafe(dispatcherProvider.io()) {
+            val emptyWishIds = wishesRepository
+                .getAllWishes(isCompleted = false)
+                .filter { it.isEmpty() }
+                .map { it.id }
+            if (emptyWishIds.isNotEmpty()) {
+                wishesRepository.deleteWishesByIds(emptyWishIds)
             }
         }
     }

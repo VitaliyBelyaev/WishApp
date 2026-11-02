@@ -4,12 +4,14 @@ import app.cash.sqldelight.Query
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.benasher44.uuid.uuid4
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.shared.data.coroutines.DispatcherProvider
@@ -208,10 +210,12 @@ class DatabaseRepository(
 
     @NativeCoroutines
     override fun observeWishById(id: String): Flow<WishEntity> {
+        // Желание могут удалить, пока на него ещё подписан закрывающийся экран
         val wishDtoFlow: Flow<Wish> = wishQueries
             .getById(id)
             .asFlow()
-            .mapToOne(dispatcherProvider.io())
+            .mapToOneOrNull(dispatcherProvider.io())
+            .filterNotNull()
 
         val tagsFlow: Flow<List<Tag>> = wishTagRelationQueries
             .getWishTags(id)
@@ -230,21 +234,7 @@ class DatabaseRepository(
 
     @NativeCoroutines
     override suspend fun getWishById(id: String): WishEntity {
-        return withContext(dispatcherProvider.io()) {
-            val wishDto: Wish = wishQueries
-                .getById(id)
-                .executeAsOne()
-
-            val tags: List<Tag> = wishTagRelationQueries
-                .getWishTags(id)
-                .executeAsList()
-
-            val images: List<Image> = imageQueries
-                .getByWishId(id)
-                .executeAsList()
-
-            WishMapper.mapToDomain(wishDto, tags, images)
-        }
+        return getWishByIdOrNull(id) ?: error("Wish not found: $id")
     }
 
     @NativeCoroutines
@@ -278,11 +268,11 @@ class DatabaseRepository(
         sortMode: WishSortMode,
     ): Flow<List<WishEntity>> {
         val wishesQuery: Query<Wish> = when (sortMode) {
-            WishSortMode.Default -> wishQueries.getAll(isCompleted)
+            WishSortMode.Default,
+            WishSortMode.TitleAZ,
+            WishSortMode.TitleZA -> wishQueries.getAll(isCompleted)
             WishSortMode.CreatedDateNewest -> wishQueries.getAllByCreatedTimestampDesc(isCompleted)
             WishSortMode.CreatedDateOldest -> wishQueries.getAllByCreatedTimestampAsc(isCompleted)
-            WishSortMode.TitleAZ -> wishQueries.getAllByTitleAsc(isCompleted)
-            WishSortMode.TitleZA -> wishQueries.getAllByTitleDesc(isCompleted)
         }
 
         val wishesFlow: Flow<List<Wish>> = wishesQuery
@@ -363,11 +353,11 @@ class DatabaseRepository(
         sortMode: WishSortMode,
     ): Flow<List<WishEntity>> {
         val wishesByTagQuery: Query<Wish> = when (sortMode) {
-            WishSortMode.Default -> wishTagRelationQueries.getAllWishesByTag(tagId)
+            WishSortMode.Default,
+            WishSortMode.TitleAZ,
+            WishSortMode.TitleZA -> wishTagRelationQueries.getAllWishesByTag(tagId)
             WishSortMode.CreatedDateNewest -> wishTagRelationQueries.getAllWishesByTagCreatedDesc(tagId)
             WishSortMode.CreatedDateOldest -> wishTagRelationQueries.getAllWishesByTagCreatedAsc(tagId)
-            WishSortMode.TitleAZ -> wishTagRelationQueries.getAllWishesByTagTitleAsc(tagId)
-            WishSortMode.TitleZA -> wishTagRelationQueries.getAllWishesByTagTitleDesc(tagId)
         }
 
         val wishesByTagFlow: Flow<List<Wish>> = wishesByTagQuery
@@ -398,8 +388,8 @@ class DatabaseRepository(
 
     // SQLite COLLATE NOCASE сравнивает без регистра только латиницу. Для
     // кириллицы сравнение идёт по коду символа, поэтому заглавные буквы
-    // оказываются раньше строчных: "Яблоко" встаёт перед "арбуз". Сортируем
-    // уже готовый список по lowercase, чтобы исправить регистр без миграции БД.
+    // оказываются раньше строчных: "Яблоко" встаёт перед "арбуз". Поэтому порядок
+    // по названию задаём только здесь, по lowercase, без сортировки в SQL.
     // Это не полноценная locale-aware сортировка, но убирает основной
     // практический баг.
     private fun sortWishesByTitle(
@@ -421,7 +411,8 @@ class DatabaseRepository(
         withContext(dispatcherProvider.io()) {
             wishQueries.transaction {
                 for (id in ids) {
-                    val wishToDelete = wishQueries.getById(id).executeAsOne()
+                    // Желание могли удалить параллельно: выход с экрана и очистка пустых желаний
+                    val wishToDelete = wishQueries.getById(id).executeAsOneOrNull() ?: continue
                     if (wishToDelete.position != -1L) {
                         wishQueries.updatePositionsOnDelete(wishToDelete.position)
                     }

@@ -1,13 +1,14 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 
 import androidx.lifecycle.SavedStateHandle
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -15,6 +16,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -62,7 +64,6 @@ class WishDetailedViewModelTest {
 
         assertTrue(repository.insertedIds.isEmpty())
         assertEquals(wish.title, viewModel.uiState.value.get().wish.title)
-        viewModel.onBackPressed()
     }
 
     @Test
@@ -83,7 +84,6 @@ class WishDetailedViewModelTest {
         advanceUntilIdle()
 
         assertEquals(listOf(generatedId), repository.insertedIds)
-        viewModel.onBackPressed()
     }
 
     @Test
@@ -106,7 +106,6 @@ class WishDetailedViewModelTest {
 
         assertTrue(repository.insertedIds.isEmpty())
         assertEquals(restoredWish.title, viewModel.uiState.value.get().wish.title)
-        viewModel.onBackPressed()
     }
 
     @Test
@@ -127,7 +126,6 @@ class WishDetailedViewModelTest {
         advanceUntilIdle()
 
         assertEquals(listOf("restored-id"), repository.insertedIds)
-        viewModel.onBackPressed()
     }
 
     @Test
@@ -146,11 +144,10 @@ class WishDetailedViewModelTest {
             listOf(viewModel.currentWishId to "tag-1"),
             relationsRepository.insertedRelations,
         )
-        viewModel.onBackPressed()
     }
 
     @Test
-    fun prepareForExit_persistsWishAndCancelsObserver() = runTest(dispatcher) {
+    fun prepareForExit_waitsForInsertAndReturnsWishId() = runTest(dispatcher) {
         val repository = FakeWishesRepository()
 
         val viewModel = createViewModel(
@@ -163,7 +160,61 @@ class WishDetailedViewModelTest {
 
         assertEquals(viewModel.currentWishId, wishId)
         assertEquals(listOf(wishId), repository.insertedIds)
-        assertTrue(repository.isWishObserverCancelled)
+    }
+
+    @Test
+    fun titleChangedBeforeInsertFinished_isAppliedAfterInsert() = runTest(dispatcher) {
+        val insertGate = CompletableDeferred<Unit>()
+        val repository = FakeWishesRepository(insertGate = insertGate)
+
+        val viewModel = createViewModel(
+            wishId = null,
+            wishesRepository = repository,
+        )
+        viewModel.onWishTitleChanged("New title")
+        advanceUntilIdle()
+
+        insertGate.complete(Unit)
+        advanceUntilIdle()
+
+        assertEquals("New title", viewModel.uiState.value.get().wish.title)
+    }
+
+    @Test
+    fun titleWrites_runInOrder() = runTest(dispatcher) {
+        val wish = createEmptyWish().copy(id = "wish-1")
+        val firstWriteGate = CompletableDeferred<Unit>()
+        val repository = FakeWishesRepository(mapOf(wish.id to wish), firstTitleWriteGate = firstWriteGate)
+        val viewModel = createViewModel(wishId = wish.id, wishesRepository = repository)
+        advanceUntilIdle()
+
+        viewModel.onWishTitleChanged("First")
+        viewModel.onWishTitleChanged("Second")
+        advanceUntilIdle()
+        firstWriteGate.complete(Unit)
+        advanceUntilIdle()
+
+        assertEquals("Second", viewModel.uiState.value.get().wish.title)
+    }
+
+    @Test
+    fun prepareForExit_waitsForPendingWrite() = runTest(dispatcher) {
+        val wish = createEmptyWish().copy(id = "wish-1")
+        val firstWriteGate = CompletableDeferred<Unit>()
+        val repository = FakeWishesRepository(mapOf(wish.id to wish), firstTitleWriteGate = firstWriteGate)
+        val viewModel = createViewModel(wishId = wish.id, wishesRepository = repository)
+        advanceUntilIdle()
+
+        viewModel.onWishTitleChanged("Typed before exit")
+        val exitJob = launch { viewModel.prepareForExit() }
+        advanceUntilIdle()
+        assertTrue(exitJob.isActive)
+
+        firstWriteGate.complete(Unit)
+        advanceUntilIdle()
+
+        assertFalse(exitJob.isActive)
+        assertEquals("Typed before exit", repository.getWishById(wish.id).title)
     }
 
     private fun createViewModel(
@@ -188,25 +239,24 @@ class WishDetailedViewModelTest {
 
     private class FakeWishesRepository(
         initialWishes: Map<String, WishEntity> = emptyMap(),
+        private val insertGate: CompletableDeferred<Unit>? = null,
+        private val firstTitleWriteGate: CompletableDeferred<Unit>? = null,
     ) : WishesRepository {
 
         private val wishes: MutableMap<String, WishEntity> = initialWishes.toMutableMap()
         private val wishesFlow = MutableStateFlow(initialWishes)
         val insertedIds: MutableList<String> = mutableListOf()
-        var isWishObserverCancelled: Boolean = false
-            private set
+        private var titleWritesCount = 0
 
         override suspend fun insertWish(wish: WishEntity) {
+            insertGate?.await()
             insertedIds += wish.id
             wishes[wish.id] = wish
             wishesFlow.value = wishes.toMap()
         }
 
         override fun observeWishById(id: String): Flow<WishEntity> {
-            return wishesFlow
-                .mapNotNull { it[id] }
-                .distinctUntilChanged()
-                .onCompletion { isWishObserverCancelled = true }
+            return wishesFlow.mapNotNull { it[id] }.distinctUntilChanged()
         }
 
         override suspend fun getWishById(id: String): WishEntity {
@@ -222,7 +272,15 @@ class WishDetailedViewModelTest {
             wishesFlow.value = wishes.toMap()
         }
 
-        override suspend fun updateWishTitle(newValue: String, wishId: String) = notUsed()
+        override suspend fun updateWishTitle(newValue: String, wishId: String) {
+            titleWritesCount++
+            if (titleWritesCount == 1) {
+                firstTitleWriteGate?.await()
+            }
+            // Как UPDATE в SQL: для несуществующей строки ничего не делает
+            wishes[wishId]?.let { wishes[wishId] = it.copy(title = newValue) }
+            wishesFlow.value = wishes.toMap()
+        }
 
         override suspend fun updateWishLink(newValue: String, wishId: String) = notUsed()
 

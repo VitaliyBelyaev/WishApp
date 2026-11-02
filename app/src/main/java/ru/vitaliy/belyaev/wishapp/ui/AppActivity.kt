@@ -122,6 +122,7 @@ internal class AppActivity : AppCompatActivity() {
                 shareLinkFlow.collect { link ->
                     if (navigationState.currentRoute != MainRoute) {
                         navigator.goBack(MainRoute)
+                        viewModel.deleteEmptyWishes().join()
                     }
                     navigator.navigate(WishDetailedRoute(wishLink = link))
                 }

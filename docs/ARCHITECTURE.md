@@ -273,7 +273,7 @@ iosApp/WishApp/
 
 - фильтр `WishesFilter`: `All`, `Completed`, `ByTag`;
 - сортировка `WishSortMode`: `Default`, `CreatedDateNewest`, `CreatedDateOldest`, `TitleAZ`, `TitleZA`;
-  - `TitleAZ/TitleZA` дополнительно сортируются в Kotlin по `lowercase()`,
+  - `TitleAZ/TitleZA` сортируются только в Kotlin по `lowercase()`,
     потому что SQLite `COLLATE NOCASE` не учитывает регистр кириллицы;
 - режим множественного выбора по long press + удаление выбранных;
 - перемещение вверх/вниз доступно только в `Default`-сортировке;
@@ -426,8 +426,9 @@ iosApp/WishApp/
 - Состояние — `StateFlow` / `SharedFlow`; UI собирает через `collectAsStateWithLifecycle`.
 - `ViewModel` обычно подписывается на Flow репозитория в `init`.
 - Экраны получают ViewModel через `hiltViewModel()`.
-- `WishDetailedViewModel` при выходе вызывает `viewModelScope.cancel()` — это
-  осознанное поведение после фикса краша, не убирай без причины.
+- `WishDetailedViewModel` выполняет записи строго по очереди, а `prepareForExit()`
+  ждёт их завершения перед очисткой пустого желания. Удаление наблюдаемого желания
+  не приводит к падению: `observeWishById` просто перестаёт отдавать значения.
 
 ### iOS
 

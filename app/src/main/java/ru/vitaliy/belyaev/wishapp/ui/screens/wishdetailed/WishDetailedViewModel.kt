@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory.Options
 import android.graphics.Matrix
 import android.util.Patterns
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -18,7 +17,6 @@ import java.util.UUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.domain.model.ImageData
@@ -56,21 +54,18 @@ class WishDetailedViewModel @AssistedInject constructor(
 ) : BaseViewModel() {
 
     val inputWishId: String = wishId ?: ""
-    var currentWishId: String = ""
-        private set
+    val currentWishId: String = wishId?.takeIf { it.isNotBlank() }
+        ?: savedStateHandle.get<String>(KEY_CURRENT_WISH_ID)?.takeIf { it.isNotBlank() }
+        ?: createEmptyWish().id
 
     private val sharedLinkForNewWish: String = wishLink ?: ""
     private val preselectedTagId: String? = tagId
-    private val isNewWish: Boolean = wishId.isNullOrBlank()
-
-    private val restoredWishId: String? =
-        savedStateHandle.get<String>(KEY_CURRENT_WISH_ID)?.takeIf { it.isNotBlank() }
-    private val newWish = if (isNewWish && restoredWishId == null) {
-        createEmptyWish()
+    private val insertJob: Job? = if (inputWishId.isBlank()) {
+        launchSafe { insertNewWishIfMissing() }
     } else {
         null
     }
-    private var insertJob: Job? = null
+    private var lastWriteJob: Job? = insertJob
 
     var linkInputString: String
         get() {
@@ -83,30 +78,7 @@ class WishDetailedViewModel @AssistedInject constructor(
     val uiState: MutableStateFlow<Optional<WishItem>> = MutableStateFlow(Optional.empty())
 
     init {
-        currentWishId = when {
-            !wishId.isNullOrBlank() -> wishId
-            restoredWishId != null -> restoredWishId
-            else -> checkNotNull(newWish).id
-        }
         savedStateHandle[KEY_CURRENT_WISH_ID] = currentWishId
-        launchObserving()
-    }
-
-    private fun launchObserving() {
-        insertJob = if (isNewWish) {
-            launchSafe {
-                if (newWish != null) {
-                    wishesRepository.insertWish(newWish)
-                    insertPreselectedTag()
-                } else if (wishesRepository.getWishByIdOrNull(currentWishId) == null) {
-                    wishesRepository.insertWish(createEmptyWish().copy(id = currentWishId))
-                    insertPreselectedTag()
-                }
-            }
-        } else {
-            null
-        }
-
         launchSafe {
             insertJob?.join()
             wishesRepository
@@ -117,7 +89,10 @@ class WishDetailedViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun insertPreselectedTag() {
+    private suspend fun insertNewWishIfMissing() {
+        if (wishesRepository.getWishByIdOrNull(currentWishId) != null) return
+
+        wishesRepository.insertWish(createEmptyWish().copy(id = currentWishId))
         preselectedTagId?.let { tagId ->
             wishTagRelationRepository.insertWishTagRelation(
                 wishId = currentWishId,
@@ -126,8 +101,17 @@ class WishDetailedViewModel @AssistedInject constructor(
         }
     }
 
-    suspend fun awaitWishPersisted() {
-        insertJob?.join()
+    /**
+     * Записи идут строго по очереди: репозиторий пишет на IO, где порядок не гарантирован,
+     * а UPDATE до завершения вставки нового желания не затронул бы ни одной строки.
+     * Вызывается только с главного потока.
+     */
+    private fun launchWrite(block: suspend () -> Unit) {
+        val previousWriteJob = lastWriteJob
+        lastWriteJob = launchSafe {
+            previousWriteJob?.join()
+            block()
+        }
     }
 
     @AssistedFactory
@@ -165,19 +149,13 @@ class WishDetailedViewModel @AssistedInject constructor(
         analyticsRepository.trackEvent(WishDetailedScreenShowEvent(isNewWish = inputWishId.isBlank()))
     }
 
-    fun onBackPressed() {
-        viewModelScope.cancel()
-    }
-
     suspend fun prepareForExit(): String {
-        awaitWishPersisted()
-        val wishId = currentWishId
-        onBackPressed()
-        return wishId
+        lastWriteJob?.join()
+        return currentWishId
     }
 
     fun onWishTitleChanged(newValue: String) {
-        launchSafe {
+        launchWrite {
             wishesRepository.updateWishTitle(newValue, currentWishId)
         }
     }
@@ -194,27 +172,26 @@ class WishDetailedViewModel @AssistedInject constructor(
         analyticsRepository.trackEvent(WishDetailedAddLinkButtonClickedEvent)
         val currentLinks = uiState.value.toValueOfNull()?.wish?.links ?: return
 
-        launchSafe {
+        launchWrite {
             val newLinkString = LinksAdapter.addLinkAndGetAccumulatedString(link, currentLinks)
             wishesRepository.updateWishLink(newLinkString, currentWishId)
         }
     }
 
     fun onWishCommentChanged(newValue: String) {
-        launchSafe {
+        launchWrite {
             wishesRepository.updateWishComment(newValue, currentWishId)
         }
     }
 
     fun onDeleteWishConfirmed() {
         analyticsRepository.trackEvent(WishDetailedDeleteWishConfirmedEvent)
-        viewModelScope.cancel()
     }
 
     fun onDeleteWishLinkConfirmed(link: String) {
         analyticsRepository.trackEvent(WishDetailedDeleteLinkConfirmedEvent)
         val currentLinks = uiState.value.toValueOfNull()?.wish?.links ?: return
-        launchSafe {
+        launchWrite {
             val newLinkString = LinksAdapter.removeLinkAndGetAccumulatedString(link, currentLinks)
             wishesRepository.updateWishLink(newLinkString, currentWishId)
         }

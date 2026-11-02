@@ -47,9 +47,9 @@ adee588 Add architecture docs and AGENTS.md
 
 - В `shared` добавлен `WishSortMode`:
   `Default`, `CreatedDateNewest`, `CreatedDateOldest`, `TitleAZ`, `TitleZA`.
-- Добавлены SQL-запросы сортировки в `Wish.sq` и `WishTagRelation.sq`.
+- Добавлены SQL-запросы сортировки по дате в `Wish.sq` и `WishTagRelation.sq`.
   Миграция не требуется: схема БД не менялась.
-- `TitleAZ/TitleZA` дополнительно сортируются в Kotlin по `title.lowercase()`,
+- `TitleAZ/TitleZA` сортируются только в Kotlin по `title.lowercase()`,
   потому что SQLite `COLLATE NOCASE` не учитывает регистр кириллицы.
 - Для iOS сохранены старые методы без `sortMode`, сортировка вынесена в
   отдельные `*Sorted`-методы.
@@ -68,10 +68,12 @@ adee588 Add architecture docs and AGENTS.md
 - Новое желание получает id синхронно, до запуска `insertWish`.
 - `currentWishId` сохраняется в `SavedStateHandle` и восстанавливается после
   смерти процесса без создания второго пустого желания.
-- Выход с экрана ждёт завершения вставки и использует
+- Записи экрана идут строго по очереди. Выход ждёт их завершения и использует
   `getWishByIdOrNull`, поэтому быстрый back больше не падает на пустом id.
-- Наблюдатель отменяется до cleanup, чтобы удаление не успело уронить
-  `mapToOne`.
+- `viewModelScope.cancel()` при выходе убран: `observeWishById` использует
+  `mapToOneOrNull` + `filterNotNull`, поэтому удаление желания не роняет наблюдателя.
+- `deleteWishesByIds` идемпотентен и пропускает уже удалённые желания.
+- Потеря фото при выходе во время их обработки принята как допустимая.
 - Повторный back защищён активным `exitJob`, а не необратимым флагом.
 - Добавлены unit-тесты `WishDetailedViewModelTest` на id, восстановление,
   preselected tag и порядок выхода.

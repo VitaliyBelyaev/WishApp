@@ -1,21 +1,30 @@
 package ru.vitaliy.belyaev.wishapp.screenshots
 
+import android.app.Activity
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
+import android.os.HandlerThread
+import android.os.Looper
 import android.os.SystemClock
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResult
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
@@ -23,10 +32,14 @@ import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.preferencesDataStoreFile
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.google.firebase.Firebase
@@ -62,12 +75,18 @@ import ru.vitaliy.belyaev.wishapp.domain.use_case.GetExistingBackupInfoUseCase
 import ru.vitaliy.belyaev.wishapp.domain.use_case.IsUserSignedInToBackupServiceUseCase
 import ru.vitaliy.belyaev.wishapp.domain.use_case.NeedToShowRestoreUseCase
 import ru.vitaliy.belyaev.wishapp.domain.use_case.RestoreBackupUseCase
+import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
+import ru.vitaliy.belyaev.wishapp.shared.data.database.DatabaseDriverFactory
 import ru.vitaliy.belyaev.wishapp.shared.data.repository.DatabaseRepository
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.shared.utils.PrivacyPolicy
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
+import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupLoadProgressListener
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupViewModel
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.WishListScreen
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.WishListViewModel
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
 
 /**
@@ -88,6 +107,32 @@ internal class ScreenshotsTest {
 
     val rule = createAndroidComposeRule<AppActivity>()
 
+    private val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
+
+    private val demoData = DemoData(language = InstrumentationRegistry.getArguments().getString("locale").orEmpty())
+
+    /**
+     * Пропускает тест без `-e screenshots true`. Иначе до запуска активности выключает
+     * отправку аналитики и заполняет базу: если добавлять желания при открытом списке,
+     * LazyColumn удержит позицию на старых элементах и новые окажутся выше экрана.
+     */
+    private val screenshotsModeRule = TestRule { base, _ ->
+        object : Statement() {
+            override fun evaluate() {
+                assumeTrue(
+                    "Запускайте через scripts/take_screenshots.sh",
+                    InstrumentationRegistry.getArguments().getString("screenshots") == "true"
+                )
+                Firebase.analytics.setAnalyticsCollectionEnabled(false)
+                Firebase.crashlytics.isCrashlyticsCollectionEnabled = false
+                AmplitudeWrapper.amplitude?.configuration?.optOut = true
+                val seedRepository = WishAppSdk(DatabaseDriverFactory(targetContext)).getDatabaseRepository()
+                runBlocking { demoData.seed(seedRepository) }
+                base.evaluate()
+            }
+        }
+    }
+
     @get:Rule
     val rules: TestRule = RuleChain.outerRule(screenshotsModeRule).around(rule)
 
@@ -96,12 +141,12 @@ internal class ScreenshotsTest {
     private val repository: DatabaseRepository
         get() = rule.activity.wishAppSdk.getDatabaseRepository()
 
-    private lateinit var demoData: DemoData
-
+    /** Клавиатура показывает буфер обмена, который эмулятор получает с компьютера. */
     @Before
-    fun setUp() {
-        demoData = DemoData(language = rule.activity.resources.configuration.locales[0].language)
-        runBlocking { demoData.seed(repository) }
+    fun clearClipboard() {
+        rule.runOnUiThread {
+            rule.activity.getSystemService(ClipboardManager::class.java).clearPrimaryClip()
+        }
     }
 
     // region Wish list
@@ -146,15 +191,15 @@ internal class ScreenshotsTest {
         shot("07_wish_list_reorder")
         clickDescription("Reorder wishes")
 
-        rule.onAllNodesWithText(demoData.firstWishTitle).onFirst().performTouchInput { longClick() }
+        rule.onAllNodesWithText(demoData.firstWishTitle).onFirst().performSemanticsAction(SemanticsActions.OnLongClick)
         shot("08_wish_list_selection")
-
-        clickDescription("Menu")
-        shot("09_wish_list_selection_menu")
-        device.pressBack()
 
         clickDescription("Delete")
         shot("10_wish_list_delete_dialog")
+        clickString(R.string.cancel)
+
+        clickDescription("Menu")
+        shot("09_wish_list_selection_menu")
     }
 
     @Test
@@ -200,13 +245,25 @@ internal class ScreenshotsTest {
     fun wishDetailedNew() {
         waitForText(demoData.firstWishTitle)
         clickDescription("Add wish")
-        shot("24_wish_detailed_new")
+        shotWithKeyboard("24_wish_detailed_new")
+    }
+
+    @Test
+    fun wishDetailedLinkEntered() {
+        waitForText(demoData.firstWishTitle)
+        clickDescription("Add wish")
+        val linkField = rule.onAllNodes(hasSetTextAction())[LINK_FIELD_INDEX]
+        linkField.performClick()
+        linkField.performTextInput(LINK_TO_ENTER)
+        shotWithKeyboard("24b_wish_detailed_link_entered")
     }
 
     @Test
     fun wishImagesViewer() {
         openFirstWish()
         rule.onAllNodes(imageMatcher).onFirst().performClick()
+        // Картинка декодируется вне Compose, поэтому waitForIdle её не дожидается
+        SystemClock.sleep(IMAGE_DECODE_MILLIS)
         shot("25_wish_images_viewer")
 
         clickDescription("Menu")
@@ -221,10 +278,10 @@ internal class ScreenshotsTest {
         openFirstWish()
         clickDescription("Open tags")
         waitForText(demoData.firstTagTitle)
-        shot("28_wish_tags")
+        shotWithKeyboard("28_wish_tags")
 
         rule.onNode(hasSetTextAction()).performTextInput(demoData.newTagTitle)
-        shot("29_wish_tags_new")
+        shotWithKeyboard("29_wish_tags_new")
     }
 
     @Test
@@ -236,10 +293,173 @@ internal class ScreenshotsTest {
         shot("30_edit_tags")
 
         clickLastText(demoData.firstTagTitle)
-        shot("31_edit_tags_edit_mode")
+        shotWithKeyboard("31_edit_tags_edit_mode")
 
         clickDescription("Delete")
         shot("32_edit_tags_delete_dialog")
+    }
+
+    // endregion
+
+    // region Snackbars
+
+    @Test
+    fun snackbarWishCompleted() {
+        openFirstWish()
+        clickDescription("Menu")
+        clickString(R.string.wish_done)
+        shotWithText("70_snackbar_wish_completed", R.string.wish_done_snack_message)
+    }
+
+    @Test
+    fun snackbarInvalidSharedLink() {
+        waitForText(demoData.firstWishTitle)
+        val intent = Intent(rule.activity, AppActivity::class.java)
+            .setAction(Intent.ACTION_SEND)
+            .setType("text/plain")
+            .putExtra(Intent.EXTRA_TEXT, INVALID_LINK)
+        rule.activity.startActivity(intent)
+        shotWithText("71_snackbar_invalid_link", R.string.invalid_link_error_message)
+    }
+
+    @Test
+    fun snackbarDeleteError() {
+        val activity = rule.activity
+        val failingRepository = object : WishesRepository by repository {
+            override suspend fun deleteWishesByIds(ids: List<String>) = error("Fake delete error")
+        }
+        rule.runOnUiThread {
+            val viewModel = WishListViewModel(failingRepository, repository, activity.analyticsRepository)
+            activity.setContent {
+                WishAppTheme(selectedTheme = Theme.SYSTEM) {
+                    WishListScreen(
+                        openWishDetailed = {},
+                        onAddWishClicked = {},
+                        onSettingIconClicked = {},
+                        onEditTagClick = {},
+                        onGoToBackupScreenClicked = {},
+                        viewModel = viewModel,
+                    )
+                }
+            }
+        }
+        waitForText(demoData.firstWishTitle)
+        rule.onAllNodesWithText(demoData.firstWishTitle).onFirst().performSemanticsAction(SemanticsActions.OnLongClick)
+        clickDescription("Delete")
+        clickLastText(string(R.string.delete))
+        shotWithText("72_snackbar_delete_error", R.string.delete_wishes_error_message)
+    }
+
+    @Test
+    fun snackbarFailToOpenLink() {
+        waitForText(demoData.firstWishTitle)
+        runBlocking { repository.updateWishLink(INVALID_LINK, firstWishId()) }
+        openFirstWish()
+        rule.onNodeWithText(INVALID_LINK).performClick()
+        shotWithText("73_snackbar_fail_to_open_link", R.string.fail_to_open_link)
+    }
+
+    /** На эмуляторе письма умеет отправлять только Gmail, поэтому на время теста выключаем его. */
+    @Test
+    fun snackbarNoEmailApp() {
+        // На настоящем устройстве почтовые приложения не трогаем
+        assumeTrue(InstrumentationRegistry.getArguments().getString("emulator") == "true")
+        waitForText(demoData.firstWishTitle)
+        device.executeShellCommand("pm disable-user --user 0 $GMAIL_PACKAGE")
+        try {
+            clickDescription("Settings")
+            clickString(R.string.about_app)
+            clickString(R.string.feedback)
+            shotWithText("74_snackbar_no_email_app", R.string.no_email_app_error)
+        } finally {
+            device.executeShellCommand("pm enable $GMAIL_PACKAGE")
+        }
+    }
+
+    @Test
+    fun snackbarBackupCreated() {
+        showBackupScreen(
+            checkBackup = { BackupInfo.None(FAKE_ACCOUNT_EMAIL) },
+            uploadBackup = { fakeBackupInfo },
+        )
+        waitForText(string(R.string.backup_create_backup_button_text))
+        clickString(R.string.backup_create_backup_button_text)
+        shotWithText("75_snackbar_backup_created", R.string.backup_create_backup_success_text)
+    }
+
+    @Test
+    fun snackbarBackupCreateError() {
+        showBackupScreen(
+            checkBackup = { BackupInfo.None(FAKE_ACCOUNT_EMAIL) },
+            uploadBackup = { error("Fake upload error") },
+        )
+        waitForText(string(R.string.backup_create_backup_button_text))
+        clickString(R.string.backup_create_backup_button_text)
+        shotWithText("76_snackbar_backup_create_error", R.string.backup_create_backup_error_text)
+    }
+
+    @Test
+    fun snackbarBackupRestored() {
+        showBackupScreen(
+            checkBackup = { fakeBackupInfo },
+            downloadBackup = {},
+            contextWrapper = ::RestoreWithoutRestartContext,
+        )
+        confirmBackupRestore()
+        shotWithText("77_snackbar_backup_restored", R.string.backup_restore_backup_success_text)
+    }
+
+    @Test
+    fun snackbarBackupRestoreError() {
+        showBackupScreen(
+            checkBackup = { fakeBackupInfo },
+            downloadBackup = { error("Fake download error") },
+        )
+        confirmBackupRestore()
+        shotWithText("78_snackbar_backup_restore_error", R.string.backup_restore_backup_error_text)
+    }
+
+    @Test
+    fun snackbarBackupCheckError() {
+        var isFirstCheck = true
+        showBackupScreen(
+            checkBackup = {
+                if (isFirstCheck) {
+                    isFirstCheck = false
+                    fakeBackupInfo
+                } else {
+                    error("Fake check backup error")
+                }
+            },
+        )
+        waitForText(string(R.string.backup_restore_button_text))
+        clickDescription("Refresh")
+        shotWithText("79_snackbar_backup_check_error", R.string.backup_check_backup_error_text)
+    }
+
+    @Test
+    fun snackbarBackupAuthError() {
+        val viewModel = showBackupScreen(checkBackup = { fakeBackupInfo })
+        waitForText(string(R.string.backup_restore_button_text))
+        rule.runOnUiThread {
+            viewModel.onSignInResultReceived(ActivityResult(Activity.RESULT_FIRST_USER, null))
+        }
+        shotWithText("80_snackbar_backup_auth_error", R.string.backup_google_auth_error_text)
+    }
+
+    private fun confirmBackupRestore() {
+        waitForText(string(R.string.backup_restore_button_text))
+        clickString(R.string.backup_restore_button_text)
+        clickLastText(string(R.string.backup_restore_backup_confirm_dialog_positive_text))
+    }
+
+    private suspend fun firstWishId(): String {
+        return repository.getAllWishes(isCompleted = false).first { it.title == demoData.firstWishTitle }.id
+    }
+
+    private fun shotWithText(name: String, textResId: Int) {
+        waitForText(string(textResId))
+        shot(name)
     }
 
     // endregion
@@ -356,9 +576,12 @@ internal class ScreenshotsTest {
     private fun showBackupScreen(
         checkBackup: suspend () -> BackupInfo,
         wasBackupCreated: Boolean = false,
-    ) {
+        uploadBackup: suspend () -> BackupInfo.Value = { awaitCancellation() },
+        downloadBackup: suspend () -> Unit = { awaitCancellation() },
+        contextWrapper: (Context) -> Context = { it },
+    ): BackupViewModel {
         val activity = rule.activity
-        val backupRepository = FakeBackupRepository(checkBackup)
+        val backupRepository = FakeBackupRepository(checkBackup, uploadBackup, downloadBackup)
         val dataStoreRepository = DataStoreRepository(
             PreferenceDataStoreFactory.create {
                 activity.preferencesDataStoreFile("screenshots_${UUID.randomUUID()}")
@@ -366,7 +589,7 @@ internal class ScreenshotsTest {
         )
         runBlocking { dataStoreRepository.updateIsBackupWasCreated(wasBackupCreated) }
 
-        rule.runOnUiThread {
+        val viewModel = rule.runOnUiThread {
             val currentBackupInfoHolder = CurrentBackupInfoHolder()
             val viewModel = BackupViewModel(
                 createBackupUseCase = CreateBackupUseCase(backupRepository, dataStoreRepository),
@@ -381,15 +604,38 @@ internal class ScreenshotsTest {
             )
             activity.setContent {
                 WishAppTheme(selectedTheme = Theme.SYSTEM) {
-                    BackupScreen(
-                        onBackPressed = {},
-                        analyticsRepository = activity.analyticsRepository,
-                        viewModel = viewModel,
-                    )
+                    val appViewModel = hiltViewModel<AppActivityViewModel>(activity)
+                    CompositionLocalProvider(LocalContext provides contextWrapper(activity)) {
+                        BackupScreen(
+                            onBackPressed = {},
+                            analyticsRepository = activity.analyticsRepository,
+                            viewModel = viewModel,
+                            appViewModel = appViewModel,
+                        )
+                    }
                 }
             }
+            viewModel
         }
         rule.waitForIdle()
+        return viewModel
+    }
+
+    /**
+     * После восстановления приложение заменяет файл базы и перезапускает процесс, что
+     * оборвало бы тест. Поэтому база здесь временная, а перезапуск уходит на остановленный
+     * поток и не выполняется.
+     */
+    private class RestoreWithoutRestartContext(base: Context) : ContextWrapper(base) {
+
+        private val stoppedLooper: Looper = HandlerThread("stopped-looper").run {
+            start()
+            looper.also { quit() }
+        }
+
+        override fun getMainLooper(): Looper = stoppedLooper
+
+        override fun getDatabasePath(name: String): File = File(cacheDir, "screenshots_restored_$name")
     }
 
     private val fakeBackupInfo = BackupInfo.Value(
@@ -402,6 +648,8 @@ internal class ScreenshotsTest {
 
     private class FakeBackupRepository(
         private val checkBackup: suspend () -> BackupInfo,
+        private val uploadBackup: suspend () -> BackupInfo.Value,
+        private val downloadBackup: suspend () -> Unit,
     ) : BackupRepository {
 
         override suspend fun checkExistingBackup(): BackupInfo = checkBackup()
@@ -411,7 +659,7 @@ internal class ScreenshotsTest {
             progressListener: BackupLoadProgressListener,
         ): BackupInfo.Value {
             progressListener.onProgressChanged(FAKE_PROGRESS, FAKE_LOADED_BYTES)
-            awaitCancellation()
+            return uploadBackup()
         }
 
         override suspend fun downloadBackup(
@@ -420,7 +668,7 @@ internal class ScreenshotsTest {
             progressListener: BackupLoadProgressListener,
         ) {
             progressListener.onProgressChanged(FAKE_PROGRESS, FAKE_LOADED_BYTES)
-            awaitCancellation()
+            downloadBackup()
         }
     }
 
@@ -503,6 +751,17 @@ internal class ScreenshotsTest {
         }
     }
 
+    /** Клавиатура открывается асинхронно, и waitForIdle её появления не ждёт. */
+    private fun shotWithKeyboard(name: String) {
+        rule.waitUntil(WAIT_TIMEOUT_MILLIS) {
+            rule.runOnUiThread {
+                ViewCompat.getRootWindowInsets(rule.activity.window.decorView)
+                    ?.isVisible(WindowInsetsCompat.Type.ime()) == true
+            }
+        }
+        shot(name)
+    }
+
     private fun shot(name: String) {
         rule.waitForIdle()
         SystemClock.sleep(SETTLE_MILLIS)
@@ -512,30 +771,16 @@ internal class ScreenshotsTest {
 
     private companion object {
 
-        /**
-         * Пропускает тест без `-e screenshots true`, а иначе до запуска активности
-         * выключает отправку аналитики, чтобы демо-данные и фейковые ошибки не попали в отчёты.
-         */
-        val screenshotsModeRule = TestRule { base, _ ->
-            object : Statement() {
-                override fun evaluate() {
-                    assumeTrue(
-                        "Запускайте через scripts/take_screenshots.sh",
-                        InstrumentationRegistry.getArguments().getString("screenshots") == "true"
-                    )
-                    Firebase.analytics.setAnalyticsCollectionEnabled(false)
-                    Firebase.crashlytics.isCrashlyticsCollectionEnabled = false
-                    AmplitudeWrapper.amplitude?.configuration?.optOut = true
-                    base.evaluate()
-                }
-            }
-        }
-
         const val WAIT_TIMEOUT_MILLIS = 10_000L
         const val BACKUP_SIGN_IN_TIMEOUT_MILLIS = 30_000L
         const val SETTLE_MILLIS = 700L
         const val WEB_PAGE_TIMEOUT_MILLIS = 30_000L
+        const val IMAGE_DECODE_MILLIS = 2_000L
         const val FAKE_ACCOUNT_EMAIL = "user@example.com"
+        const val LINK_FIELD_INDEX = 2
+        const val LINK_TO_ENTER = "https://example.com/headphones"
+        const val INVALID_LINK = "not-a-link"
+        const val GMAIL_PACKAGE = "com.google.android.gm"
         const val FAKE_PROGRESS = 0.42
         const val FAKE_LOADED_BYTES = 1_012_924L
 
