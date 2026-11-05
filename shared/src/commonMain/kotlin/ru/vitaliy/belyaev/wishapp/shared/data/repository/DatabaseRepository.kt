@@ -12,10 +12,9 @@ import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.shared.data.coroutines.DispatcherProvider
-import ru.vitaliy.belyaev.wishapp.shared.data.database.Image
 import ru.vitaliy.belyaev.wishapp.shared.data.database.ImageQueries
 import ru.vitaliy.belyaev.wishapp.shared.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.shared.data.database.TagQueries
@@ -28,6 +27,7 @@ import ru.vitaliy.belyaev.wishapp.shared.data.mapper.ImageMapper
 import ru.vitaliy.belyaev.wishapp.shared.data.mapper.TagMapper
 import ru.vitaliy.belyaev.wishapp.shared.data.mapper.WishMapper
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageRef
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
@@ -222,8 +222,8 @@ class DatabaseRepository(
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
-        val imagesFlow: Flow<List<Image>> = imageQueries
-            .getByWishId(id)
+        val imagesFlow: Flow<List<ImageRef>> = imageQueries
+            .getRefsByWishId(id, ImageMapper::mapToRef)
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
@@ -249,8 +249,8 @@ class DatabaseRepository(
                 .getWishTags(id)
                 .executeAsList()
 
-            val images: List<Image> = imageQueries
-                .getByWishId(id)
+            val images: List<ImageRef> = imageQueries
+                .getRefsByWishId(id, ImageMapper::mapToRef)
                 .executeAsList()
 
             WishMapper.mapToDomain(wishDto, tags, images)
@@ -289,27 +289,33 @@ class DatabaseRepository(
         val tagsFlow: Flow<List<TagEntity>> = observeAllTags()
 
         // We need this for reactive changes of images content in wish
-        val imagesFlow: Flow<List<Image>> = imageQueries
-            .getAll()
+        val imagesFlow: Flow<List<ImageRef>> = imageQueries
+            .getAllRefs(ImageMapper::mapToRef)
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
         return combine(wishesFlow, wishTagRelationsFlow, tagsFlow, imagesFlow) { wishes, _, _, allImages ->
+            val imagesByWishId = allImages.groupBy { it.wishId }
             val wishEntities = wishes.map {
                 val tags: List<Tag> = wishTagRelationQueries
                     .getWishTags(it.wishId)
                     .executeAsList()
 
-                val images = allImages.filter { image -> image.wishId == it.wishId }
-                WishMapper.mapToDomain(it, tags, images)
+                WishMapper.mapToDomain(it, tags, imagesByWishId[it.wishId].orEmpty())
             }
             sortWishesByTitle(wishEntities, sortMode)
-        }
+            // Запросы тегов выше синхронные, а combine работает в контексте подписчика
+        }.flowOn(dispatcherProvider.io())
     }
 
     @NativeCoroutines
     override suspend fun getAllWishes(isCompleted: Boolean): List<WishEntity> {
         return withContext(dispatcherProvider.io()) {
+            val imagesByWishId = imageQueries
+                .getAllRefs(ImageMapper::mapToRef)
+                .executeAsList()
+                .groupBy { it.wishId }
+
             wishQueries
                 .getAll(isCompleted)
                 .executeAsList()
@@ -318,11 +324,7 @@ class DatabaseRepository(
                         .getWishTags(it.wishId)
                         .executeAsList()
 
-                    val images: List<Image> = imageQueries
-                        .getByWishId(it.wishId)
-                        .executeAsList()
-
-                    WishMapper.mapToDomain(it, tags, images)
+                    WishMapper.mapToDomain(it, tags, imagesByWishId[it.wishId].orEmpty())
                 }
         }
     }
@@ -368,22 +370,23 @@ class DatabaseRepository(
         val tagFlow: Flow<Tag> = tagQueries.getById(tagId).asFlow().mapToOne(dispatcherProvider.io())
 
         // We need this for reactive changes of images content in wish
-        val imagesFlow: Flow<List<Image>> = imageQueries
-            .getAll()
+        val imagesFlow: Flow<List<ImageRef>> = imageQueries
+            .getAllRefs(ImageMapper::mapToRef)
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
         return combine(wishesByTagFlow, tagFlow, imagesFlow) { wishes, _, allImages ->
+            val imagesByWishId = allImages.groupBy { it.wishId }
             val wishEntities = wishes.map {
                 val tags: List<Tag> = wishTagRelationQueries
                     .getWishTags(it.wishId)
                     .executeAsList()
 
-                val images = allImages.filter { image -> image.wishId == it.wishId }
-                WishMapper.mapToDomain(it, tags, images)
+                WishMapper.mapToDomain(it, tags, imagesByWishId[it.wishId].orEmpty())
             }
             sortWishesByTitle(wishEntities, sortMode)
-        }
+            // Запросы тегов выше синхронные, а combine работает в контексте подписчика
+        }.flowOn(dispatcherProvider.io())
     }
 
     // SQLite COLLATE NOCASE сравнивает без регистра только латиницу. Для
@@ -561,40 +564,17 @@ class DatabaseRepository(
     }
 
     @NativeCoroutines
-    override suspend fun getImageById(id: String): ImageEntity {
-        return imageQueries.getById(id).executeAsOne().run {
-            ImageMapper.mapToDomain(this)
+    override suspend fun getImageRawData(id: String): ByteArray? {
+        return withContext(dispatcherProvider.io()) {
+            imageQueries.getRawDataById(id).executeAsOneOrNull()
         }
     }
 
     @NativeCoroutines
-    override suspend fun getAllImages(): List<ImageEntity> {
-        imageQueries.getAll().executeAsList().run {
-            return map {
-                ImageMapper.mapToDomain(it)
-            }
-        }
-    }
-
-    @NativeCoroutines
-    override suspend fun getImagesByWishId(wishId: String): List<ImageEntity> {
-        imageQueries.getByWishId(wishId).executeAsList().run {
-            return map {
-                ImageMapper.mapToDomain(it)
-            }
-        }
-    }
-
-    @NativeCoroutines
-    override fun observeImagesByWishId(wishId: String): Flow<List<ImageEntity>> {
-        return imageQueries.getByWishId(wishId)
+    override fun observeImageRefsByWishId(wishId: String): Flow<List<ImageRef>> {
+        return imageQueries.getRefsByWishId(wishId, ImageMapper::mapToRef)
             .asFlow()
             .mapToList(dispatcherProvider.io())
-            .map {
-                it.map { image ->
-                    ImageMapper.mapToDomain(image)
-                }
-            }
     }
 
     @NativeCoroutines

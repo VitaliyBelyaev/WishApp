@@ -3,6 +3,7 @@ package ru.vitaliy.belyaev.wishapp.shared.domain.repository
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.flow.Flow
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageRef
 
 interface ImagesRepository {
 
@@ -13,16 +14,10 @@ interface ImagesRepository {
     suspend fun insertImages(images: List<ImageEntity>)
 
     @NativeCoroutines
-    suspend fun getImageById(id: String): ImageEntity
+    suspend fun getImageRawData(id: String): ByteArray?
 
     @NativeCoroutines
-    suspend fun getAllImages(): List<ImageEntity>
-
-    @NativeCoroutines
-    suspend fun getImagesByWishId(wishId: String): List<ImageEntity>
-
-    @NativeCoroutines
-    fun observeImagesByWishId(wishId: String): Flow<List<ImageEntity>>
+    fun observeImageRefsByWishId(wishId: String): Flow<List<ImageRef>>
 
     @NativeCoroutines
     suspend fun deleteImageById(id: String)

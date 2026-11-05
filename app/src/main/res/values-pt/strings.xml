@@ -44,6 +44,7 @@
     <string name="completed_wishes">Desejos concluídos</string>
     <string name="wish_done_snack_message">Desejo movido para concluído</string>
     <string name="delete_wishes_error_message">Ocorreu um erro ao excluir os desejos</string>
+    <string name="share_pdf_error_message">Não foi possível criar o arquivo PDF</string>
     <string name="empty_current_wishes_message">Você ainda não adicionou nenhum desejo, clique no botão de adição abaixo para adicionar um novo desejo</string>
     <string name="empty_done_wishes_message">Você ainda não completou nenhum desejo</string>
     <string name="empty_tagged_wishes_message">Você ainda não adicionou o marcador %s a nenhum desejo</string>

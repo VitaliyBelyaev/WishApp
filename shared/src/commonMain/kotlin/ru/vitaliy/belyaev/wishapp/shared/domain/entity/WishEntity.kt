@@ -16,7 +16,7 @@ data class WishEntity(
     val updatedTimestamp: Long,
     val position: Long,
     val tags: List<TagEntity> = emptyList(),
-    val images: List<ImageEntity> = emptyList(),
+    val images: List<ImageRef> = emptyList(),
 )
 
 @OptIn(ExperimentalTime::class)

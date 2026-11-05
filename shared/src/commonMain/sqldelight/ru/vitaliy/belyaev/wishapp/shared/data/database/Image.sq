@@ -9,24 +9,21 @@ insert:
 INSERT INTO Image(id, wishId, rawData)
 VALUES (?,?,?);
 
-getById:
-SELECT *
+getAllRefs:
+SELECT id, wishId
+FROM Image
+ORDER BY rowid;
+
+getRefsByWishId:
+SELECT id, wishId
+FROM Image
+WHERE wishId = ?
+ORDER BY rowid;
+
+getRawDataById:
+SELECT rawData
 FROM Image
 WHERE id = ?;
-
-getAll:
-SELECT *
-FROM Image;
-
-getByWishId:
-SELECT *
-FROM Image
-WHERE wishId = ?;
-
-getByWishesIds:
-SELECT *
-FROM Image
-WHERE wishId IN ?;
 
 deleteByIds:
 DELETE FROM Image

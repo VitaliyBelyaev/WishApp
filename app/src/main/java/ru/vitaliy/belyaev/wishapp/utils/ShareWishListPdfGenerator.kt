@@ -25,6 +25,7 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
 
 const val WISHLIST_PDF_DIR_NAME = "wishlist_pdf"
 
@@ -37,9 +38,10 @@ object ShareWishListPdfGenerator {
     private const val IMAGES_MARGIN = 2
     private const val WISHES_SPACER_HEIGHT = 10
 
-    fun generatePdfForWishList(
+    suspend fun generatePdfForWishList(
         @StringRes titleResId: Int,
         wishes: List<WishEntity>,
+        imagesRepository: ImagesRepository,
         context: Context,
     ): File {
         val pdfDir = File(context.filesDir, WISHLIST_PDF_DIR_NAME)
@@ -50,7 +52,7 @@ object ShareWishListPdfGenerator {
 
         // Create and fill with data view for drawing on pdf page canvas
         val allBitmaps = mutableListOf<Bitmap>()
-        val view = createView(context, wishes, context.getString(titleResId), allBitmaps)
+        val view = createView(context, wishes, imagesRepository, context.getString(titleResId), allBitmaps)
 
         // Measure view with width set exact to A4 page width and height set to unspecified for
         // measuring how tall view with all data set want to be
@@ -89,9 +91,10 @@ object ShareWishListPdfGenerator {
         return pdfFile
     }
 
-    private fun createView(
+    private suspend fun createView(
         context: Context,
         wishes: List<WishEntity>,
+        imagesRepository: ImagesRepository,
         title: String,
         allBitmaps: MutableList<Bitmap>
     ): LinearLayout {
@@ -125,8 +128,10 @@ object ShareWishListPdfGenerator {
             val options = BitmapFactory.Options().apply {
                 inSampleSize = BITMAP_SAMPLE_SIZE
             }
-            val bitmaps = wishEntity.images.map {
-                BitmapFactory.decodeByteArray(it.rawData, 0, it.rawData.size, options)
+            val bitmaps = wishEntity.images.mapNotNull { image ->
+                imagesRepository.getImageRawData(image.id)?.let { rawData ->
+                    BitmapFactory.decodeByteArray(rawData, 0, rawData.size, options)
+                }
             }
             allBitmaps.addAll(bitmaps)
 
