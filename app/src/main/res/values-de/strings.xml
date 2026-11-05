@@ -44,6 +44,7 @@
     <string name="completed_wishes">Erledigte Wünsche</string>
     <string name="wish_done_snack_message">Wunsch wurde in abgeschlossen verschoben</string>
     <string name="delete_wishes_error_message">Beim Löschen von Wünschen ist ein Fehler aufgetreten</string>
+    <string name="share_pdf_error_message">PDF-Datei konnte nicht erstellt werden</string>
     <string name="empty_current_wishes_message">Sie haben noch keine Wünsche hinzugefügt, klicken Sie unten auf die Plus-Schaltfläche, um einen neuen Wunsch hinzuzufügen</string>
     <string name="empty_done_wishes_message">Du hast noch keine Wünsche abgeschlossen</string>
     <string name="empty_tagged_wishes_message">Sie haben Label %s noch keinem Wunsch hinzugefügt</string>

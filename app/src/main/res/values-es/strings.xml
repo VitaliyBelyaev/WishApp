@@ -44,6 +44,7 @@
     <string name="completed_wishes">Deseos completados</string>
     <string name="wish_done_snack_message">Deseo movido a completado</string>
     <string name="delete_wishes_error_message">Ocurrió un error al eliminar deseos</string>
+    <string name="share_pdf_error_message">No se pudo crear el archivo PDF</string>
     <string name="empty_current_wishes_message">Aún no ha agregado ningún deseo, haga clic en el botón más a continuación para agregar un nuevo deseo</string>
     <string name="empty_done_wishes_message">Aún no has completado ningún deseo</string>
     <string name="empty_tagged_wishes_message">Aún no has añadido la etiqueta %s a ningún deseo</string>

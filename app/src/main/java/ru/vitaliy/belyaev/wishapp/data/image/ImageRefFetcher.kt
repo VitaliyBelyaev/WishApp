@@ -12,6 +12,9 @@ import okio.Buffer
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageRef
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
 
+/** Картинку могли удалить, пока её запрос ещё выполнялся. Это не ошибка. */
+class ImageNotFoundException(imageId: String) : Exception("Image not found: $imageId")
+
 /** Читает байты картинки из базы только на время декодирования. */
 class ImageRefFetcher(
     private val image: ImageRef,
@@ -21,7 +24,7 @@ class ImageRefFetcher(
 
     override suspend fun fetch(): FetchResult {
         val rawData = imagesRepository.getImageRawData(image.id)
-            ?: error("Image not found: ${image.id}")
+            ?: throw ImageNotFoundException(image.id)
         return SourceFetchResult(
             source = ImageSource(Buffer().write(rawData), options.fileSystem),
             mimeType = null,

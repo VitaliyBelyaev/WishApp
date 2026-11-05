@@ -45,6 +45,7 @@
     <string name="completed_wishes">Виконані хотелки</string>
     <string name="wish_done_snack_message">Хотелка переміщена в виконані</string>
     <string name="delete_wishes_error_message">При видаленні хотелок сталася помилка</string>
+    <string name="share_pdf_error_message">Не вдалося створити PDF-файл</string>
     <string name="empty_current_wishes_message">Ви ще не додали жодної хотелки, натисніть на кнопку з плюсом нижче, щоб додати нову хотелку</string>
     <string name="empty_done_wishes_message">Ви ще не виконали жодну хотелку</string>
     <string name="empty_tagged_wishes_message">Ви ще не додали ярлик %s ні на одну хотелку</string>

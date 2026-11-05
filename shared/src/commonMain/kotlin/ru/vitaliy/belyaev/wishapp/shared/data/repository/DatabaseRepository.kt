@@ -12,6 +12,7 @@ import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.shared.data.coroutines.DispatcherProvider
 import ru.vitaliy.belyaev.wishapp.shared.data.database.ImageQueries
@@ -294,21 +295,27 @@ class DatabaseRepository(
             .mapToList(dispatcherProvider.io())
 
         return combine(wishesFlow, wishTagRelationsFlow, tagsFlow, imagesFlow) { wishes, _, _, allImages ->
+            val imagesByWishId = allImages.groupBy { it.wishId }
             val wishEntities = wishes.map {
                 val tags: List<Tag> = wishTagRelationQueries
                     .getWishTags(it.wishId)
                     .executeAsList()
 
-                val images = allImages.filter { image -> image.wishId == it.wishId }
-                WishMapper.mapToDomain(it, tags, images)
+                WishMapper.mapToDomain(it, tags, imagesByWishId[it.wishId].orEmpty())
             }
             sortWishesByTitle(wishEntities, sortMode)
-        }
+            // Запросы тегов выше синхронные, а combine работает в контексте подписчика
+        }.flowOn(dispatcherProvider.io())
     }
 
     @NativeCoroutines
     override suspend fun getAllWishes(isCompleted: Boolean): List<WishEntity> {
         return withContext(dispatcherProvider.io()) {
+            val imagesByWishId = imageQueries
+                .getAllRefs(ImageMapper::mapToRef)
+                .executeAsList()
+                .groupBy { it.wishId }
+
             wishQueries
                 .getAll(isCompleted)
                 .executeAsList()
@@ -317,11 +324,7 @@ class DatabaseRepository(
                         .getWishTags(it.wishId)
                         .executeAsList()
 
-                    val images: List<ImageRef> = imageQueries
-                        .getRefsByWishId(it.wishId, ImageMapper::mapToRef)
-                        .executeAsList()
-
-                    WishMapper.mapToDomain(it, tags, images)
+                    WishMapper.mapToDomain(it, tags, imagesByWishId[it.wishId].orEmpty())
                 }
         }
     }
@@ -373,16 +376,17 @@ class DatabaseRepository(
             .mapToList(dispatcherProvider.io())
 
         return combine(wishesByTagFlow, tagFlow, imagesFlow) { wishes, _, allImages ->
+            val imagesByWishId = allImages.groupBy { it.wishId }
             val wishEntities = wishes.map {
                 val tags: List<Tag> = wishTagRelationQueries
                     .getWishTags(it.wishId)
                     .executeAsList()
 
-                val images = allImages.filter { image -> image.wishId == it.wishId }
-                WishMapper.mapToDomain(it, tags, images)
+                WishMapper.mapToDomain(it, tags, imagesByWishId[it.wishId].orEmpty())
             }
             sortWishesByTitle(wishEntities, sortMode)
-        }
+            // Запросы тегов выше синхронные, а combine работает в контексте подписчика
+        }.flowOn(dispatcherProvider.io())
     }
 
     // SQLite COLLATE NOCASE сравнивает без регистра только латиницу. Для
@@ -555,31 +559,6 @@ class DatabaseRepository(
                     image.wishId,
                     image.rawData
                 )
-            }
-        }
-    }
-
-    @NativeCoroutines
-    override suspend fun getImageById(id: String): ImageEntity {
-        return imageQueries.getById(id).executeAsOne().run {
-            ImageMapper.mapToDomain(this)
-        }
-    }
-
-    @NativeCoroutines
-    override suspend fun getAllImages(): List<ImageEntity> {
-        imageQueries.getAll().executeAsList().run {
-            return map {
-                ImageMapper.mapToDomain(it)
-            }
-        }
-    }
-
-    @NativeCoroutines
-    override suspend fun getImagesByWishId(wishId: String): List<ImageEntity> {
-        imageQueries.getByWishId(wishId).executeAsList().run {
-            return map {
-                ImageMapper.mapToDomain(it)
             }
         }
     }

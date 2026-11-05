@@ -356,12 +356,6 @@ class WishDetailedViewModelTest {
 
         override suspend fun insertImages(images: List<ImageEntity>) = notUsed()
 
-        override suspend fun getImageById(id: String): ImageEntity = notUsed()
-
-        override suspend fun getAllImages(): List<ImageEntity> = notUsed()
-
-        override suspend fun getImagesByWishId(wishId: String): List<ImageEntity> = notUsed()
-
         override suspend fun getImageRawData(id: String): ByteArray? = notUsed()
 
         override fun observeImageRefsByWishId(wishId: String): Flow<List<ImageRef>> = notUsed()

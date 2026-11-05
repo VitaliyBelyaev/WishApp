@@ -44,6 +44,7 @@
     <string name="completed_wishes">Souhaits réalisés</string>
     <string name="wish_done_snack_message">Souhait déplacé vers terminé</string>
     <string name="delete_wishes_error_message">Une erreur s\'est produite lors de la suppression des souhaits</string>
+    <string name="share_pdf_error_message">Impossible de créer le fichier PDF</string>
     <string name="empty_current_wishes_message">Vous n\'avez pas encore ajouté de souhaits, cliquez sur le bouton plus ci-dessous pour ajouter un nouveau souhait</string>
     <string name="empty_done_wishes_message">Vous n\'avez encore réalisé aucun souhait</string>
     <string name="empty_tagged_wishes_message">Vous n\'avez encore ajouté l\'étiquette %s à aucun souhait</string>

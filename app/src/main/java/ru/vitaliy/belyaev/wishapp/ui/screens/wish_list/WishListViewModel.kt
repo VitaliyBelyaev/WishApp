@@ -294,13 +294,24 @@ class WishListViewModel @Inject constructor(
             is ShareData.Pdf -> {
                 launchSafe(Dispatchers.Default) {
                     _uiState.value = uiState.value.copy(isShareAsPdfLoading = true)
-                    val pdfFile: File = ShareWishListPdfGenerator.generatePdfForWishList(
-                        titleResId = R.string.wish_list_title,
-                        wishes = shareData.wishesToShare,
-                        imagesRepository = imagesRepository,
-                        context = context
-                    )
-                    _uiState.value = uiState.value.copy(isShareAsPdfLoading = false)
+                    val pdfFile: File = try {
+                        ShareWishListPdfGenerator.generatePdfForWishList(
+                            titleResId = R.string.wish_list_title,
+                            wishes = shareData.wishesToShare,
+                            imagesRepository = imagesRepository,
+                            context = context
+                        )
+                    } catch (error: CancellationException) {
+                        throw error
+                    } catch (error: Exception) {
+                        Timber.e(error)
+                        FirebaseCrashlytics.getInstance().recordException(error)
+                        _hideShareBottomSheetFlow.emit(Unit)
+                        _showSnackFlow.emit(R.string.share_pdf_error_message)
+                        return@launchSafe
+                    } finally {
+                        _uiState.value = uiState.value.copy(isShareAsPdfLoading = false)
+                    }
                     _hideShareBottomSheetFlow.emit(Unit)
                     withContext(Dispatchers.Main) {
                         context.startActivity(createSharePdfDocumentIntent(pdfFile, context))

@@ -14,15 +14,6 @@ interface ImagesRepository {
     suspend fun insertImages(images: List<ImageEntity>)
 
     @NativeCoroutines
-    suspend fun getImageById(id: String): ImageEntity
-
-    @NativeCoroutines
-    suspend fun getAllImages(): List<ImageEntity>
-
-    @NativeCoroutines
-    suspend fun getImagesByWishId(wishId: String): List<ImageEntity>
-
-    @NativeCoroutines
     suspend fun getImageRawData(id: String): ByteArray?
 
     @NativeCoroutines

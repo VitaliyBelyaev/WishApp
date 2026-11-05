@@ -746,6 +746,7 @@ open iosApp/WishApp.xcodeproj
 - **PDF-файлы шаринга** лежат в `filesDir/wishlist_pdf` и очищаются при старте
   Activity без сохранённого состояния.
 - **Coil:** disk cache отключён, memory cache включён. `ImageRefFetcher` читает картинки из базы.
+  При ошибке показывается `ic_broken_image`, причина уходит в Crashlytics (`ImageLoadErrorReporter`).
 
 ---
 
