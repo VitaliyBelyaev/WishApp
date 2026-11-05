@@ -23,6 +23,22 @@ SELECT *
 FROM Image
 WHERE wishId = ?;
 
+getAllRefs:
+SELECT id, wishId
+FROM Image
+ORDER BY rowid;
+
+getRefsByWishId:
+SELECT id, wishId
+FROM Image
+WHERE wishId = ?
+ORDER BY rowid;
+
+getRawDataById:
+SELECT rawData
+FROM Image
+WHERE id = ?;
+
 getByWishesIds:
 SELECT *
 FROM Image

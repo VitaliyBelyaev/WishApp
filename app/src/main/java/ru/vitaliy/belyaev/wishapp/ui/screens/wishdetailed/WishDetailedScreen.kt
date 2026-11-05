@@ -382,7 +382,7 @@ fun WishDetailedScreen(
                 ) {
                     images.forEachIndexed { index, image ->
                         val imageRequest = ImageRequest.Builder(LocalContext.current)
-                            .data(image.rawData)
+                            .data(image)
                             .memoryCacheKey(image.id)
                             .crossfade(true)
                             .build()

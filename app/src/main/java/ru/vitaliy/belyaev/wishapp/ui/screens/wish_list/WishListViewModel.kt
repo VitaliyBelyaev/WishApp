@@ -34,6 +34,7 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.ShareWishListTextGenerator
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishSortMode
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.shared.utils.SampleDataGenerator
@@ -53,6 +54,7 @@ import timber.log.Timber
 class WishListViewModel @Inject constructor(
     private val wishesRepository: WishesRepository,
     private val tagsRepository: TagsRepository,
+    private val imagesRepository: ImagesRepository,
     private val analyticsRepository: AnalyticsRepository,
 ) : BaseViewModel() {
 
@@ -295,6 +297,7 @@ class WishListViewModel @Inject constructor(
                     val pdfFile: File = ShareWishListPdfGenerator.generatePdfForWishList(
                         titleResId = R.string.wish_list_title,
                         wishes = shareData.wishesToShare,
+                        imagesRepository = imagesRepository,
                         context = context
                     )
                     _uiState.value = uiState.value.copy(isShareAsPdfLoading = false)

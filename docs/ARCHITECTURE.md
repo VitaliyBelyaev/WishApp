@@ -354,7 +354,8 @@ iosApp/WishApp/
   - при удалении/завершении позиции пересчитываются;
   - новые желания получают `position = count(valid positions)`.
 - `createdTimestamp` / `updatedTimestamp` — epoch millis (`kotlin.time.Clock`).
-- `Image.rawData` — BLOB с уже сжатым JPEG.
+- `Image.rawData` — BLOB с уже сжатым JPEG. В `WishEntity.images` лежат только `ImageRef`
+  (`id`, `wishId`): байты читаются по `id` через `getImageRawData`, в списках их не держим.
 - Имя БД: `Config.DATABASE_NAME = "ru_vitaliy_belyaev_wishapp.db"`.
 
 ### 8.3 Миграции
@@ -744,7 +745,7 @@ open iosApp/WishApp.xcodeproj
 - **Snackbar на главном экране** приходит из `AppActivityViewModel.showSnackOnMainFlow`.
 - **PDF-файлы шаринга** лежат в `filesDir/wishlist_pdf` и очищаются при старте
   Activity без сохранённого состояния.
-- **Coil:** disk cache отключён, memory cache включён.
+- **Coil:** disk cache отключён, memory cache включён. `ImageRefFetcher` читает картинки из базы.
 
 ---
 

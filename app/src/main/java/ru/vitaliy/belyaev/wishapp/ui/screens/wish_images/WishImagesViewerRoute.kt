@@ -8,7 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageRef
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 
@@ -24,7 +24,7 @@ fun WishImagesViewerScreenRoute(
         },
     appViewModel: AppActivityViewModel = hiltViewModel(LocalActivity.current as AppActivity),
 ) {
-    val images: List<ImageEntity> by viewModel.images.collectAsStateWithLifecycle()
+    val images: List<ImageRef> by viewModel.images.collectAsStateWithLifecycle()
 
     WishImagesViewerScreen(
         onBackPressed = onBackPressed,

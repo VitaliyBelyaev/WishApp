@@ -23,6 +23,7 @@ import org.junit.Test
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.AnalyticsEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageRef
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishSortMode
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.createEmptyWish
@@ -361,7 +362,9 @@ class WishDetailedViewModelTest {
 
         override suspend fun getImagesByWishId(wishId: String): List<ImageEntity> = notUsed()
 
-        override fun observeImagesByWishId(wishId: String): Flow<List<ImageEntity>> = notUsed()
+        override suspend fun getImageRawData(id: String): ByteArray? = notUsed()
+
+        override fun observeImageRefsByWishId(wishId: String): Flow<List<ImageRef>> = notUsed()
 
         override suspend fun deleteImageById(id: String) = notUsed()
 

@@ -32,7 +32,7 @@ import me.saket.telephoto.zoomable.coil3.ZoomableAsyncImage
 import me.saket.telephoto.zoomable.rememberZoomableImageState
 import me.saket.telephoto.zoomable.rememberZoomableState
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageRef
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
 import ru.vitaliy.belyaev.wishapp.ui.core.dropdown.DeleteDropDownItem
 import ru.vitaliy.belyaev.wishapp.ui.core.dropdown.MenuMoreWithDropDown
@@ -43,7 +43,7 @@ import ru.vitaliy.belyaev.wishapp.ui.core.topappbar.WishAppTopBar
 fun WishImagesViewerScreen(
     onBackPressed: () -> Unit,
     initialWishImageIndex: Int,
-    images: List<ImageEntity>,
+    images: List<ImageRef>,
     onDeleteImageConfirmed: (imageId: String) -> Unit,
 ) {
 
@@ -122,7 +122,7 @@ fun WishImagesViewerScreen(
 private fun PagerScope.ZoomableContent(
     page: Int,
     pagerState: PagerState,
-    images: List<ImageEntity>,
+    images: List<ImageRef>,
 ) {
     val isActivePage = page == pagerState.settledPage
 
@@ -135,7 +135,7 @@ private fun PagerScope.ZoomableContent(
     )
     images.getOrNull(page)?.let { image ->
         val imageRequest = ImageRequest.Builder(LocalContext.current)
-            .data(image.rawData)
+            .data(image)
             .memoryCacheKey(image.id)
             .crossfade(true)
             .build()
@@ -164,9 +164,9 @@ private fun PagerScope.ZoomableContent(
 private fun WishImagesViewerScreenPreview() {
 
     val images = listOf(
-        ImageEntity("1", "1", ByteArray(0)),
-        ImageEntity("2", "1", ByteArray(0)),
-        ImageEntity("3", "1", ByteArray(0)),
+        ImageRef("1", "1"),
+        ImageRef("2", "1"),
+        ImageRef("3", "1"),
     )
 
     WishImagesViewerScreen(

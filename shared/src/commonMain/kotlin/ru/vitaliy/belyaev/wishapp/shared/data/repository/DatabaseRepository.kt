@@ -12,10 +12,8 @@ import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.shared.data.coroutines.DispatcherProvider
-import ru.vitaliy.belyaev.wishapp.shared.data.database.Image
 import ru.vitaliy.belyaev.wishapp.shared.data.database.ImageQueries
 import ru.vitaliy.belyaev.wishapp.shared.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.shared.data.database.TagQueries
@@ -28,6 +26,7 @@ import ru.vitaliy.belyaev.wishapp.shared.data.mapper.ImageMapper
 import ru.vitaliy.belyaev.wishapp.shared.data.mapper.TagMapper
 import ru.vitaliy.belyaev.wishapp.shared.data.mapper.WishMapper
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageRef
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
@@ -222,8 +221,8 @@ class DatabaseRepository(
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
-        val imagesFlow: Flow<List<Image>> = imageQueries
-            .getByWishId(id)
+        val imagesFlow: Flow<List<ImageRef>> = imageQueries
+            .getRefsByWishId(id, ImageMapper::mapToRef)
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
@@ -249,8 +248,8 @@ class DatabaseRepository(
                 .getWishTags(id)
                 .executeAsList()
 
-            val images: List<Image> = imageQueries
-                .getByWishId(id)
+            val images: List<ImageRef> = imageQueries
+                .getRefsByWishId(id, ImageMapper::mapToRef)
                 .executeAsList()
 
             WishMapper.mapToDomain(wishDto, tags, images)
@@ -289,8 +288,8 @@ class DatabaseRepository(
         val tagsFlow: Flow<List<TagEntity>> = observeAllTags()
 
         // We need this for reactive changes of images content in wish
-        val imagesFlow: Flow<List<Image>> = imageQueries
-            .getAll()
+        val imagesFlow: Flow<List<ImageRef>> = imageQueries
+            .getAllRefs(ImageMapper::mapToRef)
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
@@ -318,8 +317,8 @@ class DatabaseRepository(
                         .getWishTags(it.wishId)
                         .executeAsList()
 
-                    val images: List<Image> = imageQueries
-                        .getByWishId(it.wishId)
+                    val images: List<ImageRef> = imageQueries
+                        .getRefsByWishId(it.wishId, ImageMapper::mapToRef)
                         .executeAsList()
 
                     WishMapper.mapToDomain(it, tags, images)
@@ -368,8 +367,8 @@ class DatabaseRepository(
         val tagFlow: Flow<Tag> = tagQueries.getById(tagId).asFlow().mapToOne(dispatcherProvider.io())
 
         // We need this for reactive changes of images content in wish
-        val imagesFlow: Flow<List<Image>> = imageQueries
-            .getAll()
+        val imagesFlow: Flow<List<ImageRef>> = imageQueries
+            .getAllRefs(ImageMapper::mapToRef)
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
@@ -586,15 +585,17 @@ class DatabaseRepository(
     }
 
     @NativeCoroutines
-    override fun observeImagesByWishId(wishId: String): Flow<List<ImageEntity>> {
-        return imageQueries.getByWishId(wishId)
+    override suspend fun getImageRawData(id: String): ByteArray? {
+        return withContext(dispatcherProvider.io()) {
+            imageQueries.getRawDataById(id).executeAsOneOrNull()
+        }
+    }
+
+    @NativeCoroutines
+    override fun observeImageRefsByWishId(wishId: String): Flow<List<ImageRef>> {
+        return imageQueries.getRefsByWishId(wishId, ImageMapper::mapToRef)
             .asFlow()
             .mapToList(dispatcherProvider.io())
-            .map {
-                it.map { image ->
-                    ImageMapper.mapToDomain(image)
-                }
-            }
     }
 
     @NativeCoroutines

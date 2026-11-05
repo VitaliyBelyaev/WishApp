@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.WishImagesViewerScreenShowEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageRef
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 
@@ -20,13 +20,13 @@ class WishImagesViewerViewModel @AssistedInject constructor(
     private val imagesRepository: ImagesRepository,
 ) : BaseViewModel() {
 
-    private val _images: MutableStateFlow<List<ImageEntity>> = MutableStateFlow(emptyList())
-    val images: StateFlow<List<ImageEntity>> = _images.asStateFlow()
+    private val _images: MutableStateFlow<List<ImageRef>> = MutableStateFlow(emptyList())
+    val images: StateFlow<List<ImageRef>> = _images.asStateFlow()
 
     init {
         launchSafe {
             imagesRepository
-                .observeImagesByWishId(wishId)
+                .observeImageRefsByWishId(wishId)
                 .collect {
                     if (images.value.isEmpty() && it.isNotEmpty()) {
                         trackScreenShow(it.size)
