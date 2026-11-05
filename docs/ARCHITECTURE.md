@@ -48,6 +48,7 @@ WishApp/
 ├── app/                  # Android-приложение (Compose, Hilt, Navigation3)
 ├── shared/               # Kotlin Multiplatform: БД, домен, репозитории
 ├── iosApp/               # iOS-приложение (SwiftUI, Combine)
+├── docs/                 # Архитектура, бэклог, UX-заметки, скриншоты
 ├── gradle/
 │   └── libs.versions.toml
 ├── build.gradle.kts
@@ -723,12 +724,12 @@ open iosApp/WishApp.xcodeproj
   - выбор темы — только Android;
   - бэкап — Google Drive на Android, iCloud на iOS.
 - **Мёртвый/легаси-код:**
-  - старый `iosApp/WishApp/ui/MainScreen/` (пустой/неиспользуемый);
+  - старый `iosApp/WishApp/ui/MainScreen/` (не входит в Xcode-таргет);
   - закомментированные участки в `UseCaseProvideModule`, Firebase на iOS.
 - **Две DI-системы:** Hilt на Android, Koin в `shared`/iOS. Android не вызывает Koin.
 - **`Pods/` не в git** — iOS-зависимости через SPM.
-- **Тестов мало:** `shared` — `LinksAdapterTest`, `app` — `BytesSizeFormatterTest` и
-  `ExampleUnitTest`. Не полагайся на тесты как на полное покрытие.
+- **Тестов мало:** `shared` — `LinksAdapterTest`, `app` — `BytesSizeFormatterTest`,
+  `WishDetailedViewModelTest`, `DatabaseRepositoryDeleteTest` и `SmokeTest`. Не полагайся на тесты как на полное покрытие.
 - **Release-подпись:** в `app/build.gradle.kts` для release используется тестовый
   keystore (`test_keystore`, пароль `notasecret`). Это не production-подпись.
 - **Секреты:** `apikey.properties`, `local.properties` и keystore не коммить.

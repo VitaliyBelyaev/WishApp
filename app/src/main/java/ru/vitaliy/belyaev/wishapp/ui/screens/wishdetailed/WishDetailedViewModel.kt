@@ -1,15 +1,19 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishdetailed
 
+import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.BitmapFactory.Options
 import android.graphics.Matrix
+import android.net.Uri
 import android.util.Patterns
+import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.SavedStateHandle
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.math.RoundingMode
 import java.util.Optional
@@ -131,17 +135,33 @@ class WishDetailedViewModel @AssistedInject constructor(
         analyticsRepository.trackEvent(WishDetailedSaveAndExitClickedEvent)
     }
 
-    fun onImagesSelected(imagesRawData: List<ImageData>) {
-        analyticsRepository.trackEvent(WishDetailedImagesSelectedEvent(imagesRawData.size))
+    fun onImagesSelected(uris: List<Uri>, contentResolver: ContentResolver) {
+        analyticsRepository.trackEvent(WishDetailedImagesSelectedEvent(uris.size))
 
         launchSafe {
             withContext(Dispatchers.IO) {
-                val images = imagesRawData.map { imageRawData ->
-                    val downscaledImageRawData = decreaseImageSizeIfNeeded(imageRawData)
-                    ImageEntity(UUID.randomUUID().toString(), currentWishId, downscaledImageRawData)
+                // Оригиналы обрабатываем по одному, чтобы не держать их в памяти все сразу
+                val images = uris.mapNotNull { uri ->
+                    readImageData(uri, contentResolver)?.let { imageRawData ->
+                        val downscaledImageRawData = decreaseImageSizeIfNeeded(imageRawData)
+                        ImageEntity(UUID.randomUUID().toString(), currentWishId, downscaledImageRawData)
+                    }
                 }
                 imagesRepository.insertImages(images)
             }
+        }
+    }
+
+    private fun readImageData(uri: Uri, contentResolver: ContentResolver): ImageData? {
+        return contentResolver.openInputStream(uri)?.use { inputStream ->
+            val rawData = inputStream.readBytes()
+            val rotationDegrees = ByteArrayInputStream(rawData).use {
+                ExifInterface(it).rotationDegrees
+            }
+            ImageData(
+                rawData = rawData,
+                rotationDegrees = rotationDegrees
+            )
         }
     }
 
