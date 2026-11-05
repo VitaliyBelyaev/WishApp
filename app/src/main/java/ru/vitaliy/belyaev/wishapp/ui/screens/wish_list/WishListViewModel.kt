@@ -1,10 +1,12 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wish_list
 
 import android.content.Context
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.File
 import java.util.UUID
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -365,8 +367,13 @@ class WishListViewModel @Inject constructor(
                             scrollInfo = null
                         }
                     }
-            }.onFailure {
-                Timber.e(it)
+            }.onFailure { error ->
+                // Без фильтра сбрасывать нечего: перезапуск зациклился бы на той же ошибке
+                if (error is CancellationException || wishesFilterFlow.value is WishesFilter.All) {
+                    throw error
+                }
+                Timber.e(error)
+                FirebaseCrashlytics.getInstance().recordException(error)
                 wishesFilterFlow.value = WishesFilter.All
                 launchObservingWishes()
             }

@@ -56,6 +56,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -68,18 +69,16 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.exifinterface.media.ExifInterface
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import java.io.ByteArrayInputStream
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import java.util.Optional
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
-import ru.vitaliy.belyaev.wishapp.domain.model.ImageData
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
@@ -117,6 +116,7 @@ fun WishDetailedScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val resources = LocalResources.current
     val uriHandler = LocalUriHandler.current
     val wishItem: Optional<WishItem> by viewModel.uiState.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -143,7 +143,7 @@ fun WishDetailedScreen(
         } catch (error: Throwable) {
             Timber.e(error)
             scope.launch {
-                snackbarHostState.showDismissableSnackbar(context.getString(R.string.fail_to_open_link))
+                snackbarHostState.showDismissableSnackbar(resources.getString(R.string.fail_to_open_link))
             }
         }
     }
@@ -152,21 +152,10 @@ fun WishDetailedScreen(
     val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = maxSelectionCount),
         onResult = { uris ->
-            val imagesData: List<ImageData> = uris
-                .take(maxSelectionCount)
-                .mapNotNull { uri ->
-                    context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                        val rawData = inputStream.readBytes()
-                        val rotationDegrees = ByteArrayInputStream(rawData).use {
-                            ExifInterface(it).rotationDegrees
-                        }
-                        ImageData(
-                            rawData = rawData,
-                            rotationDegrees = rotationDegrees
-                        )
-                    }
-                }
-            viewModel.onImagesSelected(imagesData)
+            viewModel.onImagesSelected(
+                uris = uris.take(maxSelectionCount),
+                contentResolver = context.applicationContext.contentResolver
+            )
         }
     )
 
@@ -194,7 +183,7 @@ fun WishDetailedScreen(
                         oldIsCompleted = oldIsCompleted
                     )
                     if (!oldIsCompleted) {
-                        appViewModel.showSnackMessageOnMain(context.getString(R.string.wish_done_snack_message))
+                        appViewModel.showSnackMessageOnMain(resources.getString(R.string.wish_done_snack_message))
                         onBackPressed()
                     }
                 },

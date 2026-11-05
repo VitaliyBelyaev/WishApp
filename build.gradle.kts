@@ -1,8 +1,7 @@
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.androidApplication).apply(false)
-    alias(libs.plugins.androidLibrary).apply(false)
-    alias(libs.plugins.kotlinAndroid).apply(false)
+    alias(libs.plugins.androidKotlinMultiplatformLibrary).apply(false)
     alias(libs.plugins.kotlinParcelize).apply(false)
     alias(libs.plugins.kotlinSerialization).apply(false)
     alias(libs.plugins.kotlinMultiplatform).apply(false)
@@ -27,10 +26,10 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
+        classpath("com.google.android.gms:oss-licenses-plugin:0.13.0")
     }
 }
 
 tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
+    delete(rootProject.layout.buildDirectory)
 }

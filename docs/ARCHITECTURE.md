@@ -48,6 +48,7 @@ WishApp/
 ├── app/                  # Android-приложение (Compose, Hilt, Navigation3)
 ├── shared/               # Kotlin Multiplatform: БД, домен, репозитории
 ├── iosApp/               # iOS-приложение (SwiftUI, Combine)
+├── docs/                 # Архитектура, бэклог, UX-заметки, скриншоты
 ├── gradle/
 │   └── libs.versions.toml
 ├── build.gradle.kts
@@ -71,22 +72,22 @@ WishApp/
 
 ### shared
 
-- Kotlin `2.2.21`
-- Kotlin Coroutines `1.10.2`
-- kotlinx-datetime `0.7.1`
-- SQLDelight `2.2.1`
-- Koin `3.4.2` (используется на iOS и как общий DI-модуль)
-- KMP-NativeCoroutines `1.0.0-ALPHA-22`
+- Kotlin `2.4.21`
+- Kotlin Coroutines `1.11.0`
+- kotlinx-datetime `0.8.0`
+- SQLDelight `2.4.1`
+- Koin `4.2.2` (используется на iOS и как общий DI-модуль)
+- KMP-NativeCoroutines `1.0.6`
 - UUID (`com.benasher44:uuid`)
 - Napier (логирование)
 
 ### Android
 
-- Android Gradle Plugin `8.13.2`
-- JVM target `11`, `minSdk 23`, `targetSdk 36`, `compileSdk 36`
+- Android Gradle Plugin `9.4.0`
+- JVM target `11`, `minSdk 24`, `targetSdk 37`, `compileSdk 37`
 - Jetpack Compose + Material 3 (Material You, dynamic colors на Android 12+)
 - Navigation 3 (`androidx.navigation3`) — актуальная навигация
-- Hilt `2.57.2` + KSP
+- Hilt `2.60.1` + KSP
 - DataStore Preferences
 - Google Drive API (бэкап), Google Sign-In, Google Play Review
 - Firebase Analytics / Crashlytics / Performance
@@ -590,7 +591,7 @@ iOS `Wish List Screen - Show` с другим набором параметро�
 ### Требования
 
 - JDK 17 для запуска Gradle (JVM target проекта — 11).
-- Android Studio с поддержкой AGP 8.13 / compileSdk 36.
+- Android Studio с поддержкой AGP 9.4 / compileSdk 37.
 - Xcode с iOS 16+ SDK.
 - `local.properties` с `sdk.dir` (не коммитится).
 - `apikey.properties` в корне с `AMPLITUDE_API_KEY` (не коммитится).
@@ -723,12 +724,12 @@ open iosApp/WishApp.xcodeproj
   - выбор темы — только Android;
   - бэкап — Google Drive на Android, iCloud на iOS.
 - **Мёртвый/легаси-код:**
-  - старый `iosApp/WishApp/ui/MainScreen/` (пустой/неиспользуемый);
+  - старый `iosApp/WishApp/ui/MainScreen/` (не входит в Xcode-таргет);
   - закомментированные участки в `UseCaseProvideModule`, Firebase на iOS.
 - **Две DI-системы:** Hilt на Android, Koin в `shared`/iOS. Android не вызывает Koin.
 - **`Pods/` не в git** — iOS-зависимости через SPM.
-- **Тестов мало:** `shared` — `LinksAdapterTest`, `app` — `BytesSizeFormatterTest` и
-  `ExampleUnitTest`. Не полагайся на тесты как на полное покрытие.
+- **Тестов мало:** `shared` — `LinksAdapterTest`, `app` — `BytesSizeFormatterTest`,
+  `WishDetailedViewModelTest`, `DatabaseRepositoryDeleteTest` и `SmokeTest`. Не полагайся на тесты как на полное покрытие.
 - **Release-подпись:** в `app/build.gradle.kts` для release используется тестовый
   keystore (`test_keystore`, пароль `notasecret`). Это не production-подпись.
 - **Секреты:** `apikey.properties`, `local.properties` и keystore не коммить.

@@ -24,6 +24,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -54,6 +55,7 @@ fun AboutAppScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val resources = LocalResources.current
     val scrollState: ScrollState = rememberScrollState()
 
     val onSendFeedbackClicked: () -> Unit = {
@@ -63,7 +65,7 @@ fun AboutAppScreen(
             context.startActivity(intent)
         } catch (t: Throwable) {
             scope.launch {
-                snackbarHostState.showDismissableSnackbar(context.getString(R.string.no_email_app_error))
+                snackbarHostState.showDismissableSnackbar(resources.getString(R.string.no_email_app_error))
             }
         }
     }

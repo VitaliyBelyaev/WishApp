@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/rickclephas/KMP-NativeCoroutines.git",
       "state" : {
-        "revision" : "47bede5732bc502c7dc14af7343263ae64ed8772",
-        "version" : "1.0.0-ALPHA-22-spm-no-deps"
+        "revision" : "142afac768902208f71832819b40d370c5154182",
+        "version" : "1.0.6-spm-no-deps"
       }
     },
     {

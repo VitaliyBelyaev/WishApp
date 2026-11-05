@@ -19,9 +19,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.SemanticsActions
-import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -261,7 +258,7 @@ internal class ScreenshotsTest {
     @Test
     fun wishImagesViewer() {
         openFirstWish()
-        rule.onAllNodes(imageMatcher).onFirst().performClick()
+        rule.onAllNodes(wishImageMatcher).onFirst().performClick()
         // Картинка декодируется вне Compose, поэтому waitForIdle её не дожидается
         SystemClock.sleep(IMAGE_DECODE_MILLIS)
         shot("25_wish_images_viewer")
@@ -699,7 +696,7 @@ internal class ScreenshotsTest {
         }
         // Пока картинка не декодирована, её ширина нулевая и клик по ней не попадёт
         rule.waitUntil(WAIT_TIMEOUT_MILLIS) {
-            rule.onAllNodes(imageMatcher).fetchSemanticsNodes().firstOrNull()?.let { it.size.width > 0 } ?: false
+            rule.onAllNodes(wishImageMatcher).fetchSemanticsNodes().firstOrNull()?.let { it.size.width > 0 } ?: false
         }
     }
 
@@ -783,13 +780,5 @@ internal class ScreenshotsTest {
         const val GMAIL_PACKAGE = "com.google.android.gm"
         const val FAKE_PROGRESS = 0.42
         const val FAKE_LOADED_BYTES = 1_012_924L
-
-        /** Картинка на экране желания кликабельна, но без текста и описания. */
-        val imageMatcher: SemanticsMatcher = hasClickAction() and SemanticsMatcher("is image") { node ->
-            val keys = node.config
-            SemanticsProperties.Text !in keys &&
-                SemanticsProperties.EditableText !in keys &&
-                SemanticsProperties.ContentDescription !in keys
-        }
     }
 }
