@@ -6,12 +6,23 @@ import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Shader
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.hasClickAction
 import java.io.ByteArrayOutputStream
 import java.util.UUID
 import ru.vitaliy.belyaev.wishapp.shared.data.repository.DatabaseRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.LinksAdapter
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.createEmptyWish
+
+/** Картинка на экране желания кликабельна, но без текста и описания. */
+internal val wishImageMatcher: SemanticsMatcher = hasClickAction() and SemanticsMatcher("is image") { node ->
+    val keys = node.config
+    SemanticsProperties.Text !in keys &&
+        SemanticsProperties.EditableText !in keys &&
+        SemanticsProperties.ContentDescription !in keys
+}
 
 /** Демо-данные для скриншотов: тексты на русском для `ru`, иначе на английском. */
 internal class DemoData(language: String) {
@@ -75,6 +86,8 @@ internal class DemoData(language: String) {
             tags = listOf(electronicsTag, booksTag),
         ),
     )
+
+    val lastWishTitle: String = activeWishes.last().title
 
     private val completedWishes = listOf(
         DemoWish(

@@ -1,9 +1,9 @@
 package ru.vitaliy.belyaev.wishapp
 
 import android.app.Application
-import coil.Coil
-import coil.ImageLoader
-import coil.request.CachePolicy
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
+import coil3.request.CachePolicy
 import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.HiltAndroidApp
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AmplitudeWrapper
@@ -25,7 +25,7 @@ class WishApplication : Application() {
 
         AmplitudeWrapper.init(applicationContext)
 
-        Coil.setImageLoader {
+        SingletonImageLoader.setSafe {
             ImageLoader.Builder(applicationContext)
                 .diskCachePolicy(CachePolicy.DISABLED)
                 .memoryCachePolicy(CachePolicy.ENABLED)

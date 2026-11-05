@@ -34,6 +34,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -89,6 +90,7 @@ fun WishListScreen(
     val openDeleteConfirmDialog: MutableState<Boolean> = remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+    val resources = LocalResources.current
     val haptic = LocalHapticFeedback.current
 
     val modalNavBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -131,7 +133,7 @@ fun WishListScreen(
 
     LaunchedEffect(key1 = Unit) {
         viewModel.showSnackFlow.collect {
-            snackbarHostState.showDismissableSnackbar(context.getString(it))
+            snackbarHostState.showDismissableSnackbar(resources.getString(it))
         }
     }
 

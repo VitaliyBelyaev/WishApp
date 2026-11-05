@@ -1,11 +1,9 @@
 import com.android.build.api.dsl.ApplicationDefaultConfig
 import java.util.Properties
-import org.jetbrains.kotlin.daemon.common.trimQuotes
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.kotlinSerialization)
@@ -33,13 +31,13 @@ kotlin {
 android {
     namespace = "ru.vitaliy.belyaev.wishapp"
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
 
     defaultConfig {
         applicationId = "ru.vitaliy.belyaev.wishapp"
-        minSdk = 23
-        targetSdk = 36
+        minSdk = 24
+        targetSdk = 37
         versionCode = 24
         versionName = "1.8.2"
 
@@ -47,7 +45,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-        android.buildFeatures.buildConfig = true
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
@@ -56,6 +53,8 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+        resValues = true
     }
     packaging {
         resources {
@@ -67,6 +66,7 @@ android {
             excludes += "META-INF/NOTICE"
             excludes += "META-INF/NOTICE.txt"
             excludes += "META-INF/ASL2.0"
+            excludes += "META-INF/INDEX.LIST"
         }
     }
 
@@ -198,7 +198,6 @@ dependencies {
 
     // Mockito
     testImplementation(libs.mockito.mockitoCore)
-    testImplementation(libs.mockito.mockitoInline)
 
     // Instrumentation
     androidTestImplementation(libs.androidx.test.runner)
@@ -221,7 +220,7 @@ fun readProperties(filePath: String) = Properties().apply {
 }
 
 fun Properties.getStringOrDefault(key: String, default: String): String {
-    return getProperty(key)?.trimQuotes() ?: default
+    return getProperty(key)?.removeSurrounding("\"") ?: default
 }
 
 fun ApplicationDefaultConfig.stringConfigField(name: String, value: String) {

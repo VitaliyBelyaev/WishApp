@@ -56,6 +56,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -71,8 +72,9 @@ import androidx.compose.ui.unit.dp
 import androidx.exifinterface.media.ExifInterface
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import java.io.ByteArrayInputStream
 import java.util.Optional
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -117,6 +119,7 @@ fun WishDetailedScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val resources = LocalResources.current
     val uriHandler = LocalUriHandler.current
     val wishItem: Optional<WishItem> by viewModel.uiState.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -143,7 +146,7 @@ fun WishDetailedScreen(
         } catch (error: Throwable) {
             Timber.e(error)
             scope.launch {
-                snackbarHostState.showDismissableSnackbar(context.getString(R.string.fail_to_open_link))
+                snackbarHostState.showDismissableSnackbar(resources.getString(R.string.fail_to_open_link))
             }
         }
     }
@@ -194,7 +197,7 @@ fun WishDetailedScreen(
                         oldIsCompleted = oldIsCompleted
                     )
                     if (!oldIsCompleted) {
-                        appViewModel.showSnackMessageOnMain(context.getString(R.string.wish_done_snack_message))
+                        appViewModel.showSnackMessageOnMain(resources.getString(R.string.wish_done_snack_message))
                         onBackPressed()
                     }
                 },

@@ -9,7 +9,7 @@ import com.google.api.client.googleapis.media.MediaHttpDownloader
 import com.google.api.client.googleapis.media.MediaHttpUploader
 import com.google.api.client.http.FileContent
 import com.google.api.client.http.javanet.NetHttpTransport
-import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.FileList
@@ -31,7 +31,7 @@ internal class GoogleDriveBackupRepository(
 ) : BackupRepository {
 
     private val httpTransport = NetHttpTransport()
-    private val jsonFactory = JacksonFactory.getDefaultInstance()
+    private val jsonFactory = GsonFactory.getDefaultInstance()
 
     override suspend fun checkExistingBackup(): BackupInfo {
         val account = checkAccount(context)

@@ -97,6 +97,7 @@
 | Строки Android | `app/src/main/res/values*/strings.xml` |
 | Строки iOS | `iosApp/WishApp/Resources/{en,ru}.lproj/Localizable.strings` |
 | Тема Android | `app/.../ui/theme/WishAppTheme.kt` |
+| Техдолг, идеи, просьбы пользователей (сюда же записывай новые находки) | `docs/BACKLOG.md` |
 
 ## Сборка и проверки
 
@@ -105,6 +106,13 @@
 ./gradlew :app:testDebugUnitTest
 ./gradlew :app:lintDebug
 ./gradlew :shared:allTests
+```
+
+Smoke-тест на эмуляторе (успешный сценарий по всем экранам),
+удобно после обновления зависимостей. Стирает данные debug-приложения:
+
+```bash
+scripts/run_smoke_test.sh
 ```
 
 iOS (разработка на паузе; сборка нужна как smoke-check, чтобы не сломать

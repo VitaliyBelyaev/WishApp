@@ -1,5 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.backup
 
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -40,6 +41,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -82,13 +84,14 @@ internal fun BackupScreen(
     onBackPressed: () -> Unit,
     analyticsRepository: AnalyticsRepository,
     viewModel: BackupViewModel = hiltViewModel(),
-    appViewModel: AppActivityViewModel = hiltViewModel(LocalContext.current as AppActivity),
+    appViewModel: AppActivityViewModel = hiltViewModel(LocalActivity.current as AppActivity),
 ) {
 
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
     val loadingState by viewModel.loadingState.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
+    val resources = LocalResources.current
     val snackbarHostState = remember { SnackbarHostState() }
     val scrollState: ScrollState = rememberScrollState()
 
@@ -109,7 +112,7 @@ internal fun BackupScreen(
     LaunchedEffect(key1 = Unit) {
         viewModel.showSnackFlow.collect {
             val message: String = when (it) {
-                is SnackbarMessage.StringResInt -> context.getString(it.value)
+                is SnackbarMessage.StringResInt -> resources.getString(it.value)
                 is SnackbarMessage.StringValue -> it.value
             }
             snackbarHostState.showDismissableSnackbar(message)

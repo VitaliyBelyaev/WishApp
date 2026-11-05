@@ -910,7 +910,7 @@
 			repositoryURL = "https://github.com/rickclephas/KMP-NativeCoroutines.git";
 			requirement = {
 				kind = exactVersion;
-				version = "1.0.0-ALPHA-22-spm-no-deps";
+				version = "1.0.6-spm-no-deps";
 			};
 		};
 		E3389BB82BFBA8B100A01BE0 /* XCRemoteSwiftPackageReference "Amplitude-iOS" */ = {
