@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">Wishapp</string>
     <string name="debug_app_name" translatable="false">DEV Wishapp</string>
+    <string name="autotest_app_name" translatable="false">AUTOTEST Wishapp</string>
 </resources>

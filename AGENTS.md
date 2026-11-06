@@ -100,6 +100,7 @@
 | Тема Android | `app/.../ui/theme/WishAppTheme.kt` |
 | Техдолг, идеи, просьбы пользователей (сюда же записывай новые находки) | `docs/BACKLOG.md` |
 | Поведение экранов для редизайна | `docs/UX_NOTES.md` |
+| Релиз: ветки, теги, проверки, раскатка | `docs/RELEASE.md` |
 | Новые долгоживущие md-файлы | `docs/` (в корне только `README.md` и `AGENTS.md`) |
 
 ## Сборка и проверки
@@ -116,6 +117,13 @@ Smoke-тест на эмуляторе (успешный сценарий по �
 
 ```bash
 scripts/run_smoke_test.sh
+```
+
+Тот же smoke-тест на сборке `autotest` (как release, с R8; эмулятор API 26+),
+перед релизом обязательно:
+
+```bash
+BUILD_TYPE=autotest scripts/run_smoke_test.sh
 ```
 
 Проверка `shared` под iOS, без Xcode-проекта и симулятора. Обязательна после

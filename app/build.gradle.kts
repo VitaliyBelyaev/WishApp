@@ -48,7 +48,12 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
     compileOptions {
-        isCoreLibraryDesugaringEnabled = true
+        // В прогоне тестов на autotest desugaring выключен. Тестовый APK несёт свою
+        // урезанную копию j$.time (её тянет androidx.test), в одном процессе она
+        // перекрывает копию приложения, и код приложения падает с NoSuchMethodError.
+        // Без desugaring java.time берётся из системы, поэтому такой прогон только
+        // на Android 8 (API 26) и выше.
+        isCoreLibraryDesugaringEnabled = providers.gradleProperty("testBuildType").orNull != "autotest"
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -81,6 +86,9 @@ android {
         }
     }
 
+    // Сборка для Android-тестов: `-PtestBuildType=autotest`, по умолчанию debug
+    testBuildType = providers.gradleProperty("testBuildType").getOrElse("debug")
+
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
@@ -97,6 +105,20 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             resValue("string", "release_app_name", "@string/app_name")
             stringConfigField(amplitudeApiKey, amplitudeApiKeyValue)
+            signingConfig = signingConfigs.getByName("signingTest")
+        }
+
+        // Как release, с R8, но для автотестов: ловит то, что R8 вырезал или переименовал.
+        // Keep-правила для тестов лежат отдельно и в release не попадают.
+        create("autotest") {
+            initWith(getByName("release"))
+            // Тот же id, что у debug: тест гоняется на отдельном эмуляторе, и сборки
+            // не нужно ставить рядом. Заодно не нужен свой клиент в google-services.json
+            applicationIdSuffix = ".debug"
+            matchingFallbacks += "release"
+            proguardFiles("proguard-autotest.pro")
+            resValue("string", "release_app_name", "@string/autotest_app_name")
+            stringConfigField(amplitudeApiKey, "")
             signingConfig = signingConfigs.getByName("signingTest")
         }
     }

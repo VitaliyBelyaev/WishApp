@@ -11,12 +11,23 @@
 # Другое устройство выбирается явно, его debug-приложение тоже будет очищено:
 #
 #   DEVICE_SERIAL=R5CT1234 scripts/run_smoke_test.sh
+#
+# Перед релизом тот же тест гоняется на сборке autotest: она как release, с R8,
+# и ловит то, что R8 вырезал или переименовал:
+#
+#   BUILD_TYPE=autotest scripts/run_smoke_test.sh
 
 set -euo pipefail
 
 AVD_NAME="WishApp_Screenshots"
 EMULATOR_PORT="${EMULATOR_PORT:-5554}"
 DEVICE_SERIAL="${DEVICE_SERIAL:-}"
+BUILD_TYPE="${BUILD_TYPE:-debug}"
+case "$BUILD_TYPE" in
+    debug|autotest) ;;
+    *) echo "BUILD_TYPE может быть debug или autotest, а не $BUILD_TYPE" >&2; exit 1 ;;
+esac
+BUILD_TYPE_TASK="$(printf '%s' "${BUILD_TYPE:0:1}" | tr '[:lower:]' '[:upper:]')${BUILD_TYPE:1}"
 APP_ID="ru.vitaliy.belyaev.wishapp.debug"
 TEST_CLASS="ru.vitaliy.belyaev.wishapp.smoke.SmokeTest"
 TEST_RUNNER="$APP_ID.test/androidx.test.runner.AndroidJUnitRunner"
@@ -79,7 +90,8 @@ for scale in window_animation_scale transition_animation_scale animator_duration
 done
 
 install_apks() {
-    ANDROID_SERIAL="$SERIAL" "$ROOT_DIR/gradlew" -p "$ROOT_DIR" :app:installDebug :app:installDebugAndroidTest
+    ANDROID_SERIAL="$SERIAL" "$ROOT_DIR/gradlew" -p "$ROOT_DIR" -PtestBuildType="$BUILD_TYPE" \
+        ":app:install$BUILD_TYPE_TASK" ":app:install${BUILD_TYPE_TASK}AndroidTest"
 }
 
 # Gradle иногда не успевает прочитать свойства занятого эмулятора и пропускает его

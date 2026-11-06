@@ -1,6 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.smoke
 
 import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -22,12 +23,12 @@ import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextReplacement
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.analytics
-import com.google.firebase.crashlytics.crashlytics
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertNotNull
 import org.junit.Assume.assumeTrue
@@ -46,8 +47,11 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.entity.createEmptyWish
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 
 /**
- * Быстрая проверка, что приложение запускается и все экраны открываются: один успешный
- * сценарий без разбора всех состояний. Нужна после обновления зависимостей. Запускается через `scripts/run_smoke_test.sh`.
+ * Проверка, что приложение запускается, все экраны открываются и основные действия
+ * доходят до базы: один успешный сценарий без разбора всех состояний. Нужна после
+ * обновления зависимостей и перед релизом. Запускается через `scripts/run_smoke_test.sh`,
+ * перед релизом ещё и на сборке autotest (с R8), поэтому тест работает как пользователь:
+ * код приложения напрямую трогает только заполнение базы.
  *
  * Тест стирает базу приложения, поэтому без аргумента `-e smoke true` он пропускается.
  */
@@ -72,8 +76,10 @@ internal class SmokeTest {
                     "Запускайте через scripts/run_smoke_test.sh",
                     InstrumentationRegistry.getArguments().getString("smoke") == "true"
                 )
-                Firebase.analytics.setAnalyticsCollectionEnabled(false)
-                Firebase.crashlytics.isCrashlyticsCollectionEnabled = false
+                // Java API вместо ktx-расширений: в сборке autotest R8 вырезает
+                // `com.google.firebase.Firebase`, приложение его не использует
+                FirebaseAnalytics.getInstance(targetContext).setAnalyticsCollectionEnabled(false)
+                FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = false
                 AmplitudeWrapper.amplitude?.configuration?.optOut = true
                 seedDatabase()
                 base.evaluate()
@@ -98,10 +104,13 @@ internal class SmokeTest {
     fun mainFlow() {
         scrollWishList()
         sortWishes()
-        openReorderMode()
-        openShareSheet()
+        reorderWishes()
+        selectWishes()
+        shareWishes()
         addWish()
+        receiveSharedLinks()
         openWishScreens()
+        editWish()
         completeWish()
         openEditTags()
         filterWishes()
@@ -122,6 +131,11 @@ internal class SmokeTest {
     }
 
     private fun sortWishes() {
+        listOf(R.string.sort_created_newest, R.string.sort_created_oldest, R.string.sort_title_za).forEach { mode ->
+            selectSortMode(mode)
+            waitForList()
+        }
+
         selectSortMode(R.string.sort_title_az)
         // В алфавитном порядке желания-заполнители идут ниже демо-желаний
         scrollListToTop()
@@ -139,24 +153,69 @@ internal class SmokeTest {
         waitUntilGone(string(R.string.sort_title))
     }
 
-    private fun openReorderMode() {
+    /** Переставляет верхнее желание на одну позицию вниз и обратно, порядок сохраняется в базе. */
+    private fun reorderWishes() {
+        val secondWishTitle = fillerTitle(FILLER_WISHES_COUNT - 1)
         clickDescription("Reorder wishes")
         rule.waitUntil(WAIT_TIMEOUT_MILLIS) {
             rule.onAllNodesWithContentDescription("Move down").fetchSemanticsNodes().isNotEmpty()
         }
+
+        clickDescriptionInRowOf("Move down", TOP_WISH_TITLE)
+        waitForOrder(upper = secondWishTitle, lower = TOP_WISH_TITLE)
+        clickDescriptionInRowOf("Move up", TOP_WISH_TITLE)
+        waitForOrder(upper = TOP_WISH_TITLE, lower = secondWishTitle)
+
         clickDescription("Reorder wishes")
         rule.waitUntil(WAIT_TIMEOUT_MILLIS) {
             rule.onAllNodesWithContentDescription("Move down").fetchSemanticsNodes().isEmpty()
         }
     }
 
-    private fun openShareSheet() {
+    private fun selectWishes() {
+        rule.onAllNodesWithText(TOP_WISH_TITLE).onFirst().performSemanticsAction(SemanticsActions.OnLongClick)
+        waitForDescription("Close")
+        clickText(fillerTitle(FILLER_WISHES_COUNT - 1))
+        clickDescription("Menu")
+        clickText(string(R.string.select_all))
+        clickDescription("Close")
+        rule.waitUntil(WAIT_TIMEOUT_MILLIS) {
+            rule.onAllNodesWithContentDescription("Close").fetchSemanticsNodes().isEmpty()
+        }
+    }
+
+    /** Текст и PDF уходят в системное окно «Поделиться», тест только дожидается его и возвращается. */
+    private fun shareWishes() {
         clickDescription("Share wishes")
         waitForText(string(R.string.share_title))
-        rule.onNodeWithText(string(R.string.share_type_text_button_text)).assertIsDisplayed()
-        rule.onNodeWithText(string(R.string.share_type_pdf_button_text)).assertIsDisplayed()
+        clickText(string(R.string.share_type_text_button_text))
+        returnFromSystemShareSheet()
+
+        clickDescription("Share wishes")
+        waitForText(string(R.string.share_title))
+        clickText(string(R.string.share_type_pdf_button_text))
+        returnFromSystemShareSheet(timeoutMillis = PDF_TIMEOUT_MILLIS)
+    }
+
+    private fun returnFromSystemShareSheet(timeoutMillis: Long = WAIT_TIMEOUT_MILLIS) {
+        val appPackage = targetContext.packageName
+        val deadline = System.currentTimeMillis() + timeoutMillis
+        // Пока сверху системное окно, дерево Compose приложения недоступно: ждём только смену пакета
+        while (device.currentPackageName == appPackage) {
+            if (System.currentTimeMillis() > deadline) {
+                val pdfFailed = rule.onAllNodesWithText(string(R.string.share_pdf_error_message))
+                    .fetchSemanticsNodes().isNotEmpty()
+                error(if (pdfFailed) "Не удалось поделиться PDF" else "Системное окно «Поделиться» не открылось")
+            }
+            Thread.sleep(POLL_MILLIS)
+        }
         device.pressBack()
+        rule.waitUntil(WAIT_TIMEOUT_MILLIS) { device.currentPackageName == appPackage }
+        if (rule.onAllNodesWithText(string(R.string.share_title)).fetchSemanticsNodes().isNotEmpty()) {
+            device.pressBack()
+        }
         waitUntilGone(string(R.string.share_title))
+        waitForList()
     }
 
     private fun addWish() {
@@ -178,11 +237,42 @@ internal class SmokeTest {
         rule.onNodeWithText(NEW_WISH_COMMENT).assertIsDisplayed()
     }
 
+    /**
+     * Ссылка из другого приложения: неверная даёт ошибку, верная открывает новое желание
+     * со ссылкой в поле ввода.
+     */
+    private fun receiveSharedLinks() {
+        rule.activity.startActivity(sharedTextIntent(INVALID_SHARED_LINK))
+        waitForText(string(R.string.invalid_link_error_message))
+
+        rule.activity.startActivity(sharedTextIntent(SHARED_LINK))
+        waitForText(SHARED_LINK)
+        clickDescription("Add Link")
+        waitForText(SHARED_LINK_HOST)
+        deleteOpenedWish()
+    }
+
+    private fun sharedTextIntent(text: String): Intent =
+        Intent(rule.activity, AppActivity::class.java)
+            .setAction(Intent.ACTION_SEND)
+            .setType("text/plain")
+            .putExtra(Intent.EXTRA_TEXT, text)
+
+    private fun deleteOpenedWish() {
+        clickDescription("Menu")
+        clickText(string(R.string.delete))
+        waitForText(string(R.string.delete_wish_title))
+        clickLastText(string(R.string.delete))
+        waitForList()
+        waitUntilGone(SHARED_LINK_HOST)
+    }
+
     private fun openWishScreens() {
         openFirstWish()
         openImagesViewer()
         openWishMenu()
         createTagFromWish()
+        toggleTagOnWish()
         openDeleteLinkDialog()
         clickDescription("Back")
 
@@ -200,15 +290,27 @@ internal class SmokeTest {
         }
     }
 
+    /** Удаляет одно фото из просмотра: у первого демо-желания их несколько. */
     private fun openImagesViewer() {
+        val imagesCount = rule.onAllNodes(wishImageMatcher).fetchSemanticsNodes().size
         rule.onAllNodes(wishImageMatcher).onFirst().performClick()
         waitUntilGone(demoData.firstWishTitle)
         clickDescription("Menu")
         clickText(string(R.string.delete))
         waitForText(string(R.string.delete_wish_image_title))
         clickText(string(R.string.cancel))
+        waitUntilGone(string(R.string.delete_wish_image_title))
+
+        clickDescription("Menu")
+        clickText(string(R.string.delete))
+        waitForText(string(R.string.delete_wish_image_title))
+        clickLastText(string(R.string.delete))
+        waitUntilGone(string(R.string.delete_wish_image_title))
         clickDescription("Back")
         waitForText(demoData.firstWishTitle)
+        rule.waitUntil(WAIT_TIMEOUT_MILLIS) {
+            rule.onAllNodes(wishImageMatcher).fetchSemanticsNodes().size == imagesCount - 1
+        }
     }
 
     private fun openWishMenu() {
@@ -231,11 +333,39 @@ internal class SmokeTest {
         waitForText(demoData.newTagTitle)
     }
 
+    /** Снимает ярлык с желания и возвращает его: на ярлык опирается фильтр дальше. */
+    private fun toggleTagOnWish() {
+        repeat(2) { round ->
+            clickDescription("Open tags")
+            waitForText(demoData.newTagTitle)
+            clickLastText(demoData.firstTagTitle)
+            clickDescription("Back")
+            waitForText(demoData.newTagTitle)
+            if (round == 0) waitUntilGone(demoData.firstTagTitle) else waitForText(demoData.firstTagTitle)
+        }
+    }
+
     private fun openDeleteLinkDialog() {
         rule.onAllNodesWithContentDescription("Delete Link").onFirst().performClick()
         waitForText(string(R.string.delete_wish_link_title))
         clickText(string(R.string.cancel))
         waitUntilGone(string(R.string.delete_wish_link_title))
+    }
+
+    private fun editWish() {
+        val fillerToEdit = fillerTitle(1)
+        scrollListTo(fillerToEdit)
+        rule.onAllNodesWithText(fillerToEdit).onFirst().performClick()
+        waitForText(string(R.string.enter_link))
+        rule.onAllNodes(hasSetTextAction())[TITLE_FIELD_INDEX].performTextReplacement(EDITED_WISH_TITLE)
+        rule.onAllNodes(hasSetTextAction())[COMMENT_FIELD_INDEX].performTextInput(EDITED_WISH_COMMENT)
+        clickDescription("Back")
+
+        waitForList()
+        scrollListTo(EDITED_WISH_TITLE)
+        rule.onNodeWithText(EDITED_WISH_TITLE).assertIsDisplayed()
+        rule.onNodeWithText(EDITED_WISH_COMMENT).assertIsDisplayed()
+        rule.onAllNodesWithText(fillerToEdit).fetchSemanticsNodes().let { check(it.isEmpty()) { "Старое название осталось" } }
     }
 
     private fun completeWish() {
@@ -260,9 +390,28 @@ internal class SmokeTest {
         waitForText(string(R.string.delete_tag_title))
         clickText(string(R.string.cancel))
         waitUntilGone(string(R.string.delete_tag_title))
+        clickDescription("Done")
+
+        renameAndDeleteTag()
 
         clickDescription("Back")
         waitForList()
+    }
+
+    /** Переименовывает ярлык, созданный на экране желания, и удаляет его. */
+    private fun renameAndDeleteTag() {
+        waitForText(demoData.newTagTitle)
+        clickLastText(demoData.newTagTitle)
+        rule.onNode(hasSetTextAction()).performTextReplacement(RENAMED_TAG_TITLE)
+        clickDescription("Done")
+        waitForText(RENAMED_TAG_TITLE)
+        waitUntilGone(demoData.newTagTitle)
+
+        clickLastText(RENAMED_TAG_TITLE)
+        clickDescription("Delete")
+        waitForText(string(R.string.delete_tag_title))
+        clickLastText(string(R.string.delete))
+        waitUntilGone(RENAMED_TAG_TITLE)
     }
 
     private fun filterWishes() {
@@ -275,12 +424,28 @@ internal class SmokeTest {
         openNavigationMenu()
         clickLastText(string(R.string.completed_wishes))
         waitForText(NEW_WISH_TITLE)
+        restoreCompletedWish()
 
         openNavigationMenu()
         clickLastText(string(R.string.all_wishes))
-        waitUntilGone(NEW_WISH_TITLE)
+        waitForList()
+        scrollListTo(NEW_WISH_TITLE)
+        rule.onNodeWithText(NEW_WISH_TITLE).assertIsDisplayed()
         scrollListToTop()
         waitForText(TOP_WISH_TITLE)
+    }
+
+    /** Возвращает выполненное желание в активные, из раздела «Выполненные» оно уходит. */
+    private fun restoreCompletedWish() {
+        rule.onNodeWithText(NEW_WISH_TITLE).performClick()
+        waitForText(string(R.string.enter_link))
+        clickDescription("Menu")
+        clickText(string(R.string.wish_not_done))
+        // В отличие от отметки «Выполнено», возврат в активные оставляет экран желания открытым
+        clickDescription("Back")
+        // В демо-данных есть и другие выполненные, поэтому раздел не пустеет
+        waitForList()
+        waitUntilGone(NEW_WISH_TITLE)
     }
 
     private fun openNavigationMenu() {
@@ -293,6 +458,7 @@ internal class SmokeTest {
         waitForText(string(R.string.backup))
 
         clickText(string(R.string.theme_dark))
+        clickText(string(R.string.theme_light))
         clickText(string(R.string.theme_system_title))
 
         clickText(string(R.string.backup))
@@ -357,6 +523,37 @@ internal class SmokeTest {
         rule.waitForIdle()
     }
 
+    private fun topOf(text: String): Float? =
+        rule.onAllNodesWithText(text).fetchSemanticsNodes().firstOrNull()?.boundsInRoot?.top
+
+    /** Список после перестановки может прокрутиться, поэтому каждый раз возвращаемся наверх. */
+    private fun waitForOrder(upper: String, lower: String) {
+        rule.waitUntil(WAIT_TIMEOUT_MILLIS) {
+            scrollListToTop()
+            val upperTop = topOf(upper)
+            val lowerTop = topOf(lower)
+            upperTop != null && lowerTop != null && upperTop < lowerTop
+        }
+    }
+
+    /** Кнопка с описанием в той же строке списка, что и текст: у каждой строки свои «Вверх» и «Вниз». */
+    private fun clickDescriptionInRowOf(description: String, text: String) {
+        val rowCenter = rule.onAllNodesWithText(text).onFirst().fetchSemanticsNode().boundsInRoot.center.y
+        val buttons = rule.onAllNodesWithContentDescription(description)
+        val index = buttons.fetchSemanticsNodes()
+            .withIndex()
+            .minBy { (_, node) -> kotlin.math.abs(node.boundsInRoot.center.y - rowCenter) }
+            .index
+        buttons[index].performClick()
+        rule.waitForIdle()
+    }
+
+    private fun waitForDescription(description: String) {
+        rule.waitUntil(WAIT_TIMEOUT_MILLIS) {
+            rule.onAllNodesWithContentDescription(description).fetchSemanticsNodes().isNotEmpty()
+        }
+    }
+
     private fun waitForList() {
         rule.waitUntil(WAIT_TIMEOUT_MILLIS) {
             rule.onAllNodesWithContentDescription("Add wish").fetchSemanticsNodes().isNotEmpty()
@@ -405,6 +602,14 @@ internal class SmokeTest {
         const val NEW_WISH_COMMENT = "Smoke test comment"
         const val NEW_WISH_LINK_HOST = "example.com"
         const val NEW_WISH_LINK = "https://$NEW_WISH_LINK_HOST/smoke"
+        const val SHARED_LINK_HOST = "example.net"
+        const val SHARED_LINK = "https://$SHARED_LINK_HOST/shared"
+        const val INVALID_SHARED_LINK = "not a link"
+        const val EDITED_WISH_TITLE = "Edited smoke wish"
+        const val EDITED_WISH_COMMENT = "Edited smoke comment"
+        const val RENAMED_TAG_TITLE = "Renamed smoke tag"
+        const val PDF_TIMEOUT_MILLIS = 30_000L
+        const val POLL_MILLIS = 200L
 
         /** Новые желания попадают в начало списка, поэтому сверху последнее добавленное. */
         val TOP_WISH_TITLE = fillerTitle(FILLER_WISHES_COUNT)
