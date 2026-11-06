@@ -13,7 +13,7 @@ SwiftUI, её разработка на паузе.
 
 ### Что настроено в теме
 
-Тема в `ui/theme/WishAppTheme.kt` передаёт в `MaterialTheme` только цвета.
+Тема в `ui/old/theme/WishAppTheme.kt` передаёт в `MaterialTheme` только цвета.
 
 | Что | Как сейчас |
 |---|---|

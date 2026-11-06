@@ -61,7 +61,7 @@ WishApp/
 1. `shared/src/commonMain/kotlin/ru/vitaliy/belyaev/wishapp/shared/data/WishAppSdk.kt` — точка входа в общую БД.
 2. `shared/src/commonMain/kotlin/ru/vitaliy/belyaev/wishapp/shared/data/repository/DatabaseRepository.kt` — вся работа с БД.
 3. `app/src/main/java/ru/vitaliy/belyaev/wishapp/ui/AppActivity.kt` — Android-точка входа и навигация.
-4. `app/src/main/java/ru/vitaliy/belyaev/wishapp/navigation/Navigation.kt` — карта Android-экранов.
+4. `app/src/main/java/ru/vitaliy/belyaev/wishapp/navigation/old/Navigation.kt` — карта Android-экранов.
 5. `iosApp/WishApp/WishApp.swift` — iOS-точка входа.
 6. `iosApp/WishApp/View/Main/Components/MainContentView.swift` — карта iOS-экранов.
 
@@ -197,13 +197,21 @@ shared/src/
 app/src/main/java/ru/vitaliy/belyaev/wishapp/
 ├── WishApplication.kt          # @HiltAndroidApp, dynamic colors, Coil, Amplitude
 ├── ui/
-│   ├── AppActivity.kt          # single activity, setContent, deep link ACTION_SEND
-│   ├── AppActivityViewModel.kt # тема, in-app review, удаление пустых желаний
-│   ├── core/                   # переиспользуемые Compose-компоненты
-│   ├── screens/                # экраны (см. раздел 6)
-│   ├── theme/                  # цвета, типографика, WishAppTheme
-│   └── model/                  # UI-модели
-├── navigation/                 # Navigation3: Routes, NavigationState, Navigator, Navigation
+│   ├── AppActivity.kt          # single activity, выбор вида, deep link ACTION_SEND
+│   ├── AppActivityViewModel.kt # вид, тема, снэкбар, in-app review, удаление пустых желаний
+│   ├── AppRoot.kt              # корни старого и нового вида: тема, навигация, снэкбар
+│   ├── core/viewmodel/         # BaseViewModel, общий для старого и нового вида
+│   ├── core/snackbar/          # AppSnackMessage и единственный снэкбар нового вида
+│   ├── theme/                  # тема нового вида: токены, Onest/Unbounded, формы, «Как обои»
+│   ├── components/             # компоненты нового вида; wish/ — общее для хотелки, wish/card — WishCard, wish/row — WishRow (спецификации в артефакте дизайн-системы)
+│   ├── screens/                # экраны нового вида (пока витрина lookpreview, только debug)
+│   └── old/                    # прежний вид, удаляется после перехода на новый
+│       ├── core/               # переиспользуемые Compose-компоненты
+│       ├── screens/            # экраны (см. раздел 6)
+│       ├── theme/              # цвета, типографика, WishAppTheme
+│       └── model/              # UI-модели
+├── navigation/                 # AppNavigation нового вида
+├── navigation/old/             # Navigation3 прежнего вида: Routes, NavigationState, Navigator, Navigation
 ├── di/                         # Hilt-модули
 ├── data/
 │   ├── repository/datastore/   # DataStoreRepository
@@ -255,19 +263,19 @@ iosApp/WishApp/
 
 ## 6. Экраны Android
 
-Навигация описана в `app/src/main/java/ru/vitaliy/belyaev/wishapp/navigation/`.
+Навигация описана в `app/src/main/java/ru/vitaliy/belyaev/wishapp/navigation/old/`.
 
 | Экран | Файлы | ViewModel | Что делает |
 |---|---|---|---|
-| Wish List (главный) | `ui/screens/wish_list/WishListScreen.kt` + `components/` | `WishListViewModel` | Список желаний, фильтры All / Completed / By Tag, сортировка, редактирование, удаление, перемещение, шаринг, переход к бэкапу |
-| Wish Detailed | `ui/screens/wishdetailed/WishDetailedScreen.kt` + `components/` | `WishDetailedViewModel` | Создание/редактирование желания: title, comment, links, images, tags, complete/delete |
-| Wish Tags | `ui/screens/wishtags/WishTagsScreen.kt` + `components/` | `WishTagsViewModel` | Привязка/создание тегов для конкретного желания |
-| Edit Tags | `ui/screens/edittags/EditTagsScreen.kt` + `components/` | `EditTagsViewModel` | Переименование и удаление тегов |
-| Wish Images Viewer | `ui/screens/wish_images/WishImagesViewerScreen.kt`, `WishImagesViewerRoute.kt` | `WishImagesViewerViewModel` | Полноэкранный просмотр изображений с zoom и удалением |
-| Settings | `ui/screens/settings/SettingsScreen.kt` + `components/` | `SettingsViewModel` | Тема, Backup, Rate app, Share app, About |
-| Backup & Restore | `ui/screens/backup/BackupScreen.kt` + `components/` | `BackupViewModel` | Google Sign-In, проверка бэкапа, создание, восстановление, управление аккаунтом |
-| About App | `ui/screens/aboutapp/AboutAppScreen.kt` | `AboutAppViewModel` | Версия, feedback по email, OSS-лицензии, privacy policy |
-| Privacy Policy | `ui/screens/aboutapp/privacypolicy/PrivacyPolicyScreen.kt` | `PrivacyPolicyViewModel` | WebView с политикой конфиденциальности |
+| Wish List (главный) | `ui/old/screens/wish_list/WishListScreen.kt` + `components/` | `WishListViewModel` | Список желаний, фильтры All / Completed / By Tag, сортировка, редактирование, удаление, перемещение, шаринг, переход к бэкапу |
+| Wish Detailed | `ui/old/screens/wishdetailed/WishDetailedScreen.kt` + `components/` | `WishDetailedViewModel` | Создание/редактирование желания: title, comment, links, images, tags, complete/delete |
+| Wish Tags | `ui/old/screens/wishtags/WishTagsScreen.kt` + `components/` | `WishTagsViewModel` | Привязка/создание тегов для конкретного желания |
+| Edit Tags | `ui/old/screens/edittags/EditTagsScreen.kt` + `components/` | `EditTagsViewModel` | Переименование и удаление тегов |
+| Wish Images Viewer | `ui/old/screens/wish_images/WishImagesViewerScreen.kt`, `WishImagesViewerRoute.kt` | `WishImagesViewerViewModel` | Полноэкранный просмотр изображений с zoom и удалением |
+| Settings | `ui/old/screens/settings/SettingsScreen.kt` + `components/` | `SettingsViewModel` | Тема, Backup, Rate app, Share app, About |
+| Backup & Restore | `ui/old/screens/backup/BackupScreen.kt` + `components/` | `BackupViewModel` | Google Sign-In, проверка бэкапа, создание, восстановление, управление аккаунтом |
+| About App | `ui/old/screens/aboutapp/AboutAppScreen.kt` | `AboutAppViewModel` | Версия, feedback по email, OSS-лицензии, privacy policy |
+| Privacy Policy | `ui/old/screens/aboutapp/privacypolicy/PrivacyPolicyScreen.kt` | `PrivacyPolicyViewModel` | WebView с политикой конфиденциальности |
 
 Особенности Wish List:
 
@@ -390,13 +398,13 @@ iosApp/WishApp/
 
 Используется **Navigation 3**:
 
-- `navigation/Routes.kt` — `@Serializable` `NavKey`-классы:
+- `navigation/old/Routes.kt` — `@Serializable` `NavKey`-классы:
   `MainRoute`, `WishDetailedRoute`, `SettingsRoute`, `BackupAndRestoreRoute`,
   `AboutAppRoute`, `PrivacyPolicyRoute`, `EditTagRoute`, `WishTagsRoute`,
   `WishImagesViewerRoute`.
-- `navigation/Navigation.kt` — `NavDisplay` + `entryProvider`, здесь собираются экраны.
-- `navigation/NavigationState.kt` — back stack-и, сохранение состояния.
-- `navigation/Navigator.kt` — `navigate()` / `goBack()`.
+- `navigation/old/Navigation.kt` — `NavDisplay` + `entryProvider`, здесь собираются экраны.
+- `navigation/old/NavigationState.kt` — back stack-и, сохранение состояния.
+- `navigation/old/Navigator.kt` — `navigate()` / `goBack()`.
 
 Правило: для нового экрана добавь `NavKey`, `entry<>` в `Navigation.kt` и
 навигационный callback в нужный экран.
@@ -489,7 +497,7 @@ Hilt-модулем. Не пытайся «починить» это, не ра�
 - `domain/use_case/RestoreBackupUseCase.kt`
 - `domain/use_case/GetExistingBackupInfoUseCase.kt`
 - `domain/use_case/NeedToShowRestoreUseCase.kt`
-- `ui/screens/backup/BackupViewModel.kt`
+- `ui/old/screens/backup/BackupViewModel.kt`
 
 Как работает:
 
@@ -569,10 +577,20 @@ iOS `Wish List Screen - Show` с другим набором параметро�
   `values-fr`, `values-pt`.
 - Строки: `app/src/main/res/values*/strings.xml`.
 - Названия приложения: `app_name.xml`.
-- Тема: `ui/theme/WishAppTheme.kt`.
+- Тема прежнего вида: `ui/old/theme/WishAppTheme.kt`.
   - `Theme.SYSTEM / DARK / LIGHT`;
   - на Android 12+ используются dynamic colors (Material You);
   - выбранная тема хранится в DataStore.
+- Тема нового вида: `ui/theme/AppTheme.kt`, цвета из токенов дизайн-системы, «Хурма» на всех версиях.
+  - Настройка «Как обои» (`KEY_WALLPAPER_COLORS`, Android 12+): схема из обоев, тона `paper-*`
+    и «Сбылось» подстраиваются под `primary` обоев одним поворотом, посчитанным по светлой теме.
+  - Шрифты Onest и Unbounded лежат статическими файлами в `res/font`. Их лицензии OFL
+    дописываются в экран лицензий задачей в `app/build.gradle.kts`, тексты в `app/licenses/`.
+  - Значки Material Symbols Rounded: `res/drawable/ic_ms_*`, залитые варианты `*_filled`.
+- Какой вид показать, решает `resolveUiLook` (`domain/model/UiLook.kt`): флаг `ui_look_mode`
+  из Remote Config (читается один раз за запуск, новое значение со следующего) и выбор
+  пользователя `KEY_UI_LOOK`. Пока `IS_NEW_LOOK_RELEASED = false`, релиз всегда на прежнем виде.
+  В debug новый вид открывается пунктом «Новый вид (отладка)» в старых настройках.
 - Для изображений экрана просмотра принудительно включается тёмная тема
   (`NavigationState.currentRoute is WishImagesViewerRoute` → `Theme.DARK`).
 
@@ -676,10 +694,10 @@ open iosApp/WishApp.xcodeproj
 
 ### Добавить Android-экран
 
-1. Создай пакет в `ui/screens/<name>/`.
+1. Создай пакет в `ui/old/screens/<name>/`.
 2. Добавь `<Name>Screen.kt` и `<Name>ViewModel.kt` (наследник `BaseViewModel`).
-3. Добавь `@Serializable data object/class <Name>Route : NavKey` в `navigation/Routes.kt`.
-4. Зарегистрируй `entry<<Name>Route>` в `navigation/Navigation.kt`.
+3. Добавь `@Serializable data object/class <Name>Route : NavKey` в `navigation/old/Routes.kt`.
+4. Зарегистрируй `entry<<Name>Route>` в `navigation/old/Navigation.kt`.
 5. Добавь строки в `res/values*/strings.xml`.
 6. Если нужен экран-показ — добавь analytics-событие и `trackScreenShow`.
 
@@ -764,11 +782,11 @@ open iosApp/WishApp.xcodeproj
 | Точка входа Android | `app/src/main/java/ru/vitaliy/belyaev/wishapp/ui/AppActivity.kt` |
 | Application Android | `app/src/main/java/ru/vitaliy/belyaev/wishapp/WishApplication.kt` |
 | Точка входа iOS | `iosApp/WishApp/WishApp.swift` |
-| Навигация Android | `app/.../navigation/Navigation.kt`, `Routes.kt`, `Navigator.kt` |
+| Навигация Android | `app/.../navigation/old/Navigation.kt`, `Routes.kt`, `Navigator.kt`; новый вид `navigation/AppNavigation.kt` |
 | Навигация iOS | `iosApp/WishApp/Navigation/NavigationModel.swift` |
-| Главный экран Android | `app/.../ui/screens/wish_list/WishListScreen.kt` |
+| Главный экран Android | `app/.../ui/old/screens/wish_list/WishListScreen.kt` |
 | Главный экран iOS | `iosApp/WishApp/View/Main/Components/MainContentView.swift` |
-| Карточка желания Android | `app/.../ui/screens/wishdetailed/WishDetailedScreen.kt` |
+| Карточка желания Android | `app/.../ui/old/screens/wishdetailed/WishDetailedScreen.kt` |
 | Карточка желания iOS | `iosApp/WishApp/View/WishDetailed/WishDetailedView.swift` |
 | Схема БД | `shared/src/commonMain/sqldelight/.../*.sq` |
 | Миграции | `shared/src/commonMain/sqldelight/.../migrations/*.sqm` |
@@ -782,7 +800,7 @@ open iosApp/WishApp.xcodeproj
 | Бэкап iOS | `iosApp/WishApp/View/Backup/` |
 | Аналитика Android | `app/.../domain/model/analytics/`, `app/.../data/repository/analytics/` |
 | Аналитика iOS | `iosApp/WishApp/Domain/Analytics/` |
-| Тема Android | `app/.../ui/theme/WishAppTheme.kt` |
+| Тема Android | `app/.../ui/old/theme/WishAppTheme.kt`, новый вид `app/.../ui/theme/AppTheme.kt` |
 | Строки Android | `app/src/main/res/values*/strings.xml` |
 | Строки iOS | `iosApp/WishApp/Resources/{en,ru}.lproj/Localizable.strings` |
 | Версии зависимостей | `gradle/libs.versions.toml` |

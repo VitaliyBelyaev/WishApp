@@ -1,0 +1,462 @@
+package ru.vitaliy.belyaev.wishapp.ui.old.screens.wish_list
+
+import android.content.Context
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.File
+import java.util.UUID
+import javax.inject.Inject
+import kotlin.math.roundToInt
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.withContext
+import ru.vitaliy.belyaev.wishapp.BuildConfig
+import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
+import ru.vitaliy.belyaev.wishapp.domain.model.ShareData
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.ageDays
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.WishListScreenShowEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListDeleteWishesConfirmedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListFilterByTagClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListFilterCompletedClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListFilterCurrentClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListGoToBackupScreenClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListShareClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListSortSelectedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListWishMovedEvent
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.shared.domain.ShareWishListTextGenerator
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishSortMode
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
+import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
+import ru.vitaliy.belyaev.wishapp.shared.utils.SampleDataGenerator
+import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
+import ru.vitaliy.belyaev.wishapp.ui.old.screens.wish_list.entity.MainScreenState
+import ru.vitaliy.belyaev.wishapp.ui.old.screens.wish_list.entity.MoveDirection
+import ru.vitaliy.belyaev.wishapp.ui.old.screens.wish_list.entity.ReorderButtonState
+import ru.vitaliy.belyaev.wishapp.ui.old.screens.wish_list.entity.ScrollInfo
+import ru.vitaliy.belyaev.wishapp.ui.old.screens.wish_list.entity.WishesFilter
+import ru.vitaliy.belyaev.wishapp.utils.ShareWishListPdfGenerator
+import ru.vitaliy.belyaev.wishapp.utils.createSharePdfDocumentIntent
+import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
+import timber.log.Timber
+
+@ExperimentalCoroutinesApi
+@HiltViewModel
+class WishListViewModel @Inject constructor(
+    private val wishesRepository: WishesRepository,
+    private val tagsRepository: TagsRepository,
+    private val imagesRepository: ImagesRepository,
+    private val analyticsRepository: AnalyticsRepository,
+    private val dataStoreRepository: DataStoreRepository,
+) : BaseViewModel() {
+
+    private val _uiState: MutableStateFlow<MainScreenState> = MutableStateFlow(MainScreenState())
+    val uiState: StateFlow<MainScreenState> = _uiState.asStateFlow()
+
+    private val _tagsWithWishCount: MutableStateFlow<List<TagWithWishCount>> = MutableStateFlow(emptyList())
+    val tagsWithWishCount: StateFlow<List<TagWithWishCount>> = _tagsWithWishCount.asStateFlow()
+
+    private val _currentWishesCount: MutableStateFlow<Long> = MutableStateFlow(-1)
+    val currentWishesCount: StateFlow<Long> = _currentWishesCount.asStateFlow()
+
+    private val _completedWishesCount: MutableStateFlow<Long> = MutableStateFlow(-1)
+    val completedWishesCount: StateFlow<Long> = _completedWishesCount.asStateFlow()
+
+    private val _showSnackFlow = MutableSharedFlow<Int>()
+    val showSnackFlow: SharedFlow<Int> = _showSnackFlow.asSharedFlow()
+
+    private val _hideShareBottomSheetFlow = MutableSharedFlow<Unit>()
+    val hideShareBottomSheetFlow: SharedFlow<Unit> = _hideShareBottomSheetFlow.asSharedFlow()
+
+    private val _scrollInfoFlow = MutableSharedFlow<ScrollInfo>(extraBufferCapacity = 64)
+    val scrollInfoFlow: SharedFlow<ScrollInfo> = _scrollInfoFlow.asSharedFlow()
+
+    private val wishesFilterFlow = MutableStateFlow<WishesFilter>(WishesFilter.All)
+    // null, пока сохранённая сортировка не прочитана: список не грузится в чужом порядке
+    private val sortModeFlow = MutableStateFlow<WishSortMode?>(null)
+
+    private val testWishes = createTestWishes(true)
+    private var testWishIndex = 0
+
+    private var scrollInfo: ScrollInfo? = null
+
+    init {
+        launchSafe {
+            val savedSortMode = runCatching { dataStoreRepository.selectedSortModeFlow.first() }
+                .onFailure { if (it is CancellationException) throw it else Timber.e(it) }
+                .getOrDefault(WishSortMode.Default)
+            if (sortModeFlow.value == null) {
+                applySortMode(savedSortMode)
+            }
+        }
+        launchObservingWishes()
+
+        launchSafe {
+            tagsRepository
+                .observeAllTagsWithWishesCount()
+                .collect { tagsWithWishesCount ->
+                    _tagsWithWishCount.value = tagsWithWishesCount
+
+                    val currentWishesFilter = wishesFilterFlow.value
+                    if (currentWishesFilter is WishesFilter.ByTag) {
+                        tagsWithWishesCount
+                            .map { it.tag }
+                            .find { it.id == currentWishesFilter.tag.id }
+                            ?.let {
+                                wishesFilterFlow.value = currentWishesFilter.copy(tag = it)
+                            }
+                    }
+                }
+        }
+
+        launchSafe {
+            wishesRepository
+                .observeWishesCount(isCompleted = false)
+                .collect { _currentWishesCount.value = it }
+        }
+
+        launchSafe {
+            wishesRepository
+                .observeWishesCount(isCompleted = true)
+                .collect { _completedWishesCount.value = it }
+        }
+
+//        if (BuildConfig.DEBUG) {
+//            launchSafe {
+//                val haveTags = tagsRepository.getAllTags().isNotEmpty()
+//                if (!haveTags) {
+//                    val testTags = createTestTags()
+//                    testTags.forEach {
+//                        tagsRepository.insertTag(it)
+//                    }
+//                }
+//            }
+//        }
+    }
+
+    fun trackScreenShow() {
+        analyticsRepository.trackEvent(
+            WishListScreenShowEvent(
+                currentWishesCount = currentWishesCount.value,
+                completedWishesCount = completedWishesCount.value,
+                tagsCount = tagsWithWishCount.value.size
+            )
+        )
+    }
+
+    fun onReorderIconClicked() {
+        // Reorder is only available when sort mode is Default
+        if (sortModeFlow.value !is WishSortMode.Default) return
+
+        val oldReorderButtonState = uiState.value.reorderButtonState as? ReorderButtonState.Visible ?: return
+        val newIsReorderEnabled = !oldReorderButtonState.isEnabled
+        val selectedIds = if (newIsReorderEnabled) {
+            emptyList()
+        } else {
+            uiState.value.selectedIds
+        }
+        _uiState.value = _uiState.value.copy(
+            reorderButtonState = oldReorderButtonState.copy(isEnabled = newIsReorderEnabled),
+            selectedIds = selectedIds
+        )
+    }
+
+    fun onSortModeChanged(sortMode: WishSortMode) {
+        trackSortSelected(sortMode)
+        applySortMode(sortMode)
+        scrollInfo = ScrollInfo(position = 0, offset = 0)
+        launchSafe { dataStoreRepository.updateSelectedSortMode(sortMode) }
+    }
+
+    private fun applySortMode(sortMode: WishSortMode) {
+        sortModeFlow.value = sortMode
+        // Ручной порядок имеет смысл только в Default. При другой сортировке
+        // reorder выключается и после возврата в Default не включается сам —
+        // пользователь делает это вручную. Текущее поведение считаем ожидаемым.
+        val isDefaultSort = sortMode is WishSortMode.Default
+        val oldReorderButtonState = uiState.value.reorderButtonState
+        val reorderButtonState = if (oldReorderButtonState is ReorderButtonState.Visible) {
+            oldReorderButtonState.copy(isEnabled = if (isDefaultSort) oldReorderButtonState.isEnabled else false)
+        } else {
+            oldReorderButtonState
+        }
+        _uiState.value = _uiState.value.copy(
+            sortMode = sortMode,
+            reorderButtonState = reorderButtonState
+        )
+    }
+
+    fun onAddTestWishClicked() {
+        if (testWishes.isEmpty()) {
+            return
+        }
+        launchSafe {
+            val currentMillis = System.currentTimeMillis()
+            val wish = testWishes[testWishIndex % testWishes.size].copy(
+                id = UUID.randomUUID().toString(),
+                createdTimestamp = currentMillis,
+                updatedTimestamp = currentMillis
+            )
+            wishesRepository.insertWish(wish)
+            testWishIndex++
+        }
+    }
+
+    fun onCloseEditModeClicked() {
+        _uiState.value = _uiState.value.copy(selectedIds = emptyList())
+    }
+
+    fun onDeleteSelectedClicked() {
+        launchSafe {
+            val selectedIds = uiState.value.selectedIds
+            trackDeleteWishesConfirmed(selectedIds)
+            runCatching { wishesRepository.deleteWishesByIds(selectedIds) }
+                .onSuccess { _uiState.value = uiState.value.copy(selectedIds = emptyList()) }
+                .onFailure { _showSnackFlow.emit(R.string.delete_wishes_error_message) }
+        }
+    }
+
+    fun onSelectAllClicked() {
+        val selectedIds = uiState.value.wishes.map { it.id }
+        _uiState.value = uiState.value.copy(selectedIds = selectedIds)
+    }
+
+    fun onWishLongPress(wish: WishEntity) {
+        val oldState = _uiState.value
+        val wishId = wish.id
+        val selectedIds = if (oldState.selectedIds.isEmpty()) {
+            listOf(wishId)
+        } else {
+            val oldSelectedIds = oldState.selectedIds.toMutableList()
+            val alreadySelected = oldSelectedIds.contains(wishId)
+            if (alreadySelected) {
+                oldSelectedIds - wishId
+            } else {
+                oldSelectedIds + wishId
+            }
+        }
+        val oldReorderButtonState = uiState.value.reorderButtonState
+        val reorderButtonState = if (selectedIds.isNotEmpty() && oldReorderButtonState is ReorderButtonState.Visible) {
+            oldReorderButtonState.copy(isEnabled = false)
+        } else {
+            oldReorderButtonState
+        }
+        _uiState.value = oldState.copy(selectedIds = selectedIds, reorderButtonState = reorderButtonState)
+    }
+
+    fun onMoveWish(movedWish: WishEntity, moveDirection: MoveDirection, scrollOffset: Int) {
+        val wish1Index = uiState.value.wishes.indexOf(movedWish).takeIf { it != -1 } ?: return
+        val wish2Index = when (moveDirection) {
+            MoveDirection.UP -> wish1Index - 1
+            MoveDirection.DOWN -> wish1Index + 1
+        }.takeIf { it in 0..uiState.value.wishes.lastIndex } ?: return
+        val wish2 = uiState.value.wishes[wish2Index]
+
+        launchSafe {
+            this.scrollInfo = ScrollInfo(wish2Index, scrollOffset)
+            wishesRepository.swapWishesPositions(
+                wish1Id = movedWish.id,
+                wish1Position = movedWish.position,
+                wish2Id = wish2.id,
+                wish2Position = wish2.position
+            )
+            analyticsRepository.trackEvent(WishListWishMovedEvent)
+        }
+    }
+
+    fun onNavItemSelected(wishesFilter: WishesFilter) {
+        when (wishesFilter) {
+            is WishesFilter.All -> analyticsRepository.trackEvent(WishListFilterCurrentClickedEvent)
+            is WishesFilter.ByTag -> analyticsRepository.trackEvent(WishListFilterByTagClickedEvent)
+            is WishesFilter.Completed -> analyticsRepository.trackEvent(WishListFilterCompletedClickedEvent)
+        }
+        wishesFilterFlow.value = wishesFilter
+
+        val oldReorderButtonState = uiState.value.reorderButtonState
+        val reorderButtonState = when (wishesFilter) {
+            is WishesFilter.All,
+            is WishesFilter.ByTag -> {
+                if (oldReorderButtonState is ReorderButtonState.Visible) {
+                    oldReorderButtonState
+                } else {
+                    ReorderButtonState.Visible(isEnabled = false)
+                }
+            }
+            is WishesFilter.Completed -> ReorderButtonState.Hidden
+        }
+        _uiState.value = uiState.value.copy(reorderButtonState = reorderButtonState, selectedIds = emptyList())
+    }
+
+    fun onGoToBackupScreenClicked() {
+        analyticsRepository.trackEvent(WishListGoToBackupScreenClickedEvent)
+    }
+
+    fun onShareClick(
+        context: Context,
+        shareData: ShareData
+    ) {
+        trackShareClick(shareData)
+
+        when (shareData) {
+            is ShareData.Pdf -> {
+                launchSafe(Dispatchers.Default) {
+                    _uiState.value = uiState.value.copy(isShareAsPdfLoading = true)
+                    val pdfFile: File = try {
+                        ShareWishListPdfGenerator.generatePdfForWishList(
+                            titleResId = R.string.wish_list_title,
+                            wishes = shareData.wishesToShare,
+                            imagesRepository = imagesRepository,
+                            context = context
+                        )
+                    } catch (error: CancellationException) {
+                        throw error
+                    } catch (error: Exception) {
+                        Timber.e(error)
+                        FirebaseCrashlytics.getInstance().recordException(error)
+                        _hideShareBottomSheetFlow.emit(Unit)
+                        _showSnackFlow.emit(R.string.share_pdf_error_message)
+                        return@launchSafe
+                    } finally {
+                        _uiState.value = uiState.value.copy(isShareAsPdfLoading = false)
+                    }
+                    _hideShareBottomSheetFlow.emit(Unit)
+                    withContext(Dispatchers.Main) {
+                        context.startActivity(createSharePdfDocumentIntent(pdfFile, context))
+                    }
+                }
+            }
+            is ShareData.Text -> {
+                launchSafe(Dispatchers.Default) {
+                    val wishListAsFormattedText = ShareWishListTextGenerator.generateFormattedWishListText(
+                        title = context.getString(R.string.wish_list_title),
+                        wishes = shareData.wishesToShare
+                    )
+                    _hideShareBottomSheetFlow.emit(Unit)
+                    withContext(Dispatchers.Main) {
+                        context.startActivity(createSharePlainTextIntent(wishListAsFormattedText))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun trackSortSelected(sortMode: WishSortMode) {
+        val sort = when (sortMode) {
+            WishSortMode.Default -> "default"
+            WishSortMode.CreatedDateNewest -> "created_newest"
+            WishSortMode.CreatedDateOldest -> "created_oldest"
+            WishSortMode.TitleAZ -> "title_az"
+            WishSortMode.TitleZA -> "title_za"
+        }
+        val tab = when (wishesFilterFlow.value) {
+            is WishesFilter.All -> "wishes"
+            is WishesFilter.Completed -> "done"
+            is WishesFilter.ByTag -> "tag"
+        }
+        analyticsRepository.trackEvent(WishListSortSelectedEvent(sort = sort, tab = tab))
+    }
+
+    private fun trackDeleteWishesConfirmed(selectedIds: List<String>) {
+        val selectedIdsSet = selectedIds.toSet()
+        val wishes = uiState.value.wishes.filter { it.id in selectedIdsSet }
+        val nowMillis = System.currentTimeMillis()
+        val agesDays = wishes.map { it.ageDays(nowMillis) }
+        analyticsRepository.trackEvent(
+            WishListDeleteWishesConfirmedEvent(
+                wishCount = selectedIds.size,
+                doneCount = wishes.count { it.isCompleted },
+                avgAgeDays = if (agesDays.isEmpty()) 0 else agesDays.average().roundToInt(),
+                maxAgeDays = agesDays.maxOrNull() ?: 0,
+                withImagesCount = wishes.count { it.images.isNotEmpty() },
+                withLinksCount = wishes.count { it.links.isNotEmpty() },
+            )
+        )
+    }
+
+    private fun trackShareClick(shareData: ShareData) {
+        val shareAnalyticsType = when (shareData) {
+            is ShareData.Pdf -> "pdf"
+            is ShareData.Text -> "text"
+        }
+
+        var imagesCount = 0
+        shareData.wishesToShare.forEach { wish ->
+            imagesCount += wish.images.size
+        }
+        val event = WishListShareClickedEvent(
+            shareAnalyticsType,
+            shareData.wishesToShare.size,
+            imagesCount,
+        )
+        analyticsRepository.trackEvent(event)
+    }
+
+    private fun launchObservingWishes() {
+        launchSafe {
+            runCatching {
+                combine(wishesFilterFlow, sortModeFlow.filterNotNull()) { filter, sortMode -> filter to sortMode }
+                    .flatMapLatest { (filter, sortMode) ->
+                        withContext(Dispatchers.IO) {
+                            when (filter) {
+                                is WishesFilter.ByTag -> {
+                                    wishesRepository.observeWishesByTagSorted(filter.tag.id, sortMode)
+                                }
+                                is WishesFilter.All -> {
+                                    wishesRepository.observeAllWishesSorted(isCompleted = false, sortMode = sortMode)
+                                }
+                                is WishesFilter.Completed -> {
+                                    wishesRepository.observeAllWishesSorted(isCompleted = true, sortMode = sortMode)
+                                }
+                            }
+                        }
+                    }
+                    .collect { wishes ->
+                        _uiState.value = uiState.value.copy(
+                            wishes = wishes,
+                            wishesFilter = wishesFilterFlow.value,
+                            isLoading = false
+                        )
+                        scrollInfo?.let {
+                            _scrollInfoFlow.emit(it)
+                            scrollInfo = null
+                        }
+                    }
+            }.onFailure { error ->
+                // Без фильтра сбрасывать нечего: перезапуск зациклился бы на той же ошибке
+                if (error is CancellationException || wishesFilterFlow.value is WishesFilter.All) {
+                    throw error
+                }
+                Timber.e(error)
+                FirebaseCrashlytics.getInstance().recordException(error)
+                wishesFilterFlow.value = WishesFilter.All
+                launchObservingWishes()
+            }
+        }
+    }
+
+    private fun createTestWishes(forRu: Boolean): List<WishEntity> {
+        if (!BuildConfig.DEBUG) {
+            return emptyList()
+        }
+        return if (forRu) {
+            SampleDataGenerator.createRuWishes()
+        } else {
+            SampleDataGenerator.createEnWishes()
+        }
+    }
+}

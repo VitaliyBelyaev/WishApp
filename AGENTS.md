@@ -35,7 +35,7 @@
 1. `shared/.../data/WishAppSdk.kt`
 2. `shared/.../data/repository/DatabaseRepository.kt`
 3. `app/.../ui/AppActivity.kt`
-4. `app/.../navigation/Navigation.kt`
+4. `app/.../navigation/old/Navigation.kt`
 5. `iosApp/WishApp/WishApp.swift`
 6. `iosApp/WishApp/View/Main/Components/MainContentView.swift`
 
@@ -68,7 +68,7 @@
 
 ## Карта экранов (кратко)
 
-- Android: WishList (`ui/screens/wish_list`), WishDetailed (`wishdetailed`),
+- Android: WishList (`ui/old/screens/wish_list`), WishDetailed (`wishdetailed`),
   WishTags (`wishtags`), EditTags (`edittags`), WishImagesViewer (`wish_images`),
   Settings, Backup, AboutApp, PrivacyPolicy.
 - iOS (сейчас на паузе, карта — справочно): Main (`View/Main`), WishList
@@ -87,7 +87,7 @@
 | Сущности | `shared/.../domain/entity/` |
 | Интерфейсы репозиториев | `shared/.../domain/repository/` |
 | Инициализация shared | `shared/.../data/WishAppSdk.kt` |
-| Навигация Android | `app/.../navigation/` |
+| Навигация Android | `app/.../navigation/old/`, новый вид `app/.../navigation/` |
 | Навигация iOS | `iosApp/WishApp/Navigation/` |
 | DI Android | `app/.../di/` |
 | DI shared/iOS | `shared/.../di/`, `shared/src/iosMain/.../di/` |
@@ -97,7 +97,8 @@
 | Аналитика iOS | `iosApp/WishApp/Domain/Analytics/` |
 | Строки Android | `app/src/main/res/values*/strings.xml` |
 | Строки iOS | `iosApp/WishApp/Resources/{en,ru}.lproj/Localizable.strings` |
-| Тема Android | `app/.../ui/theme/WishAppTheme.kt` |
+| Тема Android | `app/.../ui/old/theme/WishAppTheme.kt`, новый вид `app/.../ui/theme/` |
+| Переключение старого и нового вида | `app/.../domain/model/UiLook.kt`, `app/.../ui/AppRoot.kt` |
 | Техдолг, идеи, просьбы пользователей (сюда же записывай новые находки) | `docs/BACKLOG.md` |
 | Поведение экранов для редизайна | `docs/UX_NOTES.md` |
 | Релиз: ветки, теги, проверки, раскатка | `docs/RELEASE.md` |
@@ -158,6 +159,9 @@ CI в репозитории **нет** — проверяй вручную.
 
 ## Важные различия и грабли
 
+- **Идёт редизайн Android.** Прежний вид живёт в `ui/old` и `navigation/old` и не меняется,
+  новые экраны пишутся в `ui` и `navigation` со своей темой `ui/theme`. Вид выбирает флаг
+  `ui_look_mode` и выбор пользователя, в debug новый вид открывается из старых настроек.
 - **iOS на паузе и отсутствует в App Store**; после изменений в `shared` проверяем
   только компиляцию модуля под iOS (правило 10).
 - Изображения, сортировка списка и выбор темы есть **только на Android**.

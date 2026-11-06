@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -24,20 +25,19 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
+import ru.vitaliy.belyaev.wishapp.domain.model.UiLook
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppReviewRequestedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppReviewShowEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.navigation.MainRoute
-import ru.vitaliy.belyaev.wishapp.navigation.Navigation
-import ru.vitaliy.belyaev.wishapp.navigation.NavigationState
-import ru.vitaliy.belyaev.wishapp.navigation.Navigator
-import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedRoute
-import ru.vitaliy.belyaev.wishapp.navigation.WishImagesViewerRoute
-import ru.vitaliy.belyaev.wishapp.navigation.rememberNavigationState
+import ru.vitaliy.belyaev.wishapp.navigation.old.MainRoute
+import ru.vitaliy.belyaev.wishapp.navigation.old.NavigationState
+import ru.vitaliy.belyaev.wishapp.navigation.old.Navigator
+import ru.vitaliy.belyaev.wishapp.navigation.old.WishDetailedRoute
+import ru.vitaliy.belyaev.wishapp.navigation.old.WishImagesViewerRoute
+import ru.vitaliy.belyaev.wishapp.navigation.old.rememberNavigationState
 import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
 import ru.vitaliy.belyaev.wishapp.shared.domain.SharedTextParser
 import ru.vitaliy.belyaev.wishapp.shared.domain.SharedWishDraft
-import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -60,8 +60,12 @@ internal class AppActivity : AppCompatActivity() {
     @ExperimentalAnimationApi
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        // Вид выбирается до первого кадра: иначе мелькнул бы не тот
+        splashScreen.setKeepOnScreenCondition {
+            viewModel.uiLook.value == null || viewModel.useWallpaperColors.value == null
+        }
         enableEdgeToEdge()
 
         if (savedInstanceState == null) {
@@ -92,40 +96,61 @@ internal class AppActivity : AppCompatActivity() {
 
         setContent {
             val selectedTheme: Theme by viewModel.selectedTheme.collectAsStateWithLifecycle()
+            val uiLook: UiLook? by viewModel.uiLook.collectAsStateWithLifecycle()
 
-            val navigationState: NavigationState = rememberNavigationState(
-                startRoute = MainRoute,
-                topLevelRoutes = setOf(MainRoute)
-            )
-            val navigator = remember { Navigator(navigationState) }
-            val theme = if (navigationState.currentRoute is WishImagesViewerRoute) {
-                Theme.DARK
-            } else {
-                selectedTheme
-            }
-
-            WishAppTheme(selectedTheme = theme) {
-                Navigation(
-                    analyticsRepository = analyticsRepository,
-                    navigator = navigator,
-                )
-            }
-
-            LaunchedEffect(key1 = Unit) {
-                sharedDraftFromAnotherApp?.let { draft ->
-                    navigator.navigate(WishDetailedRoute.fromSharedDraft(draft))
-                    sharedDraftFromAnotherApp = null
+            when (uiLook) {
+                UiLook.OLD -> OldLookContent(selectedTheme)
+                UiLook.NEW -> {
+                    val useWallpaperColors by viewModel.useWallpaperColors.collectAsStateWithLifecycle()
+                    NewLookRoot(
+                        selectedTheme = selectedTheme,
+                        useWallpaperColors = useWallpaperColors ?: false,
+                        appViewModel = viewModel,
+                    )
+                    // Экрана новой хотелки в новом виде ещё нет, текст из «Поделиться» появится в части 2.4
+                    LaunchedEffect(key1 = Unit) { sharedDraftFromAnotherApp = null }
                 }
+                null -> Unit
             }
+        }
+    }
 
-            LaunchedEffect(key1 = Unit) {
-                sharedDraftFlow.collect { draft ->
-                    if (navigationState.currentRoute != MainRoute) {
-                        navigator.goBack(MainRoute)
-                        viewModel.deleteEmptyWishes().join()
-                    }
-                    navigator.navigate(WishDetailedRoute.fromSharedDraft(draft))
+    /** Прежний вид. При смене вида его стек создаётся заново и начинается со списка. */
+    @ExperimentalAnimationApi
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Composable
+    private fun OldLookContent(selectedTheme: Theme) {
+        val navigationState: NavigationState = rememberNavigationState(
+            startRoute = MainRoute,
+            topLevelRoutes = setOf(MainRoute)
+        )
+        val navigator = remember { Navigator(navigationState) }
+        val theme = if (navigationState.currentRoute is WishImagesViewerRoute) {
+            Theme.DARK
+        } else {
+            selectedTheme
+        }
+
+        OldLookRoot(
+            selectedTheme = theme,
+            analyticsRepository = analyticsRepository,
+            navigator = navigator,
+        )
+
+        LaunchedEffect(key1 = Unit) {
+            sharedDraftFromAnotherApp?.let { draft ->
+                navigator.navigate(WishDetailedRoute.fromSharedDraft(draft))
+                sharedDraftFromAnotherApp = null
+            }
+        }
+
+        LaunchedEffect(key1 = Unit) {
+            sharedDraftFlow.collect { draft ->
+                if (navigationState.currentRoute != MainRoute) {
+                    navigator.goBack(MainRoute)
+                    viewModel.deleteEmptyWishes().join()
                 }
+                navigator.navigate(WishDetailedRoute.fromSharedDraft(draft))
             }
         }
     }

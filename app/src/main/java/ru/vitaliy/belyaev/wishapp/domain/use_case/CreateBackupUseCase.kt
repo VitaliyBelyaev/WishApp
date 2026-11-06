@@ -5,7 +5,7 @@ import javax.inject.Inject
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.domain.repository.BackupRepository
-import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupLoadProgressListener
+import ru.vitaliy.belyaev.wishapp.domain.repository.BackupLoadProgressListener
 
 internal class CreateBackupUseCase @Inject constructor(
     private val backupRepository: BackupRepository,

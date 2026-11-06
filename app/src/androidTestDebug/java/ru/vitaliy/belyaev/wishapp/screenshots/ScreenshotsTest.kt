@@ -79,12 +79,12 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.shared.utils.PrivacyPolicy
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
-import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupLoadProgressListener
-import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupScreen
-import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupViewModel
-import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.WishListScreen
-import ru.vitaliy.belyaev.wishapp.ui.screens.wish_list.WishListViewModel
-import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
+import ru.vitaliy.belyaev.wishapp.domain.repository.BackupLoadProgressListener
+import ru.vitaliy.belyaev.wishapp.ui.old.screens.backup.BackupScreen
+import ru.vitaliy.belyaev.wishapp.ui.old.screens.backup.BackupViewModel
+import ru.vitaliy.belyaev.wishapp.ui.old.screens.wish_list.WishListScreen
+import ru.vitaliy.belyaev.wishapp.ui.old.screens.wish_list.WishListViewModel
+import ru.vitaliy.belyaev.wishapp.ui.old.theme.WishAppTheme
 
 /**
  * Снимает скриншоты всех экранов Android-приложения. Запускается через
