@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory
 import android.graphics.BitmapFactory.Options
 import android.graphics.Matrix
 import android.net.Uri
-import android.util.Patterns
 import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.SavedStateHandle
 import dagger.assisted.Assisted
@@ -35,7 +34,9 @@ import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetai
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedLinkClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedSaveAndExitClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.shared.domain.LinkParser
 import ru.vitaliy.belyaev.wishapp.shared.domain.LinksAdapter
+import ru.vitaliy.belyaev.wishapp.shared.domain.SharedWishDraft
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.createEmptyWish
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
@@ -49,8 +50,8 @@ import ru.vitaliy.belyaev.wishapp.utils.toValueOfNull
 @HiltViewModel(assistedFactory = WishDetailedViewModel.Factory::class)
 class WishDetailedViewModel @AssistedInject constructor(
     @Assisted("wishId") wishId: String?,
-    @Assisted("wishLink") wishLink: String?,
     @Assisted("tagId") tagId: String?,
+    @Assisted sharedDraft: SharedWishDraft?,
     private val savedStateHandle: SavedStateHandle,
     private val wishesRepository: WishesRepository,
     private val analyticsRepository: AnalyticsRepository,
@@ -63,7 +64,7 @@ class WishDetailedViewModel @AssistedInject constructor(
         ?: savedStateHandle.get<String>(KEY_CURRENT_WISH_ID)?.takeIf { it.isNotBlank() }
         ?: createEmptyWish().id
 
-    private val sharedLinkForNewWish: String = wishLink ?: ""
+    private val sharedDraftForNewWish: SharedWishDraft? = sharedDraft
     private val preselectedTagId: String? = tagId
     private val insertJob: Job? = if (inputWishId.isBlank()) {
         launchSafe { insertNewWishIfMissing() }
@@ -74,13 +75,16 @@ class WishDetailedViewModel @AssistedInject constructor(
 
     var linkInputString: String
         get() {
-            return savedStateHandle[KEY_LINK_INPUT_STRING] ?: sharedLinkForNewWish
+            return savedStateHandle[KEY_LINK_INPUT_STRING] ?: ""
         }
         private set(value) {
             savedStateHandle[KEY_LINK_INPUT_STRING] = value
         }
 
     val uiState: MutableStateFlow<Optional<WishItem>> = MutableStateFlow(Optional.empty())
+
+    /** Ввод в поле ссылки, в котором не нашлось ссылки. Сбрасывается при правке поля. */
+    val isLinkInputInvalid: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     init {
         savedStateHandle[KEY_CURRENT_WISH_ID] = currentWishId
@@ -97,7 +101,20 @@ class WishDetailedViewModel @AssistedInject constructor(
     private suspend fun insertNewWishIfMissing() {
         if (wishesRepository.getWishByIdOrNull(currentWishId) != null) return
 
-        wishesRepository.insertWish(createEmptyWish().copy(id = currentWishId))
+        val draft = sharedDraftForNewWish
+        val newWish = createEmptyWish().copy(id = currentWishId)
+        wishesRepository.insertWish(
+            if (draft == null) {
+                newWish
+            } else {
+                newWish.copy(
+                    title = draft.title,
+                    comment = draft.comment,
+                    link = LinksAdapter.addLinksAndGetAccumulatedString(draft.links, emptyList()),
+                    links = draft.links,
+                )
+            }
+        )
         preselectedTagId?.let { tagId ->
             wishTagRelationRepository.insertWishTagRelation(
                 wishId = currentWishId,
@@ -123,8 +140,8 @@ class WishDetailedViewModel @AssistedInject constructor(
     interface Factory {
         fun create(
             @Assisted("wishId") wishId: String?,
-            @Assisted("wishLink") wishLink: String?,
-            @Assisted("tagId") tagId: String?
+            @Assisted("tagId") tagId: String?,
+            @Assisted sharedDraft: SharedWishDraft?,
         ): WishDetailedViewModel
     }
 
@@ -179,15 +196,22 @@ class WishDetailedViewModel @AssistedInject constructor(
     /**
      * Ссылка, оставленная в поле без нажатия «+», сохраняется при выходе, как название
      * и комментарий. Иначе она теряется, а новая хотелка только со ссылкой удаляется как пустая.
+     * Если ссылки в поле не нашлось, ввод сохраняется как есть: при выходе лучше не терять текст.
      */
     private fun savePendingLink() {
-        val link = linkInputString.trim()
-        if (link.isEmpty()) return
+        val input = linkInputString.trim()
+        if (input.isEmpty()) return
         linkInputString = ""
+        val links = LinkParser.parseLinkInput(input).ifEmpty { listOf(LinksAdapter.sanitizeLink(input)) }
+        addLinks(links)
+    }
+
+    private fun addLinks(links: List<String>) {
         launchWrite {
             val currentLinks = wishesRepository.getWishByIdOrNull(currentWishId)?.links ?: return@launchWrite
-            if (link in currentLinks) return@launchWrite
-            val newLinkString = LinksAdapter.addLinkAndGetAccumulatedString(link, currentLinks)
+            val newLinks = links.filter { it !in currentLinks }
+            if (newLinks.isEmpty()) return@launchWrite
+            val newLinkString = LinksAdapter.addLinksAndGetAccumulatedString(newLinks, currentLinks)
             wishesRepository.updateWishLink(newLinkString, currentWishId)
         }
     }
@@ -200,20 +224,28 @@ class WishDetailedViewModel @AssistedInject constructor(
 
     fun onWishLinkChanged(newValue: String) {
         linkInputString = newValue
+        isLinkInputInvalid.value = false
     }
 
-    fun isLinkValid(link: String): Boolean {
-        return link.isNotBlank()
+    fun isAddLinkEnabled(input: String): Boolean {
+        return input.isNotBlank()
     }
 
-    fun onAddLinkClicked(link: String) {
+    /**
+     * Ссылка проверяется при добавлении, а не только при открытии. Из текста со ссылкой
+     * внутри берутся только адреса. Возвращает `true`, если ссылки добавлены и поле можно очистить.
+     */
+    fun onAddLinkClicked(input: String): Boolean {
         analyticsRepository.trackEvent(WishDetailedAddLinkButtonClickedEvent)
-        val currentLinks = uiState.value.toValueOfNull()?.wish?.links ?: return
-
-        launchWrite {
-            val newLinkString = LinksAdapter.addLinkAndGetAccumulatedString(link, currentLinks)
-            wishesRepository.updateWishLink(newLinkString, currentWishId)
+        val links = LinkParser.parseLinkInput(input)
+        if (links.isEmpty()) {
+            isLinkInputInvalid.value = true
+            return false
         }
+        linkInputString = ""
+        isLinkInputInvalid.value = false
+        addLinks(links)
+        return true
     }
 
     fun onWishCommentChanged(newValue: String) {

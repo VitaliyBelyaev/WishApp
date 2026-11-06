@@ -25,7 +25,7 @@
     <string name="no_email_app_error">У вас на пристрої немає email програми</string>
     <string name="feedback_subject_pattern">Зворотній зв\'язок. Програма %s</string>
     <string name="enter_label_name">Введіть назву ярлика</string>
-    <string name="create_new_pattern">Створити \"%s\"</string>
+    <string name="create_new_pattern">Створити «%1$s»</string>
     <string name="all_wishes">Поточні хотелки</string>
     <string name="edit_tags">Редагувати ярлики</string>
     <string name="create_tag">Створити ярлик</string>
@@ -51,7 +51,7 @@
     <string name="empty_tagged_wishes_message">Ви ще не додали ярлик %s ні на одну хотелку</string>
     <string name="share_app">Поділитися додатком</string>
     <string name="share_app_text">Спробуй це додаток для зберігання своїх хотелок з можливістю ділитися ними через будь-месенджер\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
-    <string name="invalid_link_error_message">Недійсне посилання</string>
+    <string name="link_invalid">Не схоже на посилання, перевірте адресу</string>
 
     <string name="backup_check_backup_error_message">Не вдалося перевірити, чи є резервна копія</string>
     <string name="backup_retry_check">Повторіть спробу</string>
@@ -104,6 +104,6 @@
     <string name="sort_default">За замовчуванням (за позицією)</string>
     <string name="sort_created_newest">Спочатку нові</string>
     <string name="sort_created_oldest">Спочатку старі</string>
-    <string name="sort_title_az">За назвою A-Z</string>
-    <string name="sort_title_za">За назвою Z-A</string>
+    <string name="sort_title_az">За назвою, А → Я</string>
+    <string name="sort_title_za">За назвою, Я → А</string>
 </resources>

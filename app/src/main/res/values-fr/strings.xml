@@ -24,7 +24,7 @@
     <string name="no_email_app_error">Vous n\'avez pas d\'application de messagerie sur votre appareil</string>
     <string name="feedback_subject_pattern">Retour. Application %s</string>
     <string name="enter_label_name">Entrez le nom de l\'étiquette</string>
-    <string name="create_new_pattern">Créer \"%s\"</string>
+    <string name="create_new_pattern">Créer «\u00A0%1$s\u00A0»</string>
     <string name="all_wishes">Souhaits actuels</string>
     <string name="edit_tags">Modifier les libellés</string>
     <string name="create_tag">Créer une étiquette</string>
@@ -50,7 +50,7 @@
     <string name="empty_tagged_wishes_message">Vous n\'avez encore ajouté l\'étiquette %s à aucun souhait</string>
     <string name="share_app">Partager l\'application</string>
     <string name="share_app_text">Essayez cette application pour stocker et partager vos souhaits\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
-    <string name="invalid_link_error_message">Lien invalide</string>
+    <string name="link_invalid">Cela ne ressemble pas à un lien, vérifiez l’adresse</string>
 
     <string name="backup_check_backup_error_message">Impossible de vérifier s\'il existe une sauvegarde</string>
     <string name="backup_retry_check">Recommencez</string>

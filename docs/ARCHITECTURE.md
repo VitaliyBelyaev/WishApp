@@ -404,7 +404,9 @@ iosApp/WishApp/
 Глубокие ссылки:
 
 - `AppActivity` ловит `Intent.ACTION_SEND` с `text/plain`;
-- валидирует URL и открывает `WishDetailedRoute(wishLink = ...)`;
+- разбирает тему и текст через `SharedTextParser` (`shared`) и открывает
+  `WishDetailedRoute.fromSharedDraft(...)`: новое желание сразу получает название,
+  комментарий и ссылки;
 - `onNewIntent` обрабатывает повторный шаринг без перезапуска.
 
 ### iOS

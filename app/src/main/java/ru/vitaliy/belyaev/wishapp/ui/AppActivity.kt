@@ -2,7 +2,6 @@ package ru.vitaliy.belyaev.wishapp.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Patterns
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -24,7 +23,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
-import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppReviewRequestedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppReviewShowEvent
@@ -37,6 +35,8 @@ import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedRoute
 import ru.vitaliy.belyaev.wishapp.navigation.WishImagesViewerRoute
 import ru.vitaliy.belyaev.wishapp.navigation.rememberNavigationState
 import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
+import ru.vitaliy.belyaev.wishapp.shared.domain.SharedTextParser
+import ru.vitaliy.belyaev.wishapp.shared.domain.SharedWishDraft
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
 
 @ExperimentalFoundationApi
@@ -53,9 +53,9 @@ internal class AppActivity : AppCompatActivity() {
     @Inject
     lateinit var wishAppSdk: WishAppSdk
 
-    private var sharedLinkFromAnotherApp: String? = null
+    private var sharedDraftFromAnotherApp: SharedWishDraft? = null
 
-    private val shareLinkFlow = MutableSharedFlow<String>()
+    private val sharedDraftFlow = MutableSharedFlow<SharedWishDraft>()
 
     @ExperimentalAnimationApi
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -69,7 +69,7 @@ internal class AppActivity : AppCompatActivity() {
         }
 
         if (savedInstanceState == null) {
-            sharedLinkFromAnotherApp = extractSharedLinkAndShowErrorIfInvalid(intent)
+            sharedDraftFromAnotherApp = extractSharedDraft(intent)
         }
 
         lifecycleScope.launch {
@@ -112,19 +112,19 @@ internal class AppActivity : AppCompatActivity() {
             }
 
             LaunchedEffect(key1 = Unit) {
-                sharedLinkFromAnotherApp?.let { link ->
-                    navigator.navigate(WishDetailedRoute(wishLink = link))
-                    sharedLinkFromAnotherApp = null
+                sharedDraftFromAnotherApp?.let { draft ->
+                    navigator.navigate(WishDetailedRoute.fromSharedDraft(draft))
+                    sharedDraftFromAnotherApp = null
                 }
             }
 
             LaunchedEffect(key1 = Unit) {
-                shareLinkFlow.collect { link ->
+                sharedDraftFlow.collect { draft ->
                     if (navigationState.currentRoute != MainRoute) {
                         navigator.goBack(MainRoute)
                         viewModel.deleteEmptyWishes().join()
                     }
-                    navigator.navigate(WishDetailedRoute(wishLink = link))
+                    navigator.navigate(WishDetailedRoute.fromSharedDraft(draft))
                 }
             }
         }
@@ -133,39 +133,23 @@ internal class AppActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
 
-        extractSharedLinkAndShowErrorIfInvalid(intent)?.let {
+        extractSharedDraft(intent)?.let {
             lifecycleScope.launch {
-                shareLinkFlow.emit(it)
+                sharedDraftFlow.emit(it)
             }
         }
     }
 
-    private fun extractSharedLinkAndShowErrorIfInvalid(intent: Intent?): String? {
+    /**
+     * Текст из «Поделиться» другого приложения разбирается в `shared`: адреса идут в ссылки,
+     * остальное в название и комментарий. Пустой текст игнорируется.
+     */
+    private fun extractSharedDraft(intent: Intent?): SharedWishDraft? {
         if (intent == null) return null
+        if (intent.action != Intent.ACTION_SEND || intent.type != "text/plain") return null
 
-        val link = if (intent.action == Intent.ACTION_SEND &&
-            intent.type == "text/plain" &&
-            intent.hasExtra(Intent.EXTRA_TEXT)
-        ) {
-            intent.getStringExtra(Intent.EXTRA_TEXT)
-        } else {
-            null
-        }
-
-        if (link == null) return null
-
-        return if (validateLinkAndShowErrorIfInvalid(link)) link else null
-    }
-
-    private fun validateLinkAndShowErrorIfInvalid(link: String): Boolean {
-        if (!isLinkValid(link)) {
-            lifecycleScope.launch { viewModel.showSnackMessageOnMain(getString(R.string.invalid_link_error_message)) }
-            return false
-        }
-        return true
-    }
-
-    private fun isLinkValid(link: String): Boolean {
-        return Patterns.WEB_URL.matcher(link).matches()
+        val subject = intent.getStringExtra(Intent.EXTRA_SUBJECT)
+        val text = intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString()
+        return SharedTextParser.parse(subject = subject, text = text).takeUnless { it.isEmpty }
     }
 }

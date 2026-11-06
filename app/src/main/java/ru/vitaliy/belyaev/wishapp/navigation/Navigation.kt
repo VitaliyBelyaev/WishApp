@@ -55,8 +55,8 @@ internal fun Navigation(
         entry<WishDetailedRoute> { route ->
             WishDetailedScreen(
                 wishId = route.wishId,
-                wishLink = route.wishLink,
                 tagId = route.tagId,
+                sharedDraft = route.sharedDraftOrNull(),
                 onBackPressed = popBackStack,
                 onWishTagsClicked = { navigator.navigate(WishTagsRoute(it)) },
                 onWishImageClicked = {

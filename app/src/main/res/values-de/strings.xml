@@ -24,7 +24,7 @@
     <string name="no_email_app_error">Sie haben keine E-Mail-Anwendung auf Ihrem Gerät</string>
     <string name="feedback_subject_pattern">Rückmeldung. Anwendung %s</string>
     <string name="enter_label_name">Labelnamen eingeben</string>
-    <string name="create_new_pattern">Erstellen \"%s\"</string>
+    <string name="create_new_pattern">„%1$s“ erstellen</string>
     <string name="all_wishes">Aktuelle Wünsche</string>
     <string name="edit_tags">Etiketten bearbeiten</string>
     <string name="create_tag">Etikett erstellen</string>
@@ -50,7 +50,7 @@
     <string name="empty_tagged_wishes_message">Sie haben Label %s noch keinem Wunsch hinzugefügt</string>
     <string name="share_app">App teilen</string>
     <string name="share_app_text">Probieren Sie diese App zum Speichern und Teilen Ihrer Wünsche aus\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
-    <string name="invalid_link_error_message">Ungültiger Link</string>
+    <string name="link_invalid">Das sieht nicht wie ein Link aus, prüfen Sie die Adresse</string>
 
     <string name="backup_check_backup_error_message">Es konnte nicht überprüft werden, ob ein Backup vorhanden ist</string>
     <string name="backup_retry_check">Wiederholen</string>

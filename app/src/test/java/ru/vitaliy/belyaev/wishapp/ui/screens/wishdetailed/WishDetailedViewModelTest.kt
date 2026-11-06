@@ -22,6 +22,8 @@ import org.junit.Before
 import org.junit.Test
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.AnalyticsEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.shared.domain.LinksAdapter
+import ru.vitaliy.belyaev.wishapp.shared.domain.SharedWishDraft
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageRef
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
@@ -218,18 +220,106 @@ class WishDetailedViewModelTest {
         assertEquals("Typed before exit", repository.getWishById(wish.id).title)
     }
 
+    @Test
+    fun newWishFromSharedText_savesTitleCommentAndLinks() = runTest(dispatcher) {
+        val repository = FakeWishesRepository()
+        val draft = SharedWishDraft(
+            title = "Настольная лампа",
+            comment = "Тёплый свет",
+            links = listOf("https://example.com/a", "https://example.com/b"),
+        )
+
+        val viewModel = createViewModel(wishId = null, sharedDraft = draft, wishesRepository = repository)
+        advanceUntilIdle()
+
+        val saved = repository.getWishById(viewModel.currentWishId)
+        assertEquals(draft.title, saved.title)
+        assertEquals(draft.comment, saved.comment)
+        assertEquals(draft.links, saved.links)
+        assertEquals("https://example.com/a|https://example.com/b", saved.link)
+        assertEquals("", viewModel.linkInputString)
+    }
+
+    @Test
+    fun addLink_withoutLinkInInput_showsErrorAndKeepsInput() = runTest(dispatcher) {
+        val wish = createEmptyWish().copy(id = "wish-1")
+        val repository = FakeWishesRepository(mapOf(wish.id to wish))
+        val viewModel = createViewModel(wishId = wish.id, wishesRepository = repository)
+        advanceUntilIdle()
+
+        viewModel.onWishLinkChanged("not a link")
+        val added = viewModel.onAddLinkClicked("not a link")
+        advanceUntilIdle()
+
+        assertFalse(added)
+        assertTrue(viewModel.isLinkInputInvalid.value)
+        assertEquals("not a link", viewModel.linkInputString)
+        assertTrue(repository.getWishById(wish.id).links.isEmpty())
+
+        viewModel.onWishLinkChanged("not a link!")
+        assertFalse(viewModel.isLinkInputInvalid.value)
+    }
+
+    @Test
+    fun addLink_takesLinkFromTextAndSkipsDuplicates() = runTest(dispatcher) {
+        val wish = createEmptyWish().copy(
+            id = "wish-1",
+            link = "https://example.com/a",
+            links = listOf("https://example.com/a"),
+        )
+        val repository = FakeWishesRepository(mapOf(wish.id to wish))
+        val viewModel = createViewModel(wishId = wish.id, wishesRepository = repository)
+        advanceUntilIdle()
+
+        val added = viewModel.onAddLinkClicked("Смотри https://example.com/a и https://example.com/b.")
+        advanceUntilIdle()
+
+        assertTrue(added)
+        assertEquals(
+            listOf("https://example.com/a", "https://example.com/b"),
+            repository.getWishById(wish.id).links
+        )
+    }
+
+    @Test
+    fun addLink_acceptsBareDomain() = runTest(dispatcher) {
+        val wish = createEmptyWish().copy(id = "wish-1")
+        val repository = FakeWishesRepository(mapOf(wish.id to wish))
+        val viewModel = createViewModel(wishId = wish.id, wishesRepository = repository)
+        advanceUntilIdle()
+
+        viewModel.onAddLinkClicked("ozon.ru/t/abc")
+        advanceUntilIdle()
+
+        assertEquals(listOf("https://ozon.ru/t/abc"), repository.getWishById(wish.id).links)
+    }
+
+    @Test
+    fun prepareForExit_keepsPendingInputEvenWithoutLink() = runTest(dispatcher) {
+        val wish = createEmptyWish().copy(id = "wish-1")
+        val repository = FakeWishesRepository(mapOf(wish.id to wish))
+        val viewModel = createViewModel(wishId = wish.id, wishesRepository = repository)
+        advanceUntilIdle()
+
+        viewModel.onWishLinkChanged("ozon кофемолка")
+        viewModel.prepareForExit()
+        advanceUntilIdle()
+
+        assertEquals(listOf("ozon кофемолка"), repository.getWishById(wish.id).links)
+    }
+
     private fun createViewModel(
         wishId: String?,
-        wishLink: String? = null,
         tagId: String? = null,
+        sharedDraft: SharedWishDraft? = null,
         savedStateHandle: SavedStateHandle = SavedStateHandle(),
         wishesRepository: WishesRepository = FakeWishesRepository(),
         wishTagRelationRepository: WishTagRelationRepository = FakeWishTagRelationRepository(),
     ): WishDetailedViewModel {
         return WishDetailedViewModel(
             wishId = wishId,
-            wishLink = wishLink,
             tagId = tagId,
+            sharedDraft = sharedDraft,
             savedStateHandle = savedStateHandle,
             wishesRepository = wishesRepository,
             analyticsRepository = FakeAnalyticsRepository(),
@@ -283,7 +373,12 @@ class WishDetailedViewModelTest {
             wishesFlow.value = wishes.toMap()
         }
 
-        override suspend fun updateWishLink(newValue: String, wishId: String) = notUsed()
+        override suspend fun updateWishLink(newValue: String, wishId: String) {
+            wishes[wishId]?.let {
+                wishes[wishId] = it.copy(link = newValue, links = LinksAdapter.getLinksListFromString(newValue))
+            }
+            wishesFlow.value = wishes.toMap()
+        }
 
         override suspend fun updateWishComment(newValue: String, wishId: String) = notUsed()
 

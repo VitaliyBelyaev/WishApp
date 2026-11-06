@@ -79,6 +79,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.shared.domain.SharedWishDraft
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import ru.vitaliy.belyaev.wishapp.ui.core.alert_dialog.DestructiveConfirmationAlertDialog
@@ -102,15 +103,15 @@ import timber.log.Timber
 @Composable
 fun WishDetailedScreen(
     wishId: String?,
-    wishLink: String?,
     tagId: String?,
+    sharedDraft: SharedWishDraft?,
     onBackPressed: () -> Unit,
     onWishTagsClicked: (String) -> Unit,
     onWishImageClicked: (WishImageClickData) -> Unit,
     appViewModel: AppActivityViewModel = hiltViewModel(LocalActivity.current as AppActivity),
     viewModel: WishDetailedViewModel =
         hiltViewModel<WishDetailedViewModel, WishDetailedViewModel.Factory> { factory ->
-            factory.create(wishId, wishLink, tagId)
+            factory.create(wishId, tagId, sharedDraft)
         }
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -216,6 +217,7 @@ fun WishDetailedScreen(
         }
         var title: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.title }) }
         var link: String by remember { mutableStateOf(viewModel.linkInputString) }
+        val isLinkInputInvalid: Boolean by viewModel.isLinkInputInvalid.collectAsStateWithLifecycle()
         var comment: String by remember { mutableStateOf(wishItem.valueOrEmptyString { it.wish.comment }) }
         val isCompleted: Boolean = wishItem.toValueOfNull()?.wish?.isCompleted ?: false
 
@@ -281,14 +283,20 @@ fun WishDetailedScreen(
                     link = newValue
                     viewModel.onWishLinkChanged(newValue)
                 },
+                isError = isLinkInputInvalid,
+                supportingText = if (isLinkInputInvalid) {
+                    { Text(text = stringResource(R.string.link_invalid)) }
+                } else {
+                    null
+                },
                 trailingIcon = {
                     IconButton(
                         onClick = {
-                            viewModel.onAddLinkClicked(link)
-                            link = ""
-                            viewModel.onWishLinkChanged(link)
+                            if (viewModel.onAddLinkClicked(link)) {
+                                link = ""
+                            }
                         },
-                        enabled = viewModel.isLinkValid(link),
+                        enabled = viewModel.isAddLinkEnabled(link),
                         modifier = Modifier.padding(end = 4.dp)
                     ) {
                         ThemedIcon(
