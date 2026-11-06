@@ -8,12 +8,13 @@ CREATE TABLE Wish (
   isCompleted INTEGER AS Boolean DEFAULT 0 NOT NULL,
   createdTimestamp INTEGER NOT NULL,
   updatedTimestamp INTEGER NOT NULL,
-  position INTEGER DEFAULT -1 NOT NULL
+  position INTEGER DEFAULT -1 NOT NULL,
+  completedTimestamp INTEGER
 );
 
 insert:
-INSERT INTO Wish(wishId, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, position)
-VALUES (?,?,?,?,?,?,?, ?);
+INSERT INTO Wish(wishId, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, position, completedTimestamp)
+VALUES (?,?,?,?,?,?,?,?,?);
 
 updateTitle:
 UPDATE Wish
@@ -36,7 +37,8 @@ SET comment = ?,
 updateIsCompleted:
 UPDATE Wish
 SET isCompleted = ?,
-    updatedTimestamp = ?
+    updatedTimestamp = ?,
+    completedTimestamp = ?
     WHERE  wishId = ?;
 
 updatePosition:
@@ -116,8 +118,8 @@ clear:
 DELETE FROM Wish;
 
 insertOrReplace:
-INSERT OR REPLACE INTO Wish(wishId, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, position)
-VALUES (?,?,?,?,?,?,?, ?);
+INSERT OR REPLACE INTO Wish(wishId, title, link, comment, isCompleted, createdTimestamp, updatedTimestamp, position, completedTimestamp)
+VALUES (?,?,?,?,?,?,?,?,?);
 
 getAllForBackup:
 SELECT *

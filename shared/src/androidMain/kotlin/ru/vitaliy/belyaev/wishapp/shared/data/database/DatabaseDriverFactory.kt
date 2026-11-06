@@ -1,7 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.shared.data.database
 
 import android.content.Context
-import app.cash.sqldelight.db.AfterVersion
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import ru.vitaliy.belyaev.wishapp.shared.data.Config
@@ -15,7 +14,7 @@ actual class DatabaseDriverFactory(private val context: Context) {
             name = databaseName,
             callback = AndroidSqliteDriver.Callback(
                 schema = WishAppDb.Schema,
-                AfterVersion(1) { DatabaseMigrator.updateWishPositionsAfterMigrationFrom1To2(it) },
+                *DatabaseMigrator.afterVersionCallbacks,
             )
         )
     }

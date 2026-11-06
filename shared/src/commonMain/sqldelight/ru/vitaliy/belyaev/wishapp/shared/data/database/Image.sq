@@ -2,23 +2,34 @@
 CREATE TABLE Image (
  id TEXT PRIMARY KEY NOT NULL,
  wishId TEXT NOT NULL,
- rawData BLOB NOT NULL
+ rawData BLOB NOT NULL,
+ position INTEGER NOT NULL DEFAULT 0
 );
 
 insert:
-INSERT INTO Image(id, wishId, rawData)
-VALUES (?,?,?);
+INSERT INTO Image(id, wishId, rawData, position)
+VALUES (?,?,?,?);
+
+nextPositionInWish:
+SELECT COALESCE(MAX(position) + 1, 0)
+FROM Image
+WHERE wishId = ?;
+
+updatePosition:
+UPDATE Image
+SET position = ?
+WHERE id = ?;
 
 getAllRefs:
 SELECT id, wishId
 FROM Image
-ORDER BY rowid;
+ORDER BY wishId, position, rowid;
 
 getRefsByWishId:
 SELECT id, wishId
 FROM Image
 WHERE wishId = ?
-ORDER BY rowid;
+ORDER BY position, rowid;
 
 getRawDataById:
 SELECT rawData
@@ -41,8 +52,8 @@ clear:
 DELETE FROM Image;
 
 insertOrReplace:
-INSERT OR REPLACE INTO Image(id, wishId, rawData)
-VALUES (?,?,?);
+INSERT OR REPLACE INTO Image(id, wishId, rawData, position)
+VALUES (?,?,?,?);
 
 getAllForBackup:
 SELECT *

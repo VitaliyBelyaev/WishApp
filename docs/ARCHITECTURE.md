@@ -167,8 +167,8 @@ shared/src/
 │   │   └── di/Koin.kt                       # initKoin + wishAppSdkModule
 │   └── sqldelight/
 │       ├── .../database/Wish.sq, Tag.sq, Image.sq, WishTagRelation.sq
-│       ├── .../database/migrations/1.sqm, 2.sqm
-│       └── databases/1.db, 2.db, 3.db       # snapshot-файлы для verifyMigrations
+│       ├── .../database/migrations/1.sqm, 2.sqm, 3.sqm
+│       └── databases/1.db … 4.db            # snapshot-файлы для verifyMigrations
 ├── androidMain/                             # AndroidSqliteDriver, dispatcher, Koin platform module
 ├── iosMain/                                 # NativeSqliteDriver, dispatcher, Koin helper
 └── commonTest/                              # LinksAdapterTest
@@ -334,8 +334,9 @@ iosApp/WishApp/
 `shared/src/commonMain/kotlin/.../domain/entity/`
 
 - `WishEntity` — `id`, `title`, `link`, `links`, `comment`, `isCompleted`,
-  `createdTimestamp`, `updatedTimestamp`, `position`, `tags`, `images`.
-- `TagEntity` — `id`, `title`.
+  `createdTimestamp`, `updatedTimestamp`, `position`, `tags`, `images`,
+  `completedTimestamp`, `shownTagId`.
+- `TagEntity` — `id`, `title`, `color: TagColor`.
 - `ImageEntity` — `id`, `wishId`, `rawData: ByteArray`.
 - `TagWithWishCount` — тег + количество текущих (невыполненных) желаний.
 - `WishSortMode` — режим сортировки.
@@ -365,13 +366,32 @@ iosApp/WishApp/
   (`id`, `wishId`): байты читаются по `id` через `getImageRawData`, в списках их не держим.
 - Имя БД: `Config.DATABASE_NAME = "ru_vitaliy_belyaev_wishapp.db"`.
 
+Поля редизайна (схема 4) ставит `shared`, а не экран: старый вид пишет в ту же базу.
+
+- `Tag.color` — имя тона (`TagColor`). Новый ярлык получает самый редкий цвет, дальше цвет
+  от названия не зависит.
+- Дубли ярлыков запрещены: названия сравниваются через `normalizeTagTitle` (`trim().lowercase()`
+  в Kotlin, SQLite `lower()` не знает кириллицу). `insertTag` с занятым названием возвращает id
+  существующего ярлыка, `updateTagTitle` возвращает `false` и ничего не меняет.
+- `Image.position` — порядок фото в хотелке, главное первое. Новые фото встают в конец.
+- `WishTagRelation.isShown` — ярлык, выбранный «Показывать на карточке». Без выбора показан
+  первый добавленный (меньший `rowid` связи), его считает `TagMapper.shownTagId`.
+- `Wish.completedTimestamp` — когда отмечено «Сбылось», «Снова хочу» обнуляет. У старых
+  сбывшихся `NULL`: настоящей даты нет.
+
 ### 8.3 Миграции
 
 - Миграции лежат в `shared/src/commonMain/sqldelight/.../database/migrations/*.sqm`.
-- Snapshot-файлы: `shared/src/commonMain/sqldelight/databases/1.db`, `2.db`, `3.db`.
+- Snapshot-файлы: `shared/src/commonMain/sqldelight/databases/1.db` … `4.db`.
 - В `shared/build.gradle.kts` включён `verifyMigrations = true`.
-- `DatabaseMigrator.updateWishPositionsAfterMigrationFrom1To2` — пример
-  data-миграции, вызывается через `AfterVersion(1)` на Android и iOS.
+- Data-миграции на Kotlin перечислены в `DatabaseMigrator.afterVersionCallbacks`, их берут
+  драйверы Android и iOS. `AfterVersion(N)` срабатывает после `N.sqm`, то есть после
+  перехода с версии N на N+1:
+  - `AfterVersion(1)` — `updateWishPositionsAfterMigrationFrom1To2`;
+  - `AfterVersion(3)` — `mergeDuplicateTagsAfterMigrationFrom3To4`, слияние «Дом» и «дом».
+- Индексы в `bindLong`/`bindString` в SQLDelight 2 начинаются с 0.
+- Тесты миграций: `shared/src/commonTest/.../DatabaseMigrationTest.kt`, база в памяти,
+  старая схема создаётся в тесте.
 
 **Если меняешь схему:**
 
@@ -379,7 +399,8 @@ iosApp/WishApp/
 2. Добавь `.sqm` с `ALTER TABLE ...`.
 3. Обнови snapshot (`databases/N.db`) через Gradle/SQLDelight.
 4. Пробегись по мапперам (`WishMapper`, `TagMapper`, `ImageMapper`) и всем запросам.
-5. Проверь миграцию на обеих платформах.
+5. Добавь тест в `DatabaseMigrationTest` и прогони `./gradlew :shared:allTests`.
+6. Проверь миграцию на обеих платформах.
 
 ### 8.4 Слои данных
 
@@ -754,7 +775,8 @@ open iosApp/WishApp.xcodeproj
   - закомментированные участки в `UseCaseProvideModule`, Firebase на iOS.
 - **Две DI-системы:** Hilt на Android, Koin в `shared`/iOS. Android не вызывает Koin.
 - **`Pods/` не в git** — iOS-зависимости через SPM.
-- **Тестов мало:** `shared` — `LinksAdapterTest`, `app` — `BytesSizeFormatterTest`,
+- **Тестов мало:** `shared` — `LinksAdapterTest`, `DatabaseMigrationTest`,
+  `DatabaseRepositoryRulesTest`, `app` — `BytesSizeFormatterTest`,
   `WishDetailedViewModelTest`, `DatabaseRepositoryDeleteTest` и `SmokeTest`. Не полагайся на тесты как на полное покрытие.
 - **Release-подпись:** в `app/build.gradle.kts` для release используется тестовый
   keystore (`test_keystore`, пароль `notasecret`). Это не production-подпись.

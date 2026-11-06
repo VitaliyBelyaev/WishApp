@@ -440,6 +440,8 @@ class WishDetailedViewModelTest {
         }
 
         override suspend fun deleteWishTagRelation(wishId: String, tagId: String) = Unit
+
+        override suspend fun setShownTag(wishId: String, tagId: String) = Unit
     }
 
     private class FakeAnalyticsRepository : AnalyticsRepository {

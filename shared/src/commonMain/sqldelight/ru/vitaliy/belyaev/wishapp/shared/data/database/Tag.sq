@@ -1,12 +1,23 @@
 
 CREATE TABLE Tag (
  tagId TEXT PRIMARY KEY NOT NULL,
- title TEXT NOT NULL
+ title TEXT NOT NULL,
+ color TEXT NOT NULL DEFAULT 'butter'
 );
 
 insert:
-INSERT INTO Tag(tagId, title)
-VALUES (?,?);
+INSERT INTO Tag(tagId, title, color)
+VALUES (?,?,?);
+
+updateColor:
+UPDATE Tag
+SET color = ?
+    WHERE  tagId = ?;
+
+countByColor:
+SELECT color, count(*) AS tagsCount
+FROM Tag
+GROUP BY color;
 
 updateTitle:
 UPDATE Tag
@@ -31,8 +42,8 @@ clear:
 DELETE FROM Tag;
 
 insertOrReplace:
-INSERT OR REPLACE INTO Tag(tagId, title)
-VALUES (?,?);
+INSERT OR REPLACE INTO Tag(tagId, title, color)
+VALUES (?,?,?);
 
 getAllForBackup:
 SELECT *

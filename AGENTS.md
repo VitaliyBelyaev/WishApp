@@ -167,7 +167,8 @@ CI в репозитории **нет** — проверяй вручную.
 - Изображения, сортировка списка и выбор темы есть **только на Android**.
 - Бэкап: **Google Drive** на Android, **iCloud** на iOS; общего кода нет.
 - На iOS Firebase фактически отключён — используется только Amplitude.
-- Тестов мало: несколько юнит-тестов, `DatabaseRepositoryDeleteTest`, `SmokeTest`.
+- Тестов мало: несколько юнит-тестов, тесты миграций и правил базы в `shared`,
+  `DatabaseRepositoryDeleteTest`, `SmokeTest`.
 - Release на Android подписан тестовым keystore — это не production-подпись.
 - Легаси: `iosApp/WishApp/ui/MainScreen/` не входит в Xcode-таргет.
 - `WishDetailedViewModel` сразу создаёт пустое желание; при выходе пустая запись

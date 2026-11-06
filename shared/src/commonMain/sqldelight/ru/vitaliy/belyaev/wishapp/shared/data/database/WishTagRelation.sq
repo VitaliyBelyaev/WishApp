@@ -1,16 +1,28 @@
-
+import kotlin.Boolean;
 
 CREATE TABLE WishTagRelation (
  wishId TEXT NOT NULL,
  tagId TEXT NOT NULL,
+ isShown INTEGER AS Boolean NOT NULL DEFAULT 0,
  FOREIGN KEY (wishId) REFERENCES Wish(wishId),
  FOREIGN KEY (tagId) REFERENCES Tag(tagId),
  UNIQUE(wishId, tagId)
 );
 
+-- Повторная связь не ошибка: ярлык мог уже стоять у хотелки.
 insert:
-INSERT INTO WishTagRelation(wishId, tagId)
+INSERT OR IGNORE INTO WishTagRelation(wishId, tagId)
 VALUES (?,?);
+
+clearShownForWish:
+UPDATE WishTagRelation
+SET isShown = 0
+WHERE wishId = ?;
+
+markShown:
+UPDATE WishTagRelation
+SET isShown = 1
+WHERE wishId = ? AND tagId = ?;
 
 getAllRelations:
 SELECT *
@@ -24,28 +36,29 @@ ON wish.wishId = relation.wishId
 WHERE wish.isCompleted = 0;
 
 getAllWishesByTag:
-SELECT wish.wishId, wish.title, wish.link, wish.comment, wish.isCompleted, wish.createdTimestamp, wish.updatedTimestamp, wish.position
+SELECT wish.*
 FROM Wish wish
 JOIN WishTagRelation relation
 ON wish.isCompleted = 0 AND wish.wishId = relation.wishId AND relation.tagId = ?
 ORDER BY wish.position DESC;
 
 getAllWishesByTagCreatedDesc:
-SELECT wish.wishId, wish.title, wish.link, wish.comment, wish.isCompleted, wish.createdTimestamp, wish.updatedTimestamp, wish.position
+SELECT wish.*
 FROM Wish wish
 JOIN WishTagRelation relation
 ON wish.isCompleted = 0 AND wish.wishId = relation.wishId AND relation.tagId = ?
 ORDER BY wish.createdTimestamp DESC;
 
 getAllWishesByTagCreatedAsc:
-SELECT wish.wishId, wish.title, wish.link, wish.comment, wish.isCompleted, wish.createdTimestamp, wish.updatedTimestamp, wish.position
+SELECT wish.*
 FROM Wish wish
 JOIN WishTagRelation relation
 ON wish.isCompleted = 0 AND wish.wishId = relation.wishId AND relation.tagId = ?
 ORDER BY wish.createdTimestamp ASC;
 
+-- relationOrder: порядок добавления ярлыка к хотелке, по нему выбирается показанный по умолчанию.
 getWishTags:
-SELECT tag.tagId, tag.title
+SELECT tag.tagId, tag.title, tag.color, relation.isShown, relation.rowid AS relationOrder
 FROM Tag tag
 JOIN WishTagRelation relation
 ON tag.tagId = relation.tagId AND relation.wishId = ?
@@ -68,8 +81,8 @@ clear:
 DELETE FROM WishTagRelation;
 
 insertOrReplace:
-INSERT OR REPLACE INTO WishTagRelation(wishId, tagId)
-VALUES (?,?);
+INSERT OR REPLACE INTO WishTagRelation(wishId, tagId, isShown)
+VALUES (?,?,?);
 
 getAllForBackup:
 SELECT *

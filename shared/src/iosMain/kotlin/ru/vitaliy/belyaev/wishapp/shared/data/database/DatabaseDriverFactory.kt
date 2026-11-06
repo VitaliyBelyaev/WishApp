@@ -1,6 +1,5 @@
 package ru.vitaliy.belyaev.wishapp.shared.data.database
 
-import app.cash.sqldelight.db.AfterVersion
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.native.NativeSqliteDriver
 import app.cash.sqldelight.driver.native.wrapConnection
@@ -23,7 +22,7 @@ actual class DatabaseDriverFactory {
                             driver = driver,
                             oldVersion = oldVersion.toLong(),
                             newVersion = newVersion.toLong(),
-                            AfterVersion(1) { DatabaseMigrator.updateWishPositionsAfterMigrationFrom1To2(it) }
+                            *DatabaseMigrator.afterVersionCallbacks,
                         )
                     }
                 }

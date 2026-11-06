@@ -78,7 +78,8 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
                     isCompleted = wish.isCompleted,
                     createdTimestamp = wish.createdTimestamp,
                     updatedTimestamp = wish.updatedTimestamp,
-                    position = wish.position
+                    position = wish.position,
+                    completedTimestamp = wish.completedTimestamp
                 )
             }
 
@@ -87,7 +88,8 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
             allTags.forEach { tag ->
                 tagQueries?.insertOrReplace(
                     tagId = tag.tagId,
-                    title = tag.title
+                    title = tag.title,
+                    color = tag.color
                 )
             }
 
@@ -97,7 +99,8 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
                 imageQueries?.insertOrReplace(
                     id = image.id,
                     wishId = image.wishId,
-                    rawData = image.rawData
+                    rawData = image.rawData,
+                    position = image.position
                 )
             }
 
@@ -107,7 +110,8 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
             allRelations.forEach { relation ->
                 wishTagRelationQueries?.insertOrReplace(
                     wishId = relation.wishId,
-                    tagId = relation.tagId
+                    tagId = relation.tagId,
+                    isShown = relation.isShown
                 )
             }
 

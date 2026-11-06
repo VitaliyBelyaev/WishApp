@@ -1,0 +1,38 @@
+-- Редизайн: цвет ярлыка, порядок фото, показанный ярлык, дата исполнения.
+-- Дубли ярлыков объединяет DatabaseMigrator после этой миграции: SQLite lower() не знает кириллицу.
+
+ALTER TABLE Tag
+ADD COLUMN color TEXT NOT NULL DEFAULT 'butter';
+
+-- Цвет старым ярлыкам ставится один раз. Дальше он не зависит от названия.
+UPDATE Tag
+SET color = CASE rowid % 10
+    WHEN 0 THEN 'butter'
+    WHEN 1 THEN 'mint'
+    WHEN 2 THEN 'sky'
+    WHEN 3 THEN 'lilac'
+    WHEN 4 THEN 'rose'
+    WHEN 5 THEN 'lime'
+    WHEN 6 THEN 'aqua'
+    WHEN 7 THEN 'iris'
+    WHEN 8 THEN 'orchid'
+    ELSE 'sand'
+END;
+
+ALTER TABLE Image
+ADD COLUMN position INTEGER NOT NULL DEFAULT 0;
+
+-- Порядок фото в хотелке прежний: по rowid, главное первое.
+UPDATE Image
+SET position = (
+    SELECT count(*)
+    FROM Image AS other
+    WHERE other.wishId = Image.wishId AND other.rowid < Image.rowid
+);
+
+ALTER TABLE WishTagRelation
+ADD COLUMN isShown INTEGER NOT NULL DEFAULT 0;
+
+-- У старых сбывшихся настоящей даты нет, остаётся NULL.
+ALTER TABLE Wish
+ADD COLUMN completedTimestamp INTEGER;

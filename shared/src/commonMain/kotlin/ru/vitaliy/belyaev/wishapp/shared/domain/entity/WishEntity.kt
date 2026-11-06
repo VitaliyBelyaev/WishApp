@@ -17,6 +17,10 @@ data class WishEntity(
     val position: Long,
     val tags: List<TagEntity> = emptyList(),
     val images: List<ImageRef> = emptyList(),
+    /** Когда отмечена «Сбылось». `null` у несбывшихся и у старых сбывшихся, у которых даты нет. */
+    val completedTimestamp: Long? = null,
+    /** Ярлык на карточке: выбранный в «Показывать на карточке», иначе первый добавленный. */
+    val shownTagId: String? = null,
 )
 
 @OptIn(ExperimentalTime::class)
@@ -34,6 +38,8 @@ fun createEmptyWish(): WishEntity {
         position = 0,
         tags = emptyList(),
         images = emptyList(),
+        completedTimestamp = null,
+        shownTagId = null,
     )
 }
 

@@ -13,8 +13,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.shared.data.coroutines.DispatcherProvider
+import ru.vitaliy.belyaev.wishapp.shared.data.database.GetWishTags
 import ru.vitaliy.belyaev.wishapp.shared.data.database.ImageQueries
 import ru.vitaliy.belyaev.wishapp.shared.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.shared.data.database.TagQueries
@@ -28,10 +30,12 @@ import ru.vitaliy.belyaev.wishapp.shared.data.mapper.TagMapper
 import ru.vitaliy.belyaev.wishapp.shared.data.mapper.WishMapper
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageRef
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagColor
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishSortMode
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.normalizeTagTitle
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishTagRelationRepository
@@ -64,7 +68,8 @@ class DatabaseRepository(
                         isCompleted,
                         createdTimestamp,
                         updatedTimestamp,
-                        position
+                        position,
+                        completedTimestamp
                     )
                 }
             }
@@ -108,9 +113,12 @@ class DatabaseRepository(
     override suspend fun updateWishIsCompleted(newValue: Boolean, wishId: String) {
         withContext(dispatcherProvider.io()) {
             wishQueries.transaction {
+                val now = Clock.System.nowEpochMillis()
+                // «Снова хочу» убирает дату: она бы осталась от прошлого исполнения
                 wishQueries.updateIsCompleted(
                     isCompleted = newValue,
-                    updatedTimestamp = Clock.System.nowEpochMillis(),
+                    updatedTimestamp = now,
+                    completedTimestamp = if (newValue) now else null,
                     wishId = wishId
                 )
 
@@ -217,7 +225,7 @@ class DatabaseRepository(
             .mapToOneOrNull(dispatcherProvider.io())
             .filterNotNull()
 
-        val tagsFlow: Flow<List<Tag>> = wishTagRelationQueries
+        val tagsFlow: Flow<List<GetWishTags>> = wishTagRelationQueries
             .getWishTags(id)
             .asFlow()
             .mapToList(dispatcherProvider.io())
@@ -245,7 +253,7 @@ class DatabaseRepository(
                 .executeAsOneOrNull()
                 ?: return@withContext null
 
-            val tags: List<Tag> = wishTagRelationQueries
+            val tags: List<GetWishTags> = wishTagRelationQueries
                 .getWishTags(id)
                 .executeAsList()
 
@@ -297,7 +305,7 @@ class DatabaseRepository(
         return combine(wishesFlow, wishTagRelationsFlow, tagsFlow, imagesFlow) { wishes, _, _, allImages ->
             val imagesByWishId = allImages.groupBy { it.wishId }
             val wishEntities = wishes.map {
-                val tags: List<Tag> = wishTagRelationQueries
+                val tags: List<GetWishTags> = wishTagRelationQueries
                     .getWishTags(it.wishId)
                     .executeAsList()
 
@@ -320,7 +328,7 @@ class DatabaseRepository(
                 .getAll(isCompleted)
                 .executeAsList()
                 .map {
-                    val tags: List<Tag> = wishTagRelationQueries
+                    val tags: List<GetWishTags> = wishTagRelationQueries
                         .getWishTags(it.wishId)
                         .executeAsList()
 
@@ -378,7 +386,7 @@ class DatabaseRepository(
         return combine(wishesByTagFlow, tagFlow, imagesFlow) { wishes, _, allImages ->
             val imagesByWishId = allImages.groupBy { it.wishId }
             val wishEntities = wishes.map {
-                val tags: List<Tag> = wishTagRelationQueries
+                val tags: List<GetWishTags> = wishTagRelationQueries
                     .getWishTags(it.wishId)
                     .executeAsList()
 
@@ -445,20 +453,62 @@ class DatabaseRepository(
         wishTagRelationQueries.delete(wishId, tagId)
     }
 
+    @NativeCoroutines
+    override suspend fun setShownTag(wishId: String, tagId: String) {
+        withContext(dispatcherProvider.io()) {
+            wishTagRelationQueries.transaction {
+                wishTagRelationQueries.clearShownForWish(wishId)
+                wishTagRelationQueries.markShown(wishId, tagId)
+            }
+        }
+    }
+
     // end region WishTagRelationRepository
 
     // region TagsRepository
 
     @NativeCoroutines
     override suspend fun insertTag(title: String): String {
-        val tagId = uuid4().toString()
-        tagQueries.insert(tagId, title)
-        return tagId
+        return withContext(dispatcherProvider.io()) {
+            tagQueries.transactionWithResult {
+                findTagIdWithSameTitle(title)?.let { return@transactionWithResult it }
+
+                val tagId = uuid4().toString()
+                val countsByColor = tagQueries.countByColor().executeAsList()
+                    .associate { it.color to it.tagsCount }
+                tagQueries.insert(tagId, title, TagColor.leastUsed(countsByColor).storedValue)
+                tagId
+            }
+        }
     }
 
     @NativeCoroutines
-    override suspend fun updateTagTitle(title: String, tagId: String) {
-        tagQueries.updateTitle(title, tagId)
+    override suspend fun updateTagTitle(title: String, tagId: String): Boolean {
+        return withContext(dispatcherProvider.io()) {
+            tagQueries.transactionWithResult {
+                val sameTitleTagId = findTagIdWithSameTitle(title, exceptTagId = tagId)
+                if (sameTitleTagId != null) {
+                    return@transactionWithResult false
+                }
+                tagQueries.updateTitle(title, tagId)
+                true
+            }
+        }
+    }
+
+    @NativeCoroutines
+    override suspend fun updateTagColor(color: TagColor, tagId: String) {
+        withContext(dispatcherProvider.io()) {
+            tagQueries.updateColor(color.storedValue, tagId)
+        }
+    }
+
+    // SQLite lower() не знает кириллицу, поэтому названия сравниваем в Kotlin
+    private fun findTagIdWithSameTitle(title: String, exceptTagId: String? = null): String? {
+        val key = normalizeTagTitle(title)
+        return tagQueries.getAll().executeAsList()
+            .firstOrNull { it.tagId != exceptTagId && normalizeTagTitle(it.title) == key }
+            ?.tagId
     }
 
     @NativeCoroutines
@@ -491,17 +541,19 @@ class DatabaseRepository(
     override suspend fun getTagsByWishId(wishId: String): List<TagEntity> {
         return withContext(dispatcherProvider.io()) {
             wishTagRelationQueries
-                .getWishTags(wishId, TagMapper::mapToDomain)
+                .getWishTags(wishId)
                 .executeAsList()
+                .map(TagMapper::mapToDomain)
         }
     }
 
     @NativeCoroutines
     override fun observeTagsByWishId(wishId: String): Flow<List<TagEntity>> {
         return wishTagRelationQueries
-            .getWishTags(wishId, TagMapper::mapToDomain)
+            .getWishTags(wishId)
             .asFlow()
             .mapToList(dispatcherProvider.io())
+            .map { tags -> tags.map(TagMapper::mapToDomain) }
     }
 
     @NativeCoroutines
@@ -543,21 +595,20 @@ class DatabaseRepository(
 
     @NativeCoroutines
     override suspend fun insertImage(image: ImageEntity) {
-        imageQueries.insert(
-            image.id,
-            image.wishId,
-            image.rawData
-        )
+        insertImages(listOf(image))
     }
 
+    /** Новые фото встают в конец своей хотелки, главное фото не меняется. */
     @NativeCoroutines
     override suspend fun insertImages(images: List<ImageEntity>) {
         imageQueries.transaction {
             for (image in images) {
+                val position = imageQueries.nextPositionInWish(image.wishId).executeAsOne()
                 imageQueries.insert(
                     image.id,
                     image.wishId,
-                    image.rawData
+                    image.rawData,
+                    position
                 )
             }
         }

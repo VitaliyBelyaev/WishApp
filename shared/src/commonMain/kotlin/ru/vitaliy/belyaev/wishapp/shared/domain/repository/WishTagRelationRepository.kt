@@ -9,4 +9,8 @@ interface WishTagRelationRepository {
 
     @NativeCoroutines
     suspend fun deleteWishTagRelation(wishId: String, tagId: String)
+
+    /** «Показывать на карточке». Без выбора показан первый добавленный ярлык. */
+    @NativeCoroutines
+    suspend fun setShownTag(wishId: String, tagId: String)
 }
