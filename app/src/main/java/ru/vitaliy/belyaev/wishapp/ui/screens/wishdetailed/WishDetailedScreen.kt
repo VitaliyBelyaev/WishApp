@@ -182,9 +182,12 @@ fun WishDetailedScreen(
                         wishId = wishId,
                         oldIsCompleted = oldIsCompleted
                     )
-                    if (!oldIsCompleted) {
+                    if (!oldIsCompleted && exitJob?.isActive != true) {
                         appViewModel.showSnackMessageOnMain(resources.getString(R.string.wish_done_snack_message))
-                        onBackPressed()
+                        exitJob = scope.launch {
+                            viewModel.prepareForExit()
+                            onBackPressed()
+                        }
                     }
                 },
                 scrollBehavior = topAppBarScrollBehavior

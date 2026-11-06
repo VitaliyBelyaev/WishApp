@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.domain.model.ImageData
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.WishDetailedScreenShowEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.ageDays
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedAddImagesClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedAddLinkButtonClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedDeleteLinkClickedEvent
@@ -170,8 +171,25 @@ class WishDetailedViewModel @AssistedInject constructor(
     }
 
     suspend fun prepareForExit(): String {
+        savePendingLink()
         lastWriteJob?.join()
         return currentWishId
+    }
+
+    /**
+     * Ссылка, оставленная в поле без нажатия «+», сохраняется при выходе, как название
+     * и комментарий. Иначе она теряется, а новая хотелка только со ссылкой удаляется как пустая.
+     */
+    private fun savePendingLink() {
+        val link = linkInputString.trim()
+        if (link.isEmpty()) return
+        linkInputString = ""
+        launchWrite {
+            val currentLinks = wishesRepository.getWishByIdOrNull(currentWishId)?.links ?: return@launchWrite
+            if (link in currentLinks) return@launchWrite
+            val newLinkString = LinksAdapter.addLinkAndGetAccumulatedString(link, currentLinks)
+            wishesRepository.updateWishLink(newLinkString, currentWishId)
+        }
     }
 
     fun onWishTitleChanged(newValue: String) {
@@ -205,7 +223,15 @@ class WishDetailedViewModel @AssistedInject constructor(
     }
 
     fun onDeleteWishConfirmed() {
-        analyticsRepository.trackEvent(WishDetailedDeleteWishConfirmedEvent)
+        val wish = uiState.value.toValueOfNull()?.wish
+        analyticsRepository.trackEvent(
+            WishDetailedDeleteWishConfirmedEvent(
+                wasDone = wish?.isCompleted ?: false,
+                ageDays = wish?.ageDays(System.currentTimeMillis()) ?: 0,
+                hasImages = wish?.images?.isNotEmpty() ?: false,
+                hasLinks = wish?.links?.isNotEmpty() ?: false,
+            )
+        )
     }
 
     fun onDeleteWishLinkConfirmed(link: String) {

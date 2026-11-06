@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.File
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.math.roundToInt
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,11 +17,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.ShareData
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.ageDays
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.WishListScreenShowEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListDeleteWishesConfirmedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListFilterByTagClickedEvent
@@ -57,6 +62,7 @@ class WishListViewModel @Inject constructor(
     private val tagsRepository: TagsRepository,
     private val imagesRepository: ImagesRepository,
     private val analyticsRepository: AnalyticsRepository,
+    private val dataStoreRepository: DataStoreRepository,
 ) : BaseViewModel() {
 
     private val _uiState: MutableStateFlow<MainScreenState> = MutableStateFlow(MainScreenState())
@@ -81,7 +87,8 @@ class WishListViewModel @Inject constructor(
     val scrollInfoFlow: SharedFlow<ScrollInfo> = _scrollInfoFlow.asSharedFlow()
 
     private val wishesFilterFlow = MutableStateFlow<WishesFilter>(WishesFilter.All)
-    private val sortModeFlow = MutableStateFlow<WishSortMode>(WishSortMode.Default)
+    // null, пока сохранённая сортировка не прочитана: список не грузится в чужом порядке
+    private val sortModeFlow = MutableStateFlow<WishSortMode?>(null)
 
     private val testWishes = createTestWishes(true)
     private var testWishIndex = 0
@@ -89,6 +96,14 @@ class WishListViewModel @Inject constructor(
     private var scrollInfo: ScrollInfo? = null
 
     init {
+        launchSafe {
+            val savedSortMode = runCatching { dataStoreRepository.selectedSortModeFlow.first() }
+                .onFailure { if (it is CancellationException) throw it else Timber.e(it) }
+                .getOrDefault(WishSortMode.Default)
+            if (sortModeFlow.value == null) {
+                applySortMode(savedSortMode)
+            }
+        }
         launchObservingWishes()
 
         launchSafe {
@@ -163,6 +178,12 @@ class WishListViewModel @Inject constructor(
 
     fun onSortModeChanged(sortMode: WishSortMode) {
         trackSortSelected(sortMode)
+        applySortMode(sortMode)
+        scrollInfo = ScrollInfo(position = 0, offset = 0)
+        launchSafe { dataStoreRepository.updateSelectedSortMode(sortMode) }
+    }
+
+    private fun applySortMode(sortMode: WishSortMode) {
         sortModeFlow.value = sortMode
         // Ручной порядок имеет смысл только в Default. При другой сортировке
         // reorder выключается и после возврата в Default не включается сам —
@@ -178,7 +199,6 @@ class WishListViewModel @Inject constructor(
             sortMode = sortMode,
             reorderButtonState = reorderButtonState
         )
-        scrollInfo = ScrollInfo(position = 0, offset = 0)
     }
 
     fun onAddTestWishClicked() {
@@ -204,7 +224,7 @@ class WishListViewModel @Inject constructor(
     fun onDeleteSelectedClicked() {
         launchSafe {
             val selectedIds = uiState.value.selectedIds
-            analyticsRepository.trackEvent(WishListDeleteWishesConfirmedEvent(selectedIds.size))
+            trackDeleteWishesConfirmed(selectedIds)
             runCatching { wishesRepository.deleteWishesByIds(selectedIds) }
                 .onSuccess { _uiState.value = uiState.value.copy(selectedIds = emptyList()) }
                 .onFailure { _showSnackFlow.emit(R.string.delete_wishes_error_message) }
@@ -351,6 +371,23 @@ class WishListViewModel @Inject constructor(
         analyticsRepository.trackEvent(WishListSortSelectedEvent(sort = sort, tab = tab))
     }
 
+    private fun trackDeleteWishesConfirmed(selectedIds: List<String>) {
+        val selectedIdsSet = selectedIds.toSet()
+        val wishes = uiState.value.wishes.filter { it.id in selectedIdsSet }
+        val nowMillis = System.currentTimeMillis()
+        val agesDays = wishes.map { it.ageDays(nowMillis) }
+        analyticsRepository.trackEvent(
+            WishListDeleteWishesConfirmedEvent(
+                wishCount = selectedIds.size,
+                doneCount = wishes.count { it.isCompleted },
+                avgAgeDays = if (agesDays.isEmpty()) 0 else agesDays.average().roundToInt(),
+                maxAgeDays = agesDays.maxOrNull() ?: 0,
+                withImagesCount = wishes.count { it.images.isNotEmpty() },
+                withLinksCount = wishes.count { it.links.isNotEmpty() },
+            )
+        )
+    }
+
     private fun trackShareClick(shareData: ShareData) {
         val shareAnalyticsType = when (shareData) {
             is ShareData.Pdf -> "pdf"
@@ -372,7 +409,7 @@ class WishListViewModel @Inject constructor(
     private fun launchObservingWishes() {
         launchSafe {
             runCatching {
-                combine(wishesFilterFlow, sortModeFlow) { filter, sortMode -> filter to sortMode }
+                combine(wishesFilterFlow, sortModeFlow.filterNotNull()) { filter, sortMode -> filter to sortMode }
                     .flatMapLatest { (filter, sortMode) ->
                         withContext(Dispatchers.IO) {
                             when (filter) {

@@ -2,11 +2,21 @@ package ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events
 
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.AnalyticsEvent
 
-object WishDetailedDeleteWishConfirmedEvent : AnalyticsEvent {
+data class WishDetailedDeleteWishConfirmedEvent(
+    val wasDone: Boolean,
+    val ageDays: Int,
+    val hasImages: Boolean,
+    val hasLinks: Boolean,
+) : AnalyticsEvent {
 
     override val name: String = "Wish Detailed Screen - Delete Wish Confirmed"
 
-    override val params: Map<String, Any?> = emptyMap()
+    override val params: Map<String, Any?> = mapOf(
+        "was_done" to wasDone,
+        "age_days" to ageDays,
+        "has_images" to hasImages,
+        "has_links" to hasLinks,
+    )
 }
 
 object WishDetailedChangeWishCompletenessClickedEvent : AnalyticsEvent {

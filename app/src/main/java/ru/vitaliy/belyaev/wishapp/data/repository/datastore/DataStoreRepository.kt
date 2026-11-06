@@ -16,10 +16,13 @@ import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_IS_RESTORE_FROM_BACKUP_WAS_SUCCEED
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_POSITIVE_ACTIONS_COUNT
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_REVIEW_REQUEST_SHOWN_COUNT
+import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_SORT_MODE
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_THEME
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.domain.model.toInt
 import ru.vitaliy.belyaev.wishapp.domain.model.toTheme
+import ru.vitaliy.belyaev.wishapp.domain.model.toWishSortMode
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishSortMode
 
 @Singleton
 class DataStoreRepository @Inject constructor(
@@ -41,6 +44,24 @@ class DataStoreRepository @Inject constructor(
     suspend fun updateSelectedTheme(theme: Theme) {
         dataStore.edit {
             it[KEY_THEME] = theme.toInt()
+        }
+    }
+
+    val selectedSortModeFlow: Flow<WishSortMode> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map {
+            it[KEY_SORT_MODE].toWishSortMode()
+        }
+
+    suspend fun updateSelectedSortMode(sortMode: WishSortMode) {
+        dataStore.edit {
+            it[KEY_SORT_MODE] = sortMode.toInt()
         }
     }
 
@@ -119,6 +140,7 @@ class DataStoreRepository @Inject constructor(
 
     private object PreferencesKeys {
         val KEY_THEME = intPreferencesKey("KEY_THEME")
+        val KEY_SORT_MODE = intPreferencesKey("KEY_SORT_MODE")
         val KEY_POSITIVE_ACTIONS_COUNT = intPreferencesKey("KEY_POSITIVE_ACTIONS_COUNT")
         val KEY_REVIEW_REQUEST_SHOWN_COUNT = intPreferencesKey("KEY_REVIEW_REQUEST_SHOWN_COUNT")
         val KEY_IS_RESTORE_FROM_BACKUP_WAS_SUCCEED = booleanPreferencesKey("KEY_IS_RESTORE_FROM_BACKUP_WAS_SUCCEED")

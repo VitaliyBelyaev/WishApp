@@ -326,7 +326,18 @@ internal class ScreenshotsTest {
             override suspend fun deleteWishesByIds(ids: List<String>) = error("Fake delete error")
         }
         rule.runOnUiThread {
-            val viewModel = WishListViewModel(failingRepository, repository, repository, activity.analyticsRepository)
+            val dataStoreRepository = DataStoreRepository(
+                PreferenceDataStoreFactory.create {
+                    activity.preferencesDataStoreFile("screenshots_${UUID.randomUUID()}")
+                }
+            )
+            val viewModel = WishListViewModel(
+                failingRepository,
+                repository,
+                repository,
+                activity.analyticsRepository,
+                dataStoreRepository
+            )
             activity.setContent {
                 WishAppTheme(selectedTheme = Theme.SYSTEM) {
                     WishListScreen(

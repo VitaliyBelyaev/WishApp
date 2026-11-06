@@ -45,14 +45,28 @@ object WishListWishMovedEvent : AnalyticsEvent {
     override val params: Map<String, Any?> = emptyMap()
 }
 
+/**
+ * Параметры — чтобы понять, зачем удаляют: чистят список или так отмечают
+ * исполнение вместо «Сбылось». Возраст считается в целых днях от создания.
+ */
 data class WishListDeleteWishesConfirmedEvent(
-    val wishCount: Int
+    val wishCount: Int,
+    val doneCount: Int,
+    val avgAgeDays: Int,
+    val maxAgeDays: Int,
+    val withImagesCount: Int,
+    val withLinksCount: Int,
 ) : AnalyticsEvent {
 
     override val name: String = "Wish List Screen - Delete Wishes Confirmed"
 
     override val params: Map<String, Any?> = mapOf(
-        "wish_count" to wishCount
+        "wish_count" to wishCount,
+        "done_count" to doneCount,
+        "avg_age_days" to avgAgeDays,
+        "max_age_days" to maxAgeDays,
+        "with_images_count" to withImagesCount,
+        "with_links_count" to withLinksCount,
     )
 }
 
