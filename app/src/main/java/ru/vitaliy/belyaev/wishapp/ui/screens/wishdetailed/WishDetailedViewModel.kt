@@ -202,7 +202,7 @@ class WishDetailedViewModel @AssistedInject constructor(
         val input = linkInputString.trim()
         if (input.isEmpty()) return
         linkInputString = ""
-        val links = LinkParser.parseLinkInput(input).ifEmpty { listOf(input) }
+        val links = LinkParser.parseLinkInput(input).ifEmpty { listOf(LinksAdapter.sanitizeLink(input)) }
         addLinks(links)
     }
 

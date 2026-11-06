@@ -23,6 +23,9 @@ object SharedTextParser {
 
     private const val TITLE_TRAILING_SEPARATORS = ":-–—|·•,"
 
+    // В начале названия убираем только маркеры списка: минус там бывает частью смысла, «-50%»
+    private const val TITLE_LEADING_MARKERS = "·•|"
+
     fun parse(subject: String?, text: String?): SharedWishDraft {
         val subjectText = subject.orEmpty()
         val bodyText = text.orEmpty()
@@ -61,9 +64,11 @@ object SharedTextParser {
         return line.replace(MULTIPLE_SPACES, " ").trim()
     }
 
-    /** У названия ещё и разделители по краям: «Посмотри в Ozon: <адрес>» → «Посмотри в Ozon». */
+    /** У названия ещё и разделители в конце: «Посмотри в Ozon: <адрес>» → «Посмотри в Ozon». */
     private fun cleanTitle(line: String): String {
-        return cleanLine(line).trim { it.isWhitespace() || it in TITLE_TRAILING_SEPARATORS }
+        return cleanLine(line)
+            .trimEnd { it.isWhitespace() || it in TITLE_TRAILING_SEPARATORS }
+            .trimStart { it.isWhitespace() || it in TITLE_LEADING_MARKERS }
     }
 
     private val MULTIPLE_SPACES = Regex("""[ \t ]+""")

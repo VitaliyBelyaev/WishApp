@@ -87,6 +87,13 @@ class SharedTextParserTest {
     }
 
     @Test
+    fun leadingMinusStaysInTitle() {
+        val draft = SharedTextParser.parse(subject = null, text = "-50% на кофемолку https://example.com")
+
+        assertEquals("-50% на кофемолку", draft.title)
+    }
+
+    @Test
     fun blankInputIsEmpty() {
         assertTrue(SharedTextParser.parse(subject = " ", text = "\n ").isEmpty)
         assertTrue(SharedTextParser.parse(subject = null, text = null).isEmpty)

@@ -51,7 +51,8 @@ object LinkParser {
     fun removeLinks(text: String): String = URL_IN_TEXT.replace(text, "")
 
     private fun normalize(link: String): String {
-        return if (SCHEME.containsMatchIn(link)) link else "https://$link"
+        val withScheme = if (SCHEME.containsMatchIn(link)) link else "https://$link"
+        return LinksAdapter.sanitizeLink(withScheme)
     }
 
     private fun trimTrailingPunctuation(link: String): String {

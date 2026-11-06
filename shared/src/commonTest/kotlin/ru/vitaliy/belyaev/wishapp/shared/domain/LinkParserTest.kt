@@ -80,6 +80,14 @@ class LinkParserTest {
     }
 
     @Test
+    fun encodesLinksSeparatorInsideLink() {
+        val links = LinkParser.extractLinks("https://example.com/?q=a|b")
+
+        assertEquals(listOf("https://example.com/?q=a%7Cb"), links)
+        assertEquals(links, LinksAdapter.getLinksListFromString(LinksAdapter.addLinksAndGetAccumulatedString(links, emptyList())))
+    }
+
+    @Test
     fun parseLinkInputKeepsOtherScheme() {
         assertEquals(listOf("http://example.com"), LinkParser.parseLinkInput("http://example.com"))
     }
