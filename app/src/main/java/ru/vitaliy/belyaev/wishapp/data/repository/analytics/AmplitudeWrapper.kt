@@ -14,7 +14,8 @@ object AmplitudeWrapper {
     fun init(context: Context) {
         val apiKey = BuildConfig.AMPLITUDE_API_KEY
         if (apiKey.isBlank()) {
-            Timber.e("Amplitude API key is not set")
+            // Ключ есть только в release: debug и autotest в Amplitude не пишут
+            Timber.i("Amplitude API key is not set, events go to log only")
             return
         }
 

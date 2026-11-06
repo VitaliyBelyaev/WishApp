@@ -62,3 +62,15 @@ object WishListGoToBackupScreenClickedEvent : AnalyticsEvent {
 
     override val params: Map<String, Any?> = emptyMap()
 }
+data class WishListSortSelectedEvent(
+    val sort: String,
+    val tab: String,
+) : AnalyticsEvent {
+
+    override val name: String = "Wish List Screen - Sort Selected"
+
+    override val params: Map<String, Any?> = mapOf(
+        "sort" to sort,
+        "tab" to tab,
+    )
+}

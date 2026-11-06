@@ -1,4 +1,4 @@
-import com.android.build.api.dsl.ApplicationDefaultConfig
+import com.android.build.api.dsl.VariantDimension
 import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -41,7 +41,8 @@ android {
         versionCode = 24
         versionName = "1.8.2"
 
-        stringConfigField(amplitudeApiKey, amplitudeApiKeyValue)
+        // Ключ Amplitude только в release, иначе debug и автотесты пишут в боевой проект
+        stringConfigField(amplitudeApiKey, "")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -95,6 +96,7 @@ android {
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             resValue("string", "release_app_name", "@string/app_name")
+            stringConfigField(amplitudeApiKey, amplitudeApiKeyValue)
             signingConfig = signingConfigs.getByName("signingTest")
         }
     }
@@ -223,6 +225,6 @@ fun Properties.getStringOrDefault(key: String, default: String): String {
     return getProperty(key)?.removeSurrounding("\"") ?: default
 }
 
-fun ApplicationDefaultConfig.stringConfigField(name: String, value: String) {
+fun VariantDimension.stringConfigField(name: String, value: String) {
     buildConfigField("String", name, "\"$value\"")
 }

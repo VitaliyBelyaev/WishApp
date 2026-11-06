@@ -349,6 +349,8 @@ class WishDetailedViewModelTest {
 
     private class FakeAnalyticsRepository : AnalyticsRepository {
         override fun trackEvent(event: AnalyticsEvent) = Unit
+
+        override fun setUserProperties(properties: Map<String, Any>) = Unit
     }
 
     private class FakeImagesRepository : ImagesRepository {

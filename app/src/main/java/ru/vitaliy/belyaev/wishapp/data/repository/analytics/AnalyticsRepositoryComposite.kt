@@ -10,4 +10,8 @@ class AnalyticsRepositoryComposite(
     override fun trackEvent(event: AnalyticsEvent) {
         repositories.forEach { it.trackEvent(event) }
     }
+
+    override fun setUserProperties(properties: Map<String, Any>) {
+        repositories.forEach { it.setUserProperties(properties) }
+    }
 }

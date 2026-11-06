@@ -11,4 +11,8 @@ class AmplitudeAnalyticsRepository @Inject constructor() : AnalyticsRepository {
     override fun trackEvent(event: AnalyticsEvent) {
         AmplitudeWrapper.amplitude?.track(event.name, eventProperties = event.params)
     }
+
+    override fun setUserProperties(properties: Map<String, Any>) {
+        AmplitudeWrapper.amplitude?.identify(properties)
+    }
 }

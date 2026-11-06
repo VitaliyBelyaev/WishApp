@@ -9,4 +9,8 @@ class LogAnalyticsRepository : AnalyticsRepository {
     override fun trackEvent(event: AnalyticsEvent) {
         Timber.tag("Analytics").d("Track event: ${event.name}, params:${event.params}")
     }
+
+    override fun setUserProperties(properties: Map<String, Any>) {
+        Timber.tag("Analytics").d("Set user properties: $properties")
+    }
 }

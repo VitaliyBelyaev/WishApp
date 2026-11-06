@@ -68,3 +68,31 @@ object WishDetailedSaveAndExitClickedEvent : AnalyticsEvent {
 
     override val params: Map<String, Any?> = emptyMap()
 }
+/**
+ * Новая хотелка сохранена (не пустая). Одно имя на все способы создания:
+ * в редизайне шторка добавления шлёт его же с другим source.
+ */
+data class WishCreatedEvent(
+    val source: String,
+    val hasTitle: Boolean,
+    val linksCount: Int,
+    val imagesCount: Int,
+    val hasComment: Boolean,
+    val tagsCount: Int,
+) : AnalyticsEvent {
+
+    override val name: String = "Wish Created"
+
+    override val params: Map<String, Any?> = mapOf(
+        "source" to source,
+        "has_title" to hasTitle,
+        "links_count" to linksCount,
+        "images_count" to imagesCount,
+        "has_comment" to hasComment,
+        "tags_count" to tagsCount,
+    )
+
+    companion object {
+        const val SOURCE_WISH_SCREEN = "wish_screen"
+    }
+}

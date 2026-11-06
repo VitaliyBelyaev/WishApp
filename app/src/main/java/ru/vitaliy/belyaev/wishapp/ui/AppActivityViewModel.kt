@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -21,7 +22,9 @@ import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedChangeWishCompletenessClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishImagesViewerDeleteImageConfirmedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishCreatedEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.domain.use_case.UpdateAnalyticsUserPropertiesUseCase
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.isEmpty
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
@@ -37,7 +40,8 @@ class AppActivityViewModel @Inject constructor(
     private val dataStoreRepository: DataStoreRepository,
     private val imagesRepository: ImagesRepository,
     private val analyticsRepository: AnalyticsRepository,
-    private val dispatcherProvider: DispatcherProvider
+    private val dispatcherProvider: DispatcherProvider,
+    private val updateAnalyticsUserProperties: UpdateAnalyticsUserPropertiesUseCase,
 ) : BaseViewModel() {
 
     private val _requestReviewFlow: MutableSharedFlow<Unit> = MutableSharedFlow(extraBufferCapacity = 13)
@@ -57,6 +61,17 @@ class AppActivityViewModel @Inject constructor(
                 .selectedThemeFlow
                 .collect {
                     _selectedTheme.value = it
+                }
+        }
+
+        launchSafe(dispatcherProvider.io()) {
+            combine(
+                dataStoreRepository.selectedThemeFlow,
+                dataStoreRepository.isBackupWasCreated
+            ) { theme, isBackupCreated -> theme to isBackupCreated }
+                .distinctUntilChanged()
+                .collectLatest { (theme, isBackupCreated) ->
+                    updateAnalyticsUserProperties(theme, isBackupCreated)
                 }
         }
 
@@ -91,6 +106,16 @@ class AppActivityViewModel @Inject constructor(
             }
 
             if (isFirstExitOfNewWish) {
+                analyticsRepository.trackEvent(
+                    WishCreatedEvent(
+                        source = WishCreatedEvent.SOURCE_WISH_SCREEN,
+                        hasTitle = wish.title.isNotBlank(),
+                        linksCount = wish.links.size,
+                        imagesCount = wish.images.size,
+                        hasComment = wish.comment.isNotBlank(),
+                        tagsCount = wish.tags.size,
+                    )
+                )
                 dataStoreRepository.incrementPositiveActionsCount()
             }
         }

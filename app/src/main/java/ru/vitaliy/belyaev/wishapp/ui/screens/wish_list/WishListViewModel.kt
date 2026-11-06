@@ -28,6 +28,7 @@ import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListF
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListFilterCurrentClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListGoToBackupScreenClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListShareClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListSortSelectedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishListWishMovedEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.ShareWishListTextGenerator
@@ -161,6 +162,7 @@ class WishListViewModel @Inject constructor(
     }
 
     fun onSortModeChanged(sortMode: WishSortMode) {
+        trackSortSelected(sortMode)
         sortModeFlow.value = sortMode
         // Ручной порядок имеет смысл только в Default. При другой сортировке
         // reorder выключается и после возврата в Default не включается сам —
@@ -331,6 +333,22 @@ class WishListViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun trackSortSelected(sortMode: WishSortMode) {
+        val sort = when (sortMode) {
+            WishSortMode.Default -> "default"
+            WishSortMode.CreatedDateNewest -> "created_newest"
+            WishSortMode.CreatedDateOldest -> "created_oldest"
+            WishSortMode.TitleAZ -> "title_az"
+            WishSortMode.TitleZA -> "title_za"
+        }
+        val tab = when (wishesFilterFlow.value) {
+            is WishesFilter.All -> "wishes"
+            is WishesFilter.Completed -> "done"
+            is WishesFilter.ByTag -> "tag"
+        }
+        analyticsRepository.trackEvent(WishListSortSelectedEvent(sort = sort, tab = tab))
     }
 
     private fun trackShareClick(shareData: ShareData) {
