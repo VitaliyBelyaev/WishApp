@@ -26,6 +26,7 @@ import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.domain.model.UiLook
 import ru.vitaliy.belyaev.wishapp.domain.model.UiLookMode
 import ru.vitaliy.belyaev.wishapp.domain.model.resolveUiLook
+import ru.vitaliy.belyaev.wishapp.domain.model.storedValue
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedChangeWishCompletenessClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishImagesViewerDeleteImageConfirmedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishCreatedEvent
@@ -97,7 +98,10 @@ class AppActivityViewModel @Inject constructor(
                         )
                     }
                     .distinctUntilChanged()
-                    .collect { _uiLook.value = it }
+                    .collect {
+                        FirebaseCrashlytics.getInstance().setCustomKey(CRASHLYTICS_KEY_UI_LOOK, it.storedValue)
+                        _uiLook.value = it
+                    }
             } finally {
                 // Сплэш ждёт вид: при любом сбое показываем прежний, а не висим на сплэше
                 if (_uiLook.value == null) _uiLook.value = UiLook.OLD
@@ -266,5 +270,7 @@ class AppActivityViewModel @Inject constructor(
          * Включить вместе с готовым новым видом, этап 2.7.
          */
         const val IS_NEW_LOOK_RELEASED = false
+
+        const val CRASHLYTICS_KEY_UI_LOOK = "ui_look"
     }
 }

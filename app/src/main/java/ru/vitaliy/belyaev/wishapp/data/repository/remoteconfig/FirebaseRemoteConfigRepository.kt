@@ -28,7 +28,10 @@ class FirebaseRemoteConfigRepository @Inject constructor() : RemoteConfigReposit
 
     // Пока значения по умолчанию не применились, getString вернёт пустую строку: это тоже old_only
     override fun activatedUiLookMode(): UiLookMode {
-        return UiLookMode.fromRemoteValue(remoteConfig.getString(KEY_UI_LOOK_MODE))
+        val value = remoteConfig.getString(KEY_UI_LOOK_MODE)
+        // Ключи Crashlytics живут один процесс: ставим режим этого запуска, а не загруженный на следующий
+        FirebaseCrashlytics.getInstance().setCustomKey(KEY_UI_LOOK_MODE, value)
+        return UiLookMode.fromRemoteValue(value)
     }
 
     override fun fetchForNextLaunch() {
@@ -36,12 +39,6 @@ class FirebaseRemoteConfigRepository @Inject constructor() : RemoteConfigReposit
             .addOnFailureListener {
                 // Без сети это обычная ситуация, в Crashlytics не шлём
                 Timber.w(it, "Remote Config fetch failed")
-            }
-            .addOnSuccessListener { updated ->
-                if (updated) {
-                    val mode = remoteConfig.getString(KEY_UI_LOOK_MODE)
-                    FirebaseCrashlytics.getInstance().setCustomKey(KEY_UI_LOOK_MODE, mode)
-                }
             }
     }
 
