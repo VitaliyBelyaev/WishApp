@@ -238,17 +238,18 @@ internal class SmokeTest {
     }
 
     /**
-     * Ссылка из другого приложения: неверная даёт ошибку, верная открывает новое желание
-     * со ссылкой в поле ввода.
+     * Текст со ссылкой из другого приложения открывает новое желание: название из текста,
+     * ссылка уже сохранена. Ввод без ссылки в поле ссылки даёт ошибку под полем.
      */
     private fun receiveSharedLinks() {
-        rule.activity.startActivity(sharedTextIntent(INVALID_SHARED_LINK))
-        waitForText(string(R.string.invalid_link_error_message))
-
-        rule.activity.startActivity(sharedTextIntent(SHARED_LINK))
-        waitForText(SHARED_LINK)
-        clickDescription("Add Link")
+        rule.activity.startActivity(sharedTextIntent("$SHARED_TITLE: $SHARED_LINK"))
+        waitForText(SHARED_TITLE)
         waitForText(SHARED_LINK_HOST)
+
+        val linkField = rule.onAllNodes(hasSetTextAction())[LINK_FIELD_INDEX]
+        linkField.performTextInput(INVALID_LINK_INPUT)
+        clickDescription("Add Link")
+        waitForText(string(R.string.link_invalid))
         deleteOpenedWish()
     }
 
@@ -604,7 +605,8 @@ internal class SmokeTest {
         const val NEW_WISH_LINK = "https://$NEW_WISH_LINK_HOST/smoke"
         const val SHARED_LINK_HOST = "example.net"
         const val SHARED_LINK = "https://$SHARED_LINK_HOST/shared"
-        const val INVALID_SHARED_LINK = "not a link"
+        const val SHARED_TITLE = "Shared smoke wish"
+        const val INVALID_LINK_INPUT = "not a link"
         const val EDITED_WISH_TITLE = "Edited smoke wish"
         const val EDITED_WISH_COMMENT = "Edited smoke comment"
         const val RENAMED_TAG_TITLE = "Renamed smoke tag"

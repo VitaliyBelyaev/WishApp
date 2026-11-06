@@ -17,15 +17,15 @@
     <string name="other">Другое</string>
     <string name="app_description"><![CDATA[Это open-source приложение, код можно посмотреть <a href=https://github.com/VitaliyBelyaev/WishApp">здесь</a>]]></string>
     <string name="app_version_pattern">Версия %s</string>
-    <string name="theme_system_title">Cистемная</string>
+    <string name="theme_system_title">Системная</string>
     <string name="theme_system_description">Такая же как на устройстве</string>
-    <string name="theme_dark">Темная</string>
+    <string name="theme_dark">Тёмная</string>
     <string name="theme_light">Светлая</string>
     <string name="backup_description">Мы используем Google Drive для сохранения и восстановления ваших данных в приложении.\n\nНе волнуйтесь, у нас не будет доступа к вашим файлам в Google Drive, кроме файла с данными из приложения, который мы будем создавать.\n\nРекомендуем регулярно создавать резервные копии, чтобы не потерять свои данные и восстановить их при переустановке приложения или на другом устройстве.</string>
     <string name="no_email_app_error">У вас на устройстве нет email приложения</string>
     <string name="feedback_subject_pattern">Обратная связь. Приложение %s</string>
     <string name="enter_label_name">Введите название ярлыка</string>
-    <string name="create_new_pattern">Создать \"%s\"</string>
+    <string name="create_new_pattern">Создать «%1$s»</string>
     <string name="all_wishes">Текущие хотелки</string>
     <string name="edit_tags">Редактировать ярлыки</string>
     <string name="create_tag">Создать ярлык</string>
@@ -51,7 +51,7 @@
     <string name="empty_tagged_wishes_message">Вы ещё не добавили ярлык %s ни на одну хотелку</string>
     <string name="share_app">Поделиться приложением</string>
     <string name="share_app_text">Попробуй это приложения для хранения своих хотелок с возможностью делиться ими через любой мессенджер\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
-    <string name="invalid_link_error_message">Невалидная ссылка</string>
+    <string name="link_invalid">Не похоже на ссылку, проверьте адрес</string>
 
     <string name="backup_check_backup_error_message">Не удалось проверить есть ли резервная копия</string>
     <string name="backup_retry_check">Попробовать снова</string>
@@ -103,6 +103,6 @@
     <string name="sort_default">По умолчанию (по позиции)</string>
     <string name="sort_created_newest">Сначала новые</string>
     <string name="sort_created_oldest">Сначала старые</string>
-    <string name="sort_title_az">По названию (алфавитный порядок)</string>
-    <string name="sort_title_za">По названию (обратный алфавитный порядок)</string>
+    <string name="sort_title_az">По названию, А → Я</string>
+    <string name="sort_title_za">По названию, Я → А</string>
 </resources>

@@ -11,6 +11,10 @@ object LinksAdapter {
         return newList.joinToString(separator = LINKS_SEPARATOR)
     }
 
+    fun addLinksAndGetAccumulatedString(links: List<String>, currentLinks: List<String>): String {
+        return (currentLinks + links).joinToString(separator = LINKS_SEPARATOR)
+    }
+
     fun removeLinkAndGetAccumulatedString(link: String, currentLinks: List<String>): String {
         val newList = currentLinks.filter { it != link }
         return newList.joinToString(separator = LINKS_SEPARATOR)

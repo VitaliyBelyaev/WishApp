@@ -24,7 +24,7 @@
     <string name="no_email_app_error">You do not have an email application on your device</string>
     <string name="feedback_subject_pattern">Feedback. Application %s</string>
     <string name="enter_label_name">Enter label name</string>
-    <string name="create_new_pattern">Create \"%s\"</string>
+    <string name="create_new_pattern">Create “%1$s”</string>
     <string name="all_wishes">Current wishes</string>
     <string name="edit_tags">Edit labels</string>
     <string name="create_tag">Create label</string>
@@ -50,7 +50,7 @@
     <string name="empty_tagged_wishes_message">You haven\'t added label %s to any wish yet</string>
     <string name="share_app">Share app</string>
     <string name="share_app_text">Try this app for storing and sharing your wishes\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
-    <string name="invalid_link_error_message">Invalid link</string>
+    <string name="link_invalid">This doesn’t look like a link, check the address</string>
 
     <string name="backup_check_backup_error_message">Failed to check if there is a backup</string>
     <string name="backup_retry_check">Retry</string>

@@ -24,7 +24,7 @@
     <string name="no_email_app_error">Você não tem um aplicativo de e-mail em seu dispositivo</string>
     <string name="feedback_subject_pattern">Opinião. Aplicativo %s</string>
     <string name="enter_label_name">Digite o nome do rótulo</string>
-    <string name="create_new_pattern">Crio \"%s\"</string>
+    <string name="create_new_pattern">Criar “%1$s”</string>
     <string name="all_wishes">Desejos atuais</string>
     <string name="edit_tags">Editar marcadores</string>
     <string name="create_tag">Criar etiqueta</string>
@@ -50,7 +50,7 @@
     <string name="empty_tagged_wishes_message">Você ainda não adicionou o marcador %s a nenhum desejo</string>
     <string name="share_app">Compartilhe o aplicativo</string>
     <string name="share_app_text">Experimente este aplicativo para armazenar e compartilhar seus desejos\n\nhttps://play.google.com/store/apps/details?id=ru.vitaliy.belyaev.wishapp</string>
-    <string name="invalid_link_error_message">Link inválido</string>
+    <string name="link_invalid">Isto não parece um link, verifique o endereço</string>
 
     <string name="backup_check_backup_error_message">Falha ao verificar se há um backup</string>
     <string name="backup_retry_check">Tentar novamente</string>

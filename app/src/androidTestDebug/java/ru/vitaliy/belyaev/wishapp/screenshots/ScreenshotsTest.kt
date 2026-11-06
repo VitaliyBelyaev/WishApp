@@ -309,14 +309,26 @@ internal class ScreenshotsTest {
     }
 
     @Test
-    fun snackbarInvalidSharedLink() {
+    fun wishDetailedInvalidLink() {
+        waitForText(demoData.firstWishTitle)
+        clickDescription("Add wish")
+        val linkField = rule.onAllNodes(hasSetTextAction())[LINK_FIELD_INDEX]
+        linkField.performClick()
+        linkField.performTextInput(INVALID_LINK)
+        clickDescription("Add Link")
+        shotWithText("71_wish_detailed_invalid_link", R.string.link_invalid)
+    }
+
+    @Test
+    fun wishDetailedFromSharedText() {
         waitForText(demoData.firstWishTitle)
         val intent = Intent(rule.activity, AppActivity::class.java)
             .setAction(Intent.ACTION_SEND)
             .setType("text/plain")
-            .putExtra(Intent.EXTRA_TEXT, INVALID_LINK)
+            .putExtra(Intent.EXTRA_TEXT, "$SHARED_TEXT_TITLE: $LINK_TO_ENTER")
         rule.activity.startActivity(intent)
-        shotWithText("71_snackbar_invalid_link", R.string.invalid_link_error_message)
+        waitForText(SHARED_TEXT_TITLE)
+        shot("71b_wish_detailed_from_shared_text")
     }
 
     @Test
@@ -788,6 +800,7 @@ internal class ScreenshotsTest {
         const val LINK_FIELD_INDEX = 2
         const val LINK_TO_ENTER = "https://example.com/headphones"
         const val INVALID_LINK = "not-a-link"
+        const val SHARED_TEXT_TITLE = "Настольная лампа"
         const val GMAIL_PACKAGE = "com.google.android.gm"
         const val FAKE_PROGRESS = 0.42
         const val FAKE_LOADED_BYTES = 1_012_924L
