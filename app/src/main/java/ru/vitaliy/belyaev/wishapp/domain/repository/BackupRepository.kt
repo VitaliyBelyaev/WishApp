@@ -3,7 +3,7 @@ package ru.vitaliy.belyaev.wishapp.domain.repository
 import java.io.File
 import java.io.OutputStream
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
-import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupLoadProgressListener
+import ru.vitaliy.belyaev.wishapp.domain.repository.BackupLoadProgressListener
 
 internal interface BackupRepository {
 

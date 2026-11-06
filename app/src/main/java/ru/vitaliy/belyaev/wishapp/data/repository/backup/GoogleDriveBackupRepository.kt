@@ -22,7 +22,7 @@ import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.domain.model.error.GoogleSignInException
 import ru.vitaliy.belyaev.wishapp.domain.repository.BackupRepository
-import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupLoadProgressListener
+import ru.vitaliy.belyaev.wishapp.domain.repository.BackupLoadProgressListener
 
 typealias DriveFile = com.google.api.services.drive.model.File
 

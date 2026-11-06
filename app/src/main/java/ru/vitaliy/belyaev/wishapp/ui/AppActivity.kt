@@ -27,17 +27,17 @@ import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppReviewRequestedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppReviewShowEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.navigation.MainRoute
-import ru.vitaliy.belyaev.wishapp.navigation.Navigation
-import ru.vitaliy.belyaev.wishapp.navigation.NavigationState
-import ru.vitaliy.belyaev.wishapp.navigation.Navigator
-import ru.vitaliy.belyaev.wishapp.navigation.WishDetailedRoute
-import ru.vitaliy.belyaev.wishapp.navigation.WishImagesViewerRoute
-import ru.vitaliy.belyaev.wishapp.navigation.rememberNavigationState
+import ru.vitaliy.belyaev.wishapp.navigation.old.MainRoute
+import ru.vitaliy.belyaev.wishapp.navigation.old.Navigation
+import ru.vitaliy.belyaev.wishapp.navigation.old.NavigationState
+import ru.vitaliy.belyaev.wishapp.navigation.old.Navigator
+import ru.vitaliy.belyaev.wishapp.navigation.old.WishDetailedRoute
+import ru.vitaliy.belyaev.wishapp.navigation.old.WishImagesViewerRoute
+import ru.vitaliy.belyaev.wishapp.navigation.old.rememberNavigationState
 import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
 import ru.vitaliy.belyaev.wishapp.shared.domain.SharedTextParser
 import ru.vitaliy.belyaev.wishapp.shared.domain.SharedWishDraft
-import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppTheme
+import ru.vitaliy.belyaev.wishapp.ui.old.theme.WishAppTheme
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi

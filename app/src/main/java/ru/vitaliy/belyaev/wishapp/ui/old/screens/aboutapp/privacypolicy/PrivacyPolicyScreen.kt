@@ -1,0 +1,50 @@
+package ru.vitaliy.belyaev.wishapp.ui.old.screens.aboutapp.privacypolicy
+
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.shared.utils.PrivacyPolicy
+import ru.vitaliy.belyaev.wishapp.ui.old.core.topappbar.WishAppTopBar
+import ru.vitaliy.belyaev.wishapp.ui.old.core.webview.WebPageBlock
+import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
+
+@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterialApi
+@Composable
+fun PrivacyPolicyScreen(
+    onBackPressed: () -> Unit,
+    viewModel: PrivacyPolicyViewModel = hiltViewModel()
+) {
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    trackScreenShow { viewModel.trackScreenShow() }
+
+    Scaffold(
+        contentWindowInsets = WindowInsets.Companion.safeDrawing,
+        topBar = {
+            WishAppTopBar(
+                stringResource(R.string.privacy_policy),
+                withBackIcon = true,
+                onBackPressed = onBackPressed
+            )
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+    ) { pd ->
+        WebPageBlock(
+            modifier = Modifier.padding(pd),
+            urlToRender = PrivacyPolicy.url,
+        )
+    }
+}
