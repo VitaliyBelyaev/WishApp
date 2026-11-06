@@ -1,5 +1,10 @@
 package ru.vitaliy.belyaev.wishapp.ui.old.screens.settings
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
+import ru.vitaliy.belyaev.wishapp.BuildConfig
+import ru.vitaliy.belyaev.wishapp.domain.model.UiLook
+import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -46,7 +51,8 @@ fun SettingsScreen(
     onBackPressed: () -> Unit,
     onAboutAppClicked: () -> Unit,
     onBackupAndRestoreClicked: () -> Unit,
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: SettingsViewModel = hiltViewModel(),
+    appViewModel: AppActivityViewModel = hiltViewModel(LocalActivity.current as ComponentActivity),
 ) {
 
     val context = LocalContext.current
@@ -114,6 +120,13 @@ fun SettingsScreen(
                 title = stringResource(R.string.about_app),
                 onClick = { onAboutAppClicked() }
             )
+            // Новый вид в разработке, флаг old_only. Пункт только для отладки, поэтому без перевода
+            if (BuildConfig.DEBUG) {
+                SettingBlock(
+                    title = "Новый вид (отладка)",
+                    onClick = { appViewModel.onUiLookChosen(UiLook.NEW) }
+                )
+            }
         }
     }
 }

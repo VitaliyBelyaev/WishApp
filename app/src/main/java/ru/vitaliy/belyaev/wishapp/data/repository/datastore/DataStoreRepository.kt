@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,7 +19,11 @@ import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_REVIEW_REQUEST_SHOWN_COUNT
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_SORT_MODE
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_THEME
+import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_UI_LOOK
+import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_WALLPAPER_COLORS
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
+import ru.vitaliy.belyaev.wishapp.domain.model.UiLook
+import ru.vitaliy.belyaev.wishapp.domain.model.storedValue
 import ru.vitaliy.belyaev.wishapp.domain.model.toInt
 import ru.vitaliy.belyaev.wishapp.domain.model.toTheme
 import ru.vitaliy.belyaev.wishapp.domain.model.toWishSortMode
@@ -138,6 +143,44 @@ class DataStoreRepository @Inject constructor(
         }
     }
 
+    /** Выбор вида пользователем, `null` если он ещё не выбирал. */
+    val uiLookChoiceFlow: Flow<UiLook?> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map {
+            UiLook.fromStoredValue(it[KEY_UI_LOOK])
+        }
+
+    suspend fun updateUiLookChoice(uiLook: UiLook) {
+        dataStore.edit {
+            it[KEY_UI_LOOK] = uiLook.storedValue
+        }
+    }
+
+    /** Настройка «Как обои» нового вида: цвета интерфейса из обоев на Android 12+. */
+    val useWallpaperColorsFlow: Flow<Boolean> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map {
+            it[KEY_WALLPAPER_COLORS] ?: false
+        }
+
+    suspend fun updateUseWallpaperColors(newValue: Boolean) {
+        dataStore.edit {
+            it[KEY_WALLPAPER_COLORS] = newValue
+        }
+    }
+
     private object PreferencesKeys {
         val KEY_THEME = intPreferencesKey("KEY_THEME")
         val KEY_SORT_MODE = intPreferencesKey("KEY_SORT_MODE")
@@ -146,5 +189,7 @@ class DataStoreRepository @Inject constructor(
         val KEY_IS_RESTORE_FROM_BACKUP_WAS_SUCCEED = booleanPreferencesKey("KEY_IS_RESTORE_FROM_BACKUP_WAS_SUCCEED")
         val KEY_IS_BACKUP_WAS_CREATED = booleanPreferencesKey("KEY_IS_BACKUP_WAS_CREATED")
         val KEY_IS_RESTORE_SCREEN_WAS_SHOWN = booleanPreferencesKey("KEY_IS_RESTORE_SCREEN_WAS_SHOWN")
+        val KEY_UI_LOOK = stringPreferencesKey("KEY_UI_LOOK")
+        val KEY_WALLPAPER_COLORS = booleanPreferencesKey("KEY_WALLPAPER_COLORS")
     }
 }

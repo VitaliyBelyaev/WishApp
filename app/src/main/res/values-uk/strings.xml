@@ -106,4 +106,39 @@
     <string name="sort_created_oldest">Спочатку старі</string>
     <string name="sort_title_az">За назвою, А → Я</string>
     <string name="sort_title_za">За назвою, Я → А</string>
+
+    <!-- Новый вид, черновики из артефакта локализации -->
+    <string name="nav_done">Збулося</string>
+    <string name="snack_deleted">Видалено: «%1$s»</string>
+    <string name="snack_undo">Повернути</string>
+    <plurals name="photo_count">
+        <item quantity="one">%1$d фото</item>
+        <item quantity="few">%1$d фото</item>
+        <item quantity="many">%1$d фото</item>
+        <item quantity="other">%1$d фото</item>
+    </plurals>
+    <string name="card_photo_only">Фото</string>
+    <!-- TalkBack: карточка и строка хотелки читаются одной фразой -->
+    <string name="a11y_card_with_photo">з фото</string>
+    <string name="a11y_card_tag">ярлик %1$s</string>
+    <string name="a11y_card_tag_more">ярлик %1$s і ще %2$d</string>
+    <plurals name="a11y_card_other_tags">
+        <item quantity="one">ще %1$d ярлик</item>
+        <item quantity="few">ще %1$d ярлики</item>
+        <item quantity="many">ще %1$d ярликів</item>
+        <item quantity="other">ще %1$d ярлика</item>
+    </plurals>
+    <string name="a11y_card_has_link">є посилання</string>
+    <plurals name="a11y_card_links">
+        <item quantity="one">%1$d посилання</item>
+        <item quantity="few">%1$d посилання</item>
+        <item quantity="many">%1$d посилань</item>
+        <item quantity="other">%1$d посилання</item>
+    </plurals>
+    <string name="a11y_selected">вибрано</string>
+    <string name="a11y_not_selected">не вибрано</string>
+    <string name="a11y_action_open">відкрити</string>
+    <string name="a11y_action_select">вибрати</string>
+    <string name="a11y_action_unselect">зняти вибір</string>
+    <string name="a11y_action_select_many">вибрати кілька</string>
 </resources>

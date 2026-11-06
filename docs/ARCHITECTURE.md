@@ -197,14 +197,20 @@ shared/src/
 app/src/main/java/ru/vitaliy/belyaev/wishapp/
 ├── WishApplication.kt          # @HiltAndroidApp, dynamic colors, Coil, Amplitude
 ├── ui/
-│   ├── AppActivity.kt          # single activity, setContent, deep link ACTION_SEND
-│   ├── AppActivityViewModel.kt # тема, in-app review, удаление пустых желаний
+│   ├── AppActivity.kt          # single activity, выбор вида, deep link ACTION_SEND
+│   ├── AppActivityViewModel.kt # вид, тема, снэкбар, in-app review, удаление пустых желаний
+│   ├── AppRoot.kt              # корни старого и нового вида: тема, навигация, снэкбар
 │   ├── core/viewmodel/         # BaseViewModel, общий для старого и нового вида
+│   ├── core/snackbar/          # AppSnackMessage и единственный снэкбар нового вида
+│   ├── theme/                  # тема нового вида: токены, Onest/Unbounded, формы, «Как обои»
+│   ├── components/             # компоненты нового вида; wish/ — общее для хотелки, wish/card — WishCard, wish/row — WishRow (спецификации в артефакте дизайн-системы)
+│   ├── screens/                # экраны нового вида (пока витрина lookpreview, только debug)
 │   └── old/                    # прежний вид, удаляется после перехода на новый
 │       ├── core/               # переиспользуемые Compose-компоненты
 │       ├── screens/            # экраны (см. раздел 6)
 │       ├── theme/              # цвета, типографика, WishAppTheme
 │       └── model/              # UI-модели
+├── navigation/                 # AppNavigation нового вида
 ├── navigation/old/             # Navigation3 прежнего вида: Routes, NavigationState, Navigator, Navigation
 ├── di/                         # Hilt-модули
 ├── data/
@@ -571,10 +577,20 @@ iOS `Wish List Screen - Show` с другим набором параметро�
   `values-fr`, `values-pt`.
 - Строки: `app/src/main/res/values*/strings.xml`.
 - Названия приложения: `app_name.xml`.
-- Тема: `ui/old/theme/WishAppTheme.kt`.
+- Тема прежнего вида: `ui/old/theme/WishAppTheme.kt`.
   - `Theme.SYSTEM / DARK / LIGHT`;
   - на Android 12+ используются dynamic colors (Material You);
   - выбранная тема хранится в DataStore.
+- Тема нового вида: `ui/theme/AppTheme.kt`, цвета из токенов дизайн-системы, «Хурма» на всех версиях.
+  - Настройка «Как обои» (`KEY_WALLPAPER_COLORS`, Android 12+): схема из обоев, тона `paper-*`
+    и «Сбылось» подстраиваются под `primary` обоев одним поворотом, посчитанным по светлой теме.
+  - Шрифты Onest и Unbounded лежат статическими файлами в `res/font`. Их лицензии OFL
+    дописываются в экран лицензий задачей в `app/build.gradle.kts`, тексты в `app/licenses/`.
+  - Значки Material Symbols Rounded: `res/drawable/ic_ms_*`, залитые варианты `*_filled`.
+- Какой вид показать, решает `resolveUiLook` (`domain/model/UiLook.kt`): флаг `ui_look_mode`
+  из Remote Config (читается один раз за запуск, новое значение со следующего) и выбор
+  пользователя `KEY_UI_LOOK`. Пока `IS_NEW_LOOK_RELEASED = false`, релиз всегда на прежнем виде.
+  В debug новый вид открывается пунктом «Новый вид (отладка)» в старых настройках.
 - Для изображений экрана просмотра принудительно включается тёмная тема
   (`NavigationState.currentRoute is WishImagesViewerRoute` → `Theme.DARK`).
 
@@ -766,7 +782,7 @@ open iosApp/WishApp.xcodeproj
 | Точка входа Android | `app/src/main/java/ru/vitaliy/belyaev/wishapp/ui/AppActivity.kt` |
 | Application Android | `app/src/main/java/ru/vitaliy/belyaev/wishapp/WishApplication.kt` |
 | Точка входа iOS | `iosApp/WishApp/WishApp.swift` |
-| Навигация Android | `app/.../navigation/old/Navigation.kt`, `Routes.kt`, `Navigator.kt` |
+| Навигация Android | `app/.../navigation/old/Navigation.kt`, `Routes.kt`, `Navigator.kt`; новый вид `navigation/AppNavigation.kt` |
 | Навигация iOS | `iosApp/WishApp/Navigation/NavigationModel.swift` |
 | Главный экран Android | `app/.../ui/old/screens/wish_list/WishListScreen.kt` |
 | Главный экран iOS | `iosApp/WishApp/View/Main/Components/MainContentView.swift` |
@@ -784,7 +800,7 @@ open iosApp/WishApp.xcodeproj
 | Бэкап iOS | `iosApp/WishApp/View/Backup/` |
 | Аналитика Android | `app/.../domain/model/analytics/`, `app/.../data/repository/analytics/` |
 | Аналитика iOS | `iosApp/WishApp/Domain/Analytics/` |
-| Тема Android | `app/.../ui/old/theme/WishAppTheme.kt` |
+| Тема Android | `app/.../ui/old/theme/WishAppTheme.kt`, новый вид `app/.../ui/theme/AppTheme.kt` |
 | Строки Android | `app/src/main/res/values*/strings.xml` |
 | Строки iOS | `iosApp/WishApp/Resources/{en,ru}.lproj/Localizable.strings` |
 | Версии зависимостей | `gradle/libs.versions.toml` |

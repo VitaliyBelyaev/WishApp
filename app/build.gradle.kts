@@ -171,6 +171,7 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.perf)
+    implementation(libs.firebase.config)
 
     // GMS
     implementation(libs.google.android.gms.playServices.ossLicenses)
@@ -249,4 +250,29 @@ fun Properties.getStringOrDefault(key: String, default: String): String {
 
 fun VariantDimension.stringConfigField(name: String, value: String) {
     buildConfigField("String", name, "\"$value\"")
+}
+// Шрифты лежат в res/font, а не в зависимостях, поэтому плагин лицензий их не видит.
+// Дописываем их лицензии в файлы, которые он генерирует для OssLicensesMenuActivity.
+val fontLicenses = mapOf(
+    "Onest" to file("licenses/OFL-Onest.txt"),
+    "Unbounded" to file("licenses/OFL-Unbounded.txt"),
+)
+tasks.matching { it.name.endsWith("OssLicensesTask") }.configureEach {
+    inputs.files(fontLicenses.values)
+    doLast {
+        val licensesFiles = outputs.files.flatMap { output ->
+            output.walkTopDown().filter { it.name == "third_party_licenses" }.toList()
+        }
+        licensesFiles.forEach { licensesFile ->
+            val metadataFile = File(licensesFile.parentFile, "third_party_license_metadata")
+            fontLicenses.forEach { (name, licenseFile) ->
+                val text = licenseFile.readBytes()
+                val offset = licensesFile.length()
+                licensesFile.appendBytes(text + "\n".toByteArray())
+                val metadata = metadataFile.readText()
+                val separator = if (metadata.isEmpty() || metadata.endsWith("\n")) "" else "\n"
+                metadataFile.appendText("$separator$offset:${text.size} $name\n")
+            }
+        }
+    }
 }

@@ -127,7 +127,7 @@ fun WishListScreen(
 
     LaunchedEffect(key1 = Unit) {
         appViewModel.showSnackOnMainFlow.collect {
-            snackbarHostState.showDismissableSnackbar(it)
+            snackbarHostState.showDismissableSnackbar(it.text)
         }
     }
 

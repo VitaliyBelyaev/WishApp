@@ -104,4 +104,36 @@
     <string name="sort_created_oldest">Mais antigos primeiro</string>
     <string name="sort_title_az">Título A-Z</string>
     <string name="sort_title_za">Título Z-A</string>
+
+    <!-- Новый вид, черновики из артефакта локализации -->
+    <string name="nav_done">Realizados</string>
+    <string name="snack_deleted">Excluído: “%1$s”</string>
+    <string name="snack_undo">Desfazer</string>
+    <plurals name="photo_count">
+        <item quantity="one">%1$d foto</item>
+        <item quantity="many">%1$d fotos</item>
+        <item quantity="other">%1$d fotos</item>
+    </plurals>
+    <string name="card_photo_only">Foto</string>
+    <!-- TalkBack: карточка и строка хотелки читаются одной фразой -->
+    <string name="a11y_card_with_photo">com foto</string>
+    <string name="a11y_card_tag">etiqueta %1$s</string>
+    <string name="a11y_card_tag_more">etiqueta %1$s e mais %2$d</string>
+    <plurals name="a11y_card_other_tags">
+        <item quantity="one">mais %1$d etiqueta</item>
+        <item quantity="many">mais %1$d etiquetas</item>
+        <item quantity="other">mais %1$d etiquetas</item>
+    </plurals>
+    <string name="a11y_card_has_link">com link</string>
+    <plurals name="a11y_card_links">
+        <item quantity="one">%1$d link</item>
+        <item quantity="many">%1$d links</item>
+        <item quantity="other">%1$d links</item>
+    </plurals>
+    <string name="a11y_selected">selecionado</string>
+    <string name="a11y_not_selected">não selecionado</string>
+    <string name="a11y_action_open">abrir</string>
+    <string name="a11y_action_select">selecionar</string>
+    <string name="a11y_action_unselect">desmarcar</string>
+    <string name="a11y_action_select_many">selecionar vários</string>
 </resources>
