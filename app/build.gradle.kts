@@ -38,8 +38,8 @@ android {
         applicationId = "ru.vitaliy.belyaev.wishapp"
         minSdk = 24
         targetSdk = 37
-        versionCode = 24
-        versionName = "1.8.2"
+        versionCode = 25
+        versionName = "1.9.0"
 
         // Ключ Amplitude только в release, иначе debug и автотесты пишут в боевой проект
         stringConfigField(amplitudeApiKey, "")

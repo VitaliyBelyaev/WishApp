@@ -9,7 +9,7 @@
 теги, ссылки, комментарии, шаринг (Android: текст/PDF), изображения (Android),
 локальная SQLite, бэкап в Google Drive (Android) / iCloud (iOS).
 
-- Android: `1.8.2` (`versionCode 24`), Google Play `ru.vitaliy.belyaev.wishapp`
+- Android: `1.9.0` (`versionCode 25`), Google Play `ru.vitaliy.belyaev.wishapp`
 - iOS: `1.1.0` (`CURRENT_PROJECT_VERSION 7`), ранее App Store `id6450624836`
 
 ## Статус платформ
