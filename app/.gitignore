@@ -1,3 +1,4 @@
 /build
 src/google-services.json
 wish_app_release_keystore
+/release
