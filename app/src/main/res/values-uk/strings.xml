@@ -34,6 +34,7 @@
     <string name="cancel">Скасування</string>
     <string name="delete_tag_title">Видалити ярлик?</string>
     <string name="delete_tag_description">Ярлик буде видалено. Він зникне з усіх хотелок, причому самі хотелки збережеться.</string>
+    <string name="edit_tag_duplicate_title_text">Ярлик з такою назвою вже є</string>
     <string name="delete_wish_title">Видалити хотелку?</string>
     <string name="delete_wish_image_title">Видалити зображення?</string>
     <string name="delete_wish_link_title">Видалити посилання?</string>

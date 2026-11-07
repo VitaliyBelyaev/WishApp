@@ -33,6 +33,7 @@
     <string name="cancel">Annuler</string>
     <string name="delete_tag_title">Supprimer le libellé ?</string>
     <string name="delete_tag_description">Nous supprimerons ce libellé et le supprimerons de tous vos souhaits. Vos souhaits ne seront pas supprimés.</string>
+    <string name="edit_tag_duplicate_title_text">Un libellé portant ce nom existe déjà</string>
     <string name="delete_wish_title">Supprimer le souhait ?</string>
     <string name="delete_wish_image_title">Supprimer l\'image?</string>
     <string name="delete_wish_link_title">Supprimer le lien ?</string>

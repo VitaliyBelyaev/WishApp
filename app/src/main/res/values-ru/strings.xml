@@ -34,6 +34,7 @@
     <string name="cancel">Отмена</string>
     <string name="delete_tag_title">Удалить ярлык?</string>
     <string name="delete_tag_description">Ярлык будет удалён. Он исчезнет со всех хотелок, при этом сами хотелки сохранятся.</string>
+    <string name="edit_tag_duplicate_title_text">Ярлык с таким названием уже есть</string>
     <string name="delete_wish_title">Удалить хотелку?</string>
     <string name="delete_wish_image_title">Удалить изображение?</string>
     <string name="delete_wish_link_title">Удалить ссылку?</string>

@@ -2,8 +2,11 @@ package ru.vitaliy.belyaev.wishapp.ui.old.screens.edittags
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.EditTagsScreenShowEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.EditTagsDeleteTagConfirmedEvent
@@ -23,6 +26,10 @@ class EditTagsViewModel @Inject constructor(
     val uiState: StateFlow<List<EditTagItem>> = _uiState
 
     private var currentEditingTag: TagEntity? = null
+
+    /** Новое название уже занято другим ярлыком: shared дубли не пропускает, название не изменилось. */
+    private val _duplicateTitleFlow = MutableSharedFlow<Unit>()
+    val duplicateTitleFlow: SharedFlow<Unit> = _duplicateTitleFlow.asSharedFlow()
 
     init {
         launchSafe {
@@ -57,7 +64,12 @@ class EditTagsViewModel @Inject constructor(
         }
         launchSafe {
             currentEditingTag = null
-            tagsRepository.updateTagTitle(newTitle.trim(), tag.id)
+            val isRenamed = tagsRepository.updateTagTitle(newTitle.trim(), tag.id)
+            if (!isRenamed) {
+                // База не изменилась и новых данных не пришлёт: закрываем поле сами, название прежнее
+                _uiState.value = _uiState.value.map { it.copy(isEditMode = false) }
+                _duplicateTitleFlow.emit(Unit)
+            }
         }
     }
 }

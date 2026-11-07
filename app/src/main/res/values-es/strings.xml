@@ -33,6 +33,7 @@
     <string name="cancel">Cancelar</string>
     <string name="delete_tag_title">¿Eliminar etiqueta?</string>
     <string name="delete_tag_description">Borraremos esta etiqueta y la quitaremos de todos tus deseos. Tus deseos no serán eliminados.</string>
+    <string name="edit_tag_duplicate_title_text">Ya existe una etiqueta con este nombre</string>
     <string name="delete_wish_title">¿Eliminar deseo?</string>
     <string name="delete_wish_image_title">¿Eliminar Imagen?</string>
     <string name="delete_wish_link_title">¿Eliminar enlace?</string>

@@ -33,6 +33,7 @@
     <string name="cancel">Cancelar</string>
     <string name="delete_tag_title">Excluir marcador?</string>
     <string name="delete_tag_description">Vamos excluir este marcador e removê-lo de todos os seus desejos. Seus desejos não serão excluídos.</string>
+    <string name="edit_tag_duplicate_title_text">Já existe um marcador com este nome</string>
     <string name="delete_wish_title">Excluir desejo?</string>
     <string name="delete_wish_image_title">Excluir imagem?</string>
     <string name="delete_wish_link_title">Excluir link?</string>
