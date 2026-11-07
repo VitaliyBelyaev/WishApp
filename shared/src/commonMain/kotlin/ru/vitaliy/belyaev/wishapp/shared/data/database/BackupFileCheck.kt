@@ -23,14 +23,14 @@ sealed interface BackupFileCheckResult {
 object BackupFileCheck {
 
     private val SqliteMagic: ByteArray = "SQLite format 3\u0000".encodeToByteArray()
-    private const val HeaderSize = 100
-    private const val UserVersionOffset = 60
+    private const val HEADER_SIZE = 100
+    private const val USER_VERSION_OFFSET = 60
 
     fun check(
         fileHeader: ByteArray,
         appSchemaVersion: Long = WishAppDb.Schema.version,
     ): BackupFileCheckResult {
-        if (fileHeader.size < HeaderSize) return BackupFileCheckResult.NotDatabase
+        if (fileHeader.size < HEADER_SIZE) return BackupFileCheckResult.NotDatabase
         if (!SqliteMagic.indices.all { fileHeader[it] == SqliteMagic[it] }) return BackupFileCheckResult.NotDatabase
 
         val backupSchemaVersion = readUserVersion(fileHeader)
@@ -42,5 +42,5 @@ object BackupFileCheck {
     }
 
     private fun readUserVersion(header: ByteArray): Long =
-        (0 until 4).fold(0L) { acc, i -> (acc shl 8) or (header[UserVersionOffset + i].toLong() and 0xFF) }
+        (0 until 4).fold(0L) { acc, i -> (acc shl 8) or (header[USER_VERSION_OFFSET + i].toLong() and 0xFF) }
 }

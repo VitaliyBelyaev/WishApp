@@ -5,7 +5,6 @@ import androidx.annotation.StringRes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -34,10 +33,10 @@ fun annotatedStringResource(@StringRes id: Int): AnnotatedString {
             addStyle(
                 SpanStyle(
                     color = MaterialTheme.colorScheme.primary,
-                    textDecoration = TextDecoration.Underline
+                    textDecoration = TextDecoration.Underline,
                 ),
                 start,
-                end
+                end,
             )
             addStringAnnotation("URL", span.url, start, end)
         }

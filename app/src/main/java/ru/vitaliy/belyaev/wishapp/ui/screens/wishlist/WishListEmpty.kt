@@ -36,9 +36,9 @@ import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppSpacing
 import ru.vitaliy.belyaev.wishapp.ui.theme.body
+import ru.vitaliy.belyaev.wishapp.ui.theme.displayM
 import ru.vitaliy.belyaev.wishapp.ui.theme.label
 import ru.vitaliy.belyaev.wishapp.ui.theme.labelS
-import ru.vitaliy.belyaev.wishapp.ui.theme.displayM
 
 /** Пустой раздел: у «Хотелок» кнопки первой хотелки и восстановления из копии, у остальных только текст. */
 @Composable

@@ -33,7 +33,7 @@ class UpdateAnalyticsUserPropertiesUseCase @Inject constructor(
                 "has_images" to hasImages,
                 "app_theme" to theme.name.lowercase(Locale.ROOT),
                 "backup_created" to isBackupCreated,
-            )
+            ),
         )
     }
 }

@@ -1,9 +1,11 @@
+root = true
+
 [*]
 charset = utf-8
 end_of_line = lf
 indent_size = 4
 indent_style = space
-insert_final_newline = false
+insert_final_newline = true
 max_line_length = 120
 tab_width = 4
 ij_continuation_indent_size = 8
@@ -15,14 +17,32 @@ ij_visual_guides = none
 ij_wrap_on_typing = false
 
 [{*.kt,*.kts}]
+# ktlint: стиль близок к коду до редизайна, подробности в docs/CODE_STYLE.md
+ktlint_code_style = intellij_idea
+ktlint_function_naming_ignore_when_annotated_with = Composable
+# Параметры остаются по одному на строку, даже если влезают в одну
+ktlint_standard_function-signature = disabled
+ktlint_standard_class-signature = disabled
+# Тело функции блоком не переделывается в «= выражение»
+ktlint_standard_function-expression-body = disabled
+# Пакеты с подчёркиванием (wish_list, alert_dialog) уже есть
+ktlint_standard_package-name = disabled
+# Файлы с группой событий (screenShowEvents.kt и т. п.); соответствие имени класса проверяет detekt
+ktlint_standard_filename = disabled
+# Неиспользуемые импорты: с ktlint 1.7 правило выключено по умолчанию, включаем явно
+ktlint_standard_no-unused-imports = enabled
+# Ветки when идут без пустых строк между ними
+ktlint_standard_blank-line-between-when-conditions = disabled
+# Пустая строка в начале тела функции допустима
+ktlint_standard_no-empty-first-line-in-method-block = disabled
 ij_kotlin_align_in_columns_case_branch = false
 ij_kotlin_align_multiline_binary_operation = false
 ij_kotlin_align_multiline_extends_list = false
 ij_kotlin_align_multiline_method_parentheses = false
 ij_kotlin_align_multiline_parameters = true
 ij_kotlin_align_multiline_parameters_in_calls = false
-ij_kotlin_allow_trailing_comma = false
-ij_kotlin_allow_trailing_comma_on_call_site = false
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
 ij_kotlin_assignment_wrap = normal
 ij_kotlin_blank_lines_after_class_header = 0
 ij_kotlin_blank_lines_around_block_when_branches = 0
@@ -48,7 +68,7 @@ ij_kotlin_field_annotation_wrap = split_into_lines
 ij_kotlin_finally_on_new_line = false
 ij_kotlin_if_rparen_on_new_line = true
 ij_kotlin_import_nested_classes = false
-ij_kotlin_imports_layout = ^,*
+ij_kotlin_imports_layout = *
 ij_kotlin_insert_whitespaces_in_simple_one_line_method = true
 ij_kotlin_keep_blank_lines_before_right_brace = 0
 ij_kotlin_keep_blank_lines_in_code = 1

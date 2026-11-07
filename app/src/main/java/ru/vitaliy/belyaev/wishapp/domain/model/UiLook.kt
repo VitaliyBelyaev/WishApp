@@ -2,7 +2,9 @@ package ru.vitaliy.belyaev.wishapp.domain.model
 
 /** Какой вид приложения показывать: прежний или новый после редизайна. */
 enum class UiLook {
-    OLD, NEW;
+    OLD,
+    NEW,
+    ;
 
     companion object {
         fun fromStoredValue(value: String?): UiLook? = entries.firstOrNull { it.storedValue == value }
@@ -23,7 +25,10 @@ val UiLook.storedValue: String
  * - [NEW_ONLY]: выбора нет.
  */
 enum class UiLookMode {
-    OLD_ONLY, CHOICE, NEW_ONLY;
+    OLD_ONLY,
+    CHOICE,
+    NEW_ONLY,
+    ;
 
     companion object {
         /** Неизвестное или пустое значение из Remote Config считается [OLD_ONLY]. */

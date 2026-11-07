@@ -12,7 +12,7 @@ import ru.vitaliy.belyaev.wishapp.domain.repository.BackupAuthRepository
 import timber.log.Timber
 
 internal class GoogleBackupAuthRepository(
-    private val context: Context
+    private val context: Context,
 ) : BackupAuthRepository {
 
     override fun isSignedIn(): Boolean {

@@ -1,0 +1,43 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>AbstractClassCanBeConcreteClass:BaseViewModel.kt:BaseViewModel$BaseViewModel</ID>
+    <ID>AbstractClassCanBeInterface:BackupInfo.kt:BackupInfo$BackupInfo</ID>
+    <ID>AbstractClassCanBeInterface:ShareData.kt:ShareData$ShareData</ID>
+    <ID>ComposableNaming:TrackScreenShowExt.kt:@SuppressLint("ComposableNaming") @Composable fun trackScreenShow</ID>
+    <ID>CyclomaticComplexMethod:WishItemParts.kt:@Composable internal fun wishDescription: String</ID>
+    <ID>CyclomaticComplexMethod:WishListScreen.kt:@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class) @Composable private fun WishListContent</ID>
+    <ID>LongMethod:WishListScreen.kt:@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class) @Composable private fun WishListContent</ID>
+    <ID>LongParameterList:AppActivityViewModel.kt:AppActivityViewModel</ID>
+    <ID>LongParameterList:WishListHeader.kt:HeaderMenuState</ID>
+    <ID>LongParameterList:WishListScreen.kt:WishListActions</ID>
+    <ID>LongParameterList:WishPreviewData.kt:internal fun previewWish</ID>
+    <ID>MatchingDeclarationName:AppNavigation.kt:WishListRoute : NavKey</ID>
+    <ID>MatchingDeclarationName:FloatingDock.kt:DockTab</ID>
+    <ID>MatchingDeclarationName:WishImagesViewerEvents.kt:WishImagesViewerDeleteImageConfirmedEvent : AnalyticsEvent</ID>
+    <ID>MatchingDeclarationName:WishListScreen.kt:WishListActions</ID>
+    <ID>MatchingDeclarationName:WishTagsActionsEvents.kt:WishTagsAddNewTagClickedEvent : AnalyticsEvent</ID>
+    <ID>MaxLineLength:WishListViewModel.kt:WishListViewModel$withContext(dispatcherProvider.main()) { context.startActivity(createSharePdfDocumentIntent(pdfFile, context)) }</ID>
+    <ID>MaxLineLength:WishPreviewData.kt:PreviewWishes$"для хранения. Смотрела разные варианты, пока больше всего нравится модель из второй ссылки, но она дорогая."</ID>
+    <ID>MissingReadOnlyComposable:FloatingDock.kt:@Composable internal fun floatingDarkOutline: BorderStroke?</ID>
+    <ID>MissingReadOnlyComposable:WishListSheets.kt:@Composable internal fun sortLabel: String</ID>
+    <ID>NoNameShadowing:AppNavigation.kt:{ -smallOffset(it) }</ID>
+    <ID>NoNameShadowing:AppNavigation.kt:{ navigate(WishDetailedRoute(wishId = it)) }</ID>
+    <ID>NoNameShadowing:AppNavigation.kt:{ smallOffset(it) }</ID>
+    <ID>ReturnCount:AppActivity.kt:AppActivity$private fun extractSharedDraft: SharedWishDraft?</ID>
+    <ID>ReturnCount:UiLook.kt:fun resolveUiLook: UiLook</ID>
+    <ID>SpreadOperator:FloatingDock.kt:(*stops.toTypedArray())</ID>
+    <ID>SpreadOperator:WishListHeader.kt:(*stops.toTypedArray())</ID>
+    <ID>SwallowedException:Context.kt:e: ActivityNotFoundException</ID>
+    <ID>TooGenericExceptionCaught:GoogleBackupAuthRepository.kt:GoogleBackupAuthRepository$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:IsUserSignedInToBackupServiceUseCase.kt:IsUserSignedInToBackupServiceUseCase$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:WishListViewModel.kt:WishListViewModel$error: Exception</ID>
+    <ID>UnnecessaryApply:ShareWishListPdfGenerator.kt:ShareWishListPdfGenerator$apply { text = title }</ID>
+    <ID>UnnecessaryComposable:AppRoot.kt:@OptIn(ExperimentalCoroutinesApi::class) @ExperimentalFoundationApi @ExperimentalComposeUiApi @ExperimentalMaterialApi @Composable internal fun OldLookRoot</ID>
+    <ID>UnnecessaryLaunchedEffect:AppActivity.kt:AppActivity$LaunchedEffect</ID>
+    <ID>UnnecessaryLaunchedEffect:AppTheme.kt:LaunchedEffect</ID>
+    <ID>UnnecessaryLaunchedEffect:WishListHeader.kt:LaunchedEffect</ID>
+    <ID>UnnecessaryLaunchedEffect:WishListScreen.kt:LaunchedEffect</ID>
+  </CurrentIssues>
+</SmellBaseline>

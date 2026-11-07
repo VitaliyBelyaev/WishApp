@@ -104,4 +104,5 @@ iOSInjectionProject/
 /iosApp/Pods/
 #/iosApp/WishApp/GoogleService-Info.plist
 #/iosApp/WishApp/AppKeys.plist
-.claude/
+.claude/*
+!.claude/settings.json

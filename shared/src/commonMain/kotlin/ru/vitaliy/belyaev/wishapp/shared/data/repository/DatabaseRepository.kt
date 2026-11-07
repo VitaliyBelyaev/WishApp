@@ -45,7 +45,7 @@ import ru.vitaliy.belyaev.wishapp.shared.utils.nowEpochMillis
 @OptIn(ExperimentalTime::class)
 class DatabaseRepository(
     database: WishAppDb,
-    private val dispatcherProvider: DispatcherProvider
+    private val dispatcherProvider: DispatcherProvider,
 ) : WishesRepository, WishTagRelationRepository, TagsRepository, ImagesRepository {
 
     private val wishQueries: WishQueries = database.wishQueries
@@ -69,7 +69,7 @@ class DatabaseRepository(
                         createdTimestamp,
                         updatedTimestamp,
                         position,
-                        completedTimestamp
+                        completedTimestamp,
                     )
                 }
             }
@@ -82,7 +82,7 @@ class DatabaseRepository(
             wishQueries.updateTitle(
                 title = newValue,
                 updatedTimestamp = Clock.System.nowEpochMillis(),
-                wishId = wishId
+                wishId = wishId,
             )
         }
     }
@@ -93,7 +93,7 @@ class DatabaseRepository(
             wishQueries.updateLink(
                 link = newValue,
                 updatedTimestamp = Clock.System.nowEpochMillis(),
-                wishId = wishId
+                wishId = wishId,
             )
         }
     }
@@ -104,7 +104,7 @@ class DatabaseRepository(
             wishQueries.updateComment(
                 comment = newValue,
                 updatedTimestamp = Clock.System.nowEpochMillis(),
-                wishId = wishId
+                wishId = wishId,
             )
         }
     }
@@ -119,7 +119,7 @@ class DatabaseRepository(
                     isCompleted = newValue,
                     updatedTimestamp = now,
                     completedTimestamp = if (newValue) now else null,
-                    wishId = wishId
+                    wishId = wishId,
                 )
 
                 if (newValue) {
@@ -139,7 +139,7 @@ class DatabaseRepository(
         withContext(dispatcherProvider.io()) {
             wishQueries.updatePosition(
                 position = newValue,
-                wishId = wishId
+                wishId = wishId,
             )
         }
     }
@@ -149,17 +149,17 @@ class DatabaseRepository(
         wish1Id: String,
         wish1Position: Long,
         wish2Id: String,
-        wish2Position: Long
+        wish2Position: Long,
     ) {
         withContext(dispatcherProvider.io()) {
             wishQueries.transaction {
                 wishQueries.updatePosition(
                     position = wish2Position,
-                    wishId = wish1Id
+                    wishId = wish1Id,
                 )
                 wishQueries.updatePosition(
                     position = wish1Position,
-                    wishId = wish2Id
+                    wishId = wish2Id,
                 )
             }
         }
@@ -169,7 +169,7 @@ class DatabaseRepository(
     override suspend fun swapMovedWishPositionWithPassedWishes(
         wishId: String,
         wishPosition: Long,
-        passedWishes: List<WishEntity>
+        passedWishes: List<WishEntity>,
     ) {
         withContext(dispatcherProvider.io()) {
             wishQueries.transaction {
@@ -177,11 +177,11 @@ class DatabaseRepository(
                     val prevPassedWishPosition = passedWishes.getOrNull(index - 1)?.position ?: wishPosition
                     wishQueries.updatePosition(
                         position = passedWish.position,
-                        wishId = wishId
+                        wishId = wishId,
                     )
                     wishQueries.updatePosition(
                         position = prevPassedWishPosition,
-                        wishId = passedWish.id
+                        wishId = passedWish.id,
                     )
                 }
             }
@@ -193,24 +193,24 @@ class DatabaseRepository(
         startIndex: Int,
         endIndex: Int,
         wishId: String,
-        isMoveDown: Boolean
+        isMoveDown: Boolean,
     ) {
         withContext(dispatcherProvider.io()) {
             wishQueries.transaction {
                 if (isMoveDown) {
                     wishQueries.updatePositionsOnItemMoveDown(
                         position = startIndex.toLong(),
-                        position_ = endIndex.toLong()
+                        position_ = endIndex.toLong(),
                     )
                 } else {
                     wishQueries.updatePositionsOnItemMoveUp(
                         position = startIndex.toLong(),
-                        position_ = endIndex.toLong()
+                        position_ = endIndex.toLong(),
                     )
                 }
                 wishQueries.updatePosition(
                     position = endIndex.toLong(),
-                    wishId = wishId
+                    wishId = wishId,
                 )
             }
         }
@@ -278,7 +278,8 @@ class DatabaseRepository(
         val wishesQuery: Query<Wish> = when (sortMode) {
             WishSortMode.Default,
             WishSortMode.TitleAZ,
-            WishSortMode.TitleZA -> wishQueries.getAll(isCompleted)
+            WishSortMode.TitleZA,
+            -> wishQueries.getAll(isCompleted)
             WishSortMode.CreatedDateNewest -> wishQueries.getAllByCreatedTimestampDesc(isCompleted)
             WishSortMode.CreatedDateOldest -> wishQueries.getAllByCreatedTimestampAsc(isCompleted)
         }
@@ -381,7 +382,8 @@ class DatabaseRepository(
         val wishesByTagQuery: Query<Wish> = when (sortMode) {
             WishSortMode.Default,
             WishSortMode.TitleAZ,
-            WishSortMode.TitleZA -> wishTagRelationQueries.getAllWishesByTag(tagId)
+            WishSortMode.TitleZA,
+            -> wishTagRelationQueries.getAllWishesByTag(tagId)
             WishSortMode.CreatedDateNewest -> wishTagRelationQueries.getAllWishesByTagCreatedDesc(tagId)
             WishSortMode.CreatedDateOldest -> wishTagRelationQueries.getAllWishesByTagCreatedAsc(tagId)
         }
@@ -624,7 +626,7 @@ class DatabaseRepository(
                     image.id,
                     image.wishId,
                     image.rawData,
-                    position
+                    position,
                 )
             }
         }

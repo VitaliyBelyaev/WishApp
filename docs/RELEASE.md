@@ -5,7 +5,9 @@
 
 ## Ветки и теги
 
-- `dev` — основная разработка, сюда вливаются feature-ветки.
+- `dev` — основная разработка, сюда вливаются feature-ветки. Перед вливанием
+  (PR или прямой merge) обязательно `./gradlew ktlintCheck detekt detektTyped`,
+  см. `docs/CODE_STYLE.md`.
 - `master` — то, что сейчас в проде. Сюда попадает только раскатанный релиз.
 - `release/android-X.Y.Z` — ветка релиза, живёт от сборки до полной раскатки.
 - Тег `android/vX.Y.Z` — коммит, из которого собран бандл, ушедший в прод.
@@ -75,6 +77,7 @@
 ### Быстрые, на debug-сборке
 
 ```bash
+./gradlew ktlintCheck detekt detektTyped
 ./gradlew :app:testDebugUnitTest
 ./gradlew :app:lintDebug
 ./gradlew :shared:compileKotlinIosArm64 :shared:linkDebugFrameworkIosSimulatorArm64

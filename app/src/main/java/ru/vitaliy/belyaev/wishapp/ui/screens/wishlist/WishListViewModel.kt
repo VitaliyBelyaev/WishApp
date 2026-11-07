@@ -7,7 +7,6 @@ import java.io.File
 import java.text.Collator
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -35,6 +34,7 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.toWishCardModel
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.utils.ShareWishListPdfGenerator
+import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
 import ru.vitaliy.belyaev.wishapp.utils.createSharePdfDocumentIntent
 import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 import timber.log.Timber
@@ -60,6 +60,7 @@ class WishListViewModel @Inject constructor(
     private val tagsRepository: TagsRepository,
     private val imagesRepository: ImagesRepository,
     private val dataStoreRepository: DataStoreRepository,
+    private val dispatcherProvider: DispatcherProvider,
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow(WishListUiState())
@@ -131,11 +132,11 @@ class WishListViewModel @Inject constructor(
         val wishes = sectionWishes
         val title = context.getString(R.string.wish_list_title)
         when (format) {
-            ShareFormat.TEXT -> launchSafe(Dispatchers.Default) {
+            ShareFormat.TEXT -> launchSafe(dispatcherProvider.default()) {
                 val text = ShareWishListTextGenerator.generateFormattedWishListText(title = title, wishes = wishes)
-                withContext(Dispatchers.Main) { context.startActivity(createSharePlainTextIntent(text)) }
+                withContext(dispatcherProvider.main()) { context.startActivity(createSharePlainTextIntent(text)) }
             }
-            ShareFormat.PDF -> launchSafe(Dispatchers.Default) {
+            ShareFormat.PDF -> launchSafe(dispatcherProvider.default()) {
                 _isSharingPdf.value = true
                 val pdfFile: File = try {
                     ShareWishListPdfGenerator.generatePdfForWishList(
@@ -154,7 +155,9 @@ class WishListViewModel @Inject constructor(
                 } finally {
                     _isSharingPdf.value = false
                 }
-                withContext(Dispatchers.Main) { context.startActivity(createSharePdfDocumentIntent(pdfFile, context)) }
+                withContext(dispatcherProvider.main()) {
+                    context.startActivity(createSharePdfDocumentIntent(pdfFile, context))
+                }
             }
         }
     }
@@ -240,7 +243,10 @@ class WishListViewModel @Inject constructor(
 
     private fun observeSectionWishes(section: ListSection, settings: ListSettings): Flow<List<WishEntity>> {
         return when (section) {
-            ListSection.Wishes -> wishesRepository.observeAllWishesSorted(isCompleted = false, sortMode = settings.mainSort)
+            ListSection.Wishes -> wishesRepository.observeAllWishesSorted(
+                isCompleted = false,
+                sortMode = settings.mainSort,
+            )
             is ListSection.Tag -> wishesRepository.observeWishesByTagSorted(section.tagId, settings.mainSort)
             ListSection.Done -> when (settings.doneSort) {
                 DoneSortMode.NEWEST -> wishesRepository.observeCompletedWishesByCompletionDate(newestFirst = true)

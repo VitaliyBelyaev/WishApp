@@ -67,7 +67,7 @@ object ShareWishListPdfGenerator {
         val pageInfo = PageInfo.Builder(
             PAGE_WIDTH_A4,
             pageHeight,
-            1
+            1,
         ).create()
 
         val document = PdfDocument()
@@ -96,7 +96,7 @@ object ShareWishListPdfGenerator {
         wishes: List<WishEntity>,
         imagesRepository: ImagesRepository,
         title: String,
-        allBitmaps: MutableList<Bitmap>
+        allBitmaps: MutableList<Bitmap>,
     ): LinearLayout {
         val view: LinearLayout =
             LayoutInflater.from(context).inflate(R.layout.wishes_pdf_view, null) as LinearLayout
@@ -158,7 +158,7 @@ object ShareWishListPdfGenerator {
             View(context).apply {
                 val spacerViewLp = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
-                    WISHES_SPACER_HEIGHT
+                    WISHES_SPACER_HEIGHT,
                 )
                 view.addView(this, spacerViewLp)
             }
@@ -170,7 +170,7 @@ object ShareWishListPdfGenerator {
     private fun setupAndFillLinksContainerView(
         context: Context,
         linksContainer: LinearLayout,
-        wishEntity: WishEntity
+        wishEntity: WishEntity,
     ) {
         linksContainer.removeAllViews()
 
@@ -191,7 +191,7 @@ object ShareWishListPdfGenerator {
 
             val lp = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+                LinearLayout.LayoutParams.WRAP_CONTENT,
             )
 
             linksContainer.addView(linkView, lp)
@@ -205,22 +205,21 @@ object ShareWishListPdfGenerator {
                     URLSpan(url),
                     0,
                     length,
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
                 )
                 setSpan(
                     ForegroundColorSpan(
                         ContextCompat.getColor(
                             context,
-                            R.color.launcherIconPrimaryColor
-                        )
+                            R.color.launcherIconPrimaryColor,
+                        ),
                     ),
                     0,
                     length,
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
                 )
-
             },
-            TextView.BufferType.SPANNABLE
+            TextView.BufferType.SPANNABLE,
         )
     }
 }

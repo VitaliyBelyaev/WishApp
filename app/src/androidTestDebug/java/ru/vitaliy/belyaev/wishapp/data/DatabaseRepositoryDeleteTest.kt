@@ -21,8 +21,8 @@ class DatabaseRepositoryDeleteTest {
         DatabaseDriverFactory(
             object : ContextWrapper(targetContext) {
                 override fun getDatabasePath(name: String): File = databaseFile
-            }
-        )
+            },
+        ),
     ).getDatabaseRepository()
 
     @After

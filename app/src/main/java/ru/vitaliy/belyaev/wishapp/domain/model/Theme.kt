@@ -1,7 +1,9 @@
 package ru.vitaliy.belyaev.wishapp.domain.model
 
 enum class Theme {
-    SYSTEM, DARK, LIGHT
+    SYSTEM,
+    DARK,
+    LIGHT,
 }
 
 private const val INT_SYSTEM = 0

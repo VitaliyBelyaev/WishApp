@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:max-line-length", "MaxLineLength")
+
 package ru.vitaliy.belyaev.wishapp.shared.utils
 
 import com.benasher44.uuid.uuid4
@@ -16,12 +18,14 @@ object SampleDataGenerator {
                 id = "1",
                 title = "Шуруповерт",
                 link = "https://www.citilink.ru/product/drel-shurupovert-bosch-universaldrill-18v-akkum-patron-bystrozazhimnoi-1492081/?region_id=123062&gclid=CjwKCAiAm7OMBhAQEiwArvGi3Aom3wUbhHlBUu-9OPINzsyF9rM0Q2rBUgp1jFV68iT7IUaAoTA-1xoCzPcQAvD_BwE",
-                links = listOf("https://www.citilink.ru/product/drel-shurupovert-bosch-universaldrill-18v-akkum-patron-bystrozazhimnoi-1492081/?region_id=123062&gclid=CjwKCAiAm7OMBhAQEiwArvGi3Aom3wUbhHlBUu-9OPINzsyF9rM0Q2rBUgp1jFV68iT7IUaAoTA-1xoCzPcQAvD_BwE"),
+                links = listOf(
+                    "https://www.citilink.ru/product/drel-shurupovert-bosch-universaldrill-18v-akkum-patron-bystrozazhimnoi-1492081/?region_id=123062&gclid=CjwKCAiAm7OMBhAQEiwArvGi3Aom3wUbhHlBUu-9OPINzsyF9rM0Q2rBUgp1jFV68iT7IUaAoTA-1xoCzPcQAvD_BwE",
+                ),
                 comment = "С кейсом, чтобы были головки разные и запасной аккумулятор",
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,
-                position = 0
+                position = 0,
             ),
             WishEntity(
                 id = "2",
@@ -32,18 +36,20 @@ object SampleDataGenerator {
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,
-                position = 0
+                position = 0,
             ),
             WishEntity(
                 id = "3",
                 title = "Робот пылесос",
                 link = "https://www.citilink.ru/product/pylesos-robot-xiaomi-mi-mop-p-chernyi-1393766/?region_id=123062&gclid=CjwKCAiAm7OMBhAQEiwArvGi3DS-H1fiWV65XGxNEcrSzE1PpsULu34hK2eZ1C235ZV3OHton6qXMBoCzrQQAvD_BwE",
-                links = listOf("https://www.citilink.ru/product/pylesos-robot-xiaomi-mi-mop-p-chernyi-1393766/?region_id=123062&gclid=CjwKCAiAm7OMBhAQEiwArvGi3DS-H1fiWV65XGxNEcrSzE1PpsULu34hK2eZ1C235ZV3OHton6qXMBoCzrQQAvD_BwE"),
+                links = listOf(
+                    "https://www.citilink.ru/product/pylesos-robot-xiaomi-mi-mop-p-chernyi-1393766/?region_id=123062&gclid=CjwKCAiAm7OMBhAQEiwArvGi3DS-H1fiWV65XGxNEcrSzE1PpsULu34hK2eZ1C235ZV3OHton6qXMBoCzrQQAvD_BwE",
+                ),
                 comment = "Чтобы с шерстью справлялся и умел по неровнастям ездить",
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,
-                position = 0
+                position = 0,
             ),
             WishEntity(
                 id = "4",
@@ -54,7 +60,7 @@ object SampleDataGenerator {
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,
-                position = 0
+                position = 0,
             ),
             WishEntity(
                 id = "5",
@@ -65,8 +71,8 @@ object SampleDataGenerator {
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,
-                position = 0
-            )
+                position = 0,
+            ),
         )
     }
 
@@ -82,7 +88,7 @@ object SampleDataGenerator {
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,
-                position = 0
+                position = 0,
             ),
             WishEntity(
                 id = "2",
@@ -93,7 +99,7 @@ object SampleDataGenerator {
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,
-                position = 0
+                position = 0,
             ),
             WishEntity(
                 id = "3",
@@ -104,7 +110,7 @@ object SampleDataGenerator {
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,
-                position = 0
+                position = 0,
             ),
             WishEntity(
                 id = "4",
@@ -115,19 +121,21 @@ object SampleDataGenerator {
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,
-                position = 0
+                position = 0,
             ),
             WishEntity(
                 id = "5",
                 title = "LEATHERMAN Multitool",
                 link = "https://www.amazon.com/LEATHERMAN-Multitool-Replaceable-Spring-Action-Stainless/dp/B0B2V4N34X/ref=sr_1_2?keywords=LEATHERMAN&qid=1673963133&sr=8-2",
-                links = listOf("https://www.amazon.com/LEATHERMAN-Multitool-Replaceable-Spring-Action-Stainless/dp/B0B2V4N34X/ref=sr_1_2?keywords=LEATHERMAN&qid=1673963133&sr=8-2"),
+                links = listOf(
+                    "https://www.amazon.com/LEATHERMAN-Multitool-Replaceable-Spring-Action-Stainless/dp/B0B2V4N34X/ref=sr_1_2?keywords=LEATHERMAN&qid=1673963133&sr=8-2",
+                ),
                 comment = "",
                 isCompleted = false,
                 createdTimestamp = currentMillis,
                 updatedTimestamp = currentMillis,
-                position = 0
-            )
+                position = 0,
+            ),
         )
     }
 
@@ -145,7 +153,7 @@ object SampleDataGenerator {
             "Moment",
             "Memory",
             "Birthday",
-            "Insurance"
+            "Insurance",
         )
         val tags = mutableListOf<TagEntity>()
 

@@ -7,10 +7,10 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AmplitudeAnalyticsRepository
-import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AnalyticsRepositoryComposite
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.FirebaseAnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.LogAnalyticsRepository
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -21,7 +21,7 @@ object AnalyticsModule {
     fun provideAnalyticsRepository(): AnalyticsRepository {
         val repositories = mutableListOf(
             FirebaseAnalyticsRepository(),
-            AmplitudeAnalyticsRepository()
+            AmplitudeAnalyticsRepository(),
         )
         if (BuildConfig.DEBUG) {
             repositories.add(LogAnalyticsRepository())

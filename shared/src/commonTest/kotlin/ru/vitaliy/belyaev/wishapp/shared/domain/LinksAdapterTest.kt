@@ -11,7 +11,7 @@ class LinksAdapterTest {
         val newLink = "https://kotlinlang.org/docs/multiplatform-mobile-getting-started.html"
         val currentLinks = listOf(
             "https://kotlinlang.org/docs/multiplatform-run-tests.html",
-            "https://kotlinlang.org/docs/gradle.html"
+            "https://kotlinlang.org/docs/gradle.html",
         )
         val expected = """
             https://kotlinlang.org/docs/multiplatform-run-tests.html|
@@ -33,7 +33,7 @@ class LinksAdapterTest {
         val currentLinks = listOf(
             "https://kotlinlang.org/docs/multiplatform-run-tests.html",
             "https://kotlinlang.org/docs/gradle.html",
-            "https://kotlinlang.org/docs/multiplatform-mobile-getting-started.html"
+            "https://kotlinlang.org/docs/multiplatform-mobile-getting-started.html",
         )
         val expected = """
             https://kotlinlang.org/docs/multiplatform-run-tests.html|
@@ -58,7 +58,7 @@ class LinksAdapterTest {
         val expected = listOf(
             "https://kotlinlang.org/docs/multiplatform-run-tests.html",
             "https://kotlinlang.org/docs/gradle.html",
-            "https://kotlinlang.org/docs/multiplatform-mobile-getting-started.html"
+            "https://kotlinlang.org/docs/multiplatform-mobile-getting-started.html",
         )
 
         // WHEN

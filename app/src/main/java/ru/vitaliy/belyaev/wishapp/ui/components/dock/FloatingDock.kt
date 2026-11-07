@@ -16,10 +16,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -71,13 +71,13 @@ private val TabIconHeight = 30.dp
  * Подложка под панелью: фон экрана сгущается снизу, карточки уходят под панель мягче и не сливаются
  * с капсулой. Флаг на время подбора, лишнее уберём, когда решим.
  */
-internal const val DockFadeEnabled = true
+internal const val DOCK_FADE_ENABLED = true
 
 /**
  * Тонкая обводка плавающих капсул в тёмной теме: панели и кнопок шапки. Там капсула и карточки
  * без ярлыка почти одного тона.
  */
-internal const val FloatingDarkOutlineEnabled = true
+internal const val FLOATING_DARK_OUTLINE_ENABLED = true
 
 /**
  * Плавающая панель: «Хотелки», «Сбылось», «Ярлыки» и плюс. По макету `FloatingDock`: капсула `surface-card`
@@ -200,7 +200,7 @@ private fun DockTabItem(
                             Modifier.border(1.dp, colors.onSurface.copy(alpha = 0.18f), CircleShape)
                         } else {
                             Modifier
-                        }
+                        },
                     ),
                 contentAlignment = Alignment.Center,
             ) {
@@ -290,29 +290,29 @@ private fun AddButton(onClick: () -> Unit) {
     }
 }
 
-/** Обводка плавающей капсулы при [FloatingDarkOutlineEnabled]: 1 dp `outline` на 60%, только в тёмной теме. */
+/** Обводка плавающей капсулы при [FLOATING_DARK_OUTLINE_ENABLED]: 1 dp `outline` на 60%, только в тёмной теме. */
 @Composable
-internal fun floatingDarkOutline(): BorderStroke? = if (AppThemeExtras.isDark && FloatingDarkOutlineEnabled) {
-    BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = DarkOutlineAlpha))
+internal fun floatingDarkOutline(): BorderStroke? = if (AppThemeExtras.isDark && FLOATING_DARK_OUTLINE_ENABLED) {
+    BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = DARK_OUTLINE_ALPHA))
 } else {
     null
 }
 
-private const val DarkOutlineAlpha = 0.6f
+private const val DARK_OUTLINE_ALPHA = 0.6f
 
 /**
- * Подложка под [FloatingDock] при [DockFadeEnabled]: от прозрачного вверху до почти плотного фона
+ * Подложка под [FloatingDock] при [DOCK_FADE_ENABLED]: от прозрачного вверху до почти плотного фона
  * у нижнего края, по smoothstep. Ставится под панелью на всю ширину, высота с запасом над капсулой.
  */
 @Composable
 fun FloatingDockFade(modifier: Modifier = Modifier) {
-    if (!DockFadeEnabled) return
+    if (!DOCK_FADE_ENABLED) return
     val surface = MaterialTheme.colorScheme.surface
     val navBar = with(LocalDensity.current) { WindowInsets.navigationBars.getBottom(this).toDp() }
     val brush = remember(surface) {
-        val stops = (0..FadeSteps).map { i ->
-            val u = i / FadeSteps.toFloat()
-            u to surface.copy(alpha = FadeBottomAlpha * u * u * (3f - 2f * u))
+        val stops = (0..FADE_STEPS).map { i ->
+            val u = i / FADE_STEPS.toFloat()
+            u to surface.copy(alpha = FADE_BOTTOM_ALPHA * u * u * (3f - 2f * u))
         }
         Brush.verticalGradient(*stops.toTypedArray())
     }
@@ -326,8 +326,8 @@ fun FloatingDockFade(modifier: Modifier = Modifier) {
 
 /** Насколько подложка поднимается над панелью (вместе с её нижним отступом). */
 private val FadeAbove = 36.dp
-private const val FadeBottomAlpha = 0.92f
-private const val FadeSteps = 8
+private const val FADE_BOTTOM_ALPHA = 0.92f
+private const val FADE_STEPS = 8
 
 /** Высота панели: под неё список оставляет место. */
 val FloatingDockHeight = DockHeight

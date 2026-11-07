@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_DONE_SORT_MODE
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_IS_BACKUP_WAS_CREATED
-import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_LIST_LAYOUT
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_IS_RESTORE_FROM_BACKUP_WAS_SUCCEED
+import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_LIST_LAYOUT
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_POSITIVE_ACTIONS_COUNT
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_REVIEW_REQUEST_SHOWN_COUNT
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_SORT_MODE
@@ -35,7 +35,7 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishSortMode
 
 @Singleton
 class DataStoreRepository @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
 ) {
 
     val selectedThemeFlow: Flow<Theme> = dataStore.data

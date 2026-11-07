@@ -1,0 +1,18 @@
+#!/bin/bash
+# git pre-commit: если в коммите есть Kotlin, проверяет оформление (ktlint),
+# detekt и detekt с проверкой типов. Занимает до пары минут, поэтому не в хуке
+# агента, а здесь. Подключение: scripts/install_git_hooks.sh.
+# Пропустить один раз: git commit --no-verify. Подробности: docs/CODE_STYLE.md.
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR -- '*.kt' '*.kts' |
+    grep -v -e '/ui/old/' -e '/navigation/old/')
+[ -z "$staged" ] && exit 0
+
+cd "$(git rev-parse --show-toplevel)" || exit 1
+echo "pre-commit: ktlintCheck detekt detektTyped..."
+if ! ./gradlew -q --continue ktlintCheck detekt detektTyped; then
+    echo ""
+    echo "pre-commit: проверки не прошли. Исправь замечания (./gradlew ktlintFormat"
+    echo "поправит оформление) или пропусти проверку: git commit --no-verify"
+    exit 1
+fi

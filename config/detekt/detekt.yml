@@ -1,0 +1,60 @@
+# Поверх встроенного конфига detekt (buildUponDefaultConfig = true).
+# Здесь только отличия от него; полный список правил: ./gradlew detektGenerateConfig.
+# Оформление проверяет ktlint (.editorconfig), detekt отвечает за смысл.
+# Подробности и причины настроек: docs/CODE_STYLE.md.
+
+complexity:
+  LongMethod:
+    # Compose-экраны длиннее обычных функций
+    allowedLines: 100
+  LongParameterList:
+    # У Compose-функций много параметров (modifier, колбэки) — это нормально
+    ignoreAnnotated: ['Composable']
+  TooManyFunctions:
+    ignorePrivate: true
+    ignoreAnnotatedFunctions: ['Preview']
+    excludes: &tests
+      - '**/test/**'
+      - '**/testDebug/**'
+      - '**/androidTest/**'
+      - '**/androidTestDebug/**'
+      - '**/commonTest/**'
+      - '**/iosTest/**'
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']
+    excludes: *tests
+  PackageNaming:
+    # Пакеты с подчёркиванием (wish_list, alert_dialog) уже есть
+    packagePattern: '[a-z]+(\.[a-z][A-Za-z0-9_]*)*'
+
+style:
+  UnusedImport:
+    # Работает только с проверкой типов (detektTyped); в ktlint есть no-unused-imports
+    active: true
+  UnusedPrivateFunction:
+    # Превью приватные и нигде не вызываются
+    ignoreAnnotated: ['Preview']
+  MagicNumber:
+    # Размеры и цвета в разметке и теме не выносим в константы
+    ignoreAnnotated: ['Composable', 'Preview']
+    excludes:
+      - '**/test/**'
+      - '**/testDebug/**'
+      - '**/androidTest/**'
+      - '**/androidTestDebug/**'
+      - '**/commonTest/**'
+      - '**/iosTest/**'
+      - '**/*.kts'
+      - '**/ui/theme/**'
+
+Compose:
+  ParameterNaming:
+    # Колбэки в прошедшем времени (onBackPressed, onSearchOpened) — принятый в проекте стиль
+    active: false
+  CompositionLocalAllowlist:
+    # Свои CompositionLocal темы нового вида
+    allowedCompositionLocals:
+      - LocalExtraColors
+      - LocalIsDarkTheme
