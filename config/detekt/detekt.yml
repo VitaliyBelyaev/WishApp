@@ -42,3 +42,13 @@ style:
   UnusedImport:
     # Неиспользуемые импорты убирает ktlint, но detekt подстрахует
     active: true
+
+Compose:
+  ParameterNaming:
+    # Колбэки в прошедшем времени (onBackPressed, onSearchOpened) — принятый в проекте стиль
+    active: false
+  CompositionLocalAllowlist:
+    # Свои CompositionLocal темы нового вида
+    allowedCompositionLocals:
+      - LocalExtraColors
+      - LocalIsDarkTheme

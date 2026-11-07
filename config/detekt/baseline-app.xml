@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComposableNaming:TrackScreenShowExt.kt:@SuppressLint("ComposableNaming") @Composable fun trackScreenShow</ID>
+    <ID>CyclomaticComplexMethod:WishItemParts.kt:@Composable internal fun wishDescription: String</ID>
+    <ID>CyclomaticComplexMethod:WishListScreen.kt:@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class) @Composable private fun WishListContent</ID>
+    <ID>LongMethod:WishListScreen.kt:@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class) @Composable private fun WishListContent</ID>
+    <ID>MatchingDeclarationName:AppNavigation.kt:WishListRoute : NavKey</ID>
+    <ID>MatchingDeclarationName:CoroutinesTestRule.kt:CoroutineTestRule : TestWatcher</ID>
+    <ID>MatchingDeclarationName:FloatingDock.kt:DockTab</ID>
+    <ID>MatchingDeclarationName:WishImagesViewerEvents.kt:WishImagesViewerDeleteImageConfirmedEvent : AnalyticsEvent</ID>
+    <ID>MatchingDeclarationName:WishListScreen.kt:WishListActions</ID>
+    <ID>MatchingDeclarationName:WishTagsActionsEvents.kt:WishTagsAddNewTagClickedEvent : AnalyticsEvent</ID>
+    <ID>MaxLineLength:WishPreviewData.kt:PreviewWishes$"для хранения. Смотрела разные варианты, пока больше всего нравится модель из второй ссылки, но она дорогая."</ID>
+    <ID>ReturnCount:AppActivity.kt:AppActivity$private fun extractSharedDraft: SharedWishDraft?</ID>
+    <ID>ReturnCount:UiLook.kt:fun resolveUiLook: UiLook</ID>
+    <ID>SwallowedException:Context.kt:e: ActivityNotFoundException</ID>
+    <ID>TooGenericExceptionCaught:GoogleBackupAuthRepository.kt:GoogleBackupAuthRepository$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:IsUserSignedInToBackupServiceUseCase.kt:IsUserSignedInToBackupServiceUseCase$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:WishListViewModel.kt:WishListViewModel$error: Exception</ID>
+  </CurrentIssues>
+</SmellBaseline>

@@ -53,6 +53,9 @@ subprojects {
     tasks.withType<dev.detekt.gradle.Detekt>().configureEach {
         exclude(staticAnalysisExcludes)
     }
+    tasks.withType<dev.detekt.gradle.DetektCreateBaselineTask>().configureEach {
+        exclude(staticAnalysisExcludes)
+    }
 }
 
 buildscript {
