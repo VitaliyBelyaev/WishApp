@@ -8,11 +8,11 @@ suspend fun SnackbarHostState.showDismissableSnackbar(
     message: String,
     actionLabel: String? = null,
     duration: SnackbarDuration =
-        if (actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite
+        if (actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite,
 ): SnackbarResult =
     showSnackbar(
         message = message,
         actionLabel = actionLabel,
         withDismissAction = true,
-        duration = duration
+        duration = duration,
     )

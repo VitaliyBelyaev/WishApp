@@ -25,8 +25,8 @@ actual class DatabaseDriverFactory {
                             *DatabaseMigrator.afterVersionCallbacks,
                         )
                     }
-                }
-            )
+                },
+            ),
         )
     }
 }

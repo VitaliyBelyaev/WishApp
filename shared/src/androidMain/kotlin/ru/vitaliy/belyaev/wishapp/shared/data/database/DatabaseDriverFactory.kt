@@ -15,7 +15,7 @@ actual class DatabaseDriverFactory(private val context: Context) {
             callback = AndroidSqliteDriver.Callback(
                 schema = WishAppDb.Schema,
                 *DatabaseMigrator.afterVersionCallbacks,
-            )
+            ),
         )
     }
 }

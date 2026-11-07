@@ -1,10 +1,10 @@
 package ru.vitaliy.belyaev.wishapp.data.repository.analytics
 
-import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.AnalyticsEvent
+import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 
 class AnalyticsRepositoryComposite(
-    private val repositories: List<AnalyticsRepository>
+    private val repositories: List<AnalyticsRepository>,
 ) : AnalyticsRepository {
 
     override fun trackEvent(event: AnalyticsEvent) {

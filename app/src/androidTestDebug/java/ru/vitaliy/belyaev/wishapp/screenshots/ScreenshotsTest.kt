@@ -66,6 +66,7 @@ import ru.vitaliy.belyaev.wishapp.domain.CurrentBackupInfoHolder
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.domain.repository.BackupAuthRepository
+import ru.vitaliy.belyaev.wishapp.domain.repository.BackupLoadProgressListener
 import ru.vitaliy.belyaev.wishapp.domain.repository.BackupRepository
 import ru.vitaliy.belyaev.wishapp.domain.use_case.CreateBackupUseCase
 import ru.vitaliy.belyaev.wishapp.domain.use_case.GetExistingBackupInfoUseCase
@@ -79,7 +80,6 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.shared.utils.PrivacyPolicy
 import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.AppActivityViewModel
-import ru.vitaliy.belyaev.wishapp.domain.repository.BackupLoadProgressListener
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.backup.BackupScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.backup.BackupViewModel
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.wish_list.WishListScreen
@@ -118,7 +118,7 @@ internal class ScreenshotsTest {
             override fun evaluate() {
                 assumeTrue(
                     "Запускайте через scripts/take_screenshots.sh",
-                    InstrumentationRegistry.getArguments().getString("screenshots") == "true"
+                    InstrumentationRegistry.getArguments().getString("screenshots") == "true",
                 )
                 Firebase.analytics.setAnalyticsCollectionEnabled(false)
                 Firebase.crashlytics.isCrashlyticsCollectionEnabled = false
@@ -341,14 +341,14 @@ internal class ScreenshotsTest {
             val dataStoreRepository = DataStoreRepository(
                 PreferenceDataStoreFactory.create {
                     activity.preferencesDataStoreFile("screenshots_${UUID.randomUUID()}")
-                }
+                },
             )
             val viewModel = WishListViewModel(
                 failingRepository,
                 repository,
                 repository,
                 activity.analyticsRepository,
-                dataStoreRepository
+                dataStoreRepository,
             )
             activity.setContent {
                 WishAppTheme(selectedTheme = Theme.SYSTEM) {
@@ -605,7 +605,7 @@ internal class ScreenshotsTest {
         val dataStoreRepository = DataStoreRepository(
             PreferenceDataStoreFactory.create {
                 activity.preferencesDataStoreFile("screenshots_${UUID.randomUUID()}")
-            }
+            },
         )
         runBlocking { dataStoreRepository.updateIsBackupWasCreated(wasBackupCreated) }
 

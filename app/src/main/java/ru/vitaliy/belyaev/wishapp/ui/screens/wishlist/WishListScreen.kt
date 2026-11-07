@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBars
@@ -29,25 +30,24 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.foundation.layout.height
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.ListLayout
 import ru.vitaliy.belyaev.wishapp.ui.components.dock.DockTab
@@ -287,9 +287,10 @@ private fun WishListContent(
                 selected = when (state.section) {
                     ListSection.Wishes -> DockTab.Wishes
                     ListSection.Done -> DockTab.Done
-                    is ListSection.Tag -> state.selectedTag
-                        ?.let { DockTab.Tag(it.title, it.color.toPaperTone()) }
-                        ?: DockTab.Wishes
+                    is ListSection.Tag ->
+                        state.selectedTag
+                            ?.let { DockTab.Tag(it.title, it.color.toPaperTone()) }
+                            ?: DockTab.Wishes
                 },
                 doneCount = state.doneCount,
                 // Нажатие на уже открытую вкладку поднимает список наверх. У «Ярлыков» так нет:
@@ -432,8 +433,8 @@ private fun Modifier.blockTouches(): Modifier = pointerInput(Unit) {
 
 /** Издалека сначала прыжок поближе к началу, иначе плавная прокрутка через весь список идёт долго. */
 private suspend fun LazyStaggeredGridState.scrollToTopSmoothly() {
-    if (firstVisibleItemIndex > ScrollJumpThreshold) scrollToItem(ScrollJumpThreshold)
+    if (firstVisibleItemIndex > SCROLL_JUMP_THRESHOLD) scrollToItem(SCROLL_JUMP_THRESHOLD)
     animateScrollToItem(0)
 }
 
-private const val ScrollJumpThreshold = 12
+private const val SCROLL_JUMP_THRESHOLD = 12

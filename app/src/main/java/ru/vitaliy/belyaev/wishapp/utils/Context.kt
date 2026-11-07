@@ -26,7 +26,7 @@ fun Context.openGooglePlay() {
 @OptIn(
     ExperimentalFoundationApi::class,
     ExperimentalComposeUiApi::class,
-    ExperimentalMaterialApi::class
+    ExperimentalMaterialApi::class,
 )
 fun Context.restartAppWithDelayMillis(delayMillis: Long) {
     Handler(mainLooper).postDelayed(delayMillis) {

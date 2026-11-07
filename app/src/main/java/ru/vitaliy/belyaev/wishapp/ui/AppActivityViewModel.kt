@@ -25,11 +25,11 @@ import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.domain.model.UiLook
 import ru.vitaliy.belyaev.wishapp.domain.model.UiLookMode
-import ru.vitaliy.belyaev.wishapp.domain.model.resolveUiLook
-import ru.vitaliy.belyaev.wishapp.domain.model.storedValue
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishCreatedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedChangeWishCompletenessClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishImagesViewerDeleteImageConfirmedEvent
-import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishCreatedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.resolveUiLook
+import ru.vitaliy.belyaev.wishapp.domain.model.storedValue
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.domain.repository.RemoteConfigRepository
 import ru.vitaliy.belyaev.wishapp.domain.use_case.UpdateAnalyticsUserPropertiesUseCase
@@ -127,7 +127,7 @@ class AppActivityViewModel @Inject constructor(
         launchSafe(dispatcherProvider.io()) {
             combine(
                 dataStoreRepository.selectedThemeFlow,
-                dataStoreRepository.isBackupWasCreated
+                dataStoreRepository.isBackupWasCreated,
             ) { theme, isBackupCreated -> theme to isBackupCreated }
                 .distinctUntilChanged()
                 .collectLatest { (theme, isBackupCreated) ->
@@ -138,11 +138,11 @@ class AppActivityViewModel @Inject constructor(
         launchSafe {
             combine(
                 dataStoreRepository.positiveActionsCountFlow,
-                dataStoreRepository.reviewRequestShownCountFlow
+                dataStoreRepository.reviewRequestShownCountFlow,
             ) { positiveActionsCount, reviewRequestShownCount ->
                 val needShowReviewRequest = positiveActionsCount != 0 &&
-                        reviewRequestShownCount != positiveActionsCount &&
-                        positiveActionsCount % 5 == 0
+                    reviewRequestShownCount != positiveActionsCount &&
+                    positiveActionsCount % 5 == 0
                 needShowReviewRequest to positiveActionsCount
             }
                 .distinctUntilChanged()
@@ -174,7 +174,7 @@ class AppActivityViewModel @Inject constructor(
                         imagesCount = wish.images.size,
                         hasComment = wish.comment.isNotBlank(),
                         tagsCount = wish.tags.size,
-                    )
+                    ),
                 )
                 dataStoreRepository.incrementPositiveActionsCount()
             }
@@ -230,7 +230,7 @@ class AppActivityViewModel @Inject constructor(
                 FirebaseCrashlytics.getInstance().recordException(throwable)
                 Timber.e(
                     throwable,
-                    "Failed to send message on main ${message.text}"
+                    "Failed to send message on main ${message.text}",
                 )
             }
         }

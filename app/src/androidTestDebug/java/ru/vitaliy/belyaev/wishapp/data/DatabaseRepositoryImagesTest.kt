@@ -26,8 +26,8 @@ class DatabaseRepositoryImagesTest {
         DatabaseDriverFactory(
             object : ContextWrapper(targetContext) {
                 override fun getDatabasePath(name: String): File = databaseFile
-            }
-        )
+            },
+        ),
     ).getDatabaseRepository()
 
     @After
@@ -44,7 +44,7 @@ class DatabaseRepositoryImagesTest {
             listOf(
                 ImageEntity("z", wish.id, byteArrayOf(1)),
                 ImageEntity("a", wish.id, byteArrayOf(2)),
-            )
+            ),
         )
         val expected = listOf(ImageRef("z", wish.id), ImageRef("a", wish.id))
 

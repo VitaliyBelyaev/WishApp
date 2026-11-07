@@ -17,7 +17,7 @@ class SharedTextParserTest {
     fun titleFromFirstLineWhenLinkInsideText() {
         val draft = SharedTextParser.parse(
             subject = null,
-            text = "Чайник Xiaomi Mi Smart Kettle за 2 990 ₽ на Маркете: https://market.yandex.ru/cc/abc"
+            text = "Чайник Xiaomi Mi Smart Kettle за 2 990 ₽ на Маркете: https://market.yandex.ru/cc/abc",
         )
 
         assertEquals("Чайник Xiaomi Mi Smart Kettle за 2 990 ₽ на Маркете", draft.title)
@@ -29,7 +29,7 @@ class SharedTextParserTest {
     fun restOfTextGoesToComment() {
         val draft = SharedTextParser.parse(
             subject = null,
-            text = "Наушники\nС шумоподавлением\n\nhttps://example.com/a\nЛучше чёрные"
+            text = "Наушники\nС шумоподавлением\n\nhttps://example.com/a\nЛучше чёрные",
         )
 
         assertEquals("Наушники", draft.title)
@@ -41,7 +41,7 @@ class SharedTextParserTest {
     fun subjectBecomesTitle() {
         val draft = SharedTextParser.parse(
             subject = "Кофемашина",
-            text = "Рожковая, с капучинатором https://example.com/coffee"
+            text = "Рожковая, с капучинатором https://example.com/coffee",
         )
 
         assertEquals("Кофемашина", draft.title)
@@ -53,7 +53,7 @@ class SharedTextParserTest {
     fun subjectThatIsOnlyLinkIsNotTitle() {
         val draft = SharedTextParser.parse(
             subject = "https://example.com/a",
-            text = "Настольная лампа\nhttps://example.com/a"
+            text = "Настольная лампа\nhttps://example.com/a",
         )
 
         assertEquals("Настольная лампа", draft.title)
@@ -64,7 +64,7 @@ class SharedTextParserTest {
     fun subjectRepeatedInTextIsNotDuplicatedInComment() {
         val draft = SharedTextParser.parse(
             subject = "Настольная лампа",
-            text = "Настольная лампа: https://example.com/a"
+            text = "Настольная лампа: https://example.com/a",
         )
 
         assertEquals("Настольная лампа", draft.title)

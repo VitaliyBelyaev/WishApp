@@ -34,10 +34,10 @@ fun annotatedStringResource(@StringRes id: Int): AnnotatedString {
             addStyle(
                 SpanStyle(
                     color = MaterialTheme.colorScheme.primary,
-                    textDecoration = TextDecoration.Underline
+                    textDecoration = TextDecoration.Underline,
                 ),
                 start,
-                end
+                end,
             )
             addStringAnnotation("URL", span.url, start, end)
         }

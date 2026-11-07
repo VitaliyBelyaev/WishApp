@@ -44,8 +44,14 @@ internal object PreviewWishes {
         "с закладкой-ляссе и золотым тиснением на корешке"
 
     val CoffeeMachine = previewWish(
-        id = "b", title = "Кофемашина", comment = "Рожковая, с капучинатором", linkHost = "example.com",
-        shownTag = "Техника", otherTagsCount = 2, photosCount = 1, tone = PaperTone.SKY,
+        id = "b",
+        title = "Кофемашина",
+        comment = "Рожковая, с капучинатором",
+        linkHost = "example.com",
+        shownTag = "Техника",
+        otherTagsCount = 2,
+        photosCount = 1,
+        tone = PaperTone.SKY,
     )
     val Headphones = previewWish(
         id = "a", title = "Беспроводные наушники", comment = "С шумоподавлением, лучше чёрные. Хотелось бы к отпуску.",
@@ -53,35 +59,58 @@ internal object PreviewWishes {
         tone = PaperTone.SKY,
     )
     val Plain = previewWish(
-        id = "g", title = "Беговые кроссовки", comment = "Размер 42, для асфальта", shownTag = "Спорт",
+        id = "g",
+        title = "Беговые кроссовки",
+        comment = "Размер 42, для асфальта",
+        shownTag = "Спорт",
         tone = PaperTone.LIME,
     )
     val Coffee = previewWish(
-        id = "x1", title = "Набор для домашней обжарки кофе",
+        id = "x1",
+        title = "Набор для домашней обжарки кофе",
         comment = "Хочу попробовать обжаривать зёрна дома: небольшая ростер-машина, термометр и контейнеры " +
             "для хранения. Смотрела разные варианты, пока больше всего нравится модель из второй ссылки, но она дорогая.",
-        linkHost = "example.com", linksCount = 5, shownTag = "Кухня", otherTagsCount = 2, tone = PaperTone.BUTTER,
+        linkHost = "example.com",
+        linksCount = 5,
+        shownTag = "Кухня",
+        otherTagsCount = 2,
+        tone = PaperTone.BUTTER,
     )
     val LongTitle = previewWish(
-        id = "x2", title = "Подарочное издание всех романов Булгакова с иллюстрациями",
+        id = "x2",
+        title = "Подарочное издание всех романов Булгакова с иллюстрациями",
         comment = "Лучше всего в твёрдой обложке, с закладкой-ляссе и крупным шрифтом, чтобы было приятно держать " +
             "в руках и перечитывать вечерами",
-        linkHost = "knizhnyi-magazin-moskva.example", linksCount = 3, shownTag = "Книги", otherTagsCount = 1,
+        linkHost = "knizhnyi-magazin-moskva.example",
+        linksCount = 3,
+        shownTag = "Книги",
+        otherTagsCount = 1,
         tone = PaperTone.ROSE,
     )
     val VeryLongTitle = previewWish(id = "t5", title = LONG_TITLE, shownTag = "Книги", tone = PaperTone.ROSE)
     val NoTag = previewWish(id = "t", title = "Плед", comment = "Шерстяной")
     val TitleOnly = previewWish(id = "t4", title = "Плед")
     val Done = previewWish(
-        id = "h", title = "Велосипед", comment = "Горный, 29 дюймов", shownTag = "Спорт", isCompleted = true,
+        id = "h",
+        title = "Велосипед",
+        comment = "Горный, 29 дюймов",
+        shownTag = "Спорт",
+        isCompleted = true,
         tone = PaperTone.LIME,
     )
     val DoneWithPhoto = previewWish(
-        id = "i", title = "Настольная лампа", shownTag = "Дом", photosCount = 1, isCompleted = true,
+        id = "i",
+        title = "Настольная лампа",
+        shownTag = "Дом",
+        photosCount = 1,
+        isCompleted = true,
         tone = PaperTone.BUTTER,
     )
     val CommentOnly = previewWish(
-        id = "t1", comment = "Что-то тёплое на зиму, посмотреть в выходные", shownTag = "Дом", tone = PaperTone.BUTTER,
+        id = "t1",
+        comment = "Что-то тёплое на зиму, посмотреть в выходные",
+        shownTag = "Дом",
+        tone = PaperTone.BUTTER,
     )
     val CommentOnlyLong = previewWish(
         id = "t6",
@@ -90,16 +119,27 @@ internal object PreviewWishes {
     )
     val LinkOnly = previewWish(id = "t2", linkHost = "shop.example.com")
     val LinksOnly = previewWish(
-        id = "t7", linkHost = "shop.example.com", linksCount = 3, shownTag = "Дом", tone = PaperTone.BUTTER,
+        id = "t7",
+        linkHost = "shop.example.com",
+        linksCount = 3,
+        shownTag = "Дом",
+        tone = PaperTone.BUTTER,
     )
     val PhotoOnly = previewWish(id = "t3", photosCount = 1, shownTag = "Дом", tone = PaperTone.BUTTER)
     val PhotoOnlyNoTag = previewWish(id = "t8", photosCount = 1)
     val PhotosOnlySeveral = previewWish(id = "t12", photosCount = 2)
     val LinksOnlyTwo = previewWish(
-        id = "t13", linkHost = "shop.example.com", linksCount = 2, shownTag = "Дом", tone = PaperTone.BUTTER,
+        id = "t13",
+        linkHost = "shop.example.com",
+        linksCount = 2,
+        shownTag = "Дом",
+        tone = PaperTone.BUTTER,
     )
     val LongTag = previewWish(
-        id = "t9", title = "Кеды", shownTag = "Подарки на новый год для всей семьи", otherTagsCount = 1,
+        id = "t9",
+        title = "Кеды",
+        shownTag = "Подарки на новый год для всей семьи",
+        otherTagsCount = 1,
         tone = PaperTone.MINT,
     )
 

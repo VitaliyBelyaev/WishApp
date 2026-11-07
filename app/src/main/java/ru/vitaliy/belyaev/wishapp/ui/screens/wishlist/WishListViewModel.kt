@@ -240,7 +240,10 @@ class WishListViewModel @Inject constructor(
 
     private fun observeSectionWishes(section: ListSection, settings: ListSettings): Flow<List<WishEntity>> {
         return when (section) {
-            ListSection.Wishes -> wishesRepository.observeAllWishesSorted(isCompleted = false, sortMode = settings.mainSort)
+            ListSection.Wishes -> wishesRepository.observeAllWishesSorted(
+                isCompleted = false,
+                sortMode = settings.mainSort,
+            )
             is ListSection.Tag -> wishesRepository.observeWishesByTagSorted(section.tagId, settings.mainSort)
             ListSection.Done -> when (settings.doneSort) {
                 DoneSortMode.NEWEST -> wishesRepository.observeCompletedWishesByCompletionDate(newestFirst = true)

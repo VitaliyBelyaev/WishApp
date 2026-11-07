@@ -19,7 +19,7 @@ class FirebaseRemoteConfigRepository @Inject constructor() : RemoteConfigReposit
                 setConfigSettingsAsync(
                     FirebaseRemoteConfigSettings.Builder()
                         .setMinimumFetchIntervalInSeconds(DEBUG_FETCH_INTERVAL_SECONDS)
-                        .build()
+                        .build(),
                 )
             }
             setDefaultsAsync(mapOf(KEY_UI_LOOK_MODE to DEFAULT_UI_LOOK_MODE))

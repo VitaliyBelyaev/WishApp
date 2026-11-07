@@ -25,7 +25,7 @@ class LinkParserTest {
 
         assertEquals(
             listOf("https://example.com/item", "https://example.com/other", "https://example.com/q"),
-            LinkParser.extractLinks(text)
+            LinkParser.extractLinks(text),
         )
     }
 
@@ -35,7 +35,7 @@ class LinkParserTest {
 
         assertEquals(
             listOf("https://en.wikipedia.org/wiki/Kotlin_(programming_language)"),
-            LinkParser.extractLinks(text)
+            LinkParser.extractLinks(text),
         )
     }
 
@@ -53,7 +53,7 @@ class LinkParserTest {
     fun keepsCyrillicPathAndDomain() {
         assertEquals(
             listOf("https://пример.рф/товар/чайник"),
-            LinkParser.extractLinks("https://пример.рф/товар/чайник")
+            LinkParser.extractLinks("https://пример.рф/товар/чайник"),
         )
     }
 
@@ -67,7 +67,7 @@ class LinkParserTest {
     fun parseLinkInputTakesLinkFromSharedText() {
         assertEquals(
             listOf("https://market.yandex.ru/cc/abc"),
-            LinkParser.parseLinkInput("Чайник Xiaomi за 2 990 ₽ на Маркете: https://market.yandex.ru/cc/abc")
+            LinkParser.parseLinkInput("Чайник Xiaomi за 2 990 ₽ на Маркете: https://market.yandex.ru/cc/abc"),
         )
     }
 
@@ -84,7 +84,10 @@ class LinkParserTest {
         val links = LinkParser.extractLinks("https://example.com/?q=a|b")
 
         assertEquals(listOf("https://example.com/?q=a%7Cb"), links)
-        assertEquals(links, LinksAdapter.getLinksListFromString(LinksAdapter.addLinksAndGetAccumulatedString(links, emptyList())))
+        assertEquals(
+            links,
+            LinksAdapter.getLinksListFromString(LinksAdapter.addLinksAndGetAccumulatedString(links, emptyList())),
+        )
     }
 
     @Test

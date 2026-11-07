@@ -96,7 +96,7 @@ internal class WishListScreenTest {
             override fun evaluate() {
                 assumeTrue(
                     "Запускайте через scripts/run_smoke_test.sh",
-                    InstrumentationRegistry.getArguments().getString("smoke") == "true"
+                    InstrumentationRegistry.getArguments().getString("smoke") == "true",
                 )
                 assumeTrue("Новый вид пока выбирается только в debug", BuildConfig.DEBUG)
                 FirebaseAnalytics.getInstance(targetContext).setAnalyticsCollectionEnabled(false)

@@ -25,9 +25,9 @@ import ru.vitaliy.belyaev.wishapp.navigation.old.Navigator
 import ru.vitaliy.belyaev.wishapp.ui.components.dock.FloatingDockHeight
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.AppSnackbarHost
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.CollectAppSnackMessages
+import ru.vitaliy.belyaev.wishapp.ui.old.theme.WishAppTheme as OldWishAppTheme
 import ru.vitaliy.belyaev.wishapp.ui.theme.AppTheme
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppSpacing
-import ru.vitaliy.belyaev.wishapp.ui.old.theme.WishAppTheme as OldWishAppTheme
 
 /** Прежний вид: своя тема, навигация и снэкбары на каждом экране. */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -78,7 +78,7 @@ internal fun NewLookRoot(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .windowInsetsPadding(WindowInsets.navigationBars)
-                        .padding(bottom = FloatingDockHeight + WishAppSpacing.s3 * 2)
+                        .padding(bottom = FloatingDockHeight + WishAppSpacing.s3 * 2),
                 )
             }
         }

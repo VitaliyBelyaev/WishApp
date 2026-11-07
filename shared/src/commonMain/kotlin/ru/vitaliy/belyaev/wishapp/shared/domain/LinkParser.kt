@@ -12,13 +12,13 @@ object LinkParser {
 
     private val URL_IN_TEXT = Regex(
         pattern = """(?:https?://|www\.)[^\s<>"'«»“”„]+""",
-        option = RegexOption.IGNORE_CASE
+        option = RegexOption.IGNORE_CASE,
     )
 
     private val BARE_DOMAIN = Regex(
         pattern = """[\p{L}\p{N}](?:[\p{L}\p{N}-]*[\p{L}\p{N}])?""" +
             """(?:\.[\p{L}\p{N}](?:[\p{L}\p{N}-]*[\p{L}\p{N}])?)*""" +
-            """\.\p{L}{2,24}(?::\d{1,5})?(?:[/?#]\S*)?"""
+            """\.\p{L}{2,24}(?::\d{1,5})?(?:[/?#]\S*)?""",
     )
 
     private val SCHEME = Regex("""^[a-z][a-z0-9+.-]*://""", RegexOption.IGNORE_CASE)

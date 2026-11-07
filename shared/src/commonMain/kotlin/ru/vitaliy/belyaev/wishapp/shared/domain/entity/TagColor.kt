@@ -14,7 +14,8 @@ enum class TagColor(val storedValue: String) {
     AQUA("aqua"),
     IRIS("iris"),
     ORCHID("orchid"),
-    SAND("sand");
+    SAND("sand"),
+    ;
 
     companion object {
         /** Неизвестное значение, например из новой версии в старой, читается как [BUTTER]. */

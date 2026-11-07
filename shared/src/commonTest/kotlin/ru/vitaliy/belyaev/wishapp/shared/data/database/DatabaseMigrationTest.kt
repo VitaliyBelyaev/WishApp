@@ -120,7 +120,7 @@ class DatabaseMigrationTest {
               createdTimestamp INTEGER NOT NULL,
               updatedTimestamp INTEGER NOT NULL
             )
-            """.trimIndent()
+            """.trimIndent(),
         )
         driver.exec("CREATE TABLE Tag (tagId TEXT PRIMARY KEY NOT NULL, title TEXT NOT NULL)")
         driver.exec(CREATE_RELATION_V3)
@@ -128,7 +128,12 @@ class DatabaseMigrationTest {
         driver.exec("INSERT INTO Wish VALUES ('w2', 'Сбылось', '', '', 1, 2, 2)")
         driver.exec("INSERT INTO Wish VALUES ('w3', 'Третье', '', '', 0, 3, 3)")
 
-        WishAppDb.Schema.migrate(driver, oldVersion = 1, newVersion = WishAppDb.Schema.version, *DatabaseMigrator.afterVersionCallbacks)
+        WishAppDb.Schema.migrate(
+            driver,
+            oldVersion = 1,
+            newVersion = WishAppDb.Schema.version,
+            *DatabaseMigrator.afterVersionCallbacks,
+        )
 
         assertEquals(
             listOf(listOf<String?>("w1", "0"), listOf<String?>("w2", "-1"), listOf<String?>("w3", "1")),
@@ -137,7 +142,12 @@ class DatabaseMigrationTest {
     }
 
     private fun migrateFrom3() {
-        WishAppDb.Schema.migrate(driver, oldVersion = 3, newVersion = WishAppDb.Schema.version, *DatabaseMigrator.afterVersionCallbacks)
+        WishAppDb.Schema.migrate(
+            driver,
+            oldVersion = 3,
+            newVersion = WishAppDb.Schema.version,
+            *DatabaseMigrator.afterVersionCallbacks,
+        )
     }
 
     private fun insertWishV3(id: String, isCompleted: Boolean, position: Int) {
@@ -158,7 +168,7 @@ class DatabaseMigrationTest {
               updatedTimestamp INTEGER NOT NULL,
               position INTEGER DEFAULT -1 NOT NULL
             )
-            """.trimIndent()
+            """.trimIndent(),
         )
         driver.exec("CREATE TABLE Image (id TEXT PRIMARY KEY NOT NULL, wishId TEXT NOT NULL, rawData BLOB NOT NULL)")
         driver.exec("CREATE TABLE Tag (tagId TEXT PRIMARY KEY NOT NULL, title TEXT NOT NULL)")

@@ -3,40 +3,39 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wishlist
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.material3.IconButton
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,17 +43,18 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
@@ -71,7 +71,7 @@ import ru.vitaliy.belyaev.wishapp.ui.theme.labelS
 import ru.vitaliy.belyaev.wishapp.ui.theme.titleM
 
 /** С какого числа ярлыков в шторке появляется поиск. */
-private const val TagsSearchThreshold = 8
+private const val TAGS_SEARCH_THRESHOLD = 8
 
 private val TagRowHeight = 44.dp
 private val SheetRowHeight = 52.dp
@@ -165,7 +165,7 @@ internal fun TagsSheet(
                 Text(text = stringResource(R.string.tags_manage), style = MaterialTheme.typography.label)
             }
         }
-        if (tags.size >= TagsSearchThreshold) {
+        if (tags.size >= TAGS_SEARCH_THRESHOLD) {
             SheetSearchField(
                 query = query,
                 hint = stringResource(R.string.tags_find),
@@ -376,7 +376,7 @@ internal fun sortLabel(sort: SectionSort): String = stringResource(
             DoneSortMode.TITLE_AZ -> R.string.sort_az
             DoneSortMode.TITLE_ZA -> R.string.sort_za
         }
-    }
+    },
 )
 
 @Composable

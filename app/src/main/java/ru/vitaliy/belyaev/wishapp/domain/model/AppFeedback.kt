@@ -8,7 +8,7 @@ import ru.vitaliy.belyaev.wishapp.R
 data class AppFeedback(
     val email: String,
     val subject: String,
-    val message: String
+    val message: String,
 )
 
 fun createAppFeedback(resources: Resources): AppFeedback {
@@ -20,6 +20,6 @@ fun createAppFeedback(resources: Resources): AppFeedback {
     return AppFeedback(
         email = "vitaliy.belyaev.wishapp@gmail.com",
         subject = resources.getString(R.string.feedback_subject_pattern, appName),
-        message = message.toString()
+        message = message.toString(),
     )
 }

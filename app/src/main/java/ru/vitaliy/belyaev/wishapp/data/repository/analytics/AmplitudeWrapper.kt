@@ -26,8 +26,8 @@ object AmplitudeWrapper {
                 defaultTracking = DefaultTrackingOptions(
                     sessions = true,
                     appLifecycles = true,
-                )
-            )
+                ),
+            ),
         )
     }
 }

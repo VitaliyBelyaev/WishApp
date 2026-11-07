@@ -13,7 +13,7 @@ import ru.vitaliy.belyaev.wishapp.shared.data.database.BackupFileCheckResult
 
 internal class RestoreBackupUseCase @Inject constructor(
     private val backupRepository: BackupRepository,
-    private val dataStoreRepository: DataStoreRepository
+    private val dataStoreRepository: DataStoreRepository,
 ) {
 
     suspend operator fun invoke(
@@ -26,7 +26,7 @@ internal class RestoreBackupUseCase @Inject constructor(
         backupRepository.downloadBackup(
             fileId = backupFileId,
             outputStream = outputStream,
-            progressListener = progressListener
+            progressListener = progressListener,
         )
 
         val backupBytes = outputStream.toByteArray()

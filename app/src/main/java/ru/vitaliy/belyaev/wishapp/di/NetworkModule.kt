@@ -24,8 +24,8 @@ object NetworkModule {
             .cache(
                 Cache(
                     directory = File(appContext.cacheDir, "http_cache"),
-                    maxSize = 50L * 1024L * 1024L // 50 MiB
-                )
+                    maxSize = 50L * 1024L * 1024L, // 50 MiB
+                ),
             )
 
         if (BuildConfig.DEBUG) {
