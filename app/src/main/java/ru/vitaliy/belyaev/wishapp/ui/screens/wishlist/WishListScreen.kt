@@ -23,8 +23,12 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -121,7 +125,6 @@ private fun WishListContent(
     onSortSelected: (SectionSort) -> Unit,
     onShare: (ShareFormat) -> Unit,
 ) {
-    val gridState = rememberLazyStaggeredGridState()
     val scope = rememberCoroutineScope()
     val keyboard = LocalSoftwareKeyboardController.current
     var openSheet by rememberSaveable { mutableStateOf(OpenSheet.NONE) }
@@ -138,9 +141,12 @@ private fun WishListContent(
     }
     val search = state.search
 
-    // Без этого сетка держится за ключ прежней первой хотелки: после смены сортировки или запроса
-    // список открывался бы с середины, там, куда эта хотелка переехала
-    ScrollToTopOnChange(key = "${state.section}|${state.sort}|${search?.query}", gridState = gridState)
+    // У раздела, сортировки и запроса своя сетка со своей прокруткой, и они открываются с начала.
+    // Одна сетка на всё рисовала первый кадр нового раздела на старой прокрутке, а карточки
+    // прежнего раздела гасли поверх нового. При возврате с другого экрана прокрутка остаётся
+    val listKey = "${state.section}|${state.sort}|${search != null}|${search?.query}"
+    val gridState = rememberSaveable(listKey, saver = LazyStaggeredGridState.Saver) { LazyStaggeredGridState() }
+    val topLayout = rememberTopLayout(gridState)
 
     // Прокрутка в поиске прячет клавиатуру, чтобы видеть результаты
     LaunchedEffect(gridState.isScrollInProgress) {
@@ -209,12 +215,14 @@ private fun WishListContent(
                 )
             }
 
-            else -> WishGrid(
-                state = state,
-                gridState = gridState,
-                contentPadding = contentPadding,
-                onWishClick = actions.onWishClick,
-            )
+            else -> key(listKey) {
+                WishGrid(
+                    state = state,
+                    gridState = gridState,
+                    contentPadding = contentPadding,
+                    onWishClick = actions.onWishClick,
+                )
+            }
         }
 
         if (search != null) {
@@ -296,14 +304,14 @@ private fun WishListContent(
                 // вкладка открывает шторку
                 onWishesClick = {
                     if (state.section == ListSection.Wishes) {
-                        scope.launch { gridState.scrollToTopSmoothly() }
+                        scope.launch { gridState.scrollToTopSmoothly(topLayout) }
                     } else {
                         onSectionSelected(ListSection.Wishes)
                     }
                 },
                 onDoneClick = {
                     if (state.section == ListSection.Done) {
-                        scope.launch { gridState.scrollToTopSmoothly() }
+                        scope.launch { gridState.scrollToTopSmoothly(topLayout) }
                     } else {
                         onSectionSelected(ListSection.Done)
                     }
@@ -407,18 +415,29 @@ private fun WishGrid(
 }
 
 /**
- * Новый раздел, другая сортировка, открытие, закрытие поиска и новый запрос показывают список с начала.
- * При возврате с другого экрана прокрутка остаётся.
+ * Где стоят карточки первого экрана, пока список в самом начале: расстояние от первой карточки
+ * до каждой видимой, в пикселях. Карточки выше экрана сетка не меряет, поэтому без этого плавный
+ * подъём наверх шёл в два приёма: сначала на прикидку, потом добирал до точного места.
  */
+private class TopLayout {
+    var distances: Map<Int, Int> = emptyMap()
+    var viewportHeight: Int = 0
+}
+
 @Composable
-private fun ScrollToTopOnChange(key: String, gridState: LazyStaggeredGridState) {
-    var lastSection by rememberSaveable { mutableStateOf(key) }
-    LaunchedEffect(key) {
-        if (lastSection != key) {
-            lastSection = key
-            gridState.scrollToItem(0)
+private fun rememberTopLayout(gridState: LazyStaggeredGridState): TopLayout {
+    val topLayout = remember(gridState) { TopLayout() }
+    LaunchedEffect(gridState) {
+        snapshotFlow { gridState.layoutInfo }.collect { info ->
+            val isAtTop = gridState.firstVisibleItemIndex == 0 && gridState.firstVisibleItemScrollOffset == 0
+            val firstY = info.visibleItemsInfo.firstOrNull { it.index == 0 }?.offset?.y
+            if (isAtTop && firstY != null) {
+                topLayout.distances = info.visibleItemsInfo.associate { it.index to it.offset.y - firstY }
+                topLayout.viewportHeight = info.viewportSize.height
+            }
         }
     }
+    return topLayout
 }
 
 /** Забирает все касания, чтобы они не доходили до того, что под элементом. */
@@ -430,10 +449,32 @@ private fun Modifier.blockTouches(): Modifier = pointerInput(Unit) {
     }
 }
 
-/** Издалека сначала прыжок поближе к началу, иначе плавная прокрутка через весь список идёт долго. */
-private suspend fun LazyStaggeredGridState.scrollToTopSmoothly() {
-    if (firstVisibleItemIndex > ScrollJumpThreshold) scrollToItem(ScrollJumpThreshold)
-    animateScrollToItem(0)
+/**
+ * Плавно наверх одним движением по известному расстоянию. Издалека сначала прыжок к карточке
+ * в нижней части первого экрана, дальше плавно: через весь список прокрутка шла бы долго.
+ */
+private suspend fun LazyStaggeredGridState.scrollToTopSmoothly(topLayout: TopLayout) {
+    val distances = topLayout.distances
+    val fromCurrent = distances[firstVisibleItemIndex]?.plus(firstVisibleItemScrollOffset)
+    val distance = if (fromCurrent != null) {
+        fromCurrent
+    } else {
+        val anchor = distances.entries
+            .filter { it.key > 0 && it.value <= topLayout.viewportHeight * JumpAnchorShare }
+            .maxByOrNull { it.key }
+        if (anchor == null) {
+            // Начало списка ещё не видели, например после восстановления процесса
+            animateScrollToItem(0)
+            return
+        }
+        scrollToItem(anchor.key)
+        anchor.value
+    }
+    if (distance > 0) animateScrollBy(-distance.toFloat(), tween(ScrollToTopMillis, easing = FastOutSlowInEasing))
+    // Список мог поменяться, пока был прокручен: остаток добираем без анимации
+    if (firstVisibleItemIndex != 0 || firstVisibleItemScrollOffset != 0) scrollToItem(0)
 }
 
-private const val ScrollJumpThreshold = 12
+/** Карточка для прыжка не ниже этой доли экрана: плавная часть пути не длиннее экрана. */
+private const val JumpAnchorShare = 0.7f
+private const val ScrollToTopMillis = 450

@@ -44,7 +44,7 @@ private val ThumbnailWidth = 84.dp
  * режим выбора и фраза для TalkBack. Спецификация: компонент `WishRow` в артефакте дизайн-системы.
  *
  * Отличия от карточки: миниатюра главного фото слева шириной 84 dp и по высоте текста (центр-кроп),
- * заголовок до 3 строк, комментарий под названием до 2 строк. Если есть только фото, вместо заголовка
+ * но не ниже своей ширины: при коротком тексте фото остаётся квадратом, а текст прижат к верху. Заголовок до 3 строк, комментарий под названием до 2 строк. Если есть только фото, вместо заголовка
  * серая подпись «Фото»: строка без текста выглядела бы сломанной.
  */
 @Composable
@@ -124,8 +124,9 @@ private fun RowBody(model: WishCardModel, text: WishItemText) {
 }
 
 /**
- * Миниатюра слева по высоте текста. Высоту задаёт только текст: размер самой картинки на неё не влияет,
- * поэтому раскладка своя, а не `Row` с `IntrinsicSize`.
+ * Миниатюра слева по высоте текста, но не ниже своей ширины: при одной строке названия и одной
+ * комментария она была бы узкой полоской. Размер самой картинки на высоту не влияет, поэтому
+ * раскладка своя, а не `Row` с `IntrinsicSize`. Текст всегда прижат к верху.
  */
 @Composable
 private fun ThumbnailRowLayout(thumbnail: (@Composable () -> Unit)?, body: @Composable () -> Unit) {
@@ -143,7 +144,7 @@ private fun ThumbnailRowLayout(thumbnail: (@Composable () -> Unit)?, body: @Comp
             Constraints.Infinity
         }
         val bodyPlaceable = bodyMeasurable.measure(Constraints(maxWidth = bodyMaxWidth))
-        val height = bodyPlaceable.height.coerceIn(constraints.minHeight, constraints.maxHeight)
+        val height = maxOf(bodyPlaceable.height, thumbWidth).coerceIn(constraints.minHeight, constraints.maxHeight)
         val thumbPlaceable = if (thumbnail != null) {
             measurables.first().measure(Constraints.fixed(thumbWidth, height))
         } else {

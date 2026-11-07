@@ -13,9 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,23 +37,23 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -105,7 +105,7 @@ internal fun WishListHeader(
         HeaderScrim(progress)
         Row(
             modifier = Modifier
-                .windowInsetsPadding(WindowInsets.statusBars)
+                .windowInsetsPadding(WindowInsets.safeDrawing)
                 .fillMaxWidth()
                 .height(HeaderRowHeight)
                 .padding(start = WishAppSpacing.s4, end = WishAppSpacing.s3),
@@ -151,7 +151,7 @@ internal fun WishListHeader(
 private fun HeaderScrim(progress: () -> Float) {
     val surface = MaterialTheme.colorScheme.surface
     val density = LocalDensity.current
-    val statusBar = with(density) { WindowInsets.statusBars.getTop(this).toDp() }
+    val statusBar = with(density) { WindowInsets.safeDrawing.getTop(this).toDp() }
     val total = statusBar + ScrimTail
     val plateau = (statusBar * ScrimPlateau / total).coerceIn(0f, 1f)
     val brush = remember(surface, plateau) {
@@ -377,12 +377,12 @@ internal fun SearchHeader(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surface)
-                .windowInsetsPadding(WindowInsets.statusBars)
+                .windowInsetsPadding(WindowInsets.safeDrawing)
                 .height(HeaderRowHeight),
         )
         Row(
             modifier = Modifier
-                .windowInsetsPadding(WindowInsets.statusBars)
+                .windowInsetsPadding(WindowInsets.safeDrawing)
                 .fillMaxWidth()
                 .height(HeaderRowHeight)
                 .padding(horizontal = WishAppSpacing.s1),
@@ -427,6 +427,6 @@ internal fun SearchHeader(
 @Composable
 internal fun headerHeight(): Dp {
     val density = LocalDensity.current
-    val statusBar = with(density) { WindowInsets.statusBars.getTop(this).toDp() }
+    val statusBar = with(density) { WindowInsets.safeDrawing.getTop(this).toDp() }
     return statusBar + HeaderRowHeight
 }

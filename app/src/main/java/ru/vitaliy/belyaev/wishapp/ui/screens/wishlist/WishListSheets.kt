@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -72,6 +73,7 @@ import ru.vitaliy.belyaev.wishapp.ui.theme.titleM
 
 /** С какого числа ярлыков в шторке появляется поиск. */
 private const val TagsSearchThreshold = 8
+private const val SelectedTagRowsAbove = 2
 
 private val TagRowHeight = 44.dp
 private val SheetRowHeight = 52.dp
@@ -90,7 +92,7 @@ private val RowShape = RoundedCornerShape(16.dp)
 private fun WishSheet(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
     // Статус-бар берём из окна экрана: в окне шторки отступы приходят не в первом кадре,
     // и шторка на миг заезжала под статус-бар
-    val statusBar = with(LocalDensity.current) { WindowInsets.statusBars.getTop(this).toDp() }
+    val statusBar = with(LocalDensity.current) { WindowInsets.safeDrawing.getTop(this).toDp() }
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         modifier = Modifier.padding(top = statusBar),
@@ -199,9 +201,22 @@ internal fun TagsSheet(
             // Строки прокручиваются под системную навигацию и клавиатуру, последняя останавливается над ними
             val ime = with(density) { WindowInsets.ime.getBottom(this).toDp() }
             val navBar = with(density) { WindowInsets.navigationBars.getBottom(this).toDp() }
+            // Шторка открывается так, чтобы выбранный ярлык был виден: над ним пара строк для ориентира.
+            // Сразу на месте, без анимации прокрутки
+            val listState = rememberLazyListState(
+                initialFirstVisibleItemIndex = remember {
+                    val selectedIndex = visibleTags.indexOfFirst { it.tag.id == selectedTagId }
+                    (selectedIndex - SelectedTagRowsAbove).coerceAtLeast(0)
+                },
+            )
             // Новый запрос показывает совпадения с начала, а не с места прошлой прокрутки
-            val listState = rememberLazyListState()
-            LaunchedEffect(query) { listState.scrollToItem(0) }
+            var scrolledForQuery by rememberSaveable { mutableStateOf(query) }
+            LaunchedEffect(query) {
+                if (query != scrolledForQuery) {
+                    scrolledForQuery = query
+                    listState.scrollToItem(0)
+                }
+            }
             // В макете список шире полей шторки на 4 dp с каждой стороны
             LazyColumn(
                 state = listState,
