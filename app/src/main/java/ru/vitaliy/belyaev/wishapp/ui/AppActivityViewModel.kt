@@ -237,7 +237,7 @@ class AppActivityViewModel @Inject constructor(
     }
 
     fun onCreateWithoutSavedInstanceState(context: Context) {
-        launchSafe(Dispatchers.IO) {
+        launchSafe(dispatcherProvider.io()) {
             clearPdfFilesForShare(context)
         }
     }

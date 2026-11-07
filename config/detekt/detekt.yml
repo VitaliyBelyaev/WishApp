@@ -7,6 +7,9 @@ complexity:
   LongMethod:
     # Compose-экраны длиннее обычных функций
     allowedLines: 100
+  LongParameterList:
+    # У Compose-функций много параметров (modifier, колбэки) — это нормально
+    ignoreAnnotated: ['Composable']
   TooManyFunctions:
     ignorePrivate: true
     ignoreAnnotatedFunctions: ['Preview']
@@ -27,6 +30,12 @@ naming:
     packagePattern: '[a-z]+(\.[a-z][A-Za-z0-9_]*)*'
 
 style:
+  UnusedImport:
+    # Работает только с проверкой типов (detektTyped); в ktlint есть no-unused-imports
+    active: true
+  UnusedPrivateFunction:
+    # Превью приватные и нигде не вызываются
+    ignoreAnnotated: ['Preview']
   MagicNumber:
     # Размеры и цвета в разметке и теме не выносим в константы
     ignoreAnnotated: ['Composable', 'Preview']

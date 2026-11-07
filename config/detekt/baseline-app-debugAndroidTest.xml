@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ImplicitDefaultLocale:WishListScreenTest.kt:WishListScreenTest.Companion$"Filler label %02d".format(number)</ID>
+    <ID>MatchingDeclarationName:CoroutinesTestRule.kt:CoroutineTestRule : TestWatcher</ID>
+    <ID>UnsafeCallOnNullableType:ImageMemorySeedTest.kt:ImageMemorySeedTest$imagesCount!!</ID>
+    <ID>UnsafeCallOnNullableType:ImageMemorySeedTest.kt:ImageMemorySeedTest$resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)!!</ID>
+    <ID>UnsafeCallOnNullableType:ImageMemorySeedTest.kt:ImageMemorySeedTest$resolver.openOutputStream(uri)!!</ID>
+  </CurrentIssues>
+</SmellBaseline>

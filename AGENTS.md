@@ -66,9 +66,10 @@
     «Сборка и проверки»). Приложение `iosApp` через Xcode и симулятор не собирай
     и Swift-сигнатуры не проверяй, если об этом не попросили.
 11. **Kotlin-код проходит `./gradlew ktlintFormat detekt`.** Прогоняй после правок
-    и перед коммитом; стиль и причины настроек — `docs/CODE_STYLE.md`. Новые
-    замечания detekt исправляй, в baseline не добавляй. В конце хода то же
-    запускает хук Claude Code.
+    (в конце хода это делает хук Claude Code). Перед коммитом и перед вливанием
+    ветки в `dev` ещё и `./gradlew ktlintCheck detekt detektTyped` (с проверкой
+    типов; перед коммитом его запускает git pre-commit хук). Новые замечания
+    исправляй, в baseline не добавляй. Стиль и настройки — `docs/CODE_STYLE.md`.
 
 ## Карта экранов (кратко)
 
@@ -113,6 +114,7 @@
 
 ```bash
 ./gradlew ktlintFormat detekt
+./gradlew detektTyped
 ./gradlew :app:assembleDebug
 ./gradlew :app:testDebugUnitTest
 ./gradlew :app:lintDebug
@@ -170,7 +172,8 @@ CI в репозитории **нет** — проверяй вручную.
 3. Внеси изменения; для БД — миграция и snapshot.
 4. Обнови строки и analytics-события, если появился новый экран/действие.
 5. Прогони `./gradlew ktlintFormat detekt`, сборку и тесты.
-6. Не коммить изменения без явной просьбы.
+6. Не коммить изменения без явной просьбы. Перед вливанием ветки в `dev` —
+   `./gradlew ktlintCheck detekt detektTyped`.
 
 ## Важные различия и грабли
 

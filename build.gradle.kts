@@ -37,6 +37,12 @@ subprojects {
         }
     }
 
+    // ktlint-gradle при инкрементальном запуске помнит ошибки удалённых файлов.
+    // Меняющееся свойство делает каждый запуск полным: файлов немного, это секунды.
+    tasks.withType<org.jlleitschuh.gradle.ktlint.tasks.BaseKtLintCheckTask>().configureEach {
+        inputs.property("fullRun", System.nanoTime())
+    }
+
     configure<dev.detekt.gradle.extensions.DetektExtension> {
         buildUponDefaultConfig.set(true)
         // Один таск detekt на модуль, без проверки типов: все исходники из src
@@ -50,16 +56,39 @@ subprojects {
         add("detektPlugins", composeRulesDetekt)
     }
 
+    // Задачи с проверкой типов берут и сгенерированный код (SQLDelight, BuildConfig) из build/
     tasks.withType<dev.detekt.gradle.Detekt>().configureEach {
         exclude(staticAnalysisExcludes)
+        exclude { it.file.invariantSeparatorsPath.contains("/build/") }
     }
     tasks.withType<dev.detekt.gradle.DetektCreateBaselineTask>().configureEach {
         exclude(staticAnalysisExcludes)
+        exclude { it.file.invariantSeparatorsPath.contains("/build/") }
     }
     // В «ktlintFormat detekt» detekt смотрит уже отформатированный код
     tasks.named("detekt") {
         mustRunAfter("ktlintFormat")
     }
+}
+
+// detekt с проверкой типов: дольше (нужна компиляция), ловит больше. Не в хуке агента,
+// а перед коммитом (git pre-commit) и перед вливанием ветки, см. docs/CODE_STYLE.md.
+// В app берём только debug: в нём все папки исходников, detektMain гонял бы каждый вариант.
+val detektTypedTasks = listOf(
+    ":app:detektDebug",
+    ":app:detektDebugUnitTest",
+    ":app:detektDebugAndroidTest",
+    ":shared:detektMainAndroid",
+)
+tasks.register("detektTyped") {
+    group = "verification"
+    description = "Runs detekt with type resolution"
+    dependsOn(detektTypedTasks)
+}
+tasks.register("detektTypedBaseline") {
+    group = "verification"
+    description = "Creates baselines for detekt with type resolution"
+    dependsOn(detektTypedTasks.map { it.replace(":detekt", ":detektBaseline") })
 }
 
 buildscript {
