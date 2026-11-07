@@ -29,6 +29,8 @@ ktlint_standard_function-expression-body = disabled
 ktlint_standard_package-name = disabled
 # Файлы с группой событий (screenShowEvents.kt и т. п.); соответствие имени класса проверяет detekt
 ktlint_standard_filename = disabled
+# Неиспользуемые импорты: с ktlint 1.7 правило выключено по умолчанию, включаем явно
+ktlint_standard_no-unused-imports = enabled
 # Ветки when идут без пустых строк между ними
 ktlint_standard_blank-line-between-when-conditions = disabled
 # Пустая строка в начале тела функции допустима
