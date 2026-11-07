@@ -65,6 +65,10 @@
     что модуль компилируется и линкуется под iOS из Gradle (команда в разделе
     «Сборка и проверки»). Приложение `iosApp` через Xcode и симулятор не собирай
     и Swift-сигнатуры не проверяй, если об этом не попросили.
+11. **Kotlin-код проходит `./gradlew ktlintFormat detekt`.** Прогоняй после правок
+    и перед коммитом; стиль и причины настроек — `docs/CODE_STYLE.md`. Новые
+    замечания detekt исправляй, в baseline не добавляй. Неиспользуемые импорты
+    инструменты не ловят, убирай сам. В конце хода то же запускает хук Claude Code.
 
 ## Карта экранов (кратко)
 
@@ -102,11 +106,13 @@
 | Техдолг, идеи, просьбы пользователей (сюда же записывай новые находки) | `docs/BACKLOG.md` |
 | Поведение экранов для редизайна | `docs/UX_NOTES.md` |
 | Релиз: ветки, теги, проверки, раскатка | `docs/RELEASE.md` |
+| Стиль кода, ktlint, detekt, хук для агентов | `docs/CODE_STYLE.md`, `.editorconfig`, `config/detekt/` |
 | Новые долгоживущие md-файлы | `docs/` (в корне только `README.md` и `AGENTS.md`) |
 
 ## Сборка и проверки
 
 ```bash
+./gradlew ktlintFormat detekt
 ./gradlew :app:assembleDebug
 ./gradlew :app:testDebugUnitTest
 ./gradlew :app:lintDebug
@@ -163,7 +169,7 @@ CI в репозитории **нет** — проверяй вручную.
 2. Определи слой: `shared`, Android, iOS или всё сразу.
 3. Внеси изменения; для БД — миграция и snapshot.
 4. Обнови строки и analytics-события, если появился новый экран/действие.
-5. Прогони сборку и тесты.
+5. Прогони `./gradlew ktlintFormat detekt`, сборку и тесты.
 6. Не коммить изменения без явной просьбы.
 
 ## Важные различия и грабли
@@ -176,6 +182,8 @@ CI в репозитории **нет** — проверяй вручную.
 - Изображения, сортировка списка и выбор темы есть **только на Android**.
 - Бэкап: **Google Drive** на Android, **iCloud** на iOS; общего кода нет.
 - На iOS Firebase фактически отключён — используется только Amplitude.
+- ktlint и detekt не проверяют `ui/old` и `navigation/old`; detekt 2.0 пока в альфе,
+  `detekt` и `composeRules` в `libs.versions.toml` поднимай вместе.
 - Тестов мало: несколько юнит-тестов, тесты миграций и правил базы в `shared`,
   `DatabaseRepositoryDeleteTest`, `SmokeTest`, `WishListScreenTest`.
 - Release на Android подписан тестовым keystore — это не production-подпись.

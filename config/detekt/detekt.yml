@@ -39,9 +39,6 @@ style:
       - '**/iosTest/**'
       - '**/*.kts'
       - '**/ui/theme/**'
-  UnusedImport:
-    # Неиспользуемые импорты убирает ktlint, но detekt подстрахует
-    active: true
 
 Compose:
   ParameterNaming:

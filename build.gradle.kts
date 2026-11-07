@@ -56,6 +56,10 @@ subprojects {
     tasks.withType<dev.detekt.gradle.DetektCreateBaselineTask>().configureEach {
         exclude(staticAnalysisExcludes)
     }
+    // В «ktlintFormat detekt» detekt смотрит уже отформатированный код
+    tasks.named("detekt") {
+        mustRunAfter("ktlintFormat")
+    }
 }
 
 buildscript {
