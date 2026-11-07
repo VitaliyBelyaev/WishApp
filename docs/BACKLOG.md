@@ -156,6 +156,48 @@
 можно будет поднять библиотеку. Проверять придётся вручную, на настоящем
 Google-аккаунте: автотесты работают с фейковыми репозиториями.
 
+### Перейти на новый экран лицензий (v2.OssLicensesMenuActivity)
+
+В 1.9.0 подняли `play-services-oss-licenses` с 17.0.1 до 17.5.3 и
+`oss-licenses-plugin` до 0.13.0. После этого в проде прилетает редкий краш:
+
+```
+java.lang.NullPointerException: Attempt to read from field
+'java.lang.String dj5.q' on a null object reference
+in OssLicensesActivity.onCreate(...)
+```
+
+`dj5` — это R8-имя `com.google.android.gms.internal.oss_licenses.u`, `q` — поле
+`u.a` с названием лицензии. `OssLicensesActivity` берёт лицензию из
+`Intent.getParcelableExtra("license")` и сразу читает `license.a` без проверки на
+null. Значит extra потерялся.
+
+Обычный тап по строке списка всегда передаёт объект, так что причина не в нашем
+коде. Вероятный сценарий: Android хранит launch-Intent активити в back stack и
+может пересоздать `OssLicensesActivity` из сохранённого Intent после обновления
+приложения; внутренний `Parcelable` записан старым обфусцированным именем, класса
+в новой сборке уже нет, extras не читаются, `getParcelableExtra` возвращает null.
+В 17.5.3 проверки на null нет (в 17.3.0 тот же баг с классом `zzg`, см.
+google/play-services-plugins#395; похожий краш — atick-faisal/Shorts-Blocker#79).
+
+Наши ресурсы тут ни при чём: плагин применён, `third_party_licenses` и
+`third_party_license_metadata` генерируются и не вырезаются resource shrinker'ом.
+
+Что сделать:
+
+- перевести `AboutAppScreen` на `com.google.android.gms.oss.licenses.v2.OssLicensesMenuActivity`
+  — это одна Activity на Compose/Nav3, список и деталь внутри неё, деталь хранит
+  только int-индекс, а не `Parcelable` в Intent; заодно экран новее и с
+  двухпанельным layout на больших экранах;
+- обновить `SmokeTest` и `ScreenshotsTest`: они следят за легаси-классом
+  `OssLicensesMenuActivity`;
+- как страховка от будущих регрессий — `-keepnames class
+  com.google.android.gms.internal.oss_licenses.u` (учтя, что при первом переходе
+  с 1.9.0 возможна ещё одна волна таких же крашей).
+
+Файлы: `app/src/main/java/ru/vitaliy/belyaev/wishapp/ui/old/screens/aboutapp/AboutAppScreen.kt:92`,
+`app/src/main/AndroidManifest.xml:39-42`, `app/src/androidTest/.../SmokeTest.kt:496`.
+
 ### Покрыть приложение интеграционными UI-тестами
 
 Сейчас есть только `SmokeTest` (короткий проход по основным экранам) и
