@@ -203,14 +203,14 @@ app/src/main/java/ru/vitaliy/belyaev/wishapp/
 │   ├── core/viewmodel/         # BaseViewModel, общий для старого и нового вида
 │   ├── core/snackbar/          # AppSnackMessage и единственный снэкбар нового вида
 │   ├── theme/                  # тема нового вида: токены, Onest/Unbounded, формы, «Как обои»
-│   ├── components/             # компоненты нового вида; wish/ — общее для хотелки, wish/card — WishCard, wish/row — WishRow (спецификации в артефакте дизайн-системы)
-│   ├── screens/                # экраны нового вида (пока витрина lookpreview, только debug)
+│   ├── components/             # компоненты нового вида; wish/ — общее для хотелки, wish/card — WishCard, wish/row — WishRow, dock/ — FloatingDock (спецификации в артефакте дизайн-системы)
+│   ├── screens/                # экраны нового вида; wishlist/ — список: шапка, док, сетка, шторки, поиск
 │   └── old/                    # прежний вид, удаляется после перехода на новый
 │       ├── core/               # переиспользуемые Compose-компоненты
 │       ├── screens/            # экраны (см. раздел 6)
 │       ├── theme/              # цвета, типографика, WishAppTheme
 │       └── model/              # UI-модели
-├── navigation/                 # AppNavigation нового вида
+├── navigation/                 # AppNavigation нового вида: список и пока экраны прежнего вида в старой теме
 ├── navigation/old/             # Navigation3 прежнего вида: Routes, NavigationState, Navigator, Navigation
 ├── di/                         # Hilt-модули
 ├── data/
@@ -782,7 +782,9 @@ open iosApp/WishApp.xcodeproj
 - **`Pods/` не в git** — iOS-зависимости через SPM.
 - **Тестов мало:** `shared` — `LinksAdapterTest`, `DatabaseMigrationTest`,
   `DatabaseRepositoryRulesTest`, `app` — `BytesSizeFormatterTest`,
-  `WishDetailedViewModelTest`, `DatabaseRepositoryDeleteTest` и `SmokeTest`. Не полагайся на тесты как на полное покрытие.
+  `WishDetailedViewModelTest`, `DatabaseRepositoryDeleteTest`, `SmokeTest` и `WishListScreenTest`
+  (UI-тест экрана списка в новом виде: вкладки, шторки, меню, поиск, прокрутка, «назад»;
+  только debug, снимки экрана в `app/build/wishlist-test-screenshots`). Не полагайся на тесты как на полное покрытие.
 - **Release-подпись:** в `app/build.gradle.kts` для release используется тестовый
   keystore (`test_keystore`, пароль `notasecret`). Это не production-подпись.
 - **Секреты:** `apikey.properties`, `local.properties` и keystore не коммить.

@@ -135,4 +135,46 @@
     <string name="a11y_action_select">auswählen</string>
     <string name="a11y_action_unselect">Auswahl aufheben</string>
     <string name="a11y_action_select_many">mehrere auswählen</string>
+
+    <!-- Новый вид, часть 2.2: список. Черновики из артефакта локализации -->
+    <string name="nav_wishes">Wünsche</string>
+    <string name="nav_tags">Etiketten</string>
+    <string name="cd_add_wish">Neuer Wunsch</string>
+    <string name="cd_search">Suchen</string>
+    <string name="cd_more">Mehr</string>
+    <string name="cd_close_search">Suche schließen</string>
+    <string name="cd_clear_search">Suche löschen</string>
+    <string name="menu_share">Teilen</string>
+    <string name="menu_sort">Sortierung</string>
+    <string name="menu_show_cards">Als Karten anzeigen</string>
+    <string name="menu_show_list">Als Liste anzeigen</string>
+    <string name="search_hint">Wunsch suchen</string>
+    <string name="search_in">In „%1$s“ suchen</string>
+    <string name="search_empty_title">Nichts gefunden</string>
+    <string name="search_empty_text">Prüfen Sie die Schreibweise oder versuchen Sie ein anderes Wort</string>
+    <string name="sort_my_order">Meine Reihenfolge</string>
+    <string name="sort_az">A → Z</string>
+    <string name="sort_za">Z → A</string>
+    <string name="tags_find">Etikett suchen</string>
+    <string name="tags_manage">Verwalten</string>
+    <string name="tags_not_found">Kein solches Etikett</string>
+    <string name="empty_main_title">Was wünschen Sie sich?</string>
+    <string name="empty_main_text">Schreiben Sie einen Namen oder fügen Sie einen Produktlink ein</string>
+    <string name="empty_main_action">Erster Wunsch</string>
+    <string name="empty_restore">Aus Sicherung wiederherstellen</string>
+    <string name="empty_done_title">Hier stehen erfüllte Wünsche</string>
+    <string name="empty_done_text">Öffnen Sie einen Wunsch und tippen Sie auf „Erfüllt“</string>
+    <string name="empty_tag_title">Hier ist noch nichts</string>
+    <string name="empty_tag_text">Tippen Sie auf Plus, das Etikett wird automatisch hinzugefügt</string>
+    <plurals name="wishes_count">
+        <item quantity="one">%d Wunsch</item>
+        <item quantity="other">%d Wünsche</item>
+    </plurals>
+    <string name="share_scope">%1$s: %2$s</string>
+    <string name="share_as_text">Als Text</string>
+    <string name="share_as_pdf">PDF mit Fotos</string>
+    <!-- Нет в артефакте локализации, черновики части 2.2 -->
+    <string name="search_elsewhere">Nicht in „%1$s“, aber woanders gefunden</string>
+    <string name="search_go_to">In „%1$s“</string>
+    <string name="search_create">„%1$s“ erstellen</string>
 </resources>

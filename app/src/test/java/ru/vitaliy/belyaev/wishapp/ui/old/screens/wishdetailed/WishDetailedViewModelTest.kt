@@ -413,6 +413,8 @@ class WishDetailedViewModelTest {
             sortMode: WishSortMode,
         ): Flow<List<WishEntity>> = notUsed()
 
+        override fun observeCompletedWishesByCompletionDate(newestFirst: Boolean): Flow<List<WishEntity>> = notUsed()
+
         override suspend fun getAllWishes(isCompleted: Boolean): List<WishEntity> = notUsed()
 
         override fun observeWishesCount(isCompleted: Boolean): Flow<Long> = notUsed()

@@ -282,7 +282,23 @@ class DatabaseRepository(
             WishSortMode.CreatedDateNewest -> wishQueries.getAllByCreatedTimestampDesc(isCompleted)
             WishSortMode.CreatedDateOldest -> wishQueries.getAllByCreatedTimestampAsc(isCompleted)
         }
+        return observeWishesWithTagsAndImages(wishesQuery, sortMode)
+    }
 
+    @NativeCoroutines
+    override fun observeCompletedWishesByCompletionDate(newestFirst: Boolean): Flow<List<WishEntity>> {
+        val wishesQuery: Query<Wish> = if (newestFirst) {
+            wishQueries.getAllCompletedByCompletionDesc()
+        } else {
+            wishQueries.getAllCompletedByCompletionAsc()
+        }
+        return observeWishesWithTagsAndImages(wishesQuery, WishSortMode.Default)
+    }
+
+    private fun observeWishesWithTagsAndImages(
+        wishesQuery: Query<Wish>,
+        sortMode: WishSortMode,
+    ): Flow<List<WishEntity>> {
         val wishesFlow: Flow<List<Wish>> = wishesQuery
             .asFlow()
             .mapToList(dispatcherProvider.io())

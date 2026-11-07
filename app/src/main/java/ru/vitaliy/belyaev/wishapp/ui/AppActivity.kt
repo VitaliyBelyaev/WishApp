@@ -105,6 +105,7 @@ internal class AppActivity : AppCompatActivity() {
                     NewLookRoot(
                         selectedTheme = selectedTheme,
                         useWallpaperColors = useWallpaperColors ?: false,
+                        analyticsRepository = analyticsRepository,
                         appViewModel = viewModel,
                     )
                     // Экрана новой хотелки в новом виде ещё нет, текст из «Поделиться» появится в части 2.4

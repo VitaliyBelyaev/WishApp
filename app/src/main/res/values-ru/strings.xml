@@ -142,4 +142,48 @@
     <string name="a11y_action_select">выбрать</string>
     <string name="a11y_action_unselect">снять выбор</string>
     <string name="a11y_action_select_many">выбрать несколько</string>
+
+    <!-- Новый вид, часть 2.2: список. Черновики из артефакта локализации -->
+    <string name="nav_wishes">Хотелки</string>
+    <string name="nav_tags">Ярлыки</string>
+    <string name="cd_add_wish">Новая хотелка</string>
+    <string name="cd_search">Поиск</string>
+    <string name="cd_more">Ещё</string>
+    <string name="cd_close_search">Закрыть поиск</string>
+    <string name="cd_clear_search">Очистить поиск</string>
+    <string name="menu_share">Поделиться</string>
+    <string name="menu_sort">Сортировка</string>
+    <string name="menu_show_cards">Показать карточками</string>
+    <string name="menu_show_list">Показать списком</string>
+    <string name="search_hint">Найти хотелку</string>
+    <string name="search_in">Найти в «%1$s»</string>
+    <string name="search_empty_title">Ничего не нашлось</string>
+    <string name="search_empty_text">Проверьте написание или попробуйте другое слово</string>
+    <string name="sort_my_order">Мой порядок</string>
+    <string name="sort_az">А → Я</string>
+    <string name="sort_za">Я → А</string>
+    <string name="tags_find">Найти ярлык</string>
+    <string name="tags_manage">Управление</string>
+    <string name="tags_not_found">Такого ярлыка нет</string>
+    <string name="empty_main_title">Чего вам хочется?</string>
+    <string name="empty_main_text">Напишите название или вставьте ссылку на товар</string>
+    <string name="empty_main_action">Первая хотелка</string>
+    <string name="empty_restore">Восстановить из копии</string>
+    <string name="empty_done_title">Здесь будут сбывшиеся</string>
+    <string name="empty_done_text">Откройте хотелку и нажмите «Сбылось»</string>
+    <string name="empty_tag_title">Здесь пока пусто</string>
+    <string name="empty_tag_text">Нажмите на плюс, и ярлык добавится сам</string>
+    <plurals name="wishes_count">
+        <item quantity="one">%d хотелка</item>
+        <item quantity="few">%d хотелки</item>
+        <item quantity="many">%d хотелок</item>
+        <item quantity="other">%d хотелки</item>
+    </plurals>
+    <string name="share_scope">%1$s: %2$s</string>
+    <string name="share_as_text">Текстом</string>
+    <string name="share_as_pdf">PDF с фото</string>
+    <!-- Нет в артефакте локализации, черновики части 2.2 -->
+    <string name="search_elsewhere">В разделе «%1$s» нет, зато есть в другом</string>
+    <string name="search_go_to">В «%1$s»</string>
+    <string name="search_create">Создать «%1$s»</string>
 </resources>

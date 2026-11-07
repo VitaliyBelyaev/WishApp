@@ -120,7 +120,16 @@ Smoke-тест на эмуляторе (успешный сценарий по �
 scripts/run_smoke_test.sh
 ```
 
-Тот же smoke-тест на сборке `autotest` (как release, с R8; эмулятор API 26+),
+UI-тест экрана списка в новом виде (вкладки, шторки ярлыков и сортировки, меню,
+поиск, прокрутка, «назад»). Тоже стирает данные debug-приложения, снимки экрана
+кладёт в `app/build/wishlist-test-screenshots`. Меняешь этот экран — прогони и
+дополни тест:
+
+```bash
+TEST_CLASS=ru.vitaliy.belyaev.wishapp.wishlist.WishListScreenTest scripts/run_smoke_test.sh
+```
+
+Smoke-тест на сборке `autotest` (как release, с R8; эмулятор API 26+),
 перед релизом обязательно:
 
 ```bash
@@ -168,7 +177,7 @@ CI в репозитории **нет** — проверяй вручную.
 - Бэкап: **Google Drive** на Android, **iCloud** на iOS; общего кода нет.
 - На iOS Firebase фактически отключён — используется только Amplitude.
 - Тестов мало: несколько юнит-тестов, тесты миграций и правил базы в `shared`,
-  `DatabaseRepositoryDeleteTest`, `SmokeTest`.
+  `DatabaseRepositoryDeleteTest`, `SmokeTest`, `WishListScreenTest`.
 - Release на Android подписан тестовым keystore — это не production-подпись.
 - Легаси: `iosApp/WishApp/ui/MainScreen/` не входит в Xcode-таргет.
 - `WishDetailedViewModel` сразу создаёт пустое желание; при выходе пустая запись

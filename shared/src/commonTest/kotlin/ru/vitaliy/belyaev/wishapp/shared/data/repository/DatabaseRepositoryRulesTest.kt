@@ -10,6 +10,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import ru.vitaliy.belyaev.wishapp.shared.data.coroutines.DispatcherProvider
 import ru.vitaliy.belyaev.wishapp.shared.data.database.WishAppDb
@@ -125,6 +126,31 @@ class DatabaseRepositoryRulesTest {
         repository.insertWishTagRelation(wish.id, repository.insertTag("дом"))
 
         assertEquals(listOf(homeId), repository.getWishById(wish.id).tags.map { it.id })
+    }
+
+    @Test
+    fun completedWishes_sortedByCompletionDate_legacyWithoutDateUsesUpdateDate() = runTest {
+        insertCompletedWish("old", completedAt = 100, updatedAt = 900)
+        insertCompletedWish("legacy", completedAt = null, updatedAt = 200)
+        insertCompletedWish("new", completedAt = 300, updatedAt = 300)
+        insertWish()
+
+        val newestFirst = repository.observeCompletedWishesByCompletionDate(newestFirst = true).first()
+        val oldestFirst = repository.observeCompletedWishesByCompletionDate(newestFirst = false).first()
+
+        assertEquals(listOf("new", "legacy", "old"), newestFirst.map { it.title })
+        assertEquals(listOf("old", "legacy", "new"), oldestFirst.map { it.title })
+    }
+
+    private suspend fun insertCompletedWish(title: String, completedAt: Long?, updatedAt: Long) {
+        val wish = createEmptyWish().copy(
+            title = title,
+            isCompleted = true,
+            completedTimestamp = completedAt,
+            updatedTimestamp = updatedAt,
+            position = -1,
+        )
+        repository.insertWish(wish)
     }
 
     private suspend fun insertWish(): WishEntity = createEmptyWish().also { repository.insertWish(it) }

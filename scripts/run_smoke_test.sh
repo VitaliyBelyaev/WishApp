@@ -16,6 +16,14 @@
 # и ловит то, что R8 вырезал или переименовал:
 #
 #   BUILD_TYPE=autotest scripts/run_smoke_test.sh
+#
+# Тем же способом запускаются другие тесты, которые стирают базу, например
+# UI-тест экрана списка в новом виде. Его снимки экрана скрипт забирает
+# в app/build/wishlist-test-screenshots:
+#
+#   TEST_CLASS=ru.vitaliy.belyaev.wishapp.wishlist.WishListScreenTest scripts/run_smoke_test.sh
+#
+# Один тест из класса: TEST_CLASS=<класс>#<метод>
 
 set -euo pipefail
 
@@ -29,7 +37,7 @@ case "$BUILD_TYPE" in
 esac
 BUILD_TYPE_TASK="$(printf '%s' "${BUILD_TYPE:0:1}" | tr '[:lower:]' '[:upper:]')${BUILD_TYPE:1}"
 APP_ID="ru.vitaliy.belyaev.wishapp.debug"
-TEST_CLASS="ru.vitaliy.belyaev.wishapp.smoke.SmokeTest"
+TEST_CLASS="${TEST_CLASS:-ru.vitaliy.belyaev.wishapp.smoke.SmokeTest}"
 TEST_RUNNER="$APP_ID.test/androidx.test.runner.AndroidJUnitRunner"
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -100,4 +108,14 @@ install_apks || install_apks
 device_adb shell pm clear "$APP_ID" >/dev/null
 result="$(device_adb shell am instrument -w -e smoke true -e class "$TEST_CLASS" "$TEST_RUNNER" | tr -d '\r')"
 echo "$result"
+
+# Снимки экрана, которые тест сохранил в files/wishlist-test приложения
+SCREENSHOTS_REMOTE="/sdcard/Android/data/$APP_ID/files/wishlist-test"
+if device_adb shell ls "$SCREENSHOTS_REMOTE" >/dev/null 2>&1; then
+    SCREENSHOTS_LOCAL="$ROOT_DIR/app/build/wishlist-test-screenshots"
+    rm -rf "$SCREENSHOTS_LOCAL"
+    mkdir -p "$SCREENSHOTS_LOCAL"
+    device_adb pull "$SCREENSHOTS_REMOTE/." "$SCREENSHOTS_LOCAL" >/dev/null && echo "Снимки экрана: $SCREENSHOTS_LOCAL"
+fi
+
 echo "$result" | grep -q '^OK ('

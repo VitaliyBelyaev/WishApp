@@ -79,6 +79,19 @@ FROM Wish
 WHERE isCompleted = ?
 ORDER BY createdTimestamp ASC;
 
+-- «Сбылось» по дате исполнения. У отмеченных до схемы 4 даты нет, для порядка берём дату изменения.
+getAllCompletedByCompletionDesc:
+SELECT *
+FROM Wish
+WHERE isCompleted = 1
+ORDER BY COALESCE(completedTimestamp, updatedTimestamp) DESC;
+
+getAllCompletedByCompletionAsc:
+SELECT *
+FROM Wish
+WHERE isCompleted = 1
+ORDER BY COALESCE(completedTimestamp, updatedTimestamp) ASC;
+
 getAllNotCompleted:
 SELECT *
 FROM Wish

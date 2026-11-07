@@ -61,6 +61,12 @@ interface WishesRepository {
         sortMode: WishSortMode,
     ): Flow<List<WishEntity>>
 
+    /**
+     * «Сбылось» по дате исполнения. У отмеченных до схемы 4 даты нет, для них порядок по дате изменения.
+     */
+    @NativeCoroutines
+    fun observeCompletedWishesByCompletionDate(newestFirst: Boolean): Flow<List<WishEntity>>
+
     @NativeCoroutines
     suspend fun getAllWishes(isCompleted: Boolean): List<WishEntity>
 

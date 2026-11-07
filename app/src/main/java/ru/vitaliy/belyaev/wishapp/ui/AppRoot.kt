@@ -22,6 +22,7 @@ import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.navigation.AppNavigation
 import ru.vitaliy.belyaev.wishapp.navigation.old.Navigation
 import ru.vitaliy.belyaev.wishapp.navigation.old.Navigator
+import ru.vitaliy.belyaev.wishapp.ui.components.dock.FloatingDockHeight
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.AppSnackbarHost
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.CollectAppSnackMessages
 import ru.vitaliy.belyaev.wishapp.ui.theme.AppTheme
@@ -55,6 +56,7 @@ internal fun OldLookRoot(
 internal fun NewLookRoot(
     selectedTheme: Theme,
     useWallpaperColors: Boolean,
+    analyticsRepository: AnalyticsRepository,
     appViewModel: AppActivityViewModel,
 ) {
     AppTheme(selectedTheme = selectedTheme, useWallpaperColors = useWallpaperColors) {
@@ -64,14 +66,19 @@ internal fun NewLookRoot(
         // Surface задаёт фон и цвет текста по умолчанию для всех экранов нового вида
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
             Box(modifier = Modifier.fillMaxSize()) {
-                AppNavigation(modifier = Modifier.fillMaxSize())
-                // Над системной панелью. Когда появится плавающий док, отступ вырастет до его высоты
+                AppNavigation(
+                    selectedTheme = selectedTheme,
+                    analyticsRepository = analyticsRepository,
+                    onShowMessage = appViewModel::showSnackMessageOnMain,
+                    modifier = Modifier.fillMaxSize(),
+                )
+                // Над плавающей панелью списка. На экранах без панели снэкбар тоже стоит на этой высоте
                 AppSnackbarHost(
                     hostState = snackbarHostState,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .windowInsetsPadding(WindowInsets.navigationBars)
-                        .padding(bottom = WishAppSpacing.s3)
+                        .padding(bottom = FloatingDockHeight + WishAppSpacing.s3 * 2)
                 )
             }
         }

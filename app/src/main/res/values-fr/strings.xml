@@ -138,4 +138,46 @@
     <string name="a11y_action_select">sélectionner</string>
     <string name="a11y_action_unselect">désélectionner</string>
     <string name="a11y_action_select_many">en sélectionner plusieurs</string>
+
+    <!-- Новый вид, часть 2.2: список. Черновики из артефакта локализации -->
+    <string name="nav_wishes">Souhaits</string>
+    <string name="nav_tags">Étiquettes</string>
+    <string name="cd_add_wish">Nouveau souhait</string>
+    <string name="cd_search">Rechercher</string>
+    <string name="cd_more">Plus</string>
+    <string name="cd_close_search">Fermer la recherche</string>
+    <string name="cd_clear_search">Effacer la recherche</string>
+    <string name="menu_share">Partager</string>
+    <string name="menu_sort">Tri</string>
+    <string name="menu_show_cards">Afficher en cartes</string>
+    <string name="menu_show_list">Afficher en liste</string>
+    <string name="search_hint">Trouver un souhait</string>
+    <string name="search_in">Chercher dans « %1$s »</string>
+    <string name="search_empty_title">Aucun résultat</string>
+    <string name="search_empty_text">Vérifiez l’orthographe ou essayez un autre mot</string>
+    <string name="sort_my_order">Mon ordre</string>
+    <string name="sort_az">A → Z</string>
+    <string name="sort_za">Z → A</string>
+    <string name="tags_find">Trouver une étiquette</string>
+    <string name="tags_manage">Gérer</string>
+    <string name="tags_not_found">Aucune étiquette de ce nom</string>
+    <string name="empty_main_title">Que souhaitez-vous ?</string>
+    <string name="empty_main_text">Écrivez un nom ou collez le lien d’un produit</string>
+    <string name="empty_main_action">Premier souhait</string>
+    <string name="empty_restore">Restaurer la sauvegarde</string>
+    <string name="empty_done_title">Vos souhaits réalisés seront ici</string>
+    <string name="empty_done_text">Ouvrez un souhait et touchez « Réalisé »</string>
+    <string name="empty_tag_title">Rien pour l’instant</string>
+    <string name="empty_tag_text">Touchez le plus, l’étiquette s’ajoutera d’elle-même</string>
+    <plurals name="wishes_count">
+        <item quantity="one">%d souhait</item>
+        <item quantity="other">%d souhaits</item>
+    </plurals>
+    <string name="share_scope">%1$s : %2$s</string>
+    <string name="share_as_text">En texte</string>
+    <string name="share_as_pdf">PDF avec photos</string>
+    <!-- Нет в артефакте локализации, черновики части 2.2 -->
+    <string name="search_elsewhere">Rien dans « %1$s », mais il y a des résultats ailleurs</string>
+    <string name="search_go_to">Dans « %1$s »</string>
+    <string name="search_create">Créer « %1$s »</string>
 </resources>

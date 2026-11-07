@@ -137,4 +137,46 @@
     <string name="a11y_action_select">select</string>
     <string name="a11y_action_unselect">deselect</string>
     <string name="a11y_action_select_many">select several</string>
+
+    <!-- Новый вид, часть 2.2: список. Черновики из артефакта локализации -->
+    <string name="nav_wishes">Wishes</string>
+    <string name="nav_tags">Labels</string>
+    <string name="cd_add_wish">New wish</string>
+    <string name="cd_search">Search</string>
+    <string name="cd_more">More</string>
+    <string name="cd_close_search">Close search</string>
+    <string name="cd_clear_search">Clear search</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_sort">Sort</string>
+    <string name="menu_show_cards">Show as cards</string>
+    <string name="menu_show_list">Show as list</string>
+    <string name="search_hint">Find a wish</string>
+    <string name="search_in">Find in “%1$s”</string>
+    <string name="search_empty_title">Nothing found</string>
+    <string name="search_empty_text">Check the spelling or try another word</string>
+    <string name="sort_my_order">My order</string>
+    <string name="sort_az">A → Z</string>
+    <string name="sort_za">Z → A</string>
+    <string name="tags_find">Find a label</string>
+    <string name="tags_manage">Manage</string>
+    <string name="tags_not_found">No such label</string>
+    <string name="empty_main_title">What do you wish for?</string>
+    <string name="empty_main_text">Write a name or paste a product link</string>
+    <string name="empty_main_action">First wish</string>
+    <string name="empty_restore">Restore from backup</string>
+    <string name="empty_done_title">Wishes that came true will be here</string>
+    <string name="empty_done_text">Open a wish and tap “It came true!”</string>
+    <string name="empty_tag_title">Nothing here yet</string>
+    <string name="empty_tag_text">Tap plus and the label is added automatically</string>
+    <plurals name="wishes_count">
+        <item quantity="one">%d wish</item>
+        <item quantity="other">%d wishes</item>
+    </plurals>
+    <string name="share_scope">%1$s: %2$s</string>
+    <string name="share_as_text">As text</string>
+    <string name="share_as_pdf">PDF with photos</string>
+    <!-- Нет в артефакте локализации, черновики части 2.2 -->
+    <string name="search_elsewhere">Not in “%1$s”, but found elsewhere</string>
+    <string name="search_go_to">In “%1$s”</string>
+    <string name="search_create">Create “%1$s”</string>
 </resources>

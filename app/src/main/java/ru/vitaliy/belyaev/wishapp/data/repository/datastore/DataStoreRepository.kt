@@ -13,7 +13,9 @@ import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_DONE_SORT_MODE
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_IS_BACKUP_WAS_CREATED
+import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_LIST_LAYOUT
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_IS_RESTORE_FROM_BACKUP_WAS_SUCCEED
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_POSITIVE_ACTIONS_COUNT
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_REVIEW_REQUEST_SHOWN_COUNT
@@ -21,6 +23,8 @@ import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_THEME
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_UI_LOOK
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_WALLPAPER_COLORS
+import ru.vitaliy.belyaev.wishapp.domain.model.DoneSortMode
+import ru.vitaliy.belyaev.wishapp.domain.model.ListLayout
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.domain.model.UiLook
 import ru.vitaliy.belyaev.wishapp.domain.model.storedValue
@@ -181,6 +185,44 @@ class DataStoreRepository @Inject constructor(
         }
     }
 
+    /** Карточки или список в новом виде. */
+    val listLayoutFlow: Flow<ListLayout> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map {
+            ListLayout.fromStoredValue(it[KEY_LIST_LAYOUT])
+        }
+
+    suspend fun updateListLayout(layout: ListLayout) {
+        dataStore.edit {
+            it[KEY_LIST_LAYOUT] = layout.storedValue
+        }
+    }
+
+    /** Сортировка «Сбылось» в новом виде, отдельно от основного списка. */
+    val doneSortModeFlow: Flow<DoneSortMode> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map {
+            DoneSortMode.fromStoredValue(it[KEY_DONE_SORT_MODE])
+        }
+
+    suspend fun updateDoneSortMode(sortMode: DoneSortMode) {
+        dataStore.edit {
+            it[KEY_DONE_SORT_MODE] = sortMode.storedValue
+        }
+    }
+
     private object PreferencesKeys {
         val KEY_THEME = intPreferencesKey("KEY_THEME")
         val KEY_SORT_MODE = intPreferencesKey("KEY_SORT_MODE")
@@ -191,5 +233,7 @@ class DataStoreRepository @Inject constructor(
         val KEY_IS_RESTORE_SCREEN_WAS_SHOWN = booleanPreferencesKey("KEY_IS_RESTORE_SCREEN_WAS_SHOWN")
         val KEY_UI_LOOK = stringPreferencesKey("KEY_UI_LOOK")
         val KEY_WALLPAPER_COLORS = booleanPreferencesKey("KEY_WALLPAPER_COLORS")
+        val KEY_LIST_LAYOUT = stringPreferencesKey("KEY_LIST_LAYOUT")
+        val KEY_DONE_SORT_MODE = stringPreferencesKey("KEY_DONE_SORT_MODE")
     }
 }
