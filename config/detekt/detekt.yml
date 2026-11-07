@@ -1,0 +1,44 @@
+# Поверх встроенного конфига detekt (buildUponDefaultConfig = true).
+# Здесь только отличия от него; полный список правил: ./gradlew detektGenerateConfig.
+# Оформление проверяет ktlint (.editorconfig), detekt отвечает за смысл.
+# Подробности и причины настроек: docs/CODE_STYLE.md.
+
+complexity:
+  LongMethod:
+    # Compose-экраны длиннее обычных функций
+    allowedLines: 100
+  TooManyFunctions:
+    ignorePrivate: true
+    ignoreAnnotatedFunctions: ['Preview']
+    excludes: &tests
+      - '**/test/**'
+      - '**/testDebug/**'
+      - '**/androidTest/**'
+      - '**/androidTestDebug/**'
+      - '**/commonTest/**'
+      - '**/iosTest/**'
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']
+    excludes: *tests
+  PackageNaming:
+    # Пакеты с подчёркиванием (wish_list, alert_dialog) уже есть
+    packagePattern: '[a-z]+(\.[a-z][A-Za-z0-9_]*)*'
+
+style:
+  MagicNumber:
+    # Размеры и цвета в разметке и теме не выносим в константы
+    ignoreAnnotated: ['Composable', 'Preview']
+    excludes:
+      - '**/test/**'
+      - '**/testDebug/**'
+      - '**/androidTest/**'
+      - '**/androidTestDebug/**'
+      - '**/commonTest/**'
+      - '**/iosTest/**'
+      - '**/*.kts'
+      - '**/ui/theme/**'
+  UnusedImport:
+    # Неиспользуемые импорты убирает ktlint, но detekt подстрахует
+    active: true

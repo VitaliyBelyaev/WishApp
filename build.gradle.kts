@@ -13,6 +13,46 @@ plugins {
     alias(libs.plugins.firebase.perf).apply(false)
     alias(libs.plugins.ksp).apply(false)
     alias(libs.plugins.kmpNativeCoroutines).apply(false)
+    alias(libs.plugins.ktlint).apply(false)
+    alias(libs.plugins.detekt).apply(false)
+}
+
+// Прежний вид Android (ui/old, navigation/old) не меняется, поэтому не проверяется.
+// Правила стиля описаны в docs/CODE_STYLE.md.
+val staticAnalysisExcludes = listOf("**/ui/old/**", "**/navigation/old/**")
+val ktlintVersion = libs.versions.ktlint.get()
+val composeRulesDetekt = libs.composeRules.detekt
+
+subprojects {
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    apply(plugin = "dev.detekt")
+
+    configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+        version.set(ktlintVersion)
+        filter {
+            exclude { element ->
+                val path = element.file.invariantSeparatorsPath
+                path.contains("/build/") || path.contains("/ui/old/") || path.contains("/navigation/old/")
+            }
+        }
+    }
+
+    configure<dev.detekt.gradle.extensions.DetektExtension> {
+        buildUponDefaultConfig.set(true)
+        // Один таск detekt на модуль, без проверки типов: все исходники из src
+        source.setFrom(project.file("src"))
+        parallel.set(true)
+        config.setFrom(rootProject.file("config/detekt/detekt.yml"))
+        baseline.set(rootProject.file("config/detekt/baseline-${project.name}.xml"))
+    }
+
+    dependencies {
+        add("detektPlugins", composeRulesDetekt)
+    }
+
+    tasks.withType<dev.detekt.gradle.Detekt>().configureEach {
+        exclude(staticAnalysisExcludes)
+    }
 }
 
 buildscript {
