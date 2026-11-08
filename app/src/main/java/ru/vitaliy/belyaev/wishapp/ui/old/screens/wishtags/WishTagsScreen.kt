@@ -39,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.normalizeTagTitle
 import ru.vitaliy.belyaev.wishapp.ui.old.core.icon.ThemedIcon
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.wishtags.components.AddTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.wishtags.components.TagItemBlock
@@ -147,7 +148,9 @@ fun WishTagsScreen(
     ) { paddingValues ->
 
         LazyColumn(modifier = Modifier.padding(paddingValues)) {
-            val showAddTagBlock = query.isNotBlank() && tagItems.none { it.tag.title == query }
+            // «дом» при существующем «Дом» не новый ярлык: shared вернёт существующий, кнопку не показываем
+            val showAddTagBlock = query.isNotBlank() &&
+                tagItems.none { normalizeTagTitle(it.tag.title) == normalizeTagTitle(query) }
             if (showAddTagBlock) {
                 item {
                     AddTagBlock(

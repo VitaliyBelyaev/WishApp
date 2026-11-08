@@ -65,7 +65,8 @@
     что модуль компилируется и линкуется под iOS из Gradle (команда в разделе
     «Сборка и проверки»). Приложение `iosApp` через Xcode и симулятор не собирай
     и Swift-сигнатуры не проверяй, если об этом не попросили.
-11. **Kotlin-код проходит `./gradlew ktlintFormat detekt`.** Прогоняй после правок
+11. **WindowInsets.safeDrawing использовать лучше чем statusBars
+12. **Kotlin-код проходит `./gradlew ktlintFormat detekt`.** Прогоняй после правок
     (в конце хода это делает хук Claude Code). Перед коммитом и перед вливанием
     ветки в `dev` ещё и `./gradlew ktlintCheck detekt detektTyped` (с проверкой
     типов; перед коммитом его запускает git pre-commit хук). Новые замечания

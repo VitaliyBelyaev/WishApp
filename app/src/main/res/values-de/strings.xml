@@ -33,6 +33,7 @@
     <string name="cancel">Absagen</string>
     <string name="delete_tag_title">Etikett löschen?</string>
     <string name="delete_tag_description">Wir löschen dieses Label und entfernen es aus allen Ihren Wünschen. Ihre Wünsche werden nicht gelöscht.</string>
+    <string name="edit_tag_duplicate_title_text">Ein Label mit diesem Namen gibt es bereits</string>
     <string name="delete_wish_title">Wunsch löschen?</string>
     <string name="delete_wish_image_title">Lösche Bild?</string>
     <string name="delete_wish_link_title">Link löschen?</string>

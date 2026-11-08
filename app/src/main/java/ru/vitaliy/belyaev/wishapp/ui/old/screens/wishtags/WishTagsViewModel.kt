@@ -59,6 +59,8 @@ class WishTagsViewModel @AssistedInject constructor(
         analyticsRepository.trackEvent(WishTagsAddNewTagClickedEvent)
         launchSafe {
             val tagId = tagsRepository.insertTag(tagName.trim())
+            // insertTag может вернуть уже существующий ярлык: без remove строка задвоилась бы
+            recentlyAddedTagIds.remove(tagId)
             recentlyAddedTagIds.add(0, tagId)
             wishTagRelationRepository.insertWishTagRelation(wishId, tagId)
             dataStoreRepository.incrementPositiveActionsCount()

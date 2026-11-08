@@ -13,8 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
@@ -105,7 +105,7 @@ internal fun WishListHeader(
         HeaderScrim(progress)
         Row(
             modifier = Modifier
-                .windowInsetsPadding(WindowInsets.statusBars)
+                .windowInsetsPadding(WindowInsets.safeDrawing)
                 .fillMaxWidth()
                 .height(HeaderRowHeight)
                 .padding(start = WishAppSpacing.s4, end = WishAppSpacing.s3),
@@ -151,7 +151,7 @@ internal fun WishListHeader(
 private fun HeaderScrim(progress: () -> Float) {
     val surface = MaterialTheme.colorScheme.surface
     val density = LocalDensity.current
-    val statusBar = with(density) { WindowInsets.statusBars.getTop(this).toDp() }
+    val statusBar = with(density) { WindowInsets.safeDrawing.getTop(this).toDp() }
     val total = statusBar + ScrimTail
     val plateau = (statusBar * SCRIM_PLATEAU / total).coerceIn(0f, 1f)
     val brush = remember(surface, plateau) {
@@ -379,12 +379,12 @@ internal fun SearchHeader(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surface)
-                .windowInsetsPadding(WindowInsets.statusBars)
+                .windowInsetsPadding(WindowInsets.safeDrawing)
                 .height(HeaderRowHeight),
         )
         Row(
             modifier = Modifier
-                .windowInsetsPadding(WindowInsets.statusBars)
+                .windowInsetsPadding(WindowInsets.safeDrawing)
                 .fillMaxWidth()
                 .height(HeaderRowHeight)
                 .padding(horizontal = WishAppSpacing.s1),
@@ -432,6 +432,6 @@ internal fun SearchHeader(
 @Composable
 internal fun headerHeight(): Dp {
     val density = LocalDensity.current
-    val statusBar = with(density) { WindowInsets.statusBars.getTop(this).toDp() }
+    val statusBar = with(density) { WindowInsets.safeDrawing.getTop(this).toDp() }
     return statusBar + HeaderRowHeight
 }

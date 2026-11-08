@@ -15,6 +15,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +34,7 @@ import ru.vitaliy.belyaev.wishapp.ui.old.core.alert_dialog.DestructiveConfirmati
 import ru.vitaliy.belyaev.wishapp.ui.old.core.topappbar.WishAppTopBar
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.edittags.components.EditTagBlock
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.edittags.entity.EditTagItem
+import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 
 @ExperimentalMaterial3Api
@@ -56,6 +58,13 @@ fun EditTagsScreen(
     BackHandler { handleBackPressed() }
 
     trackScreenShow { viewModel.trackScreenShow() }
+
+    val duplicateTitleMessage = stringResource(R.string.edit_tag_duplicate_title_text)
+    LaunchedEffect(viewModel) {
+        viewModel.duplicateTitleFlow.collect {
+            snackbarHostState.showDismissableSnackbar(duplicateTitleMessage)
+        }
+    }
 
     val onTagClick: (TagEntity) -> Unit = {
         viewModel.onTagClicked(it)
