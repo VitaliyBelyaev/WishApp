@@ -750,6 +750,11 @@ open iosApp/WishApp.xcodeproj
   (`NeedToRequestReviewUseCase`), Android — сложнее: учитывает счётчик показов
   (`AppActivityViewModel`).
 - **Android in-app review** запускается через Google Play Review API.
+- **Android in-app update** (с 1.9.1): `ui/InAppUpdateController.kt`, гибкий режим Google Play.
+  Предложение при запуске, если новая версия известна устройству не меньше 3 дней, после отказа
+  не чаще раза в 7 дней (`KEY_UPDATE_PROMPT_SHOWN_AT` в DataStore). Скачанное обновление —
+  снэкбар «Перезапустить» на главном экране. Работает только у установки из Google Play.
+  Жёсткий режим и настройки через Remote Config запланированы с редизайном.
 - **`WishDetailedViewModel`** создаёт пустое желание сразу; не забывай про очистку
   пустых записей при выходе.
 - **Snackbar на главном экране** приходит из `AppActivityViewModel.showSnackOnMainFlow`.

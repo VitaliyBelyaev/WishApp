@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppUpdateRestartClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedChangeWishCompletenessClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishImagesViewerDeleteImageConfirmedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishCreatedEvent
@@ -52,6 +53,14 @@ class AppActivityViewModel @Inject constructor(
 
     private val _showSnackOnMainFlow = Channel<String>(capacity = Channel.BUFFERED)
     val showSnackOnMainFlow: Flow<String> = _showSnackOnMainFlow.receiveAsFlow()
+
+    // Обновление из Google Play скачано: главный экран показывает снэкбар «Перезапустить»
+    private val _updateDownloadedFlow = Channel<Unit>(capacity = Channel.CONFLATED)
+    val updateDownloadedFlow: Flow<Unit> = _updateDownloadedFlow.receiveAsFlow()
+
+    // Нажали «Перезапустить»: обновление ставит активити
+    private val _completeUpdateFlow = Channel<Unit>(capacity = Channel.CONFLATED)
+    val completeUpdateFlow: Flow<Unit> = _completeUpdateFlow.receiveAsFlow()
 
     private val countedNewWishIds: MutableSet<String> = mutableSetOf()
 
@@ -155,6 +164,15 @@ class AppActivityViewModel @Inject constructor(
                 dataStoreRepository.incrementPositiveActionsCount()
             }
         }
+    }
+
+    fun onUpdateDownloaded() {
+        _updateDownloadedFlow.trySend(Unit)
+    }
+
+    fun onRestartForUpdateClicked() {
+        analyticsRepository.trackEvent(InAppUpdateRestartClickedEvent)
+        _completeUpdateFlow.trySend(Unit)
     }
 
     fun showSnackMessageOnMain(message: String) {

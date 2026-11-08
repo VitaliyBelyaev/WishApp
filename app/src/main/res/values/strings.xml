@@ -108,4 +108,6 @@
     <string name="sort_created_oldest">Oldest first</string>
     <string name="sort_title_az">Title A-Z</string>
     <string name="sort_title_za">Title Z-A</string>
+    <string name="update_downloaded_text">Update downloaded</string>
+    <string name="update_restart_action">Restart</string>
 </resources>

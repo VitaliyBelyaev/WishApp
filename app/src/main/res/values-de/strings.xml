@@ -106,4 +106,6 @@
     <string name="sort_created_oldest">Älteste zuerst</string>
     <string name="sort_title_az">Titel A-Z</string>
     <string name="sort_title_za">Titel Z-A</string>
+    <string name="update_downloaded_text">Update heruntergeladen</string>
+    <string name="update_restart_action">Neu starten</string>
 </resources>

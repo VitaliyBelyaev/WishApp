@@ -108,4 +108,6 @@
     <string name="sort_created_oldest">Спочатку старі</string>
     <string name="sort_title_az">За назвою A-Z</string>
     <string name="sort_title_za">За назвою Z-A</string>
+    <string name="update_downloaded_text">Оновлення завантажено</string>
+    <string name="update_restart_action">Перезапустити</string>
 </resources>

@@ -16,6 +16,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -128,6 +129,16 @@ fun WishListScreen(
     LaunchedEffect(key1 = Unit) {
         appViewModel.showSnackOnMainFlow.collect {
             snackbarHostState.showDismissableSnackbar(it)
+        }
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        appViewModel.updateDownloadedFlow.collect {
+            val result = snackbarHostState.showDismissableSnackbar(
+                message = resources.getString(R.string.update_downloaded_text),
+                actionLabel = resources.getString(R.string.update_restart_action),
+            )
+            if (result == SnackbarResult.ActionPerformed) appViewModel.onRestartForUpdateClicked()
         }
     }
 

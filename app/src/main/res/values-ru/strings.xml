@@ -107,4 +107,6 @@
     <string name="sort_created_oldest">Сначала старые</string>
     <string name="sort_title_az">По названию (алфавитный порядок)</string>
     <string name="sort_title_za">По названию (обратный алфавитный порядок)</string>
+    <string name="update_downloaded_text">Обновление загружено</string>
+    <string name="update_restart_action">Перезапустить</string>
 </resources>
