@@ -108,4 +108,5 @@
     <string name="sort_title_za">Título Z-A</string>
     <string name="update_downloaded_text">Atualização baixada</string>
     <string name="update_restart_action">Reiniciar</string>
+    <string name="update_downloading_text">A atualização está sendo baixada em segundo plano. Avisaremos quando estiver pronta</string>
 </resources>

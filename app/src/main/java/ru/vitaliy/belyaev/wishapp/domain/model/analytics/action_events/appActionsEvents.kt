@@ -50,3 +50,11 @@ object InAppUpdateRestartClickedEvent : AnalyticsEvent {
 
     override val params: Map<String, Any?> = emptyMap()
 }
+
+/** Снэкбар «Перезапустить» закрыли крестиком или свайпом, не перезапустив. */
+object InAppUpdateRestartDismissedEvent : AnalyticsEvent {
+
+    override val name: String = "InApp Update Restart Dismissed"
+
+    override val params: Map<String, Any?> = emptyMap()
+}

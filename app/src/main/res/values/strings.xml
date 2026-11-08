@@ -110,4 +110,5 @@
     <string name="sort_title_za">Title Z-A</string>
     <string name="update_downloaded_text">Update downloaded</string>
     <string name="update_restart_action">Restart</string>
+    <string name="update_downloading_text">Update is downloading in the background. We\'ll let you know when it\'s ready</string>
 </resources>

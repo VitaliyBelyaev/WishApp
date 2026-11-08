@@ -46,13 +46,17 @@ internal class InAppUpdateController(
     private val dataStoreRepository: DataStoreRepository,
     private val analyticsRepository: AnalyticsRepository,
     private val onUpdateDownloaded: () -> Unit,
+    private val onDownloadStarted: () -> Unit,
 ) {
 
     private val appUpdateManager: AppUpdateManager = AppUpdateManagerFactory.create(activity)
 
     private val updateFlowLauncher: ActivityResultLauncher<IntentSenderRequest> =
         activity.registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-            analyticsRepository.trackEvent(InAppUpdateAnsweredEvent(accepted = result.resultCode == Activity.RESULT_OK))
+            val accepted = result.resultCode == Activity.RESULT_OK
+            analyticsRepository.trackEvent(InAppUpdateAnsweredEvent(accepted = accepted))
+            // Окно Play закрывается сразу, загрузку видно только в уведомлении: говорим об этом сами
+            if (accepted) onDownloadStarted()
         }
 
     // Проверка уже идёт: onStart может прийти снова, пока Play отвечает

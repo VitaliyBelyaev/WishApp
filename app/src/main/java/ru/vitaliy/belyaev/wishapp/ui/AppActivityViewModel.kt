@@ -22,6 +22,7 @@ import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppUpdateDownloadedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppUpdateRestartClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppUpdateRestartDismissedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedChangeWishCompletenessClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishImagesViewerDeleteImageConfirmedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishCreatedEvent
@@ -55,9 +56,10 @@ class AppActivityViewModel @Inject constructor(
     private val _showSnackOnMainFlow = Channel<String>(capacity = Channel.BUFFERED)
     val showSnackOnMainFlow: Flow<String> = _showSnackOnMainFlow.receiveAsFlow()
 
-    // Обновление из Google Play скачано: главный экран показывает снэкбар «Перезапустить»
-    private val _updateDownloadedFlow = Channel<Unit>(capacity = Channel.CONFLATED)
-    val updateDownloadedFlow: Flow<Unit> = _updateDownloadedFlow.receiveAsFlow()
+    // Обновление из Google Play скачано и ждёт перезапуска: пока true, главный экран держит снэкбар
+    // «Перезапустить». Сбрасывается, только когда человек сам закрыл снэкбар или перезапустил
+    private val _isUpdateReadyToInstall = MutableStateFlow(false)
+    val isUpdateReadyToInstall: StateFlow<Boolean> = _isUpdateReadyToInstall
 
     // Нажали «Перезапустить»: обновление ставит активити
     private val _completeUpdateFlow = Channel<Unit>(capacity = Channel.CONFLATED)
@@ -167,19 +169,29 @@ class AppActivityViewModel @Inject constructor(
         }
     }
 
-    // Снэкбар о скачанном обновлении один раз за запуск, а не при каждом возврате в приложение
-    // и не после поворота: состояние живёт во ViewModel, а не в активити
+    // Состояние во ViewModel, а не в активити: поворот и возврат из фона снэкбар не возвращают,
+    // если его уже закрыли
     private var updateDownloadedReported = false
 
     fun onUpdateDownloaded() {
         if (updateDownloadedReported) return
         updateDownloadedReported = true
         analyticsRepository.trackEvent(InAppUpdateDownloadedEvent)
-        _updateDownloadedFlow.trySend(Unit)
+        _isUpdateReadyToInstall.value = true
+    }
+
+    fun onUpdateDownloadStarted(message: String) {
+        showSnackMessageOnMain(message)
+    }
+
+    fun onUpdateSnackbarDismissed() {
+        analyticsRepository.trackEvent(InAppUpdateRestartDismissedEvent)
+        _isUpdateReadyToInstall.value = false
     }
 
     fun onRestartForUpdateClicked() {
         analyticsRepository.trackEvent(InAppUpdateRestartClickedEvent)
+        _isUpdateReadyToInstall.value = false
         _completeUpdateFlow.trySend(Unit)
     }
 

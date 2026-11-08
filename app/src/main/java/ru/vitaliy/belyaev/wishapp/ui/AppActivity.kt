@@ -82,6 +82,7 @@ internal class AppActivity : AppCompatActivity() {
             dataStoreRepository = dataStoreRepository,
             analyticsRepository = analyticsRepository,
             onUpdateDownloaded = viewModel::onUpdateDownloaded,
+            onDownloadStarted = { viewModel.onUpdateDownloadStarted(getString(R.string.update_downloading_text)) },
         )
         lifecycleScope.launch {
             viewModel.completeUpdateFlow.collect { inAppUpdateController.completeUpdate() }

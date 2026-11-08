@@ -108,4 +108,5 @@
     <string name="sort_title_za">Titre Z-A</string>
     <string name="update_downloaded_text">Mise à jour téléchargée</string>
     <string name="update_restart_action">Redémarrer</string>
+    <string name="update_downloading_text">La mise à jour se télécharge en arrière-plan. Nous vous préviendrons quand elle sera prête</string>
 </resources>

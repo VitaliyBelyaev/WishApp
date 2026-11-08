@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -126,25 +127,37 @@ fun WishListScreen(
 
     trackScreenShow { viewModel.trackScreenShow() }
 
-    LaunchedEffect(key1 = Unit) {
-        appViewModel.showSnackOnMainFlow.collect {
-            snackbarHostState.showDismissableSnackbar(it)
+    // Пока показывается обычное сообщение, снэкбар «Перезапустить» уступает ему место
+    var messagesInProgress by remember { mutableIntStateOf(0) }
+    suspend fun showMessage(message: String) {
+        messagesInProgress++
+        try {
+            snackbarHostState.showDismissableSnackbar(message)
+        } finally {
+            messagesInProgress--
         }
     }
 
     LaunchedEffect(key1 = Unit) {
-        appViewModel.updateDownloadedFlow.collect {
-            val result = snackbarHostState.showDismissableSnackbar(
-                message = resources.getString(R.string.update_downloaded_text),
-                actionLabel = resources.getString(R.string.update_restart_action),
-            )
-            if (result == SnackbarResult.ActionPerformed) appViewModel.onRestartForUpdateClicked()
-        }
+        appViewModel.showSnackOnMainFlow.collect { showMessage(it) }
     }
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.showSnackFlow.collect {
-            snackbarHostState.showDismissableSnackbar(resources.getString(it))
+        viewModel.showSnackFlow.collect { showMessage(resources.getString(it)) }
+    }
+
+    // Скачанное обновление: снэкбар держится, пока его не закроют крестиком или не перезапустят.
+    // Уход с экрана, сообщение поверх или сворачивание его только прячут, потом он возвращается
+    val isUpdateReadyToInstall by appViewModel.isUpdateReadyToInstall.collectAsStateWithLifecycle()
+    LaunchedEffect(isUpdateReadyToInstall, messagesInProgress == 0) {
+        if (!isUpdateReadyToInstall || messagesInProgress > 0) return@LaunchedEffect
+        val result = snackbarHostState.showDismissableSnackbar(
+            message = resources.getString(R.string.update_downloaded_text),
+            actionLabel = resources.getString(R.string.update_restart_action),
+        )
+        when (result) {
+            SnackbarResult.ActionPerformed -> appViewModel.onRestartForUpdateClicked()
+            SnackbarResult.Dismissed -> appViewModel.onUpdateSnackbarDismissed()
         }
     }
 
