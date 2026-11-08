@@ -223,7 +223,7 @@ internal class BackupViewModel @Inject constructor(
             runCatching {
                 withContext(Dispatchers.IO) {
                     restoreBackupUseCase(
-                        backupFileId = (viewState.value as BackupViewState.CurrentBackup).backupInfo.fileId,
+                        backup = (viewState.value as BackupViewState.CurrentBackup).backupInfo,
                         fileWhereCurrentDbStored = context.getDatabasePath(wishAppSdk.databaseName),
                         progressListener = downloadProgressListener
                     )

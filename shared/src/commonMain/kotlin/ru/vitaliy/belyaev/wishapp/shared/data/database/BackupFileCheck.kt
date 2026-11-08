@@ -26,19 +26,30 @@ object BackupFileCheck {
     private const val HeaderSize = 100
     private const val UserVersionOffset = 60
 
+    /** Версия схемы базы этого приложения. Её же записываем в свойства копии при загрузке. */
+    val appSchemaVersion: Long get() = WishAppDb.Schema.version
+
+    /**
+     * Проверка по известной версии схемы копии, без файла: из свойств копии в облаке
+     * или из запомненного прошлого отказа.
+     */
+    fun checkSchemaVersion(
+        backupSchemaVersion: Long,
+        appSchemaVersion: Long = this.appSchemaVersion,
+    ): BackupFileCheckResult = if (backupSchemaVersion > appSchemaVersion) {
+        BackupFileCheckResult.FromNewerVersion(backupSchemaVersion, appSchemaVersion)
+    } else {
+        BackupFileCheckResult.Compatible
+    }
+
     fun check(
         fileHeader: ByteArray,
-        appSchemaVersion: Long = WishAppDb.Schema.version,
+        appSchemaVersion: Long = this.appSchemaVersion,
     ): BackupFileCheckResult {
         if (fileHeader.size < HeaderSize) return BackupFileCheckResult.NotDatabase
         if (!SqliteMagic.indices.all { fileHeader[it] == SqliteMagic[it] }) return BackupFileCheckResult.NotDatabase
 
-        val backupSchemaVersion = readUserVersion(fileHeader)
-        return if (backupSchemaVersion > appSchemaVersion) {
-            BackupFileCheckResult.FromNewerVersion(backupSchemaVersion, appSchemaVersion)
-        } else {
-            BackupFileCheckResult.Compatible
-        }
+        return checkSchemaVersion(readUserVersion(fileHeader), appSchemaVersion)
     }
 
     private fun readUserVersion(header: ByteArray): Long =

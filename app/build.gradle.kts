@@ -41,6 +41,10 @@ android {
         versionCode = 26
         versionName = "1.9.1"
 
+        // Страница в Google Play всегда у релизного id: у debug и autotest к нему добавлен суффикс,
+        // и ссылка из такой сборки вела бы на несуществующую страницу
+        buildConfigField("String", "STORE_APP_ID", "\"$applicationId\"")
+
         // Ключ Amplitude только в release, иначе debug и автотесты пишут в боевой проект
         stringConfigField(amplitudeApiKey, "")
 

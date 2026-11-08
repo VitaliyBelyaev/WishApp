@@ -52,6 +52,31 @@ class BackupFileCheckTest {
         )
     }
 
+    @Test
+    fun knownSchemaVersionIsCheckedWithoutFile() {
+        val current = BackupFileCheck.appSchemaVersion
+        assertEquals(WishAppDb.Schema.version, current)
+        assertEquals(BackupFileCheckResult.Compatible, BackupFileCheck.checkSchemaVersion(current))
+        assertEquals(BackupFileCheckResult.Compatible, BackupFileCheck.checkSchemaVersion(current - 1))
+        assertEquals(
+            BackupFileCheckResult.FromNewerVersion(current + 1, current),
+            BackupFileCheck.checkSchemaVersion(current + 1),
+        )
+    }
+
+    @Test
+    fun rememberedRefusalPassesAfterAppCaughtUp() {
+        // Копия со схемой 4 в приложении со схемой 3 отклоняется, после обновления до 4 проходит
+        assertEquals(
+            BackupFileCheckResult.FromNewerVersion(4, 3),
+            BackupFileCheck.checkSchemaVersion(backupSchemaVersion = 4, appSchemaVersion = 3),
+        )
+        assertEquals(
+            BackupFileCheckResult.Compatible,
+            BackupFileCheck.checkSchemaVersion(backupSchemaVersion = 4, appSchemaVersion = 4),
+        )
+    }
+
     private fun header(userVersion: Long): ByteArray {
         val bytes = ByteArray(4096)
         "SQLite format 3\u0000".encodeToByteArray().copyInto(bytes)
