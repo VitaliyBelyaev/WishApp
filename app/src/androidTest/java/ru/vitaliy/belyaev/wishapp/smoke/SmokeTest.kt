@@ -74,7 +74,7 @@ internal class SmokeTest {
             override fun evaluate() {
                 assumeTrue(
                     "Запускайте через scripts/run_smoke_test.sh",
-                    InstrumentationRegistry.getArguments().getString("smoke") == "true"
+                    InstrumentationRegistry.getArguments().getString("smoke") == "true",
                 )
                 // Java API вместо ktx-расширений: в сборке autotest R8 вырезает
                 // `com.google.firebase.Firebase`, приложение его не использует
@@ -366,7 +366,9 @@ internal class SmokeTest {
         scrollListTo(EDITED_WISH_TITLE)
         rule.onNodeWithText(EDITED_WISH_TITLE).assertIsDisplayed()
         rule.onNodeWithText(EDITED_WISH_COMMENT).assertIsDisplayed()
-        rule.onAllNodesWithText(fillerToEdit).fetchSemanticsNodes().let { check(it.isEmpty()) { "Старое название осталось" } }
+        rule.onAllNodesWithText(fillerToEdit).fetchSemanticsNodes().let {
+            check(it.isEmpty()) { "Старое название осталось" }
+        }
     }
 
     private fun completeWish() {
@@ -497,7 +499,7 @@ internal class SmokeTest {
         clickText(string(R.string.licenses))
         assertNotNull(
             "Экран лицензий не открылся",
-            licensesMonitor.waitForActivityWithTimeout(WAIT_TIMEOUT_MILLIS)
+            licensesMonitor.waitForActivityWithTimeout(WAIT_TIMEOUT_MILLIS),
         )
         instrumentation.removeMonitor(licensesMonitor)
         device.pressBack()

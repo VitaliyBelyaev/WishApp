@@ -25,6 +25,6 @@ fun SqlDriver.queryRows(sql: String, columns: Int): List<List<String?>> {
             }
             QueryResult.Value(rows)
         },
-        parameters = 0
+        parameters = 0,
     ).value
 }

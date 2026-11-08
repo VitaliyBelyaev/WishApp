@@ -47,7 +47,7 @@ private val ShareButtonShape = RoundedCornerShape(18.dp)
 private val CaptionBackground = Color(0xB8140C08)
 
 /** Сдвиг между появлением кнопок, снизу вверх, как в макете. */
-private const val StaggerMillis = 35
+private const val STAGGER_MILLIS = 35
 
 /**
  * Меню «Поделиться» варианта K (`hk-smenu--top`): затемнение и столбик кнопок справа под шапкой.
@@ -123,7 +123,7 @@ internal fun ShareMenu(
 private fun Rising(order: Int, content: @Composable () -> Unit) {
     val state = remember { MutableTransitionState(false).apply { targetState = true } }
     val rise = with(LocalDensity.current) { 24.dp.roundToPx() }
-    val delay = order * StaggerMillis
+    val delay = order * STAGGER_MILLIS
     AnimatedVisibility(
         visibleState = state,
         enter = fadeIn(tween(220, delayMillis = delay)) +

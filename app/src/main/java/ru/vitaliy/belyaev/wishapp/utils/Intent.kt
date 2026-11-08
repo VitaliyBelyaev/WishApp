@@ -27,13 +27,13 @@ fun createSharePlainTextIntent(text: String): Intent {
 
 fun createSharePdfDocumentIntent(
     pdfFile: File,
-    context: Context
+    context: Context,
 ): Intent {
 
     val pdfUri = FileProvider.getUriForFile(
         context,
         "${BuildConfig.APPLICATION_ID}.fileprovider",
-        pdfFile
+        pdfFile,
     )
 
     val sendIntent = Intent(Intent.ACTION_SEND).apply {

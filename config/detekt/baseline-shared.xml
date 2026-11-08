@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>MagicNumber:BackupFileCheck.kt:BackupFileCheck$0xFF</ID>
+    <ID>MagicNumber:BackupFileCheck.kt:BackupFileCheck$4</ID>
+    <ID>MagicNumber:BackupFileCheck.kt:BackupFileCheck$8</ID>
+    <ID>ReturnCount:BackupFileCheck.kt:BackupFileCheck$fun check: BackupFileCheckResult</ID>
+    <ID>TooGenericExceptionCaught:WishAppSdk.kt:WishAppSdk$error: Throwable</ID>
+    <ID>TooManyFunctions:DatabaseRepository.kt:DatabaseRepository : WishesRepositoryWishTagRelationRepositoryTagsRepositoryImagesRepository</ID>
+    <ID>TooManyFunctions:WishesRepository.kt:WishesRepository</ID>
+  </CurrentIssues>
+</SmellBaseline>

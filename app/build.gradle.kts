@@ -19,7 +19,7 @@ val amplitudeApiKey = "AMPLITUDE_API_KEY"
 val apikeyProperties = readProperties("../apikey.properties")
 val amplitudeApiKeyValue = apikeyProperties.getStringOrDefault(
     key = amplitudeApiKey,
-    default = ""
+    default = "",
 )
 
 kotlin {

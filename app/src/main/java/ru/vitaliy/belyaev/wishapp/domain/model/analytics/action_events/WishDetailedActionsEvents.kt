@@ -62,13 +62,13 @@ object WishDetailedAddImagesClickedEvent : AnalyticsEvent {
 }
 
 data class WishDetailedImagesSelectedEvent(
-    private val imagesCount: Int
+    private val imagesCount: Int,
 ) : AnalyticsEvent {
 
     override val name: String = "Wish Detailed Screen - Images Selected"
 
     override val params: Map<String, Any?> = mapOf(
-        "images_count" to imagesCount
+        "images_count" to imagesCount,
     )
 }
 
@@ -78,6 +78,7 @@ object WishDetailedSaveAndExitClickedEvent : AnalyticsEvent {
 
     override val params: Map<String, Any?> = emptyMap()
 }
+
 /**
  * Новая хотелка сохранена (не пустая). Одно имя на все способы создания:
  * в редизайне шторка добавления шлёт его же с другим source.

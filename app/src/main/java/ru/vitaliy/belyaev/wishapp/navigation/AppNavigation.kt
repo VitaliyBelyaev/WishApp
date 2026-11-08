@@ -1,6 +1,5 @@
 package ru.vitaliy.belyaev.wishapp.navigation
 
-import ru.vitaliy.belyaev.wishapp.ui.old.theme.WishAppTheme as OldWishAppTheme
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -41,6 +40,7 @@ import ru.vitaliy.belyaev.wishapp.ui.old.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.wish_images.WishImagesViewerScreenRoute
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.wishdetailed.WishDetailedScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.wishtags.WishTagsScreen
+import ru.vitaliy.belyaev.wishapp.ui.old.theme.WishAppTheme as OldWishAppTheme
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishlist.WishListActions
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishlist.WishListScreen
 
@@ -51,7 +51,7 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.wishlist.WishListScreen
 @Serializable
 data object WishListRoute : NavKey
 
-private const val TransitionMillis = 300
+private const val TRANSITION_MILLIS = 300
 
 /**
  * Список нового вида и экраны, которых в новом виде ещё нет. Они открываются в прежнем виде,
@@ -144,8 +144,8 @@ fun AppNavigation(
         }
     }
 
-    val offsetSpec = tween<androidx.compose.ui.unit.IntOffset>(TransitionMillis, easing = FastOutSlowInEasing)
-    val fadeSpec = tween<Float>(TransitionMillis, easing = FastOutSlowInEasing)
+    val offsetSpec = tween<androidx.compose.ui.unit.IntOffset>(TRANSITION_MILLIS, easing = FastOutSlowInEasing)
+    val fadeSpec = tween<Float>(TRANSITION_MILLIS, easing = FastOutSlowInEasing)
     val smallOffset: (Int) -> Int = { it / 5 }
 
     NavDisplay(

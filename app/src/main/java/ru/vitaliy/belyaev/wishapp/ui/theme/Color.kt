@@ -73,7 +73,8 @@ enum class PaperTone(internal val light: Color, internal val dark: Color) {
     AQUA(Color(0xFFCDEDEC), Color(0xFF173A3B)),
     IRIS(Color(0xFFD8DEFB), Color(0xFF2A2E50)),
     ORCHID(Color(0xFFF5D8F3), Color(0xFF4A2648)),
-    SAND(Color(0xFFEBDFD0), Color(0xFF3B3026));
+    SAND(Color(0xFFEBDFD0), Color(0xFF3B3026)),
+    ;
 
     companion object {
         /** Тона ярлыков без `peach`, по порядку слотов 1–10. */

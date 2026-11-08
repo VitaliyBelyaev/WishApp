@@ -1,6 +1,5 @@
 package ru.vitaliy.belyaev.wishapp.utils
 
-import android.app.ActivityManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -26,7 +25,7 @@ fun Context.openGooglePlay() {
 @OptIn(
     ExperimentalFoundationApi::class,
     ExperimentalComposeUiApi::class,
-    ExperimentalMaterialApi::class
+    ExperimentalMaterialApi::class,
 )
 fun Context.restartAppWithDelayMillis(delayMillis: Long) {
     Handler(mainLooper).postDelayed(delayMillis) {

@@ -79,7 +79,10 @@ fun AppSnackbarHost(hostState: SnackbarHostState, modifier: Modifier = Modifier)
                 }
             },
         ) {
-            Text(text = data.visuals.message, style = MaterialTheme.typography.label.copy(fontWeight = FontWeight.Medium))
+            Text(
+                text = data.visuals.message,
+                style = MaterialTheme.typography.label.copy(fontWeight = FontWeight.Medium),
+            )
         }
     }
 }

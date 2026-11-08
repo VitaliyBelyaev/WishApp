@@ -39,7 +39,7 @@ internal class DemoData(language: String) {
     val firstWishTitle: String = text("Беспроводные наушники", "Wireless headphones")
     val firstWishComment: String = text(
         "С шумоподавлением, лучше чёрные. Хотелось бы к отпуску.",
-        "With noise cancelling, preferably black. Would love to have them by the vacation."
+        "With noise cancelling, preferably black. Would love to have them by the vacation.",
     )
 
     /** Порядок — как на экране: сверху то, что добавлено последним. */
@@ -134,7 +134,7 @@ internal class DemoData(language: String) {
                     id = UUID.randomUUID().toString(),
                     wishId = wish.id,
                     rawData = createImage(startColor, endColor),
-                )
+                ),
             )
         }
         if (isCompleted) {
@@ -155,7 +155,7 @@ internal class DemoData(language: String) {
             height.toFloat(),
             startColor,
             endColor,
-            Shader.TileMode.CLAMP
+            Shader.TileMode.CLAMP,
         )
         canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
         paint.shader = null

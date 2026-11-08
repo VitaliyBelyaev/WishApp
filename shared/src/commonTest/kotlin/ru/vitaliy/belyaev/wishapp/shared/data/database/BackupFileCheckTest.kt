@@ -7,12 +7,18 @@ class BackupFileCheckTest {
 
     @Test
     fun backupOfSameSchema_isCompatible() {
-        assertEquals(BackupFileCheckResult.Compatible, BackupFileCheck.check(header(userVersion = 4), appSchemaVersion = 4))
+        assertEquals(
+            BackupFileCheckResult.Compatible,
+            BackupFileCheck.check(header(userVersion = 4), appSchemaVersion = 4),
+        )
     }
 
     @Test
     fun backupOfOlderSchema_isCompatible_migrationsUpgradeIt() {
-        assertEquals(BackupFileCheckResult.Compatible, BackupFileCheck.check(header(userVersion = 1), appSchemaVersion = 4))
+        assertEquals(
+            BackupFileCheckResult.Compatible,
+            BackupFileCheck.check(header(userVersion = 1), appSchemaVersion = 4),
+        )
     }
 
     @Test
@@ -39,7 +45,10 @@ class BackupFileCheckTest {
 
     @Test
     fun truncatedFile_isNotDatabase() {
-        assertEquals(BackupFileCheckResult.NotDatabase, BackupFileCheck.check(header(4).copyOf(50), appSchemaVersion = 4))
+        assertEquals(
+            BackupFileCheckResult.NotDatabase,
+            BackupFileCheck.check(header(4).copyOf(50), appSchemaVersion = 4),
+        )
     }
 
     @Test
