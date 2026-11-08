@@ -58,7 +58,12 @@ if [ -z "$SERIAL" ]; then
         echo "AVD $AVD_NAME не найден, его создаёт scripts/take_screenshots.sh" >&2
         exit 1
     fi
-    echo "Запускаю $AVD_NAME"
+    # Порт может занимать другой эмулятор, например рабочий: тогда новый падает, а адрес
+    # emulator-<порт> указывает на чужой, и тест стирал бы и выключал его. Берём свободный порт
+    while "$ADB" devices | grep -q "^emulator-$EMULATOR_PORT[[:space:]]"; do
+        EMULATOR_PORT=$((EMULATOR_PORT + 2))
+    done
+    echo "Запускаю $AVD_NAME на порту $EMULATOR_PORT"
     SERIAL="emulator-$EMULATOR_PORT"
     "$EMULATOR" -avd "$AVD_NAME" -port "$EMULATOR_PORT" \
         -no-window -no-audio -no-boot-anim -no-snapshot-save >/dev/null 2>&1 &
@@ -69,8 +74,13 @@ device_adb() {
     "$ADB" -s "$SERIAL" "$@"
 }
 
+running_avd_name() {
+    device_adb emu avd name 2>/dev/null | sed -n 1p | tr -d '\r'
+}
+
 cleanup() {
-    if [ "$emulator_started_here" = true ]; then
+    # Выключаем только свой эмулятор
+    if [ "$emulator_started_here" = true ] && [ "$(running_avd_name)" = "$AVD_NAME" ]; then
         device_adb emu kill >/dev/null 2>&1 || true
     fi
 }
@@ -84,6 +94,12 @@ until [ "$(device_adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
     fi
     sleep 2
 done
+
+# Последняя страховка: на чужом эмуляторе ничего не стираем
+if [ -z "$DEVICE_SERIAL" ] && [ "$(running_avd_name)" != "$AVD_NAME" ]; then
+    echo "$SERIAL — это не $AVD_NAME, тест не запускаю" >&2
+    exit 1
+fi
 
 for scale in window_animation_scale transition_animation_scale animator_duration_scale; do
     device_adb shell settings put global "$scale" 0
