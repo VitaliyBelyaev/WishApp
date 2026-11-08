@@ -15,10 +15,10 @@ import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 
 fun Context.openGooglePlay() {
     try {
-        val uriString = "market://details?id=${BuildConfig.APPLICATION_ID}"
+        val uriString = "market://details?id=${BuildConfig.STORE_APP_ID}"
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(uriString)))
     } catch (e: ActivityNotFoundException) {
-        val webUriString = "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"
+        val webUriString = "https://play.google.com/store/apps/details?id=${BuildConfig.STORE_APP_ID}"
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(webUriString)))
     }
 }
