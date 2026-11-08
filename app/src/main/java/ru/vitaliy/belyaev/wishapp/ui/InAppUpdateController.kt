@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppUpdateAnsweredEvent
-import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppUpdateDownloadedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppUpdateShownEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import timber.log.Timber
@@ -29,10 +28,14 @@ import timber.log.Timber
 /**
  * Мягкое обновление через Google Play (in-app update, гибкий режим): Play качает новую версию
  * в фоне, человек продолжает пользоваться приложением, а когда всё скачано, на главном экране
- * снэкбар «Перезапустить».
+ * снэкбар «Перезапустить» (один раз за запуск, следит `AppActivityViewModel`).
  *
- * Предлагаем, только если устройство знает о новой версии не меньше [MinStalenessDays] дней: пока
- * версия на поэтапной раскатке, рано. После отказа повторяем не чаще раза в [PromptIntervalDays] дней.
+ * Проверяем при каждом выходе приложения на экран (`onStart`): и при запуске, и когда его разворачивают,
+ * ведь многие не закрывают приложение, а сворачивают. Предлагаем, только если устройство знает
+ * о новой версии не меньше [MinStalenessDays] дней: сутки запаса, чтобы успеть остановить раскатку
+ * плохой версии. После показа следующий не раньше чем через [PromptIntervalDays] дней: вернувшиеся
+ * пользователи обычно заходят раз в 6–7 дней (Amplitude, ноябрь 2026), и при 5 днях предложение
+ * попадает на ближайший заход, а не через один.
  * Работает только у сборок, установленных из Google Play: в остальных Play отвечает ошибкой,
  * и предложения просто нет.
  *
@@ -52,11 +55,11 @@ internal class InAppUpdateController(
             analyticsRepository.trackEvent(InAppUpdateAnsweredEvent(accepted = result.resultCode == Activity.RESULT_OK))
         }
 
-    // Снэкбар о скачанном обновлении один раз за запуск: иначе он всплывал бы при каждом возврате в приложение
-    private var downloadedReported = false
+    // Проверка уже идёт: onStart может прийти снова, пока Play отвечает
+    private var checkInProgress = false
 
     private val installStateListener = InstallStateUpdatedListener { state ->
-        if (state.installStatus() == InstallStatus.DOWNLOADED) reportDownloaded()
+        if (state.installStatus() == InstallStatus.DOWNLOADED) onUpdateDownloaded()
     }
 
     init {
@@ -65,11 +68,8 @@ internal class InAppUpdateController(
                 appUpdateManager.registerListener(installStateListener)
             }
 
-            override fun onResume(owner: LifecycleOwner) {
-                // Обновление могло докачаться, пока приложение было свёрнуто или закрыто
-                appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
-                    if (info.installStatus() == InstallStatus.DOWNLOADED) reportDownloaded()
-                }
+            override fun onStart(owner: LifecycleOwner) {
+                checkForUpdate()
             }
 
             override fun onDestroy(owner: LifecycleOwner) {
@@ -78,17 +78,24 @@ internal class InAppUpdateController(
         })
     }
 
-    /** Проверить, есть ли обновление, и предложить его. Вызывать при первом запуске активити. */
-    fun checkForUpdate() {
+    private fun checkForUpdate() {
+        if (checkInProgress) return
+        checkInProgress = true
         activity.lifecycleScope.launch {
-            val info = try {
-                appUpdateManager.requestAppUpdateInfo()
+            try {
+                val info = appUpdateManager.requestAppUpdateInfo()
+                // Обновление могло докачаться, пока приложение было свёрнуто или закрыто
+                if (info.installStatus() == InstallStatus.DOWNLOADED) {
+                    onUpdateDownloaded()
+                } else if (shouldPrompt(info)) {
+                    prompt(info)
+                }
             } catch (e: Exception) {
                 // Не из Google Play, нет Play или сети: ожидаемо, в Crashlytics не шлём
                 Timber.w(e, "In-app update info is not available")
-                return@launch
+            } finally {
+                checkInProgress = false
             }
-            if (shouldPrompt(info)) prompt(info)
         }
     }
 
@@ -98,7 +105,9 @@ internal class InAppUpdateController(
     }
 
     private suspend fun shouldPrompt(info: AppUpdateInfo): Boolean {
+        // Уже качается или ждёт установки: второй раз не предлагаем
         if (info.updateAvailability() != UpdateAvailability.UPDATE_AVAILABLE) return false
+        if (info.installStatus() in InProgressStatuses) return false
         if (!info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) return false
         if ((info.clientVersionStalenessDays() ?: 0) < MinStalenessDays) return false
         val shownAt = dataStoreRepository.getUpdatePromptShownAtMillis() ?: return true
@@ -121,15 +130,16 @@ internal class InAppUpdateController(
         )
     }
 
-    private fun reportDownloaded() {
-        if (downloadedReported) return
-        downloadedReported = true
-        analyticsRepository.trackEvent(InAppUpdateDownloadedEvent)
-        onUpdateDownloaded()
-    }
-
     private companion object {
-        const val MinStalenessDays = 3
-        const val PromptIntervalDays = 7L
+        const val MinStalenessDays = 1
+        const val PromptIntervalDays = 5L
+
+        // Отменённая или сорвавшаяся загрузка сюда не входит: такое обновление предлагаем снова
+        val InProgressStatuses = setOf(
+            InstallStatus.PENDING,
+            InstallStatus.DOWNLOADING,
+            InstallStatus.INSTALLING,
+            InstallStatus.DOWNLOADED,
+        )
     }
 }

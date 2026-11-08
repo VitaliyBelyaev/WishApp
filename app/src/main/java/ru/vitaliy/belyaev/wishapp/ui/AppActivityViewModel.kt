@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppUpdateDownloadedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppUpdateRestartClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedChangeWishCompletenessClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishImagesViewerDeleteImageConfirmedEvent
@@ -166,7 +167,14 @@ class AppActivityViewModel @Inject constructor(
         }
     }
 
+    // Снэкбар о скачанном обновлении один раз за запуск, а не при каждом возврате в приложение
+    // и не после поворота: состояние живёт во ViewModel, а не в активити
+    private var updateDownloadedReported = false
+
     fun onUpdateDownloaded() {
+        if (updateDownloadedReported) return
+        updateDownloadedReported = true
+        analyticsRepository.trackEvent(InAppUpdateDownloadedEvent)
         _updateDownloadedFlow.trySend(Unit)
     }
 

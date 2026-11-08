@@ -76,16 +76,13 @@ internal class AppActivity : AppCompatActivity() {
             sharedLinkFromAnotherApp = extractSharedLinkAndShowErrorIfInvalid(intent)
         }
 
+        // Проверяет обновление сам при каждом onStart
         val inAppUpdateController = InAppUpdateController(
             activity = this,
             dataStoreRepository = dataStoreRepository,
             analyticsRepository = analyticsRepository,
             onUpdateDownloaded = viewModel::onUpdateDownloaded,
         )
-        // Только при первом запуске: после поворота или смены темы заново не предлагаем
-        if (savedInstanceState == null) {
-            inAppUpdateController.checkForUpdate()
-        }
         lifecycleScope.launch {
             viewModel.completeUpdateFlow.collect { inAppUpdateController.completeUpdate() }
         }
