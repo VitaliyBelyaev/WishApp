@@ -8,7 +8,6 @@
     <ID>MagicNumber:BackupFileCheck.kt:BackupFileCheck$8</ID>
     <ID>ReturnCount:BackupFileCheck.kt:BackupFileCheck$fun check: BackupFileCheckResult</ID>
     <ID>SpreadOperator:DatabaseDriverFactory.kt:DatabaseDriverFactory$( schema = WishAppDb.Schema, *DatabaseMigrator.afterVersionCallbacks, )</ID>
-    <ID>TooGenericExceptionCaught:WishAppSdk.kt:WishAppSdk$error: Throwable</ID>
     <ID>TooManyFunctions:DatabaseRepository.kt:DatabaseRepository : WishesRepositoryWishTagRelationRepositoryTagsRepositoryImagesRepository</ID>
     <ID>TooManyFunctions:WishesRepository.kt:WishesRepository</ID>
     <ID>UnsafeCallOnNullableType:DatabaseMigrator.kt:DatabaseMigrator$cursor.getLong(2)!!</ID>

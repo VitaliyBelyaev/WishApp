@@ -16,8 +16,5 @@
     <ID>ReturnCount:AppActivity.kt:AppActivity$private fun extractSharedDraft: SharedWishDraft?</ID>
     <ID>ReturnCount:UiLook.kt:fun resolveUiLook: UiLook</ID>
     <ID>SwallowedException:Context.kt:e: ActivityNotFoundException</ID>
-    <ID>TooGenericExceptionCaught:GoogleBackupAuthRepository.kt:GoogleBackupAuthRepository$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:IsUserSignedInToBackupServiceUseCase.kt:IsUserSignedInToBackupServiceUseCase$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:WishListViewModel.kt:WishListViewModel$error: Exception</ID>
   </CurrentIssues>
 </SmellBaseline>

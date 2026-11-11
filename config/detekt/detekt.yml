@@ -21,6 +21,12 @@ complexity:
       - '**/commonTest/**'
       - '**/iosTest/**'
 
+exceptions:
+  TooGenericExceptionCaught:
+    # Ловить Exception целиком — нормальный способ не уронить приложение на чужих API
+    # (Play, Drive, Google Sign-In), которые бросают что угодно
+    active: false
+
 naming:
   FunctionNaming:
     ignoreAnnotated: ['Composable']

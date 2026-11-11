@@ -84,6 +84,7 @@ scripts/install_git_hooks.sh    # подключить git pre-commit хук, о
 - `LongMethod` до 100 строк, Compose-экраны длиннее обычных функций.
 - `MagicNumber` не действует в `@Composable`/`@Preview`, в `ui/theme` и в тестах.
 - `TooManyFunctions` не считает приватные функции и превью.
+- `TooGenericExceptionCaught` выключено: `catch (e: Exception)` можно, если по делу.
 - `LongParameterList` не действует на `@Composable`: modifier и колбэки — норма.
 - `UnusedPrivateFunction` не считает превью.
 - `UnusedImport` включён, работает только в `detektTyped`.

@@ -30,9 +30,6 @@
     <ID>SpreadOperator:FloatingDock.kt:(*stops.toTypedArray())</ID>
     <ID>SpreadOperator:WishListHeader.kt:(*stops.toTypedArray())</ID>
     <ID>SwallowedException:Context.kt:e: ActivityNotFoundException</ID>
-    <ID>TooGenericExceptionCaught:GoogleBackupAuthRepository.kt:GoogleBackupAuthRepository$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:IsUserSignedInToBackupServiceUseCase.kt:IsUserSignedInToBackupServiceUseCase$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:WishListViewModel.kt:WishListViewModel$error: Exception</ID>
     <ID>UnnecessaryApply:ShareWishListPdfGenerator.kt:ShareWishListPdfGenerator$apply { text = title }</ID>
     <ID>UnnecessaryComposable:AppRoot.kt:@OptIn(ExperimentalCoroutinesApi::class) @ExperimentalFoundationApi @ExperimentalComposeUiApi @ExperimentalMaterialApi @Composable internal fun OldLookRoot</ID>
     <ID>UnnecessaryLaunchedEffect:AppActivity.kt:AppActivity$LaunchedEffect</ID>

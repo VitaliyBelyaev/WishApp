@@ -83,9 +83,6 @@ internal class InAppUpdateController(
         })
     }
 
-    // Play отвечает разными исключениями (InstallException, RemoteException и др.),
-    // а проверка обновления не должна ронять приложение
-    @Suppress("TooGenericExceptionCaught")
     private fun checkForUpdate() {
         if (checkInProgress) return
         checkInProgress = true
