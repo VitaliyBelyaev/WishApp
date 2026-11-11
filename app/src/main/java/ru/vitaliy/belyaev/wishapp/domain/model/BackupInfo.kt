@@ -14,5 +14,7 @@ sealed class BackupInfo {
         val sizeInBytes: Long,
         override val accountEmail: String?,
         val device: String?,
+        /** Версия схемы базы в копии. Пишется с 1.9.1, у копий из прошлых версий её нет. */
+        val schemaVersion: Long? = null,
     ) : BackupInfo()
 }
