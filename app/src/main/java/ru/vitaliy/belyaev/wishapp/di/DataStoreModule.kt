@@ -18,7 +18,7 @@ object DataStoreModule {
     private const val WISH_APP_DATA_STORE = "WISH_APP_DATA_STORE"
 
     private val Context.dataStore by preferencesDataStore(
-        name = WISH_APP_DATA_STORE
+        name = WISH_APP_DATA_STORE,
     )
 
     @Provides

@@ -153,14 +153,14 @@ private fun HeaderScrim(progress: () -> Float) {
     val density = LocalDensity.current
     val statusBar = with(density) { WindowInsets.safeDrawing.getTop(this).toDp() }
     val total = statusBar + ScrimTail
-    val plateau = (statusBar * ScrimPlateau / total).coerceIn(0f, 1f)
+    val plateau = (statusBar * SCRIM_PLATEAU / total).coerceIn(0f, 1f)
     val brush = remember(surface, plateau) {
         val stops = buildList {
-            add(0f to surface.copy(alpha = ScrimTopAlpha))
-            for (i in 0..ScrimSteps) {
-                val u = i / ScrimSteps.toFloat()
+            add(0f to surface.copy(alpha = SCRIM_TOP_ALPHA))
+            for (i in 0..SCRIM_STEPS) {
+                val u = i / SCRIM_STEPS.toFloat()
                 val fade = 1f - u * u * (3f - 2f * u)
-                add(plateau + (1f - plateau) * u to surface.copy(alpha = ScrimTopAlpha * fade))
+                add(plateau + (1f - plateau) * u to surface.copy(alpha = SCRIM_TOP_ALPHA * fade))
             }
         }
         Brush.verticalGradient(*stops.toTypedArray())
@@ -178,9 +178,9 @@ private fun HeaderScrim(progress: () -> Float) {
 private val ScrimTail = 20.dp
 
 /** Какая доля статус-бара сверху закрыта плотно, дальше начинается затухание. */
-private const val ScrimPlateau = 0.4f
-private const val ScrimTopAlpha = 0.94f
-private const val ScrimSteps = 8
+private const val SCRIM_PLATEAU = 0.4f
+private const val SCRIM_TOP_ALPHA = 0.94f
+private const val SCRIM_STEPS = 8
 
 @Composable
 private fun HeaderButtons(
@@ -284,7 +284,9 @@ private fun HeaderOverflowMenu(menu: HeaderMenuState, isExpanded: Boolean, onDis
             action()
         }
         if (menu.showShare) {
-            MenuItem(R.drawable.ic_ms_share, stringResource(R.string.menu_share), menu.shareHint) { close(menu.onShare) }
+            MenuItem(R.drawable.ic_ms_share, stringResource(R.string.menu_share), menu.shareHint) {
+                close(menu.onShare)
+            }
         }
         menu.sortLabel?.let { sortLabel ->
             // Точка как на «⋮»: показывает, к какому пункту она относится
@@ -389,7 +391,10 @@ internal fun SearchHeader(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             HeaderIconButton(R.drawable.ic_ms_arrow_back, stringResource(R.string.cd_close_search), onClose)
-            Box(modifier = Modifier.weight(1f).padding(start = WishAppSpacing.s1), contentAlignment = Alignment.CenterStart) {
+            Box(
+                modifier = Modifier.weight(1f).padding(start = WishAppSpacing.s1),
+                contentAlignment = Alignment.CenterStart,
+            ) {
                 if (text.isEmpty()) {
                     Text(
                         text = hint,

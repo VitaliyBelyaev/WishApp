@@ -66,7 +66,6 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
             sqlDriverTemp = databaseDriveFactory.createDatabaseDriver(backupDbName)
             val databaseTemp = WishAppDb(sqlDriverTemp)
 
-
             wishQueries?.clear()
             val allWishes: List<Wish> = databaseTemp.wishQueries.getAllForBackup().executeAsList()
             allWishes.forEach { wish ->
@@ -79,7 +78,7 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
                     createdTimestamp = wish.createdTimestamp,
                     updatedTimestamp = wish.updatedTimestamp,
                     position = wish.position,
-                    completedTimestamp = wish.completedTimestamp
+                    completedTimestamp = wish.completedTimestamp,
                 )
             }
 
@@ -89,7 +88,7 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
                 tagQueries?.insertOrReplace(
                     tagId = tag.tagId,
                     title = tag.title,
-                    color = tag.color
+                    color = tag.color,
                 )
             }
 
@@ -100,7 +99,7 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
                     id = image.id,
                     wishId = image.wishId,
                     rawData = image.rawData,
-                    position = image.position
+                    position = image.position,
                 )
             }
 
@@ -111,7 +110,7 @@ class WishAppSdk(private val databaseDriveFactory: DatabaseDriverFactory) {
                 wishTagRelationQueries?.insertOrReplace(
                     wishId = relation.wishId,
                     tagId = relation.tagId,
-                    isShown = relation.isShown
+                    isShown = relation.isShown,
                 )
             }
 

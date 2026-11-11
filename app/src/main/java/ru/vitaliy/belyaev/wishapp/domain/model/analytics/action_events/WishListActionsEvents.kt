@@ -6,14 +6,14 @@ data class WishListShareClickedEvent(
     val shareType: String,
     val wishesCount: Int,
     val totalImagesCount: Int,
-): AnalyticsEvent {
+) : AnalyticsEvent {
 
     override val name: String = "Wish List Screen - Share Clicked"
 
     override val params: Map<String, Any?> = mapOf(
         "share_type" to shareType,
         "wishes_count" to wishesCount,
-        "total_images_count" to totalImagesCount
+        "total_images_count" to totalImagesCount,
     )
 }
 

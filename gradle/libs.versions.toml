@@ -24,8 +24,17 @@ googleServices = "4.5.0"
 firebaseCrashlyticsPlugin = "3.0.8"
 firebasePerfPlugin = "2.0.2"
 sqlDelightPlugin = "2.4.1"
+# Статический анализ: см. docs/CODE_STYLE.md
+ktlintPlugin = "14.2.0"
+ktlint = "1.8.0"
+# detekt 2.0 пока в альфе; composeRules собраны под конкретную альфу, поднимать вместе
+detekt = "2.0.0-alpha.6"
+composeRules = "0.6.8"
 
 [libraries]
+#Static analysis
+composeRules-detekt = { module = "io.nlopez.compose.rules:detekt", version.ref = "composeRules" }
+
 #Kotlin
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinCoroutines" }
 kotlin-dateTime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinDateTime" }
@@ -133,3 +142,5 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsPlugin" }
 firebase-perf = { id = "com.google.firebase.firebase-perf", version.ref = "firebasePerfPlugin" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintPlugin" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }

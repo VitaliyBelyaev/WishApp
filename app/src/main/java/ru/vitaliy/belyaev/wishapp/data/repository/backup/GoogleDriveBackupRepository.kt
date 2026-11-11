@@ -21,14 +21,14 @@ import ru.vitaliy.belyaev.wishapp.BuildConfig
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.domain.model.error.GoogleSignInException
-import ru.vitaliy.belyaev.wishapp.domain.repository.BackupRepository
 import ru.vitaliy.belyaev.wishapp.domain.repository.BackupLoadProgressListener
+import ru.vitaliy.belyaev.wishapp.domain.repository.BackupRepository
 import ru.vitaliy.belyaev.wishapp.shared.data.database.BackupFileCheck
 
 typealias DriveFile = com.google.api.services.drive.model.File
 
 internal class GoogleDriveBackupRepository(
-    private val context: Context
+    private val context: Context,
 ) : BackupRepository {
 
     private val httpTransport = NetHttpTransport()
@@ -81,7 +81,7 @@ internal class GoogleDriveBackupRepository(
 
     private fun configureUploader(
         uploader: MediaHttpUploader,
-        progressListener: BackupLoadProgressListener
+        progressListener: BackupLoadProgressListener,
     ) {
         uploader.isDirectUploadEnabled = false
         uploader.chunkSize = LOAD_CHUNK_SIZE
@@ -95,7 +95,7 @@ internal class GoogleDriveBackupRepository(
 
     private fun configureDownloader(
         downloader: MediaHttpDownloader,
-        progressListener: BackupLoadProgressListener
+        progressListener: BackupLoadProgressListener,
     ) {
         downloader.isDirectDownloadEnabled = false
         downloader.chunkSize = LOAD_CHUNK_SIZE
@@ -128,7 +128,7 @@ internal class GoogleDriveBackupRepository(
     private fun createDriveService(context: Context, account: GoogleSignInAccount): Drive {
         val credential = GoogleAccountCredential.usingOAuth2(
             context,
-            listOf(DriveScopes.DRIVE_APPDATA)
+            listOf(DriveScopes.DRIVE_APPDATA),
         ).apply {
             selectedAccount = account.account
         }

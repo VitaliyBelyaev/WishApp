@@ -16,7 +16,7 @@ class FirebaseEventNamesTest {
         assertEquals("list_wish_moved", FirebaseEventNames.toFirebaseName("Wish List Screen - Wish Moved"))
         assertEquals(
             "wish_change_wish_completeness_clicked",
-            FirebaseEventNames.toFirebaseName("Wish Detailed Screen - Change Wish Completeness Clicked")
+            FirebaseEventNames.toFirebaseName("Wish Detailed Screen - Change Wish Completeness Clicked"),
         )
         assertEquals("inapp_review_show", FirebaseEventNames.toFirebaseName("InApp Review Show"))
     }

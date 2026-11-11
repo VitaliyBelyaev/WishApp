@@ -26,7 +26,7 @@ import ru.vitaliy.belyaev.wishapp.shared.data.database.BackupFileCheckResult
 @Singleton
 internal class RestoreBackupUseCase @Inject constructor(
     private val backupRepository: BackupRepository,
-    private val dataStoreRepository: DataStoreRepository
+    private val dataStoreRepository: DataStoreRepository,
 ) {
 
     // Пока жив процесс: копия та же, пока совпадают id файла и время его изменения
@@ -47,7 +47,7 @@ internal class RestoreBackupUseCase @Inject constructor(
         backupRepository.downloadBackup(
             fileId = backup.fileId,
             outputStream = outputStream,
-            progressListener = progressListener
+            progressListener = progressListener,
         )
 
         val backupBytes = outputStream.toByteArray()

@@ -123,7 +123,7 @@ internal class AppActivity : AppCompatActivity() {
     private fun OldLookContent(selectedTheme: Theme) {
         val navigationState: NavigationState = rememberNavigationState(
             startRoute = MainRoute,
-            topLevelRoutes = setOf(MainRoute)
+            topLevelRoutes = setOf(MainRoute),
         )
         val navigator = remember { Navigator(navigationState) }
         val theme = if (navigationState.currentRoute is WishImagesViewerRoute) {

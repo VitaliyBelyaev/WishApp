@@ -30,13 +30,13 @@ object DatabaseMigrator {
                         createdTimestamp = cursor.getLong(5)!!,
                         updatedTimestamp = cursor.getLong(6)!!,
                         position = -1,
-                        completedTimestamp = null
+                        completedTimestamp = null,
                     )
                     allWishesInDbOrder.add(wish)
                 }
                 QueryResult.Value(allWishesInDbOrder)
             },
-            parameters = 0
+            parameters = 0,
         ).value
 
         allWishes
@@ -45,7 +45,7 @@ object DatabaseMigrator {
                 sqlDriver.execute(
                     identifier = null,
                     sql = "UPDATE Wish SET position = ? WHERE  wishId = ?",
-                    parameters = 2
+                    parameters = 2,
                 ) {
                     bindLong(0, index.toLong())
                     bindString(1, wish.wishId)
@@ -78,12 +78,12 @@ object DatabaseMigrator {
                             title = cursor.getString(1)!!,
                             order = cursor.getLong(2)!!,
                             wishesCount = cursor.getLong(3)!!,
-                        )
+                        ),
                     )
                 }
                 QueryResult.Value(result)
             },
-            parameters = 0
+            parameters = 0,
         ).value
 
         tags
@@ -107,7 +107,7 @@ object DatabaseMigrator {
                 INSERT OR IGNORE INTO WishTagRelation(wishId, tagId, isShown)
                 SELECT wishId, ?, isShown FROM WishTagRelation WHERE tagId = ?
             """.trimIndent(),
-            parameters = 2
+            parameters = 2,
         ) {
             bindString(0, toTagId)
             bindString(1, fromTagId)

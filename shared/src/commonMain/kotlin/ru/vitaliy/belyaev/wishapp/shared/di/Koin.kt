@@ -12,7 +12,7 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) =
 
         modules(
             platformModule(),
-            wishAppSdkModule
+            wishAppSdkModule,
         )
     }
 

@@ -57,7 +57,7 @@ class ImageMemorySeedTest {
             inserted += images.size
             wishIndex++
         }
-        println("seed: ${wishIndex} wishes, $inserted images")
+        println("seed: $wishIndex wishes, $inserted images")
     }
 
     /** Кладёт в галерею снимки размером как с камеры, чтобы выбирать их в системном пикере. */

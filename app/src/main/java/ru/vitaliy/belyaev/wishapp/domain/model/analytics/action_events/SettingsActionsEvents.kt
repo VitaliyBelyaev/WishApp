@@ -3,13 +3,13 @@ package ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.AnalyticsEvent
 
 data class SettingsSelectAppThemeClickedEvent(
-    val theme: String
+    val theme: String,
 ) : AnalyticsEvent {
 
     override val name: String = "Settings Screen - Select App Theme Clicked"
 
     override val params: Map<String, Any?> = mapOf(
-        "theme" to theme
+        "theme" to theme,
     )
 }
 
