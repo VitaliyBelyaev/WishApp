@@ -180,4 +180,7 @@
     <string name="search_elsewhere">Not in “%1$s”, but found elsewhere</string>
     <string name="search_go_to">In “%1$s”</string>
     <string name="search_create">Create “%1$s”</string>
+    <string name="update_downloaded_text">Update downloaded</string>
+    <string name="update_restart_action">Restart</string>
+    <string name="update_downloading_text">Update is downloading in the background. We\'ll let you know when it\'s ready</string>
 </resources>

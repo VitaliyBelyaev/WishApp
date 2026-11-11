@@ -38,8 +38,12 @@ android {
         applicationId = "ru.vitaliy.belyaev.wishapp"
         minSdk = 24
         targetSdk = 37
-        versionCode = 25
-        versionName = "1.9.0"
+        versionCode = 26
+        versionName = "1.9.1"
+
+        // Страница в Google Play всегда у релизного id: у debug и autotest к нему добавлен суффикс,
+        // и ссылка из такой сборки вела бы на несуществующую страницу
+        buildConfigField("String", "STORE_APP_ID", "\"$applicationId\"")
 
         // Страница в Google Play всегда у релизного id: у debug и autotest к нему добавлен суффикс,
         // и ссылка из такой сборки вела бы на несуществующую страницу
@@ -169,6 +173,7 @@ dependencies {
     implementation(libs.google.android.material)
     implementation(libs.google.android.play.review)
     implementation(libs.google.android.play.reviewKtx)
+    implementation(libs.google.android.play.appUpdateKtx)
 
     // Google Firebase
     implementation(platform(libs.firebase.bom))

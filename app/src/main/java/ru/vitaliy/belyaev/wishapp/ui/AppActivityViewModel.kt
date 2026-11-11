@@ -25,6 +25,9 @@ import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.domain.model.UiLook
 import ru.vitaliy.belyaev.wishapp.domain.model.UiLookMode
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppUpdateDownloadedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppUpdateRestartClickedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppUpdateRestartDismissedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishCreatedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedChangeWishCompletenessClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishImagesViewerDeleteImageConfirmedEvent
@@ -43,6 +46,8 @@ import ru.vitaliy.belyaev.wishapp.utils.WISHLIST_PDF_DIR_NAME
 import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
 import timber.log.Timber
 
+// Состояние уровня приложения для обоих видов: тема, вид, снэкбары, оценка, обновление из Google Play
+@Suppress("TooManyFunctions")
 @HiltViewModel
 class AppActivityViewModel @Inject constructor(
     private val wishesRepository: WishesRepository,
@@ -72,6 +77,15 @@ class AppActivityViewModel @Inject constructor(
 
     /** Настройка «Как обои» нового вида, `null` пока не прочитана: сплэш ждёт и её, чтобы не мелькнули другие цвета. */
     val useWallpaperColors: StateFlow<Boolean?> = _useWallpaperColors
+
+    // Обновление из Google Play скачано и ждёт перезапуска: пока true, главный экран держит снэкбар
+    // «Перезапустить». Сбрасывается, только когда человек сам закрыл снэкбар или перезапустил
+    private val _isUpdateReadyToInstall = MutableStateFlow(false)
+    val isUpdateReadyToInstall: StateFlow<Boolean> = _isUpdateReadyToInstall
+
+    // Нажали «Перезапустить»: обновление ставит активити
+    private val _completeUpdateFlow = Channel<Unit>(capacity = Channel.CONFLATED)
+    val completeUpdateFlow: Flow<Unit> = _completeUpdateFlow.receiveAsFlow()
 
     private val countedNewWishIds: MutableSet<String> = mutableSetOf()
 
@@ -215,6 +229,32 @@ class AppActivityViewModel @Inject constructor(
                 dataStoreRepository.incrementPositiveActionsCount()
             }
         }
+    }
+
+    // Состояние во ViewModel, а не в активити: поворот и возврат из фона снэкбар не возвращают,
+    // если его уже закрыли
+    private var updateDownloadedReported = false
+
+    fun onUpdateDownloaded() {
+        if (updateDownloadedReported) return
+        updateDownloadedReported = true
+        analyticsRepository.trackEvent(InAppUpdateDownloadedEvent)
+        _isUpdateReadyToInstall.value = true
+    }
+
+    fun onUpdateDownloadStarted(message: String) {
+        showSnackMessageOnMain(message)
+    }
+
+    fun onUpdateSnackbarDismissed() {
+        analyticsRepository.trackEvent(InAppUpdateRestartDismissedEvent)
+        _isUpdateReadyToInstall.value = false
+    }
+
+    fun onRestartForUpdateClicked() {
+        analyticsRepository.trackEvent(InAppUpdateRestartClickedEvent)
+        _isUpdateReadyToInstall.value = false
+        _completeUpdateFlow.trySend(Unit)
     }
 
     fun showSnackMessageOnMain(message: String) {

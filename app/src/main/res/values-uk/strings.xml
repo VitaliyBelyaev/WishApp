@@ -188,4 +188,7 @@
     <string name="search_elsewhere">У розділі «%1$s» немає, зате є в іншому</string>
     <string name="search_go_to">У «%1$s»</string>
     <string name="search_create">Створити «%1$s»</string>
+    <string name="update_downloaded_text">Оновлення завантажено</string>
+    <string name="update_restart_action">Перезапустити</string>
+    <string name="update_downloading_text">Оновлення завантажується у фоні. Повідомимо, коли буде готово</string>
 </resources>

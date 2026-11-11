@@ -178,4 +178,7 @@
     <string name="search_elsewhere">Nicht in „%1$s“, aber woanders gefunden</string>
     <string name="search_go_to">In „%1$s“</string>
     <string name="search_create">„%1$s“ erstellen</string>
+    <string name="update_downloaded_text">Update heruntergeladen</string>
+    <string name="update_restart_action">Neu starten</string>
+    <string name="update_downloading_text">Das Update wird im Hintergrund geladen. Wir melden uns, wenn es bereit ist</string>
 </resources>

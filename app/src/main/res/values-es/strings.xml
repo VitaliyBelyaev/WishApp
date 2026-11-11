@@ -182,4 +182,7 @@
     <string name="search_elsewhere">No está en «%1$s», pero sí en otra sección</string>
     <string name="search_go_to">En «%1$s»</string>
     <string name="search_create">Crear «%1$s»</string>
+    <string name="update_downloaded_text">Actualización descargada</string>
+    <string name="update_restart_action">Reiniciar</string>
+    <string name="update_downloading_text">La actualización se descarga en segundo plano. Te avisaremos cuando esté lista</string>
 </resources>

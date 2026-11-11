@@ -181,4 +181,7 @@
     <string name="search_elsewhere">Rien dans « %1$s », mais il y a des résultats ailleurs</string>
     <string name="search_go_to">Dans « %1$s »</string>
     <string name="search_create">Créer « %1$s »</string>
+    <string name="update_downloaded_text">Mise à jour téléchargée</string>
+    <string name="update_restart_action">Redémarrer</string>
+    <string name="update_downloading_text">La mise à jour se télécharge en arrière-plan. Nous vous préviendrons quand elle sera prête</string>
 </resources>

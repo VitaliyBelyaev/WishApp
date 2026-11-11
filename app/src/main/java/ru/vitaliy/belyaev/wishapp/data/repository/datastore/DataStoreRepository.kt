@@ -6,12 +6,14 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_DONE_SORT_MODE
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository.PreferencesKeys.KEY_IS_BACKUP_WAS_CREATED
@@ -33,6 +35,8 @@ import ru.vitaliy.belyaev.wishapp.domain.model.toTheme
 import ru.vitaliy.belyaev.wishapp.domain.model.toWishSortMode
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishSortMode
 
+// Все ключи DataStore приложения в одном месте: по паре функций на настройку
+@Suppress("TooManyFunctions")
 @Singleton
 class DataStoreRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>,
@@ -223,6 +227,23 @@ class DataStoreRepository @Inject constructor(
         }
     }
 
+    /** Когда последний раз предлагали обновить приложение через Google Play, мс. */
+    suspend fun getUpdatePromptShownAtMillis(): Long? = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .first()[PreferencesKeys.KEY_UPDATE_PROMPT_SHOWN_AT]
+
+    suspend fun updateUpdatePromptShownAtMillis(millis: Long) {
+        dataStore.edit {
+            it[PreferencesKeys.KEY_UPDATE_PROMPT_SHOWN_AT] = millis
+        }
+    }
+
     private object PreferencesKeys {
         val KEY_THEME = intPreferencesKey("KEY_THEME")
         val KEY_SORT_MODE = intPreferencesKey("KEY_SORT_MODE")
@@ -235,5 +256,6 @@ class DataStoreRepository @Inject constructor(
         val KEY_WALLPAPER_COLORS = booleanPreferencesKey("KEY_WALLPAPER_COLORS")
         val KEY_LIST_LAYOUT = stringPreferencesKey("KEY_LIST_LAYOUT")
         val KEY_DONE_SORT_MODE = stringPreferencesKey("KEY_DONE_SORT_MODE")
+        val KEY_UPDATE_PROMPT_SHOWN_AT = longPreferencesKey("KEY_UPDATE_PROMPT_SHOWN_AT")
     }
 }

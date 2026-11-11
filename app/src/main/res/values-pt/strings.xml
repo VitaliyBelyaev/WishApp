@@ -181,4 +181,7 @@
     <string name="search_elsewhere">Não está em “%1$s”, mas há em outra seção</string>
     <string name="search_go_to">Em “%1$s”</string>
     <string name="search_create">Criar “%1$s”</string>
+    <string name="update_downloaded_text">Atualização baixada</string>
+    <string name="update_restart_action">Reiniciar</string>
+    <string name="update_downloading_text">A atualização está sendo baixada em segundo plano. Avisaremos quando estiver pronta</string>
 </resources>
