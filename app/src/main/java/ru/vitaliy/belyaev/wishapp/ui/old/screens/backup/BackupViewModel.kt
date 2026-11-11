@@ -25,6 +25,7 @@ import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupCre
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupForceUpdateAppDataSucceedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupRefreshInfoClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.BackupRestoreBackupSucceedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.error.BackupFromNewerVersionException
 import ru.vitaliy.belyaev.wishapp.domain.model.error.CheckBackupException
 import ru.vitaliy.belyaev.wishapp.domain.model.error.RestoreBackupException
 import ru.vitaliy.belyaev.wishapp.domain.model.error.UploadNewBackupException
@@ -64,6 +65,10 @@ internal class BackupViewModel @Inject constructor(
 
     private val _showSnackFlow = MutableSharedFlow<SnackbarMessage>()
     val showSnackFlow: SharedFlow<SnackbarMessage> = _showSnackFlow.asSharedFlow()
+
+    /** Копия из более новой версии: снэкбар с кнопкой «Обновить», которая ведёт в Google Play. */
+    private val _showUpdateAppToRestoreFlow = MutableSharedFlow<Unit>()
+    val showUpdateAppToRestoreFlow: SharedFlow<Unit> = _showUpdateAppToRestoreFlow.asSharedFlow()
 
     val signInIntent: Intent
         get() = backupAuthRepository.getSignInIntent()
@@ -219,7 +224,7 @@ internal class BackupViewModel @Inject constructor(
             runCatching {
                 withContext(Dispatchers.IO) {
                     restoreBackupUseCase(
-                        backupFileId = (viewState.value as BackupViewState.CurrentBackup).backupInfo.fileId,
+                        backup = (viewState.value as BackupViewState.CurrentBackup).backupInfo,
                         fileWhereCurrentDbStored = context.getDatabasePath(wishAppSdk.databaseName),
                         progressListener = downloadProgressListener
                     )
@@ -235,11 +240,17 @@ internal class BackupViewModel @Inject constructor(
                 _showSnackFlow.emit(SnackbarMessage.StringResInt.Message(R.string.backup_restore_backup_success_text))
                 context.restartAppWithDelayMillis(3000)
             }.onFailure {
+                _loadingState.value = LoadingState.None
+                // Не сбой, а ожидаемый случай: текущие данные не тронуты, нужна новая версия приложения
+                if (it is BackupFromNewerVersionException) {
+                    Timber.w(it)
+                    _showUpdateAppToRestoreFlow.emit(Unit)
+                    return@launchSafe
+                }
+
                 val error = RestoreBackupException(it)
                 Timber.e(error)
                 FirebaseCrashlytics.getInstance().recordException(error)
-
-                _loadingState.value = LoadingState.None
                 if (it is UserRecoverableAuthIOException) {
                     _viewState.value = BackupViewState.DrivePermissionRationale
                     return@launchSafe

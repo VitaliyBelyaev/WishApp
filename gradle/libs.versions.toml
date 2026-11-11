@@ -14,6 +14,7 @@ androidXLyfecycleRuntime = "2.11.0"
 composeBom = "2026.09.00"
 firebaseBom = "35.1.0"
 googlePlayReview = "2.0.2"
+googlePlayAppUpdate = "2.1.0"
 androidXNavigation3Core = "1.2.0"
 lifecycleViewmodelNav3 = "2.11.0"
 
@@ -80,6 +81,7 @@ sqlDelight-driver-native = { module = "app.cash.sqldelight:native-driver", versi
 google-android-material = { module = "com.google.android.material:material", version = "1.14.0" }
 google-android-play-review = { module = "com.google.android.play:review", version.ref = "googlePlayReview" }
 google-android-play-reviewKtx = { module = "com.google.android.play:review-ktx", version.ref = "googlePlayReview" }
+google-android-play-appUpdateKtx = { module = "com.google.android.play:app-update-ktx", version.ref = "googlePlayAppUpdate" }
 google-android-gms-playServices-ossLicenses = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.5.3" }
 google-android-gms-playServices-auth = { module = "com.google.android.gms:play-services-auth", version = "21.6.0" }
 

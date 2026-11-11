@@ -23,6 +23,7 @@ import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
 import ru.vitaliy.belyaev.wishapp.domain.model.error.GoogleSignInException
 import ru.vitaliy.belyaev.wishapp.domain.repository.BackupRepository
 import ru.vitaliy.belyaev.wishapp.domain.repository.BackupLoadProgressListener
+import ru.vitaliy.belyaev.wishapp.shared.data.database.BackupFileCheck
 
 typealias DriveFile = com.google.api.services.drive.model.File
 
@@ -148,6 +149,7 @@ internal class GoogleDriveBackupRepository(
             sizeInBytes = getSize(),
             accountEmail = account.email,
             device = appProperties.extractDevice(),
+            schemaVersion = appProperties?.get(KEY_DB_SCHEMA_VERSION)?.toLongOrNull(),
         )
     }
 
@@ -156,6 +158,8 @@ internal class GoogleDriveBackupRepository(
             KEY_APP_VERSION_NAME to BuildConfig.VERSION_NAME,
             KEY_APP_VERSION_NUMBER to BuildConfig.VERSION_CODE.toString(),
             KEY_DEVICE to "${Build.MANUFACTURER} ${Build.MODEL}",
+            // По нему старое приложение откажет копии из более новой версии, не скачивая её
+            KEY_DB_SCHEMA_VERSION to BackupFileCheck.appSchemaVersion.toString(),
         )
     }
 
@@ -177,6 +181,7 @@ internal class GoogleDriveBackupRepository(
         private const val KEY_DEVICE = "device"
         private const val KEY_APP_VERSION_NAME = "appVersionName"
         private const val KEY_APP_VERSION_NUMBER = "appVersionNumber"
+        private const val KEY_DB_SCHEMA_VERSION = "dbSchemaVersion"
 
         private const val LOAD_CHUNK_SIZE = MediaHttpUploader.MINIMUM_CHUNK_SIZE * 2 // 512 KB
     }

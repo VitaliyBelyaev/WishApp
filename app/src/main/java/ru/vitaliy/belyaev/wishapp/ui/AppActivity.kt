@@ -24,6 +24,8 @@ import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.domain.model.UiLook
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppReviewRequestedEvent
@@ -53,6 +55,9 @@ internal class AppActivity : AppCompatActivity() {
     @Inject
     lateinit var wishAppSdk: WishAppSdk
 
+    @Inject
+    lateinit var dataStoreRepository: DataStoreRepository
+
     private var sharedDraftFromAnotherApp: SharedWishDraft? = null
 
     private val sharedDraftFlow = MutableSharedFlow<SharedWishDraft>()
@@ -74,6 +79,18 @@ internal class AppActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             sharedDraftFromAnotherApp = extractSharedDraft(intent)
+        }
+
+        // Проверяет обновление сам при каждом onStart
+        val inAppUpdateController = InAppUpdateController(
+            activity = this,
+            dataStoreRepository = dataStoreRepository,
+            analyticsRepository = analyticsRepository,
+            onUpdateDownloaded = viewModel::onUpdateDownloaded,
+            onDownloadStarted = { viewModel.onUpdateDownloadStarted(getString(R.string.update_downloading_text)) },
+        )
+        lifecycleScope.launch {
+            viewModel.completeUpdateFlow.collect { inAppUpdateController.completeUpdate() }
         }
 
         lifecycleScope.launch {

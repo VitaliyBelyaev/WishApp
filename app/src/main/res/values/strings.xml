@@ -85,6 +85,8 @@
     <string name="backup_create_backup_error_text">An error occurred while creating the backup</string>
     <string name="backup_restore_backup_success_text">The data was successfully restored, the application will now restart</string>
     <string name="backup_restore_backup_error_text">An error occurred while restoring data</string>
+    <string name="backup_restore_newer_version_text">This backup was made in a newer version of the app. Update the app to restore your data</string>
+    <string name="backup_update_app_action">Update</string>
     <string name="backup_check_backup_error_text">An error occurred while checking for a backup</string>
     <string name="backup_wishlist_empty_text">Or restore your data from a backup</string>
     <string name="backup_wishlist_go_to_backup_button_text">Go to backup</string>
@@ -135,4 +137,7 @@
     <string name="a11y_action_select">select</string>
     <string name="a11y_action_unselect">deselect</string>
     <string name="a11y_action_select_many">select several</string>
+    <string name="update_downloaded_text">Update downloaded</string>
+    <string name="update_restart_action">Restart</string>
+    <string name="update_downloading_text">Update is downloading in the background. We\'ll let you know when it\'s ready</string>
 </resources>

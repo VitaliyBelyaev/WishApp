@@ -27,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -70,6 +71,7 @@ import ru.vitaliy.belyaev.wishapp.ui.old.screens.backup.components.LoadingView
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.backup.components.ManageAccountView
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.backup.components.RestoreBackupView
 import ru.vitaliy.belyaev.wishapp.ui.old.theme.AppButtonDefaults
+import ru.vitaliy.belyaev.wishapp.utils.openGooglePlay
 import ru.vitaliy.belyaev.wishapp.utils.showDismissableSnackbar
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 
@@ -116,6 +118,15 @@ internal fun BackupScreen(
                 is SnackbarMessage.StringValue -> it.value
             }
             snackbarHostState.showDismissableSnackbar(message)
+        }
+    }
+    LaunchedEffect(key1 = Unit) {
+        viewModel.showUpdateAppToRestoreFlow.collect {
+            val result = snackbarHostState.showDismissableSnackbar(
+                message = resources.getString(R.string.backup_restore_newer_version_text),
+                actionLabel = resources.getString(R.string.backup_update_app_action),
+            )
+            if (result == SnackbarResult.ActionPerformed) context.openGooglePlay()
         }
     }
 
