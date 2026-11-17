@@ -36,6 +36,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -88,7 +89,7 @@ private val RowShape = RoundedCornerShape(16.dp)
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun WishSheet(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
+internal fun WishSheet(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
     // Статус-бар берём из окна экрана: в окне шторки отступы приходят не в первом кадре,
     // и шторка на миг заезжала под статус-бар
     val statusBar = with(LocalDensity.current) { WindowInsets.safeDrawing.getTop(this).toDp() }
@@ -101,7 +102,7 @@ private fun WishSheet(onDismiss: () -> Unit, content: @Composable ColumnScope.()
         containerColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = 0.dp,
-        scrimColor = SheetScrim,
+        scrimColor = sheetScrim(),
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -120,15 +121,23 @@ private fun WishSheet(onDismiss: () -> Unit, content: @Composable ColumnScope.()
 
 /** Отступ под последней строкой шторки: системная навигация и 28 dp по макету. */
 @Composable
-private fun sheetBottomPadding(): Dp {
+internal fun sheetBottomPadding(): Dp {
     val navBar = with(LocalDensity.current) { WindowInsets.navigationBars.getBottom(this).toDp() }
     return navBar + SheetBottomGap
 }
 
-private val SheetBottomGap = 28.dp
+internal val SheetBottomGap = 28.dp
 
-/** Затемнение под шторкой и меню «Поделиться». */
-internal val SheetScrim = Color(0x6B140C08)
+/**
+ * Единое затемнение под шторками, меню «Поделиться» и панелью новой хотелки. В тёмной теме
+ * коричневое на почти таком же фоне не видно, там чёрное и плотнее.
+ */
+@Composable
+@ReadOnlyComposable
+internal fun sheetScrim(): Color = if (AppThemeExtras.isDark) DarkSheetScrim else LightSheetScrim
+
+private val LightSheetScrim = Color(0x6B140C08)
+private val DarkSheetScrim = Color(0x99000000)
 
 /** Шторка ярлыков: нажатие выбирает ярлык и закрывает шторку, «Управление» ведёт к редактированию. */
 @Composable
@@ -241,7 +250,7 @@ internal fun TagsSheet(
  * у его начала закрывал шторку целиком. Шторку по-прежнему можно стянуть пальцем: протащенная
  * дальше порога она закрывается, ближе возвращается наверх.
  */
-private val KeepFlingInList = object : NestedScrollConnection {
+internal val KeepFlingInList = object : NestedScrollConnection {
     override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity = available
 }
 
@@ -303,7 +312,7 @@ private fun TagRow(item: TagSheetItem, isSelected: Boolean, onClick: () -> Unit)
 }
 
 @Composable
-private fun SheetSearchField(
+internal fun SheetSearchField(
     query: String,
     hint: String,
     onQueryChange: (String) -> Unit,

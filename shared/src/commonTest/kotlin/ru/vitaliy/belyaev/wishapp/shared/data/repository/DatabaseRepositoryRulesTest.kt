@@ -16,6 +16,7 @@ import ru.vitaliy.belyaev.wishapp.shared.data.coroutines.DispatcherProvider
 import ru.vitaliy.belyaev.wishapp.shared.data.database.WishAppDb
 import ru.vitaliy.belyaev.wishapp.shared.data.database.createTestDatabaseDriver
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.NewWish
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagColor
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.createEmptyWish
@@ -140,6 +141,48 @@ class DatabaseRepositoryRulesTest {
 
         assertEquals(listOf("new", "legacy", "old"), newestFirst.map { it.title })
         assertEquals(listOf("old", "legacy", "new"), oldestFirst.map { it.title })
+    }
+
+    @Test
+    fun createWish_writesLinksTagsAndPhotosAndGoesFirst() = runTest {
+        val older = insertWish()
+        val homeId = repository.insertTag("Дом")
+        val gardenId = repository.insertTag("Сад")
+
+        val wishId = repository.createWish(
+            NewWish(
+                title = "Лампа",
+                comment = "Тёплый свет",
+                links = listOf("https://a.example/1", "https://b.example/2"),
+                tagIds = listOf(gardenId, homeId),
+                images = listOf(byteArrayOf(1), byteArrayOf(2)),
+            ),
+        )
+
+        val wish = repository.getWishById(wishId)
+        assertEquals("Лампа", wish.title)
+        assertEquals("Тёплый свет", wish.comment)
+        assertEquals(listOf("https://a.example/1", "https://b.example/2"), wish.links)
+        assertEquals(setOf(homeId, gardenId), wish.tags.map { it.id }.toSet())
+        assertEquals(gardenId, wish.shownTagId)
+        assertFalse(wish.isCompleted)
+        val photos = repository.observeImageRefsByWishId(wishId).first()
+        assertEquals(
+            listOf(byteArrayOf(1), byteArrayOf(2)).map {
+                it.toList()
+            },
+            photos.map { repository.getImageRawData(it.id)?.toList() },
+        )
+        assertEquals(listOf(wishId, older.id), repository.observeAllWishes(isCompleted = false).first().map { it.id })
+    }
+
+    @Test
+    fun createWish_withoutTags_hasNoShownTag() = runTest {
+        val wishId = repository.createWish(NewWish("", "", listOf("https://a.example"), emptyList(), emptyList()))
+
+        val wish = repository.getWishById(wishId)
+        assertNull(wish.shownTagId)
+        assertTrue(wish.tags.isEmpty())
     }
 
     private suspend fun insertCompletedWish(title: String, completedAt: Long?, updatedAt: Long) {

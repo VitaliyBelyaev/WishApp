@@ -23,6 +23,7 @@
 #
 #   TEST_CLASS=ru.vitaliy.belyaev.wishapp.wishlist.WishListScreenTest scripts/run_smoke_test.sh
 #
+# Несколько классов через запятую, например вместе с NewWishSheetTest.
 # Один тест из класса: TEST_CLASS=<класс>#<метод>
 
 set -euo pipefail

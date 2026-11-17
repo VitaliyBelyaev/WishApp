@@ -2,6 +2,7 @@ package ru.vitaliy.belyaev.wishapp.shared.domain.repository
 
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.flow.Flow
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.NewWish
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishSortMode
 
@@ -9,6 +10,13 @@ interface WishesRepository {
 
     @NativeCoroutines
     suspend fun insertWish(wish: WishEntity)
+
+    /**
+     * Создаёт хотелку целиком в одной транзакции: со ссылками, ярлыками и фото. Хотелка встаёт
+     * в начало списка, первый ярлык показан на карточке. Возвращает id новой хотелки.
+     */
+    @NativeCoroutines
+    suspend fun createWish(newWish: NewWish): String
 
     @NativeCoroutines
     suspend fun updateWishTitle(newValue: String, wishId: String)

@@ -203,4 +203,28 @@
     <string name="a11y_move_up">Выше</string>
     <string name="a11y_move_down">Ниже</string>
     <string name="a11y_moved_position">%1$s, позиция %2$d из %3$d</string>
+
+    <!-- Новая хотелка: шторка и выбор ярлыков (редизайн 2.4). Переводы — черновик -->
+    <string name="tag_picker_title">Ярлыки хотелки</string>
+    <string name="tag_find_or_create">Найти или создать</string>
+    <string name="tag_create">Создать «%1$s»</string>
+    <string name="tag_on_card">На карточке</string>
+    <string name="done">Готово</string>
+    <string name="quick_title_hint">Что хочется?</string>
+    <string name="add_comment">Добавить комментарий</string>
+    <string name="chip_comment">Комментарий</string>
+    <string name="chip_link">Ссылка</string>
+    <string name="chip_photo">Фото</string>
+    <string name="chip_photo_count">Фото: %1$d</string>
+    <string name="chip_tag">Ярлык</string>
+    <string name="quick_paste_link">Вставить ссылку</string>
+    <string name="quick_clear">Очистить</string>
+    <string name="add">Добавить</string>
+    <string name="snack_not_created">Хотелка не создана</string>
+    <string name="snack_go_back">Вернуться</string>
+    <string name="link_hint">Вставьте или введите ссылку</string>
+    <string name="link_paste">Вставить</string>
+    <string name="link_remove">Убрать ссылку</string>
+    <string name="photo_remove">Убрать фото</string>
+    <string name="photo_add_failed">Не добавилось фото: файл не открывается</string>
 </resources>

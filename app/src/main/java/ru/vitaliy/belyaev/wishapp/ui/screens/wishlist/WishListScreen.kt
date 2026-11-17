@@ -1,13 +1,8 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishlist
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -42,9 +36,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -71,6 +69,9 @@ import ru.vitaliy.belyaev.wishapp.ui.components.wish.card.WishCard
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.row.WishRow
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.toPaperTone
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.AppSnackMessage
+import ru.vitaliy.belyaev.wishapp.ui.screens.newwish.NewWishOrigin
+import ru.vitaliy.belyaev.wishapp.ui.screens.newwish.NewWishSheetHost
+import ru.vitaliy.belyaev.wishapp.ui.screens.newwish.NewWishViewModel
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppSpacing
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
@@ -79,8 +80,6 @@ import sh.calvin.reorderable.rememberReorderableLazyStaggeredGridState
 /** Куда список ведёт. Пока новых экранов нет, это экраны прежнего вида. */
 class WishListActions(
     val onWishClick: (wishId: String) -> Unit,
-    val onAddWish: (tagId: String?) -> Unit,
-    val onCreateFromSearch: (title: String) -> Unit,
     val onSettings: () -> Unit,
     val onManageTags: () -> Unit,
     val onRestore: () -> Unit,
@@ -104,6 +103,7 @@ private enum class OpenSheet { NONE, TAGS, SORT, SHARE }
 fun WishListScreen(
     actions: WishListActions,
     viewModel: WishListViewModel = hiltViewModel(),
+    newWishViewModel: NewWishViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val isSharingPdf by viewModel.isSharingPdf.collectAsStateWithLifecycle()
@@ -141,6 +141,7 @@ fun WishListScreen(
         dockSection = dockSection,
         isSharingPdf = isSharingPdf,
         actions = actions,
+        onAddWish = newWishViewModel::open,
         onSectionSelected = viewModel::onSectionSelected,
         onSearchOpened = viewModel::onSearchOpened,
         onSearchQueryChanged = viewModel::onSearchQueryChanged,
@@ -170,6 +171,7 @@ private fun WishListContent(
     dockSection: ListSection,
     isSharingPdf: Boolean,
     actions: WishListActions,
+    onAddWish: (contextTagId: String?, title: String?) -> Unit,
     onSectionSelected: (ListSection) -> Unit,
     onSearchOpened: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
@@ -195,6 +197,9 @@ private fun WishListContent(
         }
     }
     val search = state.search
+    // Панель новой хотелки растёт из плюса, когда открыта им, иначе из нижнего края
+    val newWishOrigin = remember { NewWishOrigin() }
+    var addButtonBounds by remember { mutableStateOf<Rect?>(null) }
 
     // У раздела и сортировки своя сетка, раздел открывается там, где его оставили.
     // Поиск в ключ не входит: новая сетка на каждую букву заново строила карточки и грузила
@@ -256,7 +261,6 @@ private fun WishListContent(
         }
     }
 
-    val isImeVisible = WindowInsets.isImeVisible
     val navBarBottom = with(density) { WindowInsets.navigationBars.getBottom(this).toDp() }
     val contentPadding = PaddingValues(
         top = headerHeight() + WishAppSpacing.s2,
@@ -271,7 +275,10 @@ private fun WishListContent(
             state.sectionIsEmpty -> EmptySection(
                 section = state.section,
                 contentPadding = contentPadding,
-                onAddClick = { actions.onAddWish(null) },
+                onAddClick = {
+                    newWishOrigin.bounds = null
+                    onAddWish(state.selectedTag?.id, null)
+                },
                 onRestoreClick = actions.onRestore,
             )
 
@@ -286,7 +293,8 @@ private fun WishListContent(
                     onCreateClick = {
                         val title = search.query.trim()
                         onSearchClosed()
-                        actions.onCreateFromSearch(title)
+                        newWishOrigin.bounds = null
+                        onAddWish(state.selectedTag?.id, title)
                     },
                 )
             }
@@ -351,12 +359,9 @@ private fun WishListContent(
             )
         }
 
-        AnimatedVisibility(
-            visible = !isImeVisible,
-            enter = fadeIn(),
-            exit = fadeOut(),
-            modifier = Modifier.align(Alignment.BottomCenter),
-        ) {
+        // Док не прячется под клавиатурой: она закрывает его сама, а уходя, открывает на месте, без
+        // выезда. Поиск прячет клавиатуру при прокрутке, так что док под ней не нужен
+        Box(modifier = Modifier.align(Alignment.BottomCenter)) {
             Box(contentAlignment = Alignment.BottomCenter) {
                 FloatingDockFade()
                 // Полоса под панелью вместе с её отступами не пропускает касания к списку:
@@ -370,12 +375,7 @@ private fun WishListContent(
             }
         }
 
-        AnimatedVisibility(
-            visible = !isImeVisible,
-            enter = slideInVertically { it } + fadeIn(),
-            exit = slideOutVertically { it } + fadeOut(),
-            modifier = Modifier.align(Alignment.BottomCenter),
-        ) {
+        Box(modifier = Modifier.align(Alignment.BottomCenter)) {
             val dockModifier = Modifier
                 .fillMaxWidth()
                 .windowInsetsPadding(WindowInsets.navigationBars)
@@ -393,7 +393,7 @@ private fun WishListContent(
                     onDelete = { selection.onBulkAction(BulkAction.DELETE) },
                     modifier = dockModifier,
                 )
-                return@AnimatedVisibility
+                return@Box
             }
             FloatingDock(
                 selected = when (dockSection) {
@@ -422,8 +422,15 @@ private fun WishListContent(
                     }
                 },
                 onTagsClick = { openSheet = OpenSheet.TAGS },
-                onAddClick = { actions.onAddWish(state.selectedTag?.id) },
+                onAddClick = {
+                    newWishOrigin.bounds = addButtonBounds
+                    onAddWish(state.selectedTag?.id, null)
+                },
                 modifier = dockModifier,
+                // Пока панель на месте плюса, сам плюс не виден: панель и есть поднявшийся плюс
+                addButtonModifier = Modifier
+                    .onGloballyPositioned { addButtonBounds = it.boundsInRoot() }
+                    .graphicsLayer { alpha = if (newWishOrigin.isLifted) 0f else 1f },
             )
         }
 
@@ -434,17 +441,19 @@ private fun WishListContent(
                 if (wasSharingPdf && !isSharingPdf) openSheet = OpenSheet.NONE
                 wasSharingPdf = isSharingPdf
             }
-            ShareMenu(
-                scope = shareScope,
-                isSharingPdf = isSharingPdf,
-                onShareText = {
-                    openSheet = OpenSheet.NONE
-                    onShare(ShareFormat.TEXT)
-                },
-                onSharePdf = { onShare(ShareFormat.PDF) },
-                onDismiss = { if (!isSharingPdf) openSheet = OpenSheet.NONE },
-            )
         }
+        // Меню остаётся в композиции и закрывается своей анимацией
+        ShareMenu(
+            visible = openSheet == OpenSheet.SHARE,
+            scope = shareScope,
+            isSharingPdf = isSharingPdf,
+            onShareText = {
+                openSheet = OpenSheet.NONE
+                onShare(ShareFormat.TEXT)
+            },
+            onSharePdf = { onShare(ShareFormat.PDF) },
+            onDismiss = { if (!isSharingPdf) openSheet = OpenSheet.NONE },
+        )
     }
 
     when (openSheet) {
@@ -474,6 +483,13 @@ private fun WishListContent(
 
         OpenSheet.NONE, OpenSheet.SHARE -> Unit
     }
+
+    // Новая карточка встаёт в начало списка: показываем её
+    NewWishSheetHost(
+        onShowMessage = actions.onShowMessage,
+        onCreated = { scope.launch { gridState.scrollToItem(0) } },
+        origin = newWishOrigin,
+    )
 }
 
 @Composable

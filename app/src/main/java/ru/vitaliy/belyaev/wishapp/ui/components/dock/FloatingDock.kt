@@ -92,6 +92,7 @@ fun FloatingDock(
     onTagsClick: () -> Unit,
     onAddClick: () -> Unit,
     modifier: Modifier = Modifier,
+    addButtonModifier: Modifier = Modifier,
 ) {
     val isDark = AppThemeExtras.isDark
     Row(
@@ -150,7 +151,7 @@ fun FloatingDock(
                 )
             }
         }
-        AddButton(onClick = onAddClick)
+        AddButton(onClick = onAddClick, modifier = addButtonModifier)
     }
 }
 
@@ -263,7 +264,7 @@ private fun DoneBadge(count: Long, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun AddButton(onClick: () -> Unit) {
+private fun AddButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val corner by animateDpAsState(
@@ -274,7 +275,7 @@ private fun AddButton(onClick: () -> Unit) {
     val shape = RoundedCornerShape(corner)
     Surface(
         onClick = onClick,
-        modifier = Modifier
+        modifier = modifier
             .size(DockHeight)
             .tokenShadow(shape, WishAppElevation.dock(AppThemeExtras.isDark)),
         shape = shape,

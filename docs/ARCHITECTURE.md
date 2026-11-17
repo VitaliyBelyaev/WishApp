@@ -782,8 +782,9 @@ open iosApp/WishApp.xcodeproj
 - **`Pods/` не в git** — iOS-зависимости через SPM.
 - **Тестов мало:** `shared` — `LinksAdapterTest`, `DatabaseMigrationTest`,
   `DatabaseRepositoryRulesTest`, `app` — `BytesSizeFormatterTest`,
-  `WishDetailedViewModelTest`, `DatabaseRepositoryDeleteTest`, `SmokeTest` и `WishListScreenTest`
-  (UI-тест экрана списка в новом виде: вкладки, шторки, меню, поиск, прокрутка, «назад»;
+  `WishDetailedViewModelTest`, `DatabaseRepositoryDeleteTest`, `SmokeTest`, `WishListScreenTest`
+  и `NewWishSheetTest` (UI-тесты экрана списка в новом виде и шторки новой хотелки, общая
+  основа `WishListUiTest`: вкладки, шторки, меню, поиск, прокрутка, «назад», создание хотелки;
   только debug, снимки экрана в `app/build/wishlist-test-screenshots`). Не полагайся на тесты как на полное покрытие.
 - **Release-подпись:** в `app/build.gradle.kts` для release используется тестовый
   keystore (`test_keystore`, пароль `notasecret`). Это не production-подпись.

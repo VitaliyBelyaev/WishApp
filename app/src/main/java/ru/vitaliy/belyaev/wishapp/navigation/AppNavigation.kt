@@ -87,8 +87,6 @@ fun AppNavigation(
             WishListScreen(
                 actions = WishListActions(
                     onWishClick = { navigate(WishDetailedRoute(wishId = it)) },
-                    onAddWish = { tagId -> navigate(WishDetailedRoute(tagId = tagId)) },
-                    onCreateFromSearch = { title -> navigate(WishDetailedRoute(sharedTitle = title)) },
                     onSettings = { navigate(SettingsRoute) },
                     onManageTags = { navigate(EditTagRoute) },
                     onRestore = { navigate(BackupAndRestoreRoute) },

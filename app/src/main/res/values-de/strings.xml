@@ -194,4 +194,28 @@
     <string name="a11y_move_up">Nach oben</string>
     <string name="a11y_move_down">Nach unten</string>
     <string name="a11y_moved_position">%1$s, Position %2$d von %3$d</string>
+
+    <!-- Новая хотелка: шторка и выбор ярлыков (редизайн 2.4). Переводы — черновик -->
+    <string name="tag_picker_title">Etiketten des Wunsches</string>
+    <string name="tag_find_or_create">Suchen oder erstellen</string>
+    <string name="tag_create">„%1$s“ erstellen</string>
+    <string name="tag_on_card">Auf der Karte</string>
+    <string name="done">Fertig</string>
+    <string name="quick_title_hint">Was wünschen Sie sich?</string>
+    <string name="add_comment">Kommentar hinzufügen</string>
+    <string name="chip_comment">Kommentar</string>
+    <string name="chip_link">Link</string>
+    <string name="chip_photo">Foto</string>
+    <string name="chip_photo_count">Fotos: %1$d</string>
+    <string name="chip_tag">Etikett</string>
+    <string name="quick_paste_link">Link einfügen</string>
+    <string name="quick_clear">Leeren</string>
+    <string name="add">Hinzufügen</string>
+    <string name="snack_not_created">Wunsch nicht erstellt</string>
+    <string name="snack_go_back">Zurück</string>
+    <string name="link_hint">Link einfügen oder eingeben</string>
+    <string name="link_paste">Einfügen</string>
+    <string name="link_remove">Link entfernen</string>
+    <string name="photo_remove">Foto entfernen</string>
+    <string name="photo_add_failed">Foto nicht hinzugefügt: Die Datei lässt sich nicht öffnen</string>
 </resources>

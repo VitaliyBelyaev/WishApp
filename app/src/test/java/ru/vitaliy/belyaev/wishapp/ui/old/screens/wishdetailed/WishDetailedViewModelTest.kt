@@ -26,6 +26,7 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.LinksAdapter
 import ru.vitaliy.belyaev.wishapp.shared.domain.SharedWishDraft
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageRef
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.NewWish
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishSortMode
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.createEmptyWish
@@ -345,6 +346,9 @@ class WishDetailedViewModelTest {
             wishes[wish.id] = wish
             wishesFlow.value = wishes.toMap()
         }
+
+        // Старый экран хотелку целиком не создаёт: это путь шторки нового вида
+        override suspend fun createWish(newWish: NewWish): String = error("Not used by old screen")
 
         override fun observeWishById(id: String): Flow<WishEntity> {
             return wishesFlow.mapNotNull { it[id] }.distinctUntilChanged()

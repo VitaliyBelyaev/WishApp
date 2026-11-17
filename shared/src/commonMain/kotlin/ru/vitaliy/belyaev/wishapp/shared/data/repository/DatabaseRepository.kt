@@ -28,8 +28,10 @@ import ru.vitaliy.belyaev.wishapp.shared.data.database.WishTagRelationQueries
 import ru.vitaliy.belyaev.wishapp.shared.data.mapper.ImageMapper
 import ru.vitaliy.belyaev.wishapp.shared.data.mapper.TagMapper
 import ru.vitaliy.belyaev.wishapp.shared.data.mapper.WishMapper
+import ru.vitaliy.belyaev.wishapp.shared.domain.LinksAdapter
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.ImageRef
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.NewWish
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagColor
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagWithWishCount
@@ -73,6 +75,34 @@ class DatabaseRepository(
                     )
                 }
             }
+        }
+    }
+
+    @NativeCoroutines
+    override suspend fun createWish(newWish: NewWish): String {
+        return withContext(dispatcherProvider.io()) {
+            val wishId = uuid4().toString()
+            val now = Clock.System.nowEpochMillis()
+            // Транзакция общая на все таблицы: прерванное создание не оставит хотелку без её ярлыков и фото
+            wishQueries.transaction {
+                wishQueries.insert(
+                    wishId,
+                    newWish.title,
+                    LinksAdapter.addLinksAndGetAccumulatedString(newWish.links, emptyList()),
+                    newWish.comment,
+                    false,
+                    now,
+                    now,
+                    wishQueries.getWishesCountWithValidPosition().executeAsOne(),
+                    null,
+                )
+                newWish.tagIds.distinct().forEach { tagId -> wishTagRelationQueries.insert(wishId, tagId) }
+                newWish.tagIds.firstOrNull()?.let { tagId -> wishTagRelationQueries.markShown(wishId, tagId) }
+                newWish.images.forEachIndexed { index, rawData ->
+                    imageQueries.insert(uuid4().toString(), wishId, rawData, index.toLong())
+                }
+            }
+            wishId
         }
     }
 

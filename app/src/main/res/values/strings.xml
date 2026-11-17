@@ -196,4 +196,28 @@
     <string name="a11y_move_up">Move up</string>
     <string name="a11y_move_down">Move down</string>
     <string name="a11y_moved_position">%1$s, position %2$d of %3$d</string>
+
+    <!-- Новая хотелка: шторка и выбор ярлыков (редизайн 2.4). Переводы — черновик -->
+    <string name="tag_picker_title">Labels for this wish</string>
+    <string name="tag_find_or_create">Find or create</string>
+    <string name="tag_create">Create “%1$s”</string>
+    <string name="tag_on_card">On card</string>
+    <string name="done">Done</string>
+    <string name="quick_title_hint">What do you wish for?</string>
+    <string name="add_comment">Add a comment</string>
+    <string name="chip_comment">Comment</string>
+    <string name="chip_link">Link</string>
+    <string name="chip_photo">Photo</string>
+    <string name="chip_photo_count">Photos: %1$d</string>
+    <string name="chip_tag">Label</string>
+    <string name="quick_paste_link">Paste link</string>
+    <string name="quick_clear">Clear</string>
+    <string name="add">Add</string>
+    <string name="snack_not_created">Wish not created</string>
+    <string name="snack_go_back">Go back</string>
+    <string name="link_hint">Paste or enter a link</string>
+    <string name="link_paste">Paste</string>
+    <string name="link_remove">Remove link</string>
+    <string name="photo_remove">Remove photo</string>
+    <string name="photo_add_failed">Photo not added: the file won’t open</string>
 </resources>
