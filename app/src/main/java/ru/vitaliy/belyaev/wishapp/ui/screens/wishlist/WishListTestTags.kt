@@ -10,4 +10,10 @@ object WishListTestTags {
 
     /** Такая же точка на пункте «Сортировка» в меню «⋮». */
     const val MENU_SORT_DOT = "wishList.menuSortDot"
+
+    /** Режим выбора: крестик «Снять выбор», счётчик и кнопки панели. */
+    const val SELECTION_CLEAR = "wishList.selectionClear"
+    const val SELECTION_COUNT = "wishList.selectionCount"
+    const val SELECTION_DONE = "wishList.selectionDone"
+    const val SELECTION_DELETE = "wishList.selectionDelete"
 }

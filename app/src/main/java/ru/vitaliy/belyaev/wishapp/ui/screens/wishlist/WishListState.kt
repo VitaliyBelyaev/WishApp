@@ -54,7 +54,24 @@ data class WishListUiState(
     val tags: List<TagSheetItem> = emptyList(),
     /** `null`, пока поиск закрыт. */
     val search: SearchState? = null,
+    /** Выбранные хотелки. Непустой набор и есть режим выбора. */
+    val selectedIds: Set<String> = emptySet(),
 ) {
+    val isSelectionMode: Boolean get() = selectedIds.isNotEmpty()
+
+    /**
+     * Перенос работает только в «Моём порядке» в «Хотелках» и ярлыке. В «Сбылось» своя сортировка,
+     * в поиске видна только часть раздела.
+     */
+    val canReorder: Boolean
+        get() = section != ListSection.Done && search == null && sort == SectionSort.Main(WishSortMode.Default)
+
     /** Сколько хотелок в разделе без учёта поиска: от этого зависят пустое состояние и пункты меню. */
     val sectionIsEmpty: Boolean get() = !isLoading && cards.isEmpty() && search == null
 }
+
+/**
+ * Массовое действие из панели режима выбора. Хотелки сразу уходят из раздела, а в базу действие
+ * записывается, когда закрылся снэкбар.
+ */
+enum class BulkAction { CAME_TRUE, WISH_AGAIN, DELETE }

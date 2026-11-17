@@ -1,5 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.ui.core.snackbar
 
+import androidx.compose.material3.SnackbarDuration
+
 /**
  * Сообщение для единственного снэкбара приложения, хост которого лежит над навигацией.
  *
@@ -8,10 +10,13 @@ package ru.vitaliy.belyaev.wishapp.ui.core.snackbar
  * например удаление выполняется в [onDismiss].
  *
  * Прежний вид показывает только [text]: сообщения с действием отправляет только новый вид.
+ *
+ * [duration] по умолчанию: 10 секунд с действием, 4 без него.
  */
 class AppSnackMessage(
     val text: String,
     val actionLabel: String? = null,
     val onAction: (() -> Unit)? = null,
     val onDismiss: (() -> Unit)? = null,
+    val duration: SnackbarDuration? = null,
 )

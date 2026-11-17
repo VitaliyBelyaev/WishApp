@@ -184,4 +184,17 @@
     <string name="update_downloaded_text">Mise à jour téléchargée</string>
     <string name="update_restart_action">Redémarrer</string>
     <string name="update_downloading_text">La mise à jour se télécharge en arrière-plan. Nous vous préviendrons quand elle sera prête</string>
+    <!-- Режим выбора и перенос, часть 2.3. Из артефакта локализации -->
+    <string name="selection_clear">Désélectionner</string>
+    <string name="selection_count">Sélectionnés : %1$d</string>
+    <string name="selection_all">Tous</string>
+    <string name="selection_came_true">Marquer comme réalisés</string>
+    <string name="wish_again">Je le veux encore</string>
+    <string name="snack_deleted_count">Supprimés : %1$d</string>
+    <!-- Нет в артефакте локализации, черновики части 2.3 -->
+    <string name="snack_came_true_count">Réalisés : %1$d</string>
+    <string name="snack_wish_again_count">De retour dans les souhaits : %1$d</string>
+    <string name="a11y_move_up">Monter</string>
+    <string name="a11y_move_down">Descendre</string>
+    <string name="a11y_moved_position">%1$s, position %2$d sur %3$d</string>
 </resources>

@@ -69,7 +69,7 @@ internal fun NewLookRoot(
                 AppNavigation(
                     selectedTheme = selectedTheme,
                     analyticsRepository = analyticsRepository,
-                    onShowMessage = appViewModel::showSnackMessageOnMain,
+                    onShowMessage = appViewModel::showSnack,
                     modifier = Modifier.fillMaxSize(),
                 )
                 // Над плавающей панелью списка. На экранах без панели снэкбар тоже стоит на этой высоте

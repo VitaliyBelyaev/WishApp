@@ -26,9 +26,11 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -40,14 +42,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
@@ -57,10 +64,17 @@ import ru.vitaliy.belyaev.wishapp.ui.components.dock.DockTab
 import ru.vitaliy.belyaev.wishapp.ui.components.dock.FloatingDock
 import ru.vitaliy.belyaev.wishapp.ui.components.dock.FloatingDockFade
 import ru.vitaliy.belyaev.wishapp.ui.components.dock.FloatingDockHeight
+import ru.vitaliy.belyaev.wishapp.ui.components.wish.WishCardModel
+import ru.vitaliy.belyaev.wishapp.ui.components.wish.WishItemDrag
+import ru.vitaliy.belyaev.wishapp.ui.components.wish.WishSelection
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.card.WishCard
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.row.WishRow
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.toPaperTone
+import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.AppSnackMessage
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppSpacing
+import sh.calvin.reorderable.ReorderableCollectionItemScope
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyStaggeredGridState
 
 /** Куда список ведёт. Пока новых экранов нет, это экраны прежнего вида. */
 class WishListActions(
@@ -70,8 +84,19 @@ class WishListActions(
     val onSettings: () -> Unit,
     val onManageTags: () -> Unit,
     val onRestore: () -> Unit,
-    val onShowMessage: (String) -> Unit,
+    val onShowMessage: (AppSnackMessage) -> Unit,
 )
+
+/** Режим выбора и перенос карточек. */
+private interface SelectionCallbacks {
+    fun onToggle(wishId: String)
+    fun onLongPress(wishId: String)
+    fun onSelectAll()
+    fun onClear()
+    fun onBulkAction(action: BulkAction)
+    fun onMoved(wishId: String, toIndex: Int)
+    fun onMovedBy(wishId: String, step: Int)
+}
 
 private enum class OpenSheet { NONE, TAGS, SORT, SHARE }
 
@@ -82,20 +107,38 @@ fun WishListScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val isSharingPdf by viewModel.isSharingPdf.collectAsStateWithLifecycle()
+    val dockSection by viewModel.dockSection.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val pdfErrorMessage = stringResource(R.string.share_pdf_error_message)
+    val resources = LocalResources.current
     val currentActions by rememberUpdatedState(actions)
 
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
-            when (event) {
-                WishListEvent.SharePdfFailed -> currentActions.onShowMessage(pdfErrorMessage)
+            val message = when (event) {
+                WishListEvent.SharePdfFailed -> AppSnackMessage(resources.getString(R.string.share_pdf_error_message))
+                is WishListEvent.Undoable -> AppSnackMessage(
+                    text = resources.getString(
+                        when (event.action) {
+                            BulkAction.DELETE -> R.string.snack_deleted_count
+                            BulkAction.CAME_TRUE -> R.string.snack_came_true_count
+                            BulkAction.WISH_AGAIN -> R.string.snack_wish_again_count
+                        },
+                        event.count,
+                    ),
+                    actionLabel = resources.getString(R.string.snack_undo),
+                    onAction = event.onUndo,
+                    onDismiss = event.onConfirm,
+                    // Удаление без «Вернуть» не исправить, «Сбылось» легко отменить с экрана хотелки
+                    duration = if (event.action == BulkAction.DELETE) SnackbarDuration.Long else SnackbarDuration.Short,
+                )
             }
+            currentActions.onShowMessage(message)
         }
     }
 
     WishListContent(
         state = state,
+        dockSection = dockSection,
         isSharingPdf = isSharingPdf,
         actions = actions,
         onSectionSelected = viewModel::onSectionSelected,
@@ -106,6 +149,17 @@ fun WishListScreen(
         onLayoutToggled = viewModel::onLayoutToggled,
         onSortSelected = viewModel::onSortSelected,
         onShare = { format -> viewModel.onShareClicked(context, format) },
+        selection = remember(viewModel) {
+            object : SelectionCallbacks {
+                override fun onToggle(wishId: String) = viewModel.onWishToggled(wishId)
+                override fun onLongPress(wishId: String) = viewModel.onWishLongPressed(wishId)
+                override fun onSelectAll() = viewModel.onSelectAllClicked()
+                override fun onClear() = viewModel.onSelectionCleared()
+                override fun onBulkAction(action: BulkAction) = viewModel.onBulkActionClicked(action)
+                override fun onMoved(wishId: String, toIndex: Int) = viewModel.onWishMoved(wishId, toIndex)
+                override fun onMovedBy(wishId: String, step: Int) = viewModel.onWishMovedBy(wishId, step)
+            }
+        },
     )
 }
 
@@ -113,6 +167,7 @@ fun WishListScreen(
 @Composable
 private fun WishListContent(
     state: WishListUiState,
+    dockSection: ListSection,
     isSharingPdf: Boolean,
     actions: WishListActions,
     onSectionSelected: (ListSection) -> Unit,
@@ -123,6 +178,7 @@ private fun WishListContent(
     onLayoutToggled: () -> Unit,
     onSortSelected: (SectionSort) -> Unit,
     onShare: (ShareFormat) -> Unit,
+    selection: SelectionCallbacks,
 ) {
     val scope = rememberCoroutineScope()
     val keyboard = LocalSoftwareKeyboardController.current
@@ -140,12 +196,27 @@ private fun WishListContent(
     }
     val search = state.search
 
-    // У раздела, сортировки и запроса своя сетка со своей прокруткой, и они открываются с начала.
-    // Одна сетка на всё рисовала первый кадр нового раздела на старой прокрутке, а карточки
-    // прежнего раздела гасли поверх нового. При возврате с другого экрана прокрутка остаётся
-    val listKey = "${state.section}|${state.sort}|${search != null}|${search?.query}"
-    val gridState = rememberSaveable(listKey, saver = LazyStaggeredGridState.Saver) { LazyStaggeredGridState() }
+    // У раздела и сортировки своя сетка, раздел открывается там, где его оставили.
+    // Поиск в ключ не входит: новая сетка на каждую букву заново строила карточки и грузила
+    // картинки, и список мигал. Фильтр оставляет ту же сетку, а с начала её открывает смена запроса
+    val listKey = "${state.section}|${state.sort}"
+    val gridState = rememberSectionGridState(
+        section = state.section,
+        sort = state.sort,
+        isFiltered = !search?.query.isNullOrEmpty(),
+    )
     val topLayout = rememberTopLayout(gridState)
+
+    // Пустой запрос показывает тот же список, что и без поиска, поэтому открытие поиска
+    // прокрутку не сбрасывает
+    val searchScrollKey = search?.query?.ifEmpty { null }
+    var lastSearchScrollKey by rememberSaveable(listKey) { mutableStateOf(searchScrollKey) }
+    LaunchedEffect(searchScrollKey) {
+        if (searchScrollKey != lastSearchScrollKey) {
+            lastSearchScrollKey = searchScrollKey
+            gridState.scrollToItem(0)
+        }
+    }
 
     // Прокрутка в поиске прячет клавиатуру, чтобы видеть результаты
     LaunchedEffect(gridState.isScrollInProgress) {
@@ -157,17 +228,23 @@ private fun WishListContent(
         onSectionSelected(ListSection.Wishes)
     }
     BackHandler(enabled = search != null, onBack = onSearchClosed)
+    // Объявлен последним и перехватывает «назад» первым: сначала снимается выбор
+    BackHandler(enabled = state.isSelectionMode, onBack = selection::onClear)
 
     val sectionTitle = when (state.section) {
         ListSection.Wishes -> stringResource(R.string.nav_wishes)
         ListSection.Done -> stringResource(R.string.nav_done)
         is ListSection.Tag -> state.selectedTag?.title.orEmpty()
     }
-    val shareScope = stringResource(
-        R.string.share_scope,
-        sectionTitle,
-        pluralStringResource(R.plurals.wishes_count, state.cards.size, state.cards.size),
-    )
+    val shareScope = if (state.isSelectionMode) {
+        stringResource(R.string.selection_count, state.selectedIds.size)
+    } else {
+        stringResource(
+            R.string.share_scope,
+            sectionTitle,
+            pluralStringResource(R.plurals.wishes_count, state.cards.size, state.cards.size),
+        )
+    }
 
     val density = LocalDensity.current
     val collapsePx = with(density) { HeaderCollapseDistance.toPx() }
@@ -220,11 +297,20 @@ private fun WishListContent(
                     gridState = gridState,
                     contentPadding = contentPadding,
                     onWishClick = actions.onWishClick,
+                    selection = selection,
                 )
             }
         }
 
-        if (search != null) {
+        if (state.isSelectionMode) {
+            SelectionHeader(
+                count = state.selectedIds.size,
+                progress = progress,
+                onClear = selection::onClear,
+                onSelectAll = selection::onSelectAll,
+                modifier = Modifier.align(Alignment.TopCenter),
+            )
+        } else if (search != null) {
             SearchHeader(
                 query = search.query,
                 hint = when (state.section) {
@@ -290,12 +376,31 @@ private fun WishListContent(
             exit = slideOutVertically { it } + fadeOut(),
             modifier = Modifier.align(Alignment.BottomCenter),
         ) {
+            val dockModifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.navigationBars)
+                .padding(horizontal = WishAppSpacing.s3)
+                .padding(bottom = WishAppSpacing.s3)
+            if (state.isSelectionMode) {
+                SelectionDock(
+                    isDoneSection = state.section == ListSection.Done,
+                    onCompleteToggle = {
+                        selection.onBulkAction(
+                            if (state.section == ListSection.Done) BulkAction.WISH_AGAIN else BulkAction.CAME_TRUE,
+                        )
+                    },
+                    onShare = { openSheet = OpenSheet.SHARE },
+                    onDelete = { selection.onBulkAction(BulkAction.DELETE) },
+                    modifier = dockModifier,
+                )
+                return@AnimatedVisibility
+            }
             FloatingDock(
-                selected = when (state.section) {
+                selected = when (dockSection) {
                     ListSection.Wishes -> DockTab.Wishes
                     ListSection.Done -> DockTab.Done
                     is ListSection.Tag ->
-                        state.selectedTag
+                        state.tags.firstOrNull { it.tag.id == dockSection.tagId }?.tag
                             ?.let { DockTab.Tag(it.title, it.color.toPaperTone()) }
                             ?: DockTab.Wishes
                 },
@@ -303,14 +408,14 @@ private fun WishListContent(
                 // Нажатие на уже открытую вкладку поднимает список наверх. У «Ярлыков» так нет:
                 // вкладка открывает шторку
                 onWishesClick = {
-                    if (state.section == ListSection.Wishes) {
+                    if (dockSection == ListSection.Wishes) {
                         scope.launch { gridState.scrollToTopSmoothly(topLayout) }
                     } else {
                         onSectionSelected(ListSection.Wishes)
                     }
                 },
                 onDoneClick = {
-                    if (state.section == ListSection.Done) {
+                    if (dockSection == ListSection.Done) {
                         scope.launch { gridState.scrollToTopSmoothly(topLayout) }
                     } else {
                         onSectionSelected(ListSection.Done)
@@ -318,11 +423,7 @@ private fun WishListContent(
                 },
                 onTagsClick = { openSheet = OpenSheet.TAGS },
                 onAddClick = { actions.onAddWish(state.selectedTag?.id) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.navigationBars)
-                    .padding(horizontal = WishAppSpacing.s3)
-                    .padding(bottom = WishAppSpacing.s3),
+                modifier = dockModifier,
             )
         }
 
@@ -381,8 +482,23 @@ private fun WishGrid(
     gridState: LazyStaggeredGridState,
     contentPadding: PaddingValues,
     onWishClick: (String) -> Unit,
+    selection: SelectionCallbacks,
 ) {
     val isCards = state.layout == ListLayout.CARDS
+    val dragState = remember { GridDragState() }
+    val currentCards by rememberUpdatedState(state.cards)
+    LaunchedEffect(state.cards) { dragState.order = null }
+    val cards = dragState.order ?: state.cards
+
+    val reorderState = rememberReorderableLazyStaggeredGridState(
+        lazyStaggeredGridState = gridState,
+        // Прокрутка у края начинается у шапки и дока, а не у краёв экрана под ними
+        scrollThresholdPadding = PaddingValues(
+            top = contentPadding.calculateTopPadding(),
+            bottom = contentPadding.calculateBottomPadding(),
+        ),
+    ) { from, to -> dragState.move(currentCards, from.index, to.index) }
+
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(if (isCards) 2 else 1),
         state = gridState,
@@ -393,23 +509,172 @@ private fun WishGrid(
             .fillMaxSize()
             .testTag(WishListTestTags.LIST),
     ) {
-        items(state.cards, key = { it.id }) { card ->
-            // Долгое нажатие и режим выбора появятся в части 2.3
-            if (isCards) {
-                WishCard(
-                    model = card,
-                    onClick = { onWishClick(card.id) },
-                    onLongClick = {},
-                    modifier = Modifier.animateItem(),
-                )
-            } else {
-                WishRow(
-                    model = card,
-                    onClick = { onWishClick(card.id) },
-                    onLongClick = {},
-                    modifier = Modifier.animateItem(),
+        itemsIndexed(cards, key = { _, card -> card.id }) { index, card ->
+            ReorderableItem(state = reorderState, key = card.id, enabled = state.canReorder) { isDragging ->
+                WishGridItem(
+                    card = card,
+                    position = GridPosition(index, cards.size),
+                    isDragging = isDragging,
+                    state = state,
+                    dragState = dragState,
+                    currentCards = { currentCards },
+                    onWishClick = onWishClick,
+                    selection = selection,
                 )
             }
+        }
+    }
+}
+
+/** Место карточки в разделе для «Выше», «Ниже» и объявления TalkBack. */
+private class GridPosition(val index: Int, val count: Int)
+
+/**
+ * Порядок, пока карточку несут, и после отпускания, пока ViewModel не отдала новый список.
+ * Перенос записывается один раз при отпускании.
+ */
+@Stable
+private class GridDragState {
+    var order: List<WishCardModel>? by mutableStateOf(null)
+    var hasMoved: Boolean = false
+
+    fun start(cards: List<WishCardModel>) {
+        hasMoved = false
+        order = cards
+    }
+
+    fun move(cards: List<WishCardModel>, from: Int, to: Int) {
+        order = (order ?: cards).toMutableList().apply { add(to, removeAt(from)) }
+        hasMoved = true
+    }
+
+    /** Куда встала карточка, или `null`, если её отпустили на месте. */
+    fun stop(wishId: String): Int? {
+        val finalOrder = order
+        return if (hasMoved && finalOrder != null) {
+            finalOrder.indexOfFirst { it.id == wishId }
+        } else {
+            order = null
+            null
+        }
+    }
+}
+
+@Composable
+private fun ReorderableCollectionItemScope.WishGridItem(
+    card: WishCardModel,
+    position: GridPosition,
+    isDragging: Boolean,
+    state: WishListUiState,
+    dragState: GridDragState,
+    currentCards: () -> List<WishCardModel>,
+    onWishClick: (String) -> Unit,
+    selection: SelectionCallbacks,
+) {
+    val canReorder = state.canReorder
+    val haptic = LocalHapticFeedback.current
+    val itemSelection = when {
+        !state.isSelectionMode -> WishSelection.NONE
+        card.id in state.selectedIds -> WishSelection.SELECTED
+        else -> WishSelection.UNSELECTED
+    }
+    // Отпускание после долгого нажатия карточка присылает как обычное нажатие, раньше конца
+    // переноса. Его пропускаем: на месте выбирает перенос, а не нажатие
+    val pressState = remember(card.id) { LongPressState() }
+    val onClick = {
+        when {
+            pressState.isLongPressed -> pressState.isLongPressed = false
+            state.isSelectionMode -> selection.onToggle(card.id)
+            else -> onWishClick(card.id)
+        }
+    }
+    val drag = WishItemDrag(
+        longPressStartsDrag = canReorder,
+        isLifted = isDragging,
+        accessibilityActions = if (canReorder) moveActions(card, position, selection) else emptyList(),
+    )
+    // Одно долгое нажатие поднимает карточку. Повели — перенос, отпустили на месте — выбор
+    val handle = if (canReorder) {
+        Modifier.longPressDraggableHandle(
+            onDragStarted = {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                pressState.isLongPressed = true
+                dragState.start(currentCards())
+            },
+            onDragStopped = {
+                pressState.isLongPressed = false
+                val toIndex = dragState.stop(card.id)
+                if (toIndex != null) selection.onMoved(card.id, toIndex) else selection.onLongPress(card.id)
+            },
+        )
+    } else {
+        Modifier
+    }
+    if (state.layout == ListLayout.CARDS) {
+        WishCard(
+            model = card,
+            onClick = onClick,
+            onLongClick = { selection.onLongPress(card.id) },
+            selection = itemSelection,
+            drag = drag,
+            modifier = handle,
+        )
+    } else {
+        WishRow(
+            model = card,
+            onClick = onClick,
+            onLongClick = { selection.onLongPress(card.id) },
+            selection = itemSelection,
+            drag = drag,
+            modifier = handle,
+        )
+    }
+}
+
+/** Карточку держат долгим нажатием: отпускание не должно её открыть. */
+private class LongPressState {
+    var isLongPressed: Boolean = false
+}
+
+/** «Выше» и «Ниже» с объявлением новой позиции, например «Наушники, позиция 3 из 5». */
+@Composable
+private fun moveActions(
+    card: WishCardModel,
+    position: GridPosition,
+    selection: SelectionCallbacks,
+): List<CustomAccessibilityAction> {
+    val view = LocalView.current
+    val resources = LocalResources.current
+    return reorderActions(index = position.index, count = position.count) { step ->
+        selection.onMovedBy(card.id, step)
+        val label = card.title.ifBlank { card.linkHost.orEmpty() }
+        view.announceForAccessibility(
+            resources.getString(R.string.a11y_moved_position, label, position.index + step + 1, position.count),
+        )
+    }
+}
+
+/** «Выше» и «Ниже» для TalkBack. У первой карточки нет «Выше», у последней нет «Ниже». */
+@Composable
+private fun reorderActions(index: Int, count: Int, onMove: (step: Int) -> Unit): List<CustomAccessibilityAction> {
+    val up = stringResource(R.string.a11y_move_up)
+    val down = stringResource(R.string.a11y_move_down)
+    return buildList {
+        if (index > 0) {
+            add(
+                CustomAccessibilityAction(up) {
+                    onMove(-1)
+                    true
+                },
+            )
+        }
+        if (index < count - 1) {
+            add(
+                CustomAccessibilityAction(down) {
+                    onMove(1)
+                    true
+                },
+            )
         }
     }
 }

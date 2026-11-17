@@ -32,6 +32,7 @@ import ru.vitaliy.belyaev.wishapp.navigation.old.SettingsRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.WishDetailedRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.WishImagesViewerRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.WishTagsRoute
+import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.AppSnackMessage
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.aboutapp.AboutAppScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.aboutapp.privacypolicy.PrivacyPolicyScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.backup.BackupScreen
@@ -69,7 +70,7 @@ private const val TRANSITION_MILLIS = 300
 fun AppNavigation(
     selectedTheme: Theme,
     analyticsRepository: AnalyticsRepository,
-    onShowMessage: (String) -> Unit,
+    onShowMessage: (AppSnackMessage) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val backStack = rememberNavBackStack(WishListRoute)

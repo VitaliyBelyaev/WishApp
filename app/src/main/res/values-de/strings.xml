@@ -181,4 +181,17 @@
     <string name="update_downloaded_text">Update heruntergeladen</string>
     <string name="update_restart_action">Neu starten</string>
     <string name="update_downloading_text">Das Update wird im Hintergrund geladen. Wir melden uns, wenn es bereit ist</string>
+    <!-- Режим выбора и перенос, часть 2.3. Из артефакта локализации -->
+    <string name="selection_clear">Auswahl aufheben</string>
+    <string name="selection_count">Ausgewählt: %1$d</string>
+    <string name="selection_all">Alle</string>
+    <string name="selection_came_true">Als erfüllt markieren</string>
+    <string name="wish_again">Wieder wünschen</string>
+    <string name="snack_deleted_count">Gelöscht: %1$d</string>
+    <!-- Нет в артефакте локализации, черновики части 2.3 -->
+    <string name="snack_came_true_count">Erfüllt: %1$d</string>
+    <string name="snack_wish_again_count">Wieder bei den Wünschen: %1$d</string>
+    <string name="a11y_move_up">Nach oben</string>
+    <string name="a11y_move_down">Nach unten</string>
+    <string name="a11y_moved_position">%1$s, Position %2$d von %3$d</string>
 </resources>

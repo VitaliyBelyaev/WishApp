@@ -191,4 +191,17 @@
     <string name="update_downloaded_text">Оновлення завантажено</string>
     <string name="update_restart_action">Перезапустити</string>
     <string name="update_downloading_text">Оновлення завантажується у фоні. Повідомимо, коли буде готово</string>
+    <!-- Режим выбора и перенос, часть 2.3. Из артефакта локализации -->
+    <string name="selection_clear">Зняти вибір</string>
+    <string name="selection_count">Вибрано: %1$d</string>
+    <string name="selection_all">Усі</string>
+    <string name="selection_came_true">Позначити як здійснені</string>
+    <string name="wish_again">Знову хочу</string>
+    <string name="snack_deleted_count">Видалено: %1$d</string>
+    <!-- Нет в артефакте локализации, черновики части 2.3 -->
+    <string name="snack_came_true_count">Збулося: %1$d</string>
+    <string name="snack_wish_again_count">Знову в хотелках: %1$d</string>
+    <string name="a11y_move_up">Вище</string>
+    <string name="a11y_move_down">Нижче</string>
+    <string name="a11y_moved_position">%1$s, позиція %2$d з %3$d</string>
 </resources>

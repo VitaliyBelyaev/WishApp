@@ -215,6 +215,7 @@ dependencies {
     // Work with images
     implementation(libs.coilKt.coilCompose)
     implementation(libs.saket.telephoto.zoomableImageCoil)
+    implementation(libs.reorderable)
 
     // Flexbox
     implementation(libs.google.android.flexbox)

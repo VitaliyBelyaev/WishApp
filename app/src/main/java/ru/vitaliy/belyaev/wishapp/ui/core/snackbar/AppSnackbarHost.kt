@@ -4,14 +4,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -36,7 +40,8 @@ fun CollectAppSnackMessages(messages: Flow<AppSnackMessage>, hostState: Snackbar
                 val result = hostState.showSnackbar(
                     message = message.text,
                     actionLabel = message.actionLabel,
-                    duration = if (message.actionLabel != null) SnackbarDuration.Long else SnackbarDuration.Short,
+                    duration = message.duration
+                        ?: if (message.actionLabel != null) SnackbarDuration.Long else SnackbarDuration.Short,
                 )
                 isResolved = true
                 if (result == SnackbarResult.ActionPerformed) {
@@ -54,35 +59,52 @@ fun CollectAppSnackMessages(messages: Flow<AppSnackMessage>, hostState: Snackbar
     }
 }
 
-/** Единственный снэкбар нового вида: `inverse`, кнопка `inverse-accent`, тень дока. */
+/**
+ * Единственный снэкбар нового вида: `inverse`, кнопка `inverse-accent`, тень дока.
+ * Смахивается в любую сторону: это то же, что снэкбар закрылся сам, действие подтверждено.
+ */
 @Composable
 fun AppSnackbarHost(hostState: SnackbarHostState, modifier: Modifier = Modifier) {
     SnackbarHost(hostState = hostState, modifier = modifier) { data ->
-        val shape = MaterialTheme.shapes.medium
-        Snackbar(
-            modifier = Modifier
-                .padding(horizontal = WishAppSpacing.s3)
-                .widthIn(max = 560.dp)
-                .tokenShadow(shape, WishAppElevation.dock(AppThemeExtras.isDark)),
-            shape = shape,
-            containerColor = MaterialTheme.colorScheme.inverseSurface,
-            contentColor = MaterialTheme.colorScheme.inverseOnSurface,
-            action = data.visuals.actionLabel?.let { actionLabel ->
-                {
-                    TextButton(onClick = { data.performAction() }) {
-                        Text(
-                            text = actionLabel,
-                            style = MaterialTheme.typography.label.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.inversePrimary,
-                        )
-                    }
-                }
-            },
-        ) {
-            Text(
-                text = data.visuals.message,
-                style = MaterialTheme.typography.label.copy(fontWeight = FontWeight.Medium),
-            )
+        // Своё состояние смахивания у каждого сообщения, иначе следующее появлялось бы уже смахнутым
+        key(data) {
+            SwipeToDismissBox(
+                state = rememberSwipeToDismissBoxState(),
+                backgroundContent = {},
+                onDismiss = { data.dismiss() },
+            ) {
+                AppSnackbar(data)
+            }
         }
+    }
+}
+
+@Composable
+private fun AppSnackbar(data: SnackbarData) {
+    val shape = MaterialTheme.shapes.medium
+    Snackbar(
+        modifier = Modifier
+            .padding(horizontal = WishAppSpacing.s3)
+            .widthIn(max = 560.dp)
+            .tokenShadow(shape, WishAppElevation.dock(AppThemeExtras.isDark)),
+        shape = shape,
+        containerColor = MaterialTheme.colorScheme.inverseSurface,
+        contentColor = MaterialTheme.colorScheme.inverseOnSurface,
+        action = data.visuals.actionLabel?.let { actionLabel ->
+            {
+                TextButton(onClick = { data.performAction() }) {
+                    Text(
+                        text = actionLabel,
+                        style = MaterialTheme.typography.label.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.inversePrimary,
+                    )
+                }
+            }
+        },
+    ) {
+        Text(
+            text = data.visuals.message,
+            style = MaterialTheme.typography.label.copy(fontWeight = FontWeight.Medium),
+        )
     }
 }

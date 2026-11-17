@@ -106,6 +106,8 @@ napier = { module = "io.github.aakira:napier", version = "2.7.1" }
 timber = { module = "com.jakewharton.timber:timber", version = "5.0.1" }
 squareup-leakcanary-leakcanaryAndroid = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.14" }
 saket-telephoto-zoomableImageCoil = { module = "me.saket.telephoto:zoomable-image-coil3", version = "0.19.0" }
+# Перетаскивание в сетке нового вида
+reorderable = { module = "sh.calvin.reorderable:reorderable", version = "3.1.0" }
 
 #OkHttp
 squareup-okhttp3-okhttpBom = { module = "com.squareup.okhttp3:okhttp-bom", version = "5.5.1" }

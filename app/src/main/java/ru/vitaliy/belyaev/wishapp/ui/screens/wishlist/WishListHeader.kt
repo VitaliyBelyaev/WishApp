@@ -5,13 +5,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -68,6 +71,13 @@ import ru.vitaliy.belyaev.wishapp.ui.theme.displayL
 import ru.vitaliy.belyaev.wishapp.ui.theme.label
 import ru.vitaliy.belyaev.wishapp.ui.theme.tokenShadow
 
+/**
+ * Отступы шапки от системных панелей: сверху и по бокам. Низ не берём: `safeDrawing` включает
+ * клавиатуру, и фон шапки поиска вырастал на её высоту, закрывая пол-экрана списка.
+ */
+internal val HeaderInsets: WindowInsets
+    @Composable get() = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
+
 /** Высота строки шапки под статус-баром. На столько же сдвинуто начало списка. */
 internal val HeaderRowHeight: Dp = 56.dp
 
@@ -75,7 +85,7 @@ internal val HeaderRowHeight: Dp = 56.dp
 internal val HeaderCollapseDistance: Dp = 72.dp
 
 /** Кнопки шапки крупнее стандартных 44 dp, как в тулбаре системных экранов Samsung. */
-private val HeaderButtonSize = 48.dp
+internal val HeaderButtonSize = 48.dp
 
 /** Зазор между капсулой кнопок и меню «⋮», чтобы меню не прилипало к капсуле. */
 private val MenuGap = 8.dp
@@ -105,7 +115,7 @@ internal fun WishListHeader(
         HeaderScrim(progress)
         Row(
             modifier = Modifier
-                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .windowInsetsPadding(HeaderInsets)
                 .fillMaxWidth()
                 .height(HeaderRowHeight)
                 .padding(start = WishAppSpacing.s4, end = WishAppSpacing.s3),
@@ -148,7 +158,7 @@ internal fun WishListHeader(
  * не задевает, под капсулой контент читается. Затухание по smoothstep, без заметной границы.
  */
 @Composable
-private fun HeaderScrim(progress: () -> Float) {
+internal fun HeaderScrim(progress: () -> Float) {
     val surface = MaterialTheme.colorScheme.surface
     val density = LocalDensity.current
     val statusBar = with(density) { WindowInsets.safeDrawing.getTop(this).toDp() }
@@ -190,23 +200,13 @@ private fun HeaderButtons(
     onSearchClick: () -> Unit,
     onShareClick: () -> Unit,
 ) {
-    val capsule = CircleShape
     var isMenuExpanded by remember { mutableStateOf(false) }
     Box {
         // Капсула под кнопками проявляется при прокрутке отдельно от них, чтобы тень не гасла рывком.
         // Полупрозрачный слой рисуется в отдельный буфер размером со слой: тень за его краями
         // обрезалась, и при неполной прозрачности был виден прямоугольник. Поэтому слой шире капсулы
         // на запас под тень, а капсула внутри него с отступом
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .outset(CapsuleShadowRoom)
-                .graphicsLayer { alpha = (progress() * 3f).coerceIn(0f, 1f) }
-                .padding(CapsuleShadowRoom)
-                .tokenShadow(capsule, WishAppElevation.dock(AppThemeExtras.isDark))
-                .background(AppThemeExtras.colors.surfaceCard, capsule)
-                .then(floatingDarkOutline()?.let { Modifier.border(it, capsule) } ?: Modifier),
-        )
+        CapsuleBackdrop(progress)
         Row(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
             HeaderIconButton(R.drawable.ic_ms_search, stringResource(R.string.cd_search), onSearchClick)
             if (showShareIcon) {
@@ -232,6 +232,25 @@ private fun HeaderButtons(
             }
         }
     }
+}
+
+/**
+ * Подложка плавающей капсулы шапки: `surface-card` с тенью дока, проявляется с прокруткой.
+ * Ставится первой в `Box` с кнопками и занимает его размер.
+ */
+@Composable
+internal fun BoxScope.CapsuleBackdrop(progress: () -> Float) {
+    val capsule = CircleShape
+    Box(
+        modifier = Modifier
+            .matchParentSize()
+            .outset(CapsuleShadowRoom)
+            .graphicsLayer { alpha = (progress() * 3f).coerceIn(0f, 1f) }
+            .padding(CapsuleShadowRoom)
+            .tokenShadow(capsule, WishAppElevation.dock(AppThemeExtras.isDark))
+            .background(AppThemeExtras.colors.surfaceCard, capsule)
+            .then(floatingDarkOutline()?.let { Modifier.border(it, capsule) } ?: Modifier),
+    )
 }
 
 /** Запас под тень капсулы `shadow-dock`: размытие 20 dp и сдвиг 6 dp. */
@@ -379,12 +398,12 @@ internal fun SearchHeader(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surface)
-                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .windowInsetsPadding(HeaderInsets)
                 .height(HeaderRowHeight),
         )
         Row(
             modifier = Modifier
-                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .windowInsetsPadding(HeaderInsets)
                 .fillMaxWidth()
                 .height(HeaderRowHeight)
                 .padding(horizontal = WishAppSpacing.s1),

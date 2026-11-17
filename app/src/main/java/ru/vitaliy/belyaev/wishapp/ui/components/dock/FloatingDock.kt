@@ -168,8 +168,10 @@ private fun DockTabItem(
     selectedOutline: Boolean = false,
 ) {
     val colors = MaterialTheme.colorScheme
+    // Гаснет в тот же цвет с нулевой прозрачностью. Color.Transparent это прозрачный чёрный,
+    // и на середине анимации капсула темнела: при смене вкладки казалось, что она мигает
     val background by animateColorAsState(
-        targetValue = if (isSelected) selectedBackground else Color.Transparent,
+        targetValue = if (isSelected) selectedBackground else selectedBackground.copy(alpha = 0f),
         animationSpec = tween(150),
         label = "tabBackground",
     )

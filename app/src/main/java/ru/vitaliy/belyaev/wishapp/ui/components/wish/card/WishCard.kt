@@ -28,6 +28,7 @@ import ru.vitaliy.belyaev.wishapp.ui.components.wish.SelectedCheckInset
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.TagsLine
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.TextFade
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.WishCardModel
+import ru.vitaliy.belyaev.wishapp.ui.components.wish.WishItemDrag
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.WishItemFrame
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.WishItemText
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.WishPhoto
@@ -62,6 +63,7 @@ fun WishCard(
     onLongClick: () -> Unit,
     modifier: Modifier = Modifier,
     selection: WishSelection = WishSelection.NONE,
+    drag: WishItemDrag = WishItemDrag.NONE,
 ) {
     val text = model.resolveText()
     WishItemFrame(
@@ -72,6 +74,7 @@ fun WishCard(
         onClick = onClick,
         onLongClick = onLongClick,
         modifier = modifier,
+        drag = drag,
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             if (model.photos.isNotEmpty()) {

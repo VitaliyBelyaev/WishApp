@@ -8,6 +8,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
@@ -27,8 +28,10 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isHeading
 import androidx.compose.ui.test.isSelectable
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToIndex
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
@@ -64,7 +67,8 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.wishlist.WishListTestTags
 
 /**
  * UI-тест экрана списка в новом виде: вкладки панели, шторки ярлыков и сортировки, меню «⋮»,
- * поиск, вид карточками и списком, прокрутка и системное «назад». Работает через настоящую
+ * поиск, вид карточками и списком, прокрутка и системное «назад», режим выбора с массовыми действиями
+ * и «Вернуть», перенос пальцем и действиями TalkBack «Выше» и «Ниже». Работает через настоящую
  * активность и базу, как [ru.vitaliy.belyaev.wishapp.smoke.SmokeTest], и так же стирает базу,
  * поэтому без аргумента `-e smoke true` пропускается. Запуск:
  *
@@ -349,7 +353,7 @@ internal class WishListScreenTest {
     }
 
     @Test
-    fun scrollAndTappingSelectedTabReturnsToTop() {
+    fun scrollIsKeptPerTabAndTappingSelectedTabReturnsToTop() {
         val topAtStart = boundsOf(wish(TOP_WISH)).top
 
         // Прокрутка жестом в середине экрана, ниже начинается панель, и она касания не пропускает
@@ -375,14 +379,22 @@ internal class WishListScreenTest {
             exists(wish(TOP_WISH)) && kotlin.math.abs(boundsOf(wish(TOP_WISH)).top - topAtStart) < 1f
         }
 
-        // Другой раздел открывается с начала, и «Хотелки» при возврате тоже
+        // Другой раздел открывается со своей прокрутки, впервые с начала,
+        // а «Хотелки» при возврате там, где их оставили
         rule.onNode(list()).performScrollToIndex(ACTIVE_COUNT - 1)
         waitUntilExists(wish(LAST_WISH))
         click(tab(R.string.nav_done))
         waitUntilExists(wish(DONE_WISH_SPEAKER))
         click(tab(R.string.nav_wishes))
-        waitUntilFirstWish(TOP_WISH)
-        assertEquals(topAtStart, boundsOf(wish(TOP_WISH)).top, 1f)
+        waitUntilExists(wish(LAST_WISH))
+        rule.onNode(wish(TOP_WISH)).assertDoesNotExist()
+        screenshot("restored_after_done")
+
+        // Нажатие на открытую вкладку после возврата по-прежнему поднимает список
+        click(tab(R.string.nav_wishes))
+        rule.waitUntil(WAIT_TIMEOUT_MILLIS) {
+            exists(wish(TOP_WISH)) && kotlin.math.abs(boundsOf(wish(TOP_WISH)).top - topAtStart) < 1f
+        }
     }
 
     @Test
@@ -481,6 +493,165 @@ internal class WishListScreenTest {
         device.pressBack()
         waitUntilGone(hasText(string(R.string.share_as_text)))
     }
+
+    @Test
+    fun longPressInPlaceSelectsAndSelectionHeaderWorks() {
+        longPressInPlace(wish(TOP_WISH))
+        waitUntilExists(selectionCount(1))
+        // Панель стала действиями: плюса и вкладок нет
+        rule.onNode(hasContentDescription(string(R.string.cd_add_wish))).assertDoesNotExist()
+        rule.onNode(tab(R.string.nav_wishes)).assertDoesNotExist()
+        rule.onNode(hasTestTag(WishListTestTags.SELECTION_DONE)).assertIsDisplayed()
+        screenshot("selected")
+
+        // В режиме обычное нажатие переключает выбор, а не открывает хотелку
+        click(wish(fillerTitle(FILLER_WISHES_COUNT - 1)))
+        waitUntilExists(selectionCount(2))
+        click(wish(fillerTitle(FILLER_WISHES_COUNT - 1)))
+        waitUntilExists(selectionCount(1))
+
+        click(hasText(string(R.string.selection_all)) and hasClickAction())
+        waitUntilExists(selectionCount(ACTIVE_COUNT))
+
+        // «Назад» сначала снимает выбор и остаётся в «Хотелках»
+        device.pressBack()
+        waitUntilGone(hasTestTag(WishListTestTags.SELECTION_COUNT))
+        rule.onNode(tab(R.string.nav_wishes)).assertIsSelected()
+
+        // Снятый последний выбор закрывает режим
+        longPressInPlace(wish(TOP_WISH))
+        waitUntilExists(selectionCount(1))
+        click(wish(TOP_WISH))
+        waitUntilGone(hasTestTag(WishListTestTags.SELECTION_COUNT))
+    }
+
+    @Test
+    fun dragMovesWishAndKeepsOrder() {
+        val second = fillerTitle(FILLER_WISHES_COUNT - 1)
+        val third = fillerTitle(FILLER_WISHES_COUNT - 2)
+        // Первая карточка в верхнем ряду слева, третья под ней: тащим первую на место третьей
+        dragTo(wish(TOP_WISH), boundsOf(wish(third)).center + Offset(0f, boundsOf(wish(third)).height / 2))
+        waitUntilFirstWish(second)
+        // Перенос не выделяет карточку
+        rule.onNode(hasTestTag(WishListTestTags.SELECTION_COUNT)).assertDoesNotExist()
+        screenshot("dragged")
+
+        // Порядок записан в базу: после смены раздела он тот же
+        click(tab(R.string.nav_done))
+        waitUntilExists(heading(string(R.string.nav_done)))
+        click(tab(R.string.nav_wishes))
+        waitUntilFirstWish(second)
+    }
+
+    @Test
+    fun talkBackMovesWishWithCustomActions() {
+        val second = fillerTitle(FILLER_WISHES_COUNT - 1)
+        // У первой нет «Выше»
+        assertTrue(customActionLabels(wish(TOP_WISH)).none { it == string(R.string.a11y_move_up) })
+        performCustomAction(wish(TOP_WISH), R.string.a11y_move_down)
+        waitUntilFirstWish(second)
+        performCustomAction(wish(TOP_WISH), R.string.a11y_move_up)
+        waitUntilFirstWish(TOP_WISH)
+
+        // «Выбрать несколько» TalkBack по-прежнему выбирает, хотя долгое нажатие пальцем ведёт перенос
+        rule.onNode(wish(TOP_WISH)).performSemanticsAction(SemanticsActions.OnLongClick)
+        waitUntilExists(selectionCount(1))
+    }
+
+    @Test
+    fun moveInsideTagChangesOnlyTagOrder() {
+        click(tab(R.string.nav_tags))
+        waitUntilExists(tagRow(TAG_BOOKS))
+        click(tagRow(TAG_BOOKS))
+        waitUntilExists(heading(TAG_BOOKS))
+        val first = if (exists(wish(BOOKS_WISH_NOVEL)) && firstWishDescription()!!.startsWith(BOOKS_WISH_NOVEL)) {
+            BOOKS_WISH_NOVEL
+        } else {
+            BOOKS_WISH_READER
+        }
+        val second = if (first == BOOKS_WISH_NOVEL) BOOKS_WISH_READER else BOOKS_WISH_NOVEL
+        waitUntilFirstWish(first)
+
+        performCustomAction(wish(first), R.string.a11y_move_down)
+        waitUntilFirstWish(second)
+
+        // В «Хотелках» чужие хотелки остались на своих местах
+        click(tab(R.string.nav_wishes))
+        waitUntilFirstWish(TOP_WISH)
+    }
+
+    @Test
+    fun deleteSelectedHidesWishesAndUndoReturnsThem() {
+        longPressInPlace(wish(TOP_WISH))
+        waitUntilExists(selectionCount(1))
+        click(hasTestTag(WishListTestTags.SELECTION_DELETE))
+        waitUntilGone(wish(TOP_WISH))
+        rule.onNode(hasTestTag(WishListTestTags.SELECTION_COUNT)).assertDoesNotExist()
+        waitUntilExists(hasText(string(R.string.snack_deleted_count, 1)))
+        screenshot("deleted")
+
+        click(hasText(string(R.string.snack_undo)) and hasClickAction())
+        waitUntilFirstWish(TOP_WISH)
+    }
+
+    @Test
+    fun cameTrueMovesSelectedToDone() {
+        longPressInPlace(wish(TOP_WISH))
+        waitUntilExists(selectionCount(1))
+        click(hasTestTag(WishListTestTags.SELECTION_DONE))
+        waitUntilGone(wish(TOP_WISH))
+        waitUntilExists(hasText(string(R.string.snack_came_true_count, 1)))
+        // Другое действие подтверждает прошлое: хотелка уходит в «Сбылось»
+        click(tab(R.string.nav_done))
+        waitUntilExists(heading(string(R.string.nav_done)))
+        waitUntilExists(wish(TOP_WISH))
+
+        // В «Сбылось» переноса нет, долгое нажатие сразу выбирает, а действие — «Снова хочу»
+        longPressInPlace(wish(TOP_WISH))
+        waitUntilExists(selectionCount(1))
+        rule.onNode(hasTestTag(WishListTestTags.SELECTION_DONE)).assert(hasText(string(R.string.wish_again)))
+    }
+
+    // region Выбор и перенос
+
+    private fun selectionCount(count: Int): SemanticsMatcher =
+        hasTestTag(WishListTestTags.SELECTION_COUNT) and hasText(string(R.string.selection_count, count))
+
+    /** Долгое нажатие и отпускание на месте. */
+    private fun longPressInPlace(matcher: SemanticsMatcher) {
+        rule.onNode(matcher).performTouchInput { longClick() }
+        rule.waitForIdle()
+    }
+
+    /** Долгое нажатие и перенос пальцем в точку [target] в координатах корня. */
+    private fun dragTo(matcher: SemanticsMatcher, target: Offset) {
+        val bounds = boundsOf(matcher)
+        rule.onNode(matcher).performTouchInput {
+            down(center)
+            advanceEventTime(viewConfiguration.longPressTimeoutMillis + LONG_PRESS_EXTRA_MILLIS)
+            val start = center
+            val end = target - bounds.topLeft
+            repeat(DRAG_STEPS) { step ->
+                moveTo(start + (end - start) * ((step + 1) / DRAG_STEPS.toFloat()))
+                advanceEventTime(DRAG_STEP_MILLIS)
+            }
+            up()
+        }
+        rule.waitForIdle()
+    }
+
+    private fun customActionLabels(matcher: SemanticsMatcher): List<String> =
+        rule.onNode(matcher).fetchSemanticsNode().config
+            .getOrNull(SemanticsActions.CustomActions).orEmpty().map { it.label }
+
+    private fun performCustomAction(matcher: SemanticsMatcher, @StringRes label: Int) {
+        val action = rule.onNode(matcher).fetchSemanticsNode().config[SemanticsActions.CustomActions]
+            .first { it.label == string(label) }
+        rule.runOnUiThread { action.action() }
+        rule.waitForIdle()
+    }
+
+    // endregion
 
     // region Поиск элементов
 
@@ -601,6 +772,9 @@ internal class WishListScreenTest {
         const val FILLER_WISHES_COUNT = 30
         const val FILLER_TAGS_COUNT = 8
         const val SCROLL_MIDDLE_INDEX = 10
+        const val LONG_PRESS_EXTRA_MILLIS = 200L
+        const val DRAG_STEPS = 20
+        const val DRAG_STEP_MILLIS = 16L
 
         // Хотелки и ярлыки из DemoData(language = "en")
         const val DEMO_ACTIVE_COUNT = 7

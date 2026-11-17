@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -45,8 +46,11 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.onLongClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.TextStyle
@@ -56,8 +60,10 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.theme.AppThemeExtras
+import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppElevation
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppSpacing
 import ru.vitaliy.belyaev.wishapp.ui.theme.labelS
+import ru.vitaliy.belyaev.wishapp.ui.theme.tokenShadow
 
 /*
  * Общие части карточки (WishCard) и строки (WishRow): что показать в заголовке, рамка с нажатием и выбором,
@@ -66,6 +72,25 @@ import ru.vitaliy.belyaev.wishapp.ui.theme.labelS
 
 /** Режим выбора: вне его и у невыбранной меток нет, у выбранной обводка и галочка. */
 enum class WishSelection { NONE, UNSELECTED, SELECTED }
+
+/**
+ * Перенос карточки в списке.
+ *
+ * @param longPressStartsDrag долгое нажатие пальцем начинает перенос, и выделение решает список.
+ * Нажатие после долгого удержания тогда приходит в `onClick`, список его пропускает.
+ * @param isLifted карточку сейчас несут: она чуть крупнее и с тенью.
+ * @param accessibilityActions «Выше» и «Ниже» для TalkBack.
+ */
+@Immutable
+data class WishItemDrag(
+    val longPressStartsDrag: Boolean = false,
+    val isLifted: Boolean = false,
+    val accessibilityActions: List<CustomAccessibilityAction> = emptyList(),
+) {
+    companion object {
+        val NONE = WishItemDrag()
+    }
+}
 
 /** Ссылки внизу: домен первой и сколько ещё. Без домена только `+N`, когда домен уже в заголовке. */
 @Immutable
@@ -96,6 +121,7 @@ internal val WishCardModel.hasTags: Boolean get() = shownTag != null || otherTag
 // Отскок как у прототипа: cubic-bezier(.3, 1.4, .5, 1), 220 мс
 private val PressEasing = CubicBezierEasing(0.3f, 1.4f, 0.5f, 1f)
 private const val PRESSED_SCALE = 0.97f
+private const val LIFTED_SCALE = 1.04f
 private val SelectionBorderWidth = 3.dp
 
 /**
@@ -115,49 +141,66 @@ internal fun WishItemFrame(
     onClick: () -> Unit,
     onLongClick: () -> Unit,
     modifier: Modifier = Modifier,
+    drag: WishItemDrag = WishItemDrag.NONE,
     content: @Composable () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) PRESSED_SCALE else 1f,
+        targetValue = when {
+            drag.isLifted -> LIFTED_SCALE
+            isPressed -> PRESSED_SCALE
+            else -> 1f
+        },
         animationSpec = tween(durationMillis = 220, easing = PressEasing),
         label = "wishItemPress",
     )
-    val stateText = when (selection) {
-        WishSelection.NONE -> null
-        WishSelection.UNSELECTED -> stringResource(R.string.a11y_not_selected)
-        WishSelection.SELECTED -> stringResource(R.string.a11y_selected)
-    }
-    val clickLabel = when (selection) {
-        WishSelection.NONE -> stringResource(R.string.a11y_action_open)
-        WishSelection.UNSELECTED -> stringResource(R.string.a11y_action_select)
-        WishSelection.SELECTED -> stringResource(R.string.a11y_action_unselect)
-    }
+    val stateText = selectionStateText(selection)
+    val clickLabel = selectionClickLabel(selection)
+
+    val longClickLabel = stringResource(R.string.a11y_action_select_many)
 
     Box(
-        modifier = modifier.graphicsLayer {
-            scaleX = scale
-            scaleY = scale
-        },
+        modifier = modifier
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
+            .then(
+                if (drag.isLifted) {
+                    Modifier.tokenShadow(shape, WishAppElevation.dock(AppThemeExtras.isDark))
+                } else {
+                    Modifier
+                },
+            ),
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(shape)
+                // Действие TalkBack «выбрать несколько» стоит снаружи кликабельности и перекрывает её:
+                // когда долгое нажатие пальцем ведёт перенос, TalkBack всё равно выбирает карточку
+                .semantics {
+                    contentDescription = description
+                    if (stateText != null) stateDescription = stateText
+                    onLongClick(label = longClickLabel) {
+                        onLongClick()
+                        true
+                    }
+                    if (drag.accessibilityActions.isNotEmpty()) customActions = drag.accessibilityActions
+                }
                 .combinedClickable(
                     interactionSource = interactionSource,
                     indication = null,
                     onClickLabel = clickLabel,
-                    onLongClickLabel = stringResource(R.string.a11y_action_select_many),
+                    onLongClickLabel = longClickLabel,
                     onClick = onClick,
-                    onLongClick = onLongClick,
-                )
-                .semantics {
-                    contentDescription = description
-                    if (stateText != null) stateDescription = stateText
-                },
+                    // Долгое нажатие пальцем забирает перенос: он и выделяет, если отпустить на месте.
+                    // Своё долгое нажатие здесь отменило бы перенос: после него кликабельность
+                    // забирает остаток жеста. Отпускание на месте список не считает нажатием
+                    onLongClick = if (drag.longPressStartsDrag) null else onLongClick,
+                ),
             shape = shape,
             colors = CardDefaults.cardColors(
                 containerColor = AppThemeExtras.colors.paper(model.tone),
@@ -178,6 +221,24 @@ internal fun WishItemFrame(
             SelectedCheck(modifier = Modifier.align(Alignment.TopEnd).padding(SelectedCheckInset))
         }
     }
+}
+
+/** Состояние выбора для TalkBack: «выбрано», «не выбрано», вне режима ничего. */
+@Composable
+@ReadOnlyComposable
+private fun selectionStateText(selection: WishSelection): String? = when (selection) {
+    WishSelection.NONE -> null
+    WishSelection.UNSELECTED -> stringResource(R.string.a11y_not_selected)
+    WishSelection.SELECTED -> stringResource(R.string.a11y_selected)
+}
+
+/** Что сделает нажатие, для TalkBack. */
+@Composable
+@ReadOnlyComposable
+private fun selectionClickLabel(selection: WishSelection): String = when (selection) {
+    WishSelection.NONE -> stringResource(R.string.a11y_action_open)
+    WishSelection.UNSELECTED -> stringResource(R.string.a11y_action_select)
+    WishSelection.SELECTED -> stringResource(R.string.a11y_action_unselect)
 }
 
 private val SelectedCheckSize = 22.dp
