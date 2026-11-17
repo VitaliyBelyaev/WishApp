@@ -177,6 +177,7 @@
     <string name="share_scope">%1$s : %2$s</string>
     <string name="share_as_text">En texte</string>
     <string name="share_as_pdf">PDF avec photos</string>
+    <string name="share_pick_part">En choisir seulement certains</string>
     <!-- Нет в артефакте локализации, черновики части 2.2 -->
     <string name="search_elsewhere">Rien dans « %1$s », mais il y a des résultats ailleurs</string>
     <string name="search_go_to">Dans « %1$s »</string>

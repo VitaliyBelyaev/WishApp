@@ -445,6 +445,8 @@ private fun WishListContent(
         // Меню остаётся в композиции и закрывается своей анимацией
         ShareMenu(
             visible = openSheet == OpenSheet.SHARE,
+            // Из панели выбора меню поднимается снизу, из шапки выпадает сверху
+            anchor = if (state.isSelectionMode) ShareMenuAnchor.BOTTOM else ShareMenuAnchor.TOP,
             scope = shareScope,
             isSharingPdf = isSharingPdf,
             onShareText = {
@@ -452,6 +454,16 @@ private fun WishListContent(
                 onShare(ShareFormat.TEXT)
             },
             onSharePdf = { onShare(ShareFormat.PDF) },
+            // Отметить часть есть смысл, когда хотелок хотя бы две. Выбор открывается со всеми
+            // отмеченными: обычно лишнее снимают, а не набирают нужное с нуля
+            onPickPart = if (!state.isSelectionMode && state.cards.size >= MIN_CARDS_TO_PICK_PART) {
+                {
+                    openSheet = OpenSheet.NONE
+                    selection.onSelectAll()
+                }
+            } else {
+                null
+            },
             onDismiss = { if (!isSharingPdf) openSheet = OpenSheet.NONE },
         )
     }
@@ -759,3 +771,4 @@ private suspend fun LazyStaggeredGridState.scrollToTopSmoothly(topLayout: TopLay
 /** Карточка для прыжка не ниже этой доли экрана: плавная часть пути не длиннее экрана. */
 private const val JUMP_ANCHOR_SHARE = 0.7f
 private const val SCROLL_TO_TOP_MILLIS = 450
+private const val MIN_CARDS_TO_PICK_PART = 2

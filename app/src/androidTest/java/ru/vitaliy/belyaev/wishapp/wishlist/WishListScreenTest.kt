@@ -10,11 +10,13 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.click
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
@@ -388,6 +390,38 @@ internal class WishListScreenTest : WishListUiTest() {
         device.pressBack()
         waitUntilGone(hasText(string(R.string.share_as_text)))
     }
+
+    @Test
+    fun pickPartOpensSelectionAndShareFromDockRisesAboveIt() {
+        // Из «⋮» меню выпадает сверху, в нём есть «Выбрать только часть»
+        openMenu()
+        click(menuItem(R.string.menu_share))
+        waitUntilExists(hasTestTag(WishListTestTags.SHARE_MENU))
+        assertTrue("Меню из шапки должно быть сверху", shareMenuBounds().bottom < rootHeight() / 2)
+        click(menuItem(R.string.share_pick_part))
+
+        // Выбор со всеми отмеченными, меню закрыто
+        waitUntilExists(selectionCount(ACTIVE_COUNT))
+        waitUntilGone(hasTestTag(WishListTestTags.SHARE_MENU))
+
+        // «Поделиться» в панели выбора: меню над панелью, без пункта выбора
+        click(hasContentDescription(string(R.string.menu_share)) and hasClickAction())
+        waitUntilExists(hasText(string(R.string.selection_count, ACTIVE_COUNT)) and hasAnyAncestor(shareMenu()))
+        assertTrue("Меню из панели выбора должно быть снизу", shareMenuBounds().top > rootHeight() / 2)
+        rule.onNode(hasText(string(R.string.share_pick_part))).assertDoesNotExist()
+        rule.onNode(hasText(string(R.string.share_as_text))).assertIsDisplayed()
+        screenshot("share_from_selection")
+        device.pressBack()
+        waitUntilGone(hasTestTag(WishListTestTags.SHARE_MENU))
+        // «Назад» закрыло только меню, выбор остался
+        rule.onNode(selectionCount(ACTIVE_COUNT)).assertExists()
+    }
+
+    private fun shareMenu() = hasTestTag(WishListTestTags.SHARE_MENU)
+
+    private fun shareMenuBounds() = rule.onNode(shareMenu()).fetchSemanticsNode().boundsInRoot
+
+    private fun rootHeight() = rule.onRoot().fetchSemanticsNode().size.height
 
     @Test
     fun longPressInPlaceSelectsAndSelectionHeaderWorks() {

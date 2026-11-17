@@ -21,10 +21,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -38,10 +41,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.components.dock.FloatingDockHeight
 import ru.vitaliy.belyaev.wishapp.ui.components.dock.floatingDarkOutline
 import ru.vitaliy.belyaev.wishapp.ui.theme.AppThemeExtras
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppElevation
@@ -51,7 +56,7 @@ import ru.vitaliy.belyaev.wishapp.ui.theme.tokenShadow
 
 private val ShareButtonShape = RoundedCornerShape(18.dp)
 
-/** Сдвиг между появлением подписи и кнопок сверху вниз. */
+/** Сдвиг между появлением подписи и кнопок, по очереди от кнопки, которой меню открыли. */
 private const val STAGGER_MILLIS = 40
 private const val SCRIM_MILLIS = 200
 private const val POP_MILLIS = 320
@@ -60,9 +65,10 @@ private const val POP_EXIT_MILLIS = 140
 private const val POP_START_SCALE = 0.85f
 private const val POP_END_SCALE = 0.95f
 
-/** Съезжают вниз на треть своей высоты. */
+/** Съезжают от кнопки на треть своей высоты. */
 private const val POP_SLIDE_PART = 3
 private val TopEndOrigin = TransformOrigin(1f, 0f)
+private val BottomEndOrigin = TransformOrigin(1f, 1f)
 private val EmphasizedDecelerate = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1f)
 
 /**
@@ -70,16 +76,23 @@ private val EmphasizedDecelerate = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1f)
  * Сверху подпись, что уходит: «Хотелки: 12 хотелок». Пока PDF собирается, вместо его кнопки
  * неактивная строка с прогрессом, меню закрывается, когда файл отдан системе.
  *
- * Кнопки вырастают из угла под «⋮», откуда меню и открыли: проявляются, чуть съезжают вниз и
- * подрастают, сверху вниз по очереди. Закрываются все вместе, быстрее.
+ * Меню выходит оттуда, где нажали «Поделиться» ([anchor]). Из шапки оно выпадает из правого
+ * верхнего угла, из панели выбора поднимается над ней от правого края: палец не едет через весь
+ * экран. Кнопки проявляются, чуть съезжают от угла и подрастают по очереди, начиная с ближней к
+ * этому углу. Закрываются все вместе, быстрее.
+ *
+ * [onPickPart] — пункт «Выбрать только часть»: открывает выбор, где отмечено всё. Без него пункта
+ * нет: в режиме выбора и так уходит часть.
  */
 @Composable
 internal fun ShareMenu(
     visible: Boolean,
+    anchor: ShareMenuAnchor,
     scope: String,
     isSharingPdf: Boolean,
     onShareText: () -> Unit,
     onSharePdf: () -> Unit,
+    onPickPart: (() -> Unit)?,
     onDismiss: () -> Unit,
 ) {
     BackHandler(enabled = visible, onBack = onDismiss)
@@ -101,10 +114,28 @@ internal fun ShareMenu(
                         onClick = onDismiss,
                     ),
             )
+            val isTop = anchor == ShareMenuAnchor.TOP
+            // Очередь появления идёт от угла, где была кнопка: сверху вниз или снизу вверх
+            val count = if (onPickPart != null) ITEMS_WITH_PICK else ITEMS
+            val pop: AnimatedVisibilityScope.(Int) -> Modifier = { index ->
+                popFromCorner(order = if (isTop) index else count - 1 - index, fromTop = isTop)
+            }
             Column(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(top = headerHeight(), end = WishAppSpacing.s3),
+                modifier = if (isTop) {
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = headerHeight(), end = WishAppSpacing.s3)
+                } else {
+                    // Над панелью выбора: её отступ от низа, высота и зазор 8 dp
+                    Modifier
+                        .align(Alignment.BottomEnd)
+                        .windowInsetsPadding(WindowInsets.navigationBars)
+                        .padding(
+                            end = WishAppSpacing.s3,
+                            bottom =
+                            WishAppSpacing.s3 + FloatingDockHeight + WishAppSpacing.s2,
+                        )
+                }.testTag(WishListTestTags.SHARE_MENU),
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.spacedBy(WishAppSpacing.s2),
             ) {
@@ -113,11 +144,22 @@ internal fun ShareMenu(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.inverseOnSurface,
                     modifier = Modifier
-                        .then(popFromCorner(order = 0))
+                        .then(pop(0))
                         .background(MaterialTheme.colorScheme.inverseSurface, CircleShape)
                         .padding(horizontal = WishAppSpacing.s3, vertical = WishAppSpacing.s1),
                 )
-                val pdfModifier = popFromCorner(order = 1)
+                // С пунктом выбора форматы сдвигаются в очереди на одно место
+                val shift = if (onPickPart != null) 1 else 0
+                if (onPickPart != null) {
+                    ShareMenuButton(
+                        text = stringResource(R.string.share_pick_part),
+                        icon = R.drawable.ic_ms_checklist,
+                        enabled = !isSharingPdf,
+                        onClick = onPickPart,
+                        modifier = pop(1),
+                    )
+                }
+                val pdfModifier = pop(1 + shift)
                 if (isSharingPdf) {
                     ShareMenuButton(
                         text = stringResource(R.string.share_generating_pdf_button_text),
@@ -139,29 +181,37 @@ internal fun ShareMenu(
                     icon = R.drawable.ic_ms_notes,
                     enabled = !isSharingPdf,
                     onClick = onShareText,
-                    modifier = popFromCorner(order = 2),
+                    modifier = pop(2 + shift),
                 )
             }
         }
     }
 }
 
-/** Появление из правого верхнего угла, [order] — очередь сверху вниз. */
-private fun AnimatedVisibilityScope.popFromCorner(order: Int): Modifier {
+/** Откуда открыли меню «Поделиться»: кнопка в шапке или в панели выбора внизу. */
+internal enum class ShareMenuAnchor { TOP, BOTTOM }
+
+/** Подпись, PDF и текст; с пунктом «Выбрать только часть» на один больше. */
+private const val ITEMS = 3
+private const val ITEMS_WITH_PICK = 4
+
+/** Появление из правого угла, верхнего или нижнего, [order] — очередь от этого угла. */
+private fun AnimatedVisibilityScope.popFromCorner(order: Int, fromTop: Boolean): Modifier {
     val delay = order * STAGGER_MILLIS
+    val origin = if (fromTop) TopEndOrigin else BottomEndOrigin
+    val direction = if (fromTop) -1 else 1
     return Modifier.animateEnterExit(
         enter = fadeIn(tween(POP_FADE_MILLIS, delayMillis = delay)) +
             scaleIn(
                 animationSpec = tween(POP_MILLIS, delayMillis = delay, easing = EmphasizedDecelerate),
                 initialScale = POP_START_SCALE,
-                transformOrigin = TopEndOrigin,
+                transformOrigin = origin,
             ) +
             slideInVertically(tween(POP_MILLIS, delayMillis = delay, easing = EmphasizedDecelerate)) {
-                -it /
-                    POP_SLIDE_PART
+                direction * it / POP_SLIDE_PART
             },
         exit = fadeOut(tween(POP_EXIT_MILLIS)) +
-            scaleOut(tween(POP_EXIT_MILLIS), targetScale = POP_END_SCALE, transformOrigin = TopEndOrigin),
+            scaleOut(tween(POP_EXIT_MILLIS), targetScale = POP_END_SCALE, transformOrigin = origin),
     )
 }
 

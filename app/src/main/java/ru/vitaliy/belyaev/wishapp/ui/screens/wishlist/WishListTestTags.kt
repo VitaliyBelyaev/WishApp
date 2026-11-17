@@ -16,4 +16,7 @@ object WishListTestTags {
     const val SELECTION_COUNT = "wishList.selectionCount"
     const val SELECTION_DONE = "wishList.selectionDone"
     const val SELECTION_DELETE = "wishList.selectionDelete"
+
+    /** Столбик меню «Поделиться»: по нему видно, сверху меню или над панелью выбора. */
+    const val SHARE_MENU = "wishList.shareMenu"
 }

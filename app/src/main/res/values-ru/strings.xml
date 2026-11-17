@@ -183,6 +183,7 @@
     <string name="share_scope">%1$s: %2$s</string>
     <string name="share_as_text">Текстом</string>
     <string name="share_as_pdf">PDF с фото</string>
+    <string name="share_pick_part">Выбрать только часть</string>
     <!-- Нет в артефакте локализации, черновики части 2.2 -->
     <string name="search_elsewhere">В разделе «%1$s» нет, зато есть в другом</string>
     <string name="search_go_to">В «%1$s»</string>
