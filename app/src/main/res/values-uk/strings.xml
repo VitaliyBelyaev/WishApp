@@ -229,4 +229,5 @@
     <string name="link_remove">Прибрати посилання</string>
     <string name="photo_remove">Прибрати фото</string>
     <string name="photo_add_failed">Фото не додалося: файл не відкривається</string>
+    <string name="snack_photos_added_partly">Додано %1$d фото з %2$d</string>
 </resources>

@@ -58,6 +58,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.domain.model.ListLayout
+import ru.vitaliy.belyaev.wishapp.ui.IncomingShare
 import ru.vitaliy.belyaev.wishapp.ui.components.dock.DockTab
 import ru.vitaliy.belyaev.wishapp.ui.components.dock.FloatingDock
 import ru.vitaliy.belyaev.wishapp.ui.components.dock.FloatingDockFade
@@ -102,6 +103,8 @@ private enum class OpenSheet { NONE, TAGS, SORT, SHARE }
 @Composable
 fun WishListScreen(
     actions: WishListActions,
+    incomingShare: IncomingShare? = null,
+    onIncomingShareHandled: () -> Unit = {},
     viewModel: WishListViewModel = hiltViewModel(),
     newWishViewModel: NewWishViewModel = hiltViewModel(),
 ) {
@@ -142,6 +145,11 @@ fun WishListScreen(
         isSharingPdf = isSharingPdf,
         actions = actions,
         onAddWish = newWishViewModel::open,
+        incomingShare = incomingShare,
+        onAddShared = { tagId, share ->
+            onIncomingShareHandled()
+            newWishViewModel.openShared(tagId, share)
+        },
         onSectionSelected = viewModel::onSectionSelected,
         onSearchOpened = viewModel::onSearchOpened,
         onSearchQueryChanged = viewModel::onSearchQueryChanged,
@@ -172,6 +180,8 @@ private fun WishListContent(
     isSharingPdf: Boolean,
     actions: WishListActions,
     onAddWish: (contextTagId: String?, title: String?) -> Unit,
+    incomingShare: IncomingShare?,
+    onAddShared: (contextTagId: String?, share: IncomingShare) -> Unit,
     onSectionSelected: (ListSection) -> Unit,
     onSearchOpened: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
@@ -200,6 +210,14 @@ private fun WishListContent(
     // Панель новой хотелки растёт из плюса, когда открыта им, иначе из нижнего края
     val newWishOrigin = remember { NewWishOrigin() }
     var addButtonBounds by remember { mutableStateOf<Rect?>(null) }
+    // «Поделиться» из другого приложения: шторка поверх списка, как из пустого раздела, с ярлыком фильтра
+    val currentOnAddShared by rememberUpdatedState(onAddShared)
+    LaunchedEffect(incomingShare, state.isLoading) {
+        if (incomingShare != null && !state.isLoading) {
+            newWishOrigin.bounds = null
+            currentOnAddShared(state.selectedTag?.id, incomingShare)
+        }
+    }
 
     // У раздела и сортировки своя сетка, раздел открывается там, где его оставили.
     // Поиск в ключ не входит: новая сетка на каждую букву заново строила карточки и грузила

@@ -3,6 +3,7 @@ package ru.vitaliy.belyaev.wishapp.navigation.old
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 import ru.vitaliy.belyaev.wishapp.shared.domain.SharedWishDraft
+import ru.vitaliy.belyaev.wishapp.ui.IncomingShare
 
 @Serializable
 data object MainRoute : NavKey
@@ -15,6 +16,8 @@ data class WishDetailedRoute(
     val sharedTitle: String? = null,
     val sharedComment: String? = null,
     val sharedLinks: List<String> = emptyList(),
+    /** Картинки оттуда же, `content://`. Читаются один раз, когда создаётся хотелка. */
+    val sharedImageUris: List<String> = emptyList(),
 ) : NavKey {
 
     fun sharedDraftOrNull(): SharedWishDraft? {
@@ -27,11 +30,12 @@ data class WishDetailedRoute(
     }
 
     companion object {
-        fun fromSharedDraft(draft: SharedWishDraft): WishDetailedRoute {
+        fun fromShare(share: IncomingShare): WishDetailedRoute {
             return WishDetailedRoute(
-                sharedTitle = draft.title,
-                sharedComment = draft.comment,
-                sharedLinks = draft.links,
+                sharedTitle = share.text?.title,
+                sharedComment = share.text?.comment,
+                sharedLinks = share.text?.links.orEmpty(),
+                sharedImageUris = share.imageUris.map { it.toString() },
             )
         }
     }

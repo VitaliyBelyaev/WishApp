@@ -1,5 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui.old.screens.wishdetailed
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +21,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.AnalyticsEvent
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.LinksAdapter
@@ -321,6 +323,9 @@ class WishDetailedViewModelTest {
             wishId = wishId,
             tagId = tagId,
             sharedDraft = sharedDraft,
+            // Картинки из «Поделиться» читаются через Context, здесь их нет
+            sharedImageUris = emptyList(),
+            context = Mockito.mock(Context::class.java),
             savedStateHandle = savedStateHandle,
             wishesRepository = wishesRepository,
             analyticsRepository = FakeAnalyticsRepository(),

@@ -2,6 +2,12 @@ package ru.vitaliy.belyaev.wishapp.wishlist
 
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ContentValues
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.net.Uri
+import android.provider.MediaStore
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -9,6 +15,7 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasAnyDescendant
@@ -23,6 +30,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import org.junit.Test
 import ru.vitaliy.belyaev.wishapp.R
+import ru.vitaliy.belyaev.wishapp.ui.AppActivity
 import ru.vitaliy.belyaev.wishapp.ui.screens.newwish.NewWishTestTags
 
 /**
@@ -171,9 +179,101 @@ internal class NewWishSheetTest : WishListUiTest() {
         ).assert(hasAnyDescendant(hasText(NEW_TAG)))
     }
 
+    @Test
+    fun sharedTextReturnsToListAndOpensPanelWithTitleAndLink() {
+        // Открытая хотелка закрывается: шторка встаёт поверх списка
+        click(wish(TOP_WISH))
+        waitUntilGone(addButton())
+        share(
+            Intent(Intent.ACTION_SEND)
+                .setType("text/plain")
+                .putExtra(Intent.EXTRA_TEXT, "$SHARED_TITLE\n$SHARED_LINK"),
+        )
+
+        waitUntilExists(newWish(NewWishTestTags.SHEET))
+        assertTitle(SHARED_TITLE)
+        rule.onNode(hasText(SHARED_LINK_HOST, substring = true) and hasAnyAncestor(newWish(NewWishTestTags.SHEET)))
+            .assertExists()
+        rule.onNode(addButton()).assertExists()
+        // Присланное — новая хотелка, а не открытый заново черновик: «Очистить» нет
+        rule.onNode(newWish(NewWishTestTags.CLEAR)).assertDoesNotExist()
+        screenshot("shared_text")
+
+        click(newWish(NewWishTestTags.CREATE))
+        waitUntilGone(newWish(NewWishTestTags.SHEET))
+        waitUntilFirstWish(SHARED_TITLE)
+    }
+
+    @Test
+    fun sharedImagesTakeFirstFiveAndUnreadableOnesShowMessage() {
+        val images = insertImages(SHARED_IMAGES_COUNT)
+        try {
+            share(
+                Intent(Intent.ACTION_SEND_MULTIPLE)
+                    .setType("image/jpeg")
+                    .putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(images))
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
+            )
+            // Только фото: название пустое, галочка доступна
+            waitUntilExists(hasText(string(R.string.chip_photo_count, MAX_PHOTOS)))
+            waitUntilExists(hasText(string(R.string.snack_photos_added_partly, MAX_PHOTOS, SHARED_IMAGES_COUNT)))
+            assertTitle("")
+            rule.onNode(newWish(NewWishTestTags.CREATE)).assertIsEnabled()
+            screenshot("shared_images")
+            click(newWish(NewWishTestTags.CREATE))
+            waitUntilGone(newWish(NewWishTestTags.SHEET))
+
+            // Ни одна картинка не прочиталась: шторки нет, только сообщение. Провайдера нет, поэтому и
+            // выдавать доступ не к чему: адрес галереи система без разрешения не передаст
+            val missing = Uri.parse(MISSING_IMAGE_URI)
+            share(Intent(Intent.ACTION_SEND).setType("image/jpeg").putExtra(Intent.EXTRA_STREAM, missing))
+            waitUntilExists(hasText(string(R.string.photo_add_failed)))
+            rule.onNode(newWish(NewWishTestTags.SHEET)).assertDoesNotExist()
+        } finally {
+            images.forEach { targetContext.contentResolver.delete(it, null, null) }
+        }
+    }
+
+    /** Как «Поделиться» из другого приложения: активити уже открыта, придёт `onNewIntent`. */
+    private fun share(intent: Intent) {
+        targetContext.startActivity(
+            intent.setClass(targetContext, AppActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP),
+        )
+        rule.waitForIdle()
+    }
+
+    /** Картинки в галерее эмулятора от имени приложения: свои записи читаются без разрешений. */
+    private fun insertImages(count: Int): List<Uri> = (1..count).map { number ->
+        val values = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, "wishapp_share_test_$number.jpg")
+            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+        }
+        val resolver = targetContext.contentResolver
+        val uri = requireNotNull(resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values))
+        requireNotNull(resolver.openOutputStream(uri)).use { stream ->
+            Bitmap.createBitmap(TEST_IMAGE_SIDE, TEST_IMAGE_SIDE, Bitmap.Config.ARGB_8888)
+                .apply { eraseColor(Color.rgb(number * COLOR_STEP, COLOR_STEP, COLOR_STEP)) }
+                .compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, stream)
+        }
+        uri
+    }
+
     /** Только введённый текст: подсказка пустого поля тоже лежит в его семантике. */
     private fun assertTitle(text: String) {
         rule.onNode(newWish(NewWishTestTags.TITLE))
             .assert(SemanticsMatcher.expectValue(SemanticsProperties.EditableText, AnnotatedString(text)))
+    }
+
+    private companion object {
+        const val SHARED_TITLE = "Linen shirt"
+        const val SHARED_LINK = "https://shop.example.com/item/42"
+        const val SHARED_LINK_HOST = "shop.example.com"
+        const val SHARED_IMAGES_COUNT = 7
+        const val MAX_PHOTOS = 5
+        const val MISSING_IMAGE_URI = "content://com.example.missing/image.jpg"
+        const val TEST_IMAGE_SIDE = 64
+        const val COLOR_STEP = 30
+        const val JPEG_QUALITY = 90
     }
 }

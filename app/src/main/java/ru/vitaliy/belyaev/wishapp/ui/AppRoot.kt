@@ -12,10 +12,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
@@ -60,6 +62,7 @@ internal fun NewLookRoot(
     appViewModel: AppActivityViewModel,
 ) {
     AppTheme(selectedTheme = selectedTheme, useWallpaperColors = useWallpaperColors) {
+        val incomingShare by appViewModel.incomingShare.collectAsStateWithLifecycle()
         val snackbarHostState = remember { SnackbarHostState() }
         CollectAppSnackMessages(messages = appViewModel.showSnackOnMainFlow, hostState = snackbarHostState)
 
@@ -71,6 +74,8 @@ internal fun NewLookRoot(
                     analyticsRepository = analyticsRepository,
                     onShowMessage = appViewModel::showSnack,
                     modifier = Modifier.fillMaxSize(),
+                    incomingShare = incomingShare,
+                    onIncomingShareHandled = { appViewModel.consumeIncomingShare() },
                 )
                 // Над плавающей панелью списка. На экранах без панели снэкбар тоже стоит на этой высоте
                 AppSnackbarHost(

@@ -222,4 +222,5 @@
     <string name="link_remove">Remover link</string>
     <string name="photo_remove">Remover foto</string>
     <string name="photo_add_failed">Foto não adicionada: o arquivo não abre</string>
+    <string name="snack_photos_added_partly">%1$d de %2$d fotos adicionadas</string>
 </resources>

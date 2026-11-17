@@ -23,6 +23,8 @@ data class NewWishDraft(
     val tagIds: List<String> = emptyList(),
     /** Ярлык фильтра, подставленный при открытии: сам по себе он черновик не меняет. */
     val presetTagId: String? = null,
+    /** Пришёл из «Поделиться» и открыт впервые: это новая хотелка, «Очистить» ей не нужна. */
+    val isShared: Boolean = false,
 ) {
 
     /** Достаточно чего-то одного: названия, комментария, ссылки или фото. Пробелы и ярлык не в счёт. */
@@ -66,7 +68,7 @@ data class NewWishDraft(
      * перезаписывается, его ярлыки остаются как были.
      */
     fun openedIn(contextTagId: String?, title: String?): NewWishDraft {
-        val base = if (isClearable) this else fresh(contextTagId)
+        val base = if (isClearable) copy(isShared = false) else fresh(contextTagId)
         return if (title.isNullOrBlank() || base.title.isNotBlank()) base else base.copy(title = title)
     }
 

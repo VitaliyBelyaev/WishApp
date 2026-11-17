@@ -219,4 +219,5 @@
     <string name="link_remove">Link entfernen</string>
     <string name="photo_remove">Foto entfernen</string>
     <string name="photo_add_failed">Foto nicht hinzugefügt: Die Datei lässt sich nicht öffnen</string>
+    <string name="snack_photos_added_partly">%1$d von %2$d Fotos hinzugefügt</string>
 </resources>

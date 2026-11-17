@@ -12,6 +12,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -32,6 +33,7 @@ import ru.vitaliy.belyaev.wishapp.navigation.old.SettingsRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.WishDetailedRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.WishImagesViewerRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.WishTagsRoute
+import ru.vitaliy.belyaev.wishapp.ui.IncomingShare
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.AppSnackMessage
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.aboutapp.AboutAppScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.aboutapp.privacypolicy.PrivacyPolicyScreen
@@ -72,8 +74,16 @@ fun AppNavigation(
     analyticsRepository: AnalyticsRepository,
     onShowMessage: (AppSnackMessage) -> Unit,
     modifier: Modifier = Modifier,
+    incomingShare: IncomingShare? = null,
+    onIncomingShareHandled: () -> Unit = {},
 ) {
     val backStack = rememberNavBackStack(WishListRoute)
+    // «Поделиться» из другого приложения: возвращаемся на список, шторку откроет он.
+    // Хотелка прежнего вида при уходе сохраняется сама
+    DisposableEffect(incomingShare) {
+        if (incomingShare != null) backStack.popToFirst()
+        onDispose { }
+    }
     val navigate: (NavKey) -> Unit = { backStack.add(it) }
     val goBack: () -> Unit = { backStack.removeLastOrNull() }
 
@@ -92,6 +102,8 @@ fun AppNavigation(
                     onRestore = { navigate(BackupAndRestoreRoute) },
                     onShowMessage = onShowMessage,
                 ),
+                incomingShare = incomingShare,
+                onIncomingShareHandled = onIncomingShareHandled,
             )
         }
         entry<WishDetailedRoute> { route ->
@@ -100,6 +112,7 @@ fun AppNavigation(
                     wishId = route.wishId,
                     tagId = route.tagId,
                     sharedDraft = route.sharedDraftOrNull(),
+                    sharedImageUris = route.sharedImageUris,
                     onBackPressed = goBack,
                     onWishTagsClicked = { navigate(WishTagsRoute(it)) },
                     onWishImageClicked = {
@@ -169,4 +182,8 @@ fun AppNavigation(
                 (slideOutHorizontally(offsetSpec) { smallOffset(it) } + fadeOut(fadeSpec))
         },
     )
+}
+
+private fun MutableList<NavKey>.popToFirst() {
+    while (size > 1) removeAt(lastIndex)
 }

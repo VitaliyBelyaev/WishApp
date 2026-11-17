@@ -1,6 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.ui.old.screens.wishdetailed
 
 import android.content.ContentResolver
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.BitmapFactory.Options
@@ -12,6 +13,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.math.RoundingMode
@@ -22,6 +24,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
+import ru.vitaliy.belyaev.wishapp.data.image.PickedImageReader
 import ru.vitaliy.belyaev.wishapp.domain.model.ImageData
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.WishDetailedScreenShowEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.ageDays
@@ -44,6 +47,7 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishTagRelationReposi
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.wish_list.entity.WishItem
+import ru.vitaliy.belyaev.wishapp.ui.screens.newwish.MAX_DRAFT_IMAGES
 import ru.vitaliy.belyaev.wishapp.utils.toValueOfNull
 
 @ExperimentalCoroutinesApi
@@ -52,6 +56,8 @@ class WishDetailedViewModel @AssistedInject constructor(
     @Assisted("wishId") wishId: String?,
     @Assisted("tagId") tagId: String?,
     @Assisted sharedDraft: SharedWishDraft?,
+    @Assisted private val sharedImageUris: List<String>,
+    @param:ApplicationContext private val context: Context,
     private val savedStateHandle: SavedStateHandle,
     private val wishesRepository: WishesRepository,
     private val analyticsRepository: AnalyticsRepository,
@@ -121,6 +127,22 @@ class WishDetailedViewModel @AssistedInject constructor(
                 tagId = tagId
             )
         }
+        importSharedImages()
+    }
+
+    /**
+     * Картинки из «Поделиться» другого приложения: доступ к ним временный, поэтому читаем сразу,
+     * тем же кодом, что фото из галереи нового вида. Не больше 5, как при выборе фото.
+     */
+    private suspend fun importSharedImages() {
+        if (sharedImageUris.isEmpty()) return
+        val images = withContext(Dispatchers.IO) {
+            sharedImageUris.take(MAX_DRAFT_IMAGES).mapNotNull { uri ->
+                runCatching { PickedImageReader.read(Uri.parse(uri), context.contentResolver) }.getOrNull()
+                    ?.let { ImageEntity(UUID.randomUUID().toString(), currentWishId, it) }
+            }
+        }
+        if (images.isNotEmpty()) imagesRepository.insertImages(images)
     }
 
     /**
@@ -142,6 +164,7 @@ class WishDetailedViewModel @AssistedInject constructor(
             @Assisted("wishId") wishId: String?,
             @Assisted("tagId") tagId: String?,
             @Assisted sharedDraft: SharedWishDraft?,
+            @Assisted sharedImageUris: List<String>,
         ): WishDetailedViewModel
     }
 

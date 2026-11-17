@@ -105,13 +105,14 @@ fun WishDetailedScreen(
     wishId: String?,
     tagId: String?,
     sharedDraft: SharedWishDraft?,
+    sharedImageUris: List<String>,
     onBackPressed: () -> Unit,
     onWishTagsClicked: (String) -> Unit,
     onWishImageClicked: (WishImageClickData) -> Unit,
     appViewModel: AppActivityViewModel = hiltViewModel(LocalActivity.current as AppActivity),
     viewModel: WishDetailedViewModel =
         hiltViewModel<WishDetailedViewModel, WishDetailedViewModel.Factory> { factory ->
-            factory.create(wishId, tagId, sharedDraft)
+            factory.create(wishId, tagId, sharedDraft, sharedImageUris)
         }
 ) {
     val snackbarHostState = remember { SnackbarHostState() }

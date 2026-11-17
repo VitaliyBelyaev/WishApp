@@ -24,6 +24,7 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.entity.NewWish
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
+import ru.vitaliy.belyaev.wishapp.ui.IncomingShare
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
 
@@ -36,6 +37,9 @@ sealed interface NewWishEvent {
 
     /** Ни одно из выбранных фото не прочиталось. */
     data object ImagesFailed : NewWishEvent
+
+    /** Из другого приложения прислали больше фото, чем влезло, или часть не прочиталась. */
+    data class ImagesPartlyAdded(val added: Int, val sent: Int) : NewWishEvent
 }
 
 /** Всё, что человек делает в шторке и в выборе ярлыков. */
@@ -105,6 +109,37 @@ class NewWishViewModel @Inject constructor(
         _isOpen.value = true
     }
 
+    /**
+     * «Поделиться» из другого приложения. Картинки читаем сразу, доступ к ним временный, и
+     * открываем шторку уже с ними. Присланное заменяет прежний черновик: человек пришёл с новой вещью.
+     * Ничего не прочиталось и текста нет: шторка не открывается, только снэкбар.
+     */
+    fun openShared(contextTagId: String?, share: IncomingShare) {
+        launchSafe {
+            val images = readImages(share.imageUris.take(MAX_DRAFT_IMAGES))
+            val text = share.text
+            if (text == null && images.isEmpty()) {
+                eventChannel.send(NewWishEvent.ImagesFailed)
+                return@launchSafe
+            }
+            this@NewWishViewModel.contextTagId = contextTagId
+            _draft.value = NewWishDraft.fresh(contextTagId).copy(
+                title = text?.title.orEmpty(),
+                comment = text?.comment?.takeIf { it.isNotBlank() },
+                links = text?.links.orEmpty(),
+                images = images,
+                isShared = true,
+            )
+            _isOpen.value = true
+            val sent = share.imageUris.size
+            when {
+                sent == 0 -> Unit
+                images.isEmpty() -> eventChannel.send(NewWishEvent.ImagesFailed)
+                images.size < sent -> eventChannel.send(NewWishEvent.ImagesPartlyAdded(images.size, sent))
+            }
+        }
+    }
+
     /** «Вернуться» в снэкбаре «Хотелка не создана». */
     fun onReturnToDraft() {
         open(contextTagId)
@@ -133,18 +168,20 @@ class NewWishViewModel @Inject constructor(
         val free = MAX_DRAFT_IMAGES - _draft.value.images.size
         if (uris.isEmpty() || free <= 0) return
         launchSafe {
-            val images = withContext(dispatcherProvider.io()) {
-                // Оригиналы обрабатываем по одному, чтобы не держать их в памяти все сразу
-                uris.take(free).mapNotNull { uri ->
-                    runCatching { PickedImageReader.read(uri, context.contentResolver) }.getOrNull()
-                        ?.let { DraftImage(UUID.randomUUID().toString(), it) }
-                }
-            }
+            val images = readImages(uris.take(free))
             if (images.isEmpty()) {
                 eventChannel.send(NewWishEvent.ImagesFailed)
             } else {
                 _draft.update { it.copy(images = (it.images + images).take(MAX_DRAFT_IMAGES)) }
             }
+        }
+    }
+
+    /** Оригиналы обрабатываем по одному, чтобы не держать их в памяти все сразу. Нечитаемые пропускаем. */
+    private suspend fun readImages(uris: List<Uri>): List<DraftImage> = withContext(dispatcherProvider.io()) {
+        uris.mapNotNull { uri ->
+            runCatching { PickedImageReader.read(uri, context.contentResolver) }.getOrNull()
+                ?.let { DraftImage(UUID.randomUUID().toString(), it) }
         }
     }
 

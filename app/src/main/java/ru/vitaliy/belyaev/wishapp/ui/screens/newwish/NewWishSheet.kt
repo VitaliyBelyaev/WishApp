@@ -102,6 +102,9 @@ fun NewWishSheetHost(
                 NewWishEvent.ImagesFailed -> currentOnShowMessage(
                     AppSnackMessage(resources.getString(R.string.photo_add_failed)),
                 )
+                is NewWishEvent.ImagesPartlyAdded -> currentOnShowMessage(
+                    AppSnackMessage(resources.getString(R.string.snack_photos_added_partly, event.added, event.sent)),
+                )
             }
         }
     }
@@ -158,7 +161,7 @@ private fun NewWishContent(
         )
         // «Очистить» только у черновика, с которым панель открылась: стереть его не вернуть. У новой
         // хотелки, которую начали писать сейчас, его нет, закрытие и так сохранит написанное
-        val openedWithDraft = remember { draft.isClearable }
+        val openedWithDraft = remember { draft.isClearable && !draft.isShared }
         if (openedWithDraft && draft.isClearable) {
             ClearButton(onClear = { onAction(NewWishAction.Cleared) })
         }

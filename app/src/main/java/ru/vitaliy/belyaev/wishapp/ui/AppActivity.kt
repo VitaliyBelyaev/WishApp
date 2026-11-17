@@ -22,7 +22,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
@@ -38,8 +38,6 @@ import ru.vitaliy.belyaev.wishapp.navigation.old.WishDetailedRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.WishImagesViewerRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.rememberNavigationState
 import ru.vitaliy.belyaev.wishapp.shared.data.WishAppSdk
-import ru.vitaliy.belyaev.wishapp.shared.domain.SharedTextParser
-import ru.vitaliy.belyaev.wishapp.shared.domain.SharedWishDraft
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -58,10 +56,6 @@ internal class AppActivity : AppCompatActivity() {
     @Inject
     lateinit var dataStoreRepository: DataStoreRepository
 
-    private var sharedDraftFromAnotherApp: SharedWishDraft? = null
-
-    private val sharedDraftFlow = MutableSharedFlow<SharedWishDraft>()
-
     @ExperimentalAnimationApi
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,7 +72,7 @@ internal class AppActivity : AppCompatActivity() {
         }
 
         if (savedInstanceState == null) {
-            sharedDraftFromAnotherApp = extractSharedDraft(intent)
+            intent.toIncomingShare(packageName)?.let(viewModel::onIncomingShare)
         }
 
         // Проверяет обновление сам при каждом onStart
@@ -125,8 +119,6 @@ internal class AppActivity : AppCompatActivity() {
                         analyticsRepository = analyticsRepository,
                         appViewModel = viewModel,
                     )
-                    // Экрана новой хотелки в новом виде ещё нет, текст из «Поделиться» появится в части 2.4
-                    LaunchedEffect(key1 = Unit) { sharedDraftFromAnotherApp = null }
                 }
                 null -> Unit
             }
@@ -155,44 +147,21 @@ internal class AppActivity : AppCompatActivity() {
             navigator = navigator,
         )
 
+        // «Поделиться» из другого приложения: при холодном старте и в уже открытом приложении
         LaunchedEffect(key1 = Unit) {
-            sharedDraftFromAnotherApp?.let { draft ->
-                navigator.navigate(WishDetailedRoute.fromSharedDraft(draft))
-                sharedDraftFromAnotherApp = null
-            }
-        }
-
-        LaunchedEffect(key1 = Unit) {
-            sharedDraftFlow.collect { draft ->
+            viewModel.incomingShare.filterNotNull().collect {
+                val share = viewModel.consumeIncomingShare() ?: return@collect
                 if (navigationState.currentRoute != MainRoute) {
                     navigator.goBack(MainRoute)
                     viewModel.deleteEmptyWishes().join()
                 }
-                navigator.navigate(WishDetailedRoute.fromSharedDraft(draft))
+                navigator.navigate(WishDetailedRoute.fromShare(share))
             }
         }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-
-        extractSharedDraft(intent)?.let {
-            lifecycleScope.launch {
-                sharedDraftFlow.emit(it)
-            }
-        }
-    }
-
-    /**
-     * Текст из «Поделиться» другого приложения разбирается в `shared`: адреса идут в ссылки,
-     * остальное в название и комментарий. Пустой текст игнорируется.
-     */
-    private fun extractSharedDraft(intent: Intent?): SharedWishDraft? {
-        if (intent == null) return null
-        if (intent.action != Intent.ACTION_SEND || intent.type != "text/plain") return null
-
-        val subject = intent.getStringExtra(Intent.EXTRA_SUBJECT)
-        val text = intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString()
-        return SharedTextParser.parse(subject = subject, text = text).takeUnless { it.isEmpty }
+        intent.toIncomingShare(packageName)?.let(viewModel::onIncomingShare)
     }
 }

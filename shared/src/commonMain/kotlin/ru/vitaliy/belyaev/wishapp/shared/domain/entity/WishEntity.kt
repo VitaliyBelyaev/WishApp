@@ -43,7 +43,11 @@ fun createEmptyWish(): WishEntity {
     )
 }
 
-fun WishEntity.isEmpty(): Boolean = title.isBlank() && link.isBlank() && comment.isBlank()
+/**
+ * Пустая хотелка удаляется при выходе с экрана. Фото тоже содержимое: хотелка из одной картинки,
+ * например присланной через «Поделиться», остаётся. Ярлыки не в счёт.
+ */
+fun WishEntity.isEmpty(): Boolean = title.isBlank() && link.isBlank() && comment.isBlank() && images.isEmpty()
 
 // For iOS, as Kotlin extension functions are not supported in Swift
 fun isWishEmpty(wish: WishEntity): Boolean = wish.isEmpty()

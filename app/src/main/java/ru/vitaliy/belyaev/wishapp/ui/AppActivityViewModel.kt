@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.withContext
@@ -88,6 +89,21 @@ class AppActivityViewModel @Inject constructor(
     val completeUpdateFlow: Flow<Unit> = _completeUpdateFlow.receiveAsFlow()
 
     private val countedNewWishIds: MutableSet<String> = mutableSetOf()
+
+    private val _incomingShare = MutableStateFlow<IncomingShare?>(null)
+
+    /**
+     * «Поделиться» из другого приложения, которое ещё не открыло новую хотелку. Живёт здесь, а не
+     * в активити: поворот экрана его не повторяет, а пока не выбран вид, оно ждёт.
+     */
+    val incomingShare: StateFlow<IncomingShare?> = _incomingShare
+
+    fun onIncomingShare(share: IncomingShare) {
+        _incomingShare.value = share
+    }
+
+    /** Забирает присланное один раз: второй вызов вернёт `null`. */
+    fun consumeIncomingShare(): IncomingShare? = _incomingShare.getAndUpdate { null }
 
     init {
         launchSafe {
