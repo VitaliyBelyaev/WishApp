@@ -21,6 +21,8 @@ object LinkParser {
             """\.\p{L}{2,24}(?::\d{1,5})?(?:[/?#]\S*)?""",
     )
 
+    private val WHITESPACE = Regex("""\s+""")
+
     private val SCHEME = Regex("""^[a-z][a-z0-9+.-]*://""", RegexOption.IGNORE_CASE)
 
     private const val TRAILING_PUNCTUATION = ".,;:!?…'\"»”“„"
@@ -35,16 +37,34 @@ object LinkParser {
     }
 
     /**
-     * Разбор ввода в поле ссылки. Если в нём есть адреса со схемой или `www.`, берём их.
-     * Иначе весь ввод без пробелов может быть голым доменом, ему добавляется `https://`.
-     * Пустой список значит, что ссылки во вводе нет.
+     * Разбор ввода в поле ссылки и текста из буфера. Если в нём есть адреса со схемой или `www.`,
+     * берём их. Иначе весь ввод без пробелов может быть голым доменом, ему добавляется `https://`.
+     * Иначе из текста берутся слова-домены с путём («Смотри ozon.ru/t/abc»): без пути слово вроде
+     * «file.txt» ссылкой не считается. Пустой список значит, что ссылки во вводе нет.
      */
     fun parseLinkInput(input: String): List<String> {
-        val links = extractLinks(input)
-        if (links.isNotEmpty()) return links
-
         val candidate = trimTrailingPunctuation(input.trim())
-        return if (BARE_DOMAIN.matches(candidate)) listOf(normalize(candidate)) else emptyList()
+        return extractLinks(input).ifEmpty {
+            if (BARE_DOMAIN.matches(candidate)) listOf(normalize(candidate)) else bareDomainsWithPath(input)
+        }
+    }
+
+    private fun bareDomainsWithPath(text: String): List<String> = text.split(WHITESPACE)
+        .map { trimTrailingPunctuation(it.trimStart('(', '[', '«', '"', '\'')) }
+        .filter { '/' in it && BARE_DOMAIN.matches(it) }
+        .map(::normalize)
+        .distinct()
+
+    /**
+     * Что сохранить из поля ссылки. Адреса, если [parseLinkInput] их нашёл, иначе сам текст
+     * одной строкой: проверка только подсказывает, но не мешает сохранить что угодно. Ссылка,
+     * которая не откроется, лучше пропавшего текста. Пустой ввод — пустой список.
+     */
+    fun linksToSave(input: String): List<String> {
+        val links = parseLinkInput(input)
+        if (links.isNotEmpty()) return links
+        val text = input.trim().replace(WHITESPACE, " ")
+        return if (text.isEmpty()) emptyList() else listOf(LinksAdapter.sanitizeLink(text))
     }
 
     /** Текст с вырезанными адресами, остальное не меняется. */

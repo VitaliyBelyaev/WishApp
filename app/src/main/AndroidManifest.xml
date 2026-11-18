@@ -16,10 +16,12 @@
             android:theme="@style/WishAppSplash"
             tools:replace="android:allowBackup,android:dataExtractionRules,android:fullBackupContent">
 
+        <!-- singleTask: окно всегда одно. Иначе «Поделиться» из браузера создаёт новое окно в задаче
+             браузера, и присланное не попадает в уже открытую шторку новой хотелки -->
         <activity
                 android:name=".ui.AppActivity"
                 android:exported="true"
-                android:launchMode="singleTop"
+                android:launchMode="singleTask"
                 android:theme="@style/WishAppSplash"
                 android:windowSoftInputMode="adjustResize">
 

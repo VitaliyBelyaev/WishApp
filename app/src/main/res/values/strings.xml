@@ -219,6 +219,7 @@
     <string name="link_hint">Paste or enter a link</string>
     <string name="link_paste">Paste</string>
     <string name="link_remove">Remove link</string>
+    <string name="cd_clear_link">Clear link field</string>
     <string name="photo_remove">Remove photo</string>
     <string name="photo_add_failed">Photo not added: the file won’t open</string>
     <string name="snack_photos_added_partly">Added %1$d of %2$d photos</string>

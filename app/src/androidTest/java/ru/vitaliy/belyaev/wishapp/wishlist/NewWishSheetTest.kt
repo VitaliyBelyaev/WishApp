@@ -25,7 +25,6 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
-import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import org.junit.Test
@@ -130,7 +129,7 @@ internal class NewWishSheetTest : WishListUiTest() {
     }
 
     @Test
-    fun linkFieldTakesBareDomainAndShowsErrorForText() {
+    fun linkFieldTakesBareDomainAndClearsText() {
         // Со ссылкой в буфере вместо «Ссылка» был бы чип «Вставить ссылку»
         rule.runOnUiThread {
             rule.activity.getSystemService(ClipboardManager::class.java)
@@ -145,7 +144,15 @@ internal class NewWishSheetTest : WishListUiTest() {
         rule.onNode(newWish(NewWishTestTags.LINK_FIELD)).performImeAction()
         waitUntilExists(hasText(string(R.string.link_invalid)))
 
-        rule.onNode(newWish(NewWishTestTags.LINK_FIELD)).performTextReplacement(BARE_LINK)
+        // Крестик очищает поле, вместо него снова «Вставить»
+        click(newWish(NewWishTestTags.LINK_CLEAR))
+        waitUntilGone(newWish(NewWishTestTags.LINK_CLEAR))
+        rule.onNode(newWish(NewWishTestTags.LINK_FIELD))
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.EditableText, AnnotatedString("")))
+        rule.onNode(hasText(string(R.string.link_invalid))).assertDoesNotExist()
+        rule.onNode(hasText(string(R.string.link_paste))).assertExists()
+
+        rule.onNode(newWish(NewWishTestTags.LINK_FIELD)).performTextInput(BARE_LINK)
         rule.onNode(newWish(NewWishTestTags.LINK_FIELD)).performImeAction()
         waitUntilGone(newWish(NewWishTestTags.LINK_FIELD))
         waitUntilExists(hasText(BARE_LINK_HOST))
@@ -154,6 +161,38 @@ internal class NewWishSheetTest : WishListUiTest() {
         // Только ссылка: этого достаточно, название можно не писать
         click(newWish(NewWishTestTags.CREATE))
         waitUntilGone(newWish(NewWishTestTags.SHEET))
+    }
+
+    @Test
+    fun textInLinkFieldDoesNotBlockCreating() {
+        click(addButton())
+        waitUntilExists(newWish(NewWishTestTags.LINK_CHIP))
+        click(newWish(NewWishTestTags.LINK_CHIP))
+        waitUntilExists(newWish(NewWishTestTags.LINK_FIELD))
+        rule.onNode(newWish(NewWishTestTags.LINK_FIELD)).performTextInput(NOT_A_LINK)
+        rule.onNode(newWish(NewWishTestTags.TITLE)).performTextInput(NEW_WISH)
+
+        // Не ссылка подсказкой не мешает: хотелка создаётся, текст сохраняется ссылкой как есть
+        click(newWish(NewWishTestTags.CREATE))
+        waitUntilGone(newWish(NewWishTestTags.SHEET))
+        waitUntilFirstWish(NEW_WISH)
+    }
+
+    @Test
+    fun sharedTextGoesIntoOpenPanel() {
+        click(addButton())
+        waitUntilExists(newWish(NewWishTestTags.TITLE))
+        rule.onNode(newWish(NewWishTestTags.TITLE)).performTextInput(NEW_WISH)
+        share(
+            Intent(Intent.ACTION_SEND)
+                .setType("text/plain")
+                .putExtra(Intent.EXTRA_TEXT, "$SHARED_TITLE\n$SHARED_LINK"),
+        )
+
+        // Человек ходил за ссылкой: она добавилась, написанное им название осталось
+        waitUntilExists(hasText(SHARED_LINK_HOST, substring = true) and hasAnyAncestor(newWish(NewWishTestTags.SHEET)))
+        assertTitle(NEW_WISH)
+        screenshot("shared_into_open_panel")
     }
 
     @Test
@@ -238,7 +277,7 @@ internal class NewWishSheetTest : WishListUiTest() {
     private fun share(intent: Intent) {
         targetContext.startActivity(
             intent.setClass(targetContext, AppActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP),
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
         )
         rule.waitForIdle()
     }

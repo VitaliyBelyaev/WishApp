@@ -221,6 +221,7 @@
     <string name="link_hint">Pega o escribe un enlace</string>
     <string name="link_paste">Pegar</string>
     <string name="link_remove">Quitar enlace</string>
+    <string name="cd_clear_link">Borrar el campo del enlace</string>
     <string name="photo_remove">Quitar foto</string>
     <string name="photo_add_failed">No se añadió la foto: el archivo no se abre</string>
     <string name="snack_photos_added_partly">Se añadieron %1$d de %2$d fotos</string>

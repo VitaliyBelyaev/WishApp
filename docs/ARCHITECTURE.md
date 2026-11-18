@@ -432,11 +432,13 @@ iosApp/WishApp/
 
 Глубокие ссылки:
 
-- `AppActivity` ловит `Intent.ACTION_SEND` с `text/plain`;
-- разбирает тему и текст через `SharedTextParser` (`shared`) и открывает
-  `WishDetailedRoute.fromSharedDraft(...)`: новое желание сразу получает название,
-  комментарий и ссылки;
-- `onNewIntent` обрабатывает повторный шаринг без перезапуска.
+- `AppActivity` ловит `Intent.ACTION_SEND` с `text/plain`, а также `ACTION_SEND` и
+  `ACTION_SEND_MULTIPLE` с `image/*`;
+- разбирает тему и текст через `SharedTextParser` (`shared`). Старый вид открывает
+  `WishDetailedRoute.fromSharedDraft(...)`, новый — шторку новой хотелки поверх списка;
+  если шторка уже открыта, присланное дополняет её (`NewWishDraft.withShared`);
+- `AppActivity` в режиме `singleTask`: окно всегда одно, повторный шаринг приходит
+  в `onNewIntent`. С `singleTop` шеринг из браузера открывал новое окно в задаче браузера.
 
 ### iOS
 

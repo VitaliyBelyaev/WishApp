@@ -5,6 +5,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import ru.vitaliy.belyaev.wishapp.shared.domain.SharedWishDraft
 
 /** Правила `QuickAddSheet`: когда можно создать, что делает ярлык фильтра и поле ссылки. */
 class NewWishDraftTest {
@@ -53,12 +54,27 @@ class NewWishDraftTest {
     }
 
     @Test
-    fun linkInputDone_notALink_keepsFieldWithError() {
-        val draft = NewWishDraft(linkInput = "наушники").edited(NewWishAction.LinkInputDone)
+    fun linkInputDone_notALink_highlightsFirstThenSavesAsIs() {
+        val highlighted = NewWishDraft(linkInput = "наушники").edited(NewWishAction.LinkInputDone)
 
-        assertEquals("наушники", draft.linkInput)
-        assertTrue(draft.isLinkInvalid)
-        assertTrue(draft.links.isEmpty())
+        assertEquals("наушники", highlighted.linkInput)
+        assertTrue(highlighted.isLinkInvalid)
+        assertTrue(highlighted.links.isEmpty())
+
+        val saved = highlighted.edited(NewWishAction.LinkInputDone)
+
+        assertEquals(listOf("наушники"), saved.links)
+        assertNull(saved.linkInput)
+        assertFalse(saved.isLinkInvalid)
+    }
+
+    @Test
+    fun linkInputSaved_notALink_isNotBlocked() {
+        val draft = NewWishDraft(linkInput = " сыр ").withLinkInputSaved()
+
+        assertEquals(listOf("сыр"), draft.links)
+        assertNull(draft.linkInput)
+        assertTrue(draft.canCreate)
     }
 
     @Test
@@ -96,4 +112,32 @@ class NewWishDraftTest {
         // А убранный вручную подставленный ярлык — уже правка
         assertTrue(inHome.edited(NewWishAction.TagToggled("home")).isClearable)
     }
+
+    @Test
+    fun sharedIntoOpenSheet_addsWithoutOverwriting() {
+        val draft = NewWishDraft(title = "Лампа", links = listOf("https://a.example"), images = images(4))
+            .withShared(
+                SharedWishDraft(
+                    title = "Чужое",
+                    comment = "Описание",
+                    links = listOf("https://a.example", "https://b.example"),
+                ),
+                images(2),
+            )
+
+        assertEquals("Лампа", draft.title)
+        assertEquals("Описание", draft.comment)
+        assertEquals(listOf("https://a.example", "https://b.example"), draft.links)
+        assertEquals(MAX_DRAFT_IMAGES, draft.images.size)
+    }
+
+    @Test
+    fun sharedIntoOpenSheet_fillsEmptyTitle() {
+        val draft = NewWishDraft().withShared(SharedWishDraft("Наушники", "", emptyList()), emptyList())
+
+        assertEquals("Наушники", draft.title)
+        assertNull(draft.comment)
+    }
+
+    private fun images(count: Int) = List(count) { DraftImage(id = "img$it", data = ByteArray(0)) }
 }

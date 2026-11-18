@@ -104,17 +104,20 @@ class WishViewModel @AssistedInject constructor(
         _isLinkInvalid.value = false
     }
 
-    /** Enter в поле ссылки: из текста берутся только адреса. Не ссылка — ошибка под полем. */
+    /**
+     * Enter в поле ссылки: из текста берутся адреса. Не ссылку сначала подсвечиваем, повторный
+     * Enter сохраняет её как есть.
+     */
     override fun onLinkSubmit() {
         val input = _linkInput.value.trim()
         if (input.isEmpty()) return
-        val links = LinkParser.parseLinkInput(input)
-        if (links.isEmpty()) {
+        if (LinkParser.parseLinkInput(input).isEmpty() && !_isLinkInvalid.value) {
             _isLinkInvalid.value = true
             return
         }
         setLinkInput("")
-        addLinks(links)
+        _isLinkInvalid.value = false
+        addLinks(LinkParser.linksToSave(input))
     }
 
     /** «Вставить»: ссылка из буфера сохраняется сразу, как при вводе и Enter. */
@@ -131,12 +134,17 @@ class WishViewModel @AssistedInject constructor(
         }
     }
 
-    /** Поле ссылки потеряло фокус: ссылку сохраняем, не ссылку оставляем в поле. */
+    /**
+     * Поле ссылки потеряло фокус: ссылку сохраняем, не ссылку оставляем в поле с подсветкой.
+     * Она сохранится как есть при уходе с экрана, см. [WishWriteQueue.finish].
+     */
     override fun onLinkFieldLeft() {
         val input = _linkInput.value.trim()
         if (input.isEmpty()) return
         val links = LinkParser.parseLinkInput(input)
-        if (links.isNotEmpty()) {
+        if (links.isEmpty()) {
+            _isLinkInvalid.value = true
+        } else {
             setLinkInput("")
             addLinks(links)
         }

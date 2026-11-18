@@ -1,6 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.newwish
 
 import ru.vitaliy.belyaev.wishapp.shared.domain.LinkParser
+import ru.vitaliy.belyaev.wishapp.shared.domain.SharedWishDraft
 
 /** Сколько фото можно добавить к хотелке, как в системном выборе фото. */
 internal const val MAX_DRAFT_IMAGES = 5
@@ -45,13 +46,37 @@ data class NewWishDraft(
     val canAddImages: Boolean get() = images.size < MAX_DRAFT_IMAGES
 
     /**
-     * Ссылки из поля ссылки добавляются к остальным без дублей. `null`, если в поле не ссылка:
-     * тогда поле остаётся открытым с ошибкой.
+     * Поле ссылки сохранено: адреса из него, а если их нет, сам текст встают к остальным ссылкам
+     * без дублей, поле закрывается. Проверка не мешает: так по галочке создания.
      */
-    fun withLinkInputApplied(): NewWishDraft? {
-        val input = linkInput?.trim().orEmpty()
-        if (input.isEmpty()) return copy(linkInput = null, isLinkInvalid = false)
-        return withPastedLinks(input)
+    fun withLinkInputSaved(): NewWishDraft {
+        val saved = LinkParser.linksToSave(linkInput.orEmpty())
+        return copy(links = (links + saved).distinct(), linkInput = null, isLinkInvalid = false)
+    }
+
+    /**
+     * «Готово» на клавиатуре в поле ссылки. Не ссылку сначала подсвечиваем, чтобы человек
+     * заметил, повторное «Готово» сохраняет её как есть.
+     */
+    fun withLinkInputDone(): NewWishDraft {
+        val input = linkInput.orEmpty()
+        val looksLikeLink = input.isBlank() || LinkParser.parseLinkInput(input).isNotEmpty()
+        return if (looksLikeLink || isLinkInvalid) withLinkInputSaved() else copy(isLinkInvalid = true)
+    }
+
+    /**
+     * Присланное из другого приложения в открытую шторку. Ссылки и фото встают в конец, фото не
+     * больше [MAX_DRAFT_IMAGES]. Название и комментарий заполняются, только если они пусты:
+     * то, что человек уже написал, не трогаем.
+     */
+    fun withShared(text: SharedWishDraft?, sharedImages: List<DraftImage>): NewWishDraft {
+        val sharedComment = text?.comment.orEmpty()
+        return copy(
+            title = title.ifBlank { text?.title.orEmpty() },
+            comment = if (comment.isNullOrBlank() && sharedComment.isNotBlank()) sharedComment else comment,
+            links = (links + text?.links.orEmpty()).distinct(),
+            images = (images + sharedImages).take(MAX_DRAFT_IMAGES),
+        )
     }
 
     /** Новые ярлыки встают в конец, первый выбранный идёт на карточку. */
@@ -86,7 +111,7 @@ internal fun NewWishDraft.edited(action: NewWishAction): NewWishDraft = when (ac
     is NewWishAction.CommentChanged -> copy(comment = action.value)
     NewWishAction.LinkFieldOpened -> copy(linkInput = linkInput.orEmpty())
     is NewWishAction.LinkInputChanged -> copy(linkInput = action.value, isLinkInvalid = false)
-    NewWishAction.LinkInputDone -> withLinkInputApplied() ?: copy(isLinkInvalid = true)
+    NewWishAction.LinkInputDone -> withLinkInputDone()
     is NewWishAction.LinkRemoved -> copy(links = links - action.link)
     is NewWishAction.ImageRemoved -> copy(images = images.filterNot { it.id == action.imageId })
     is NewWishAction.TagToggled -> withTagToggled(action.tagId)

@@ -110,27 +110,38 @@ class NewWishViewModel @Inject constructor(
     }
 
     /**
-     * «Поделиться» из другого приложения. Картинки читаем сразу, доступ к ним временный, и
-     * открываем шторку уже с ними. Присланное заменяет прежний черновик: человек пришёл с новой вещью.
-     * Ничего не прочиталось и текста нет: шторка не открывается, только снэкбар.
+     * «Поделиться» из другого приложения. Картинки читаем сразу, доступ к ним временный.
+     *
+     * - Шторка закрыта: открываем её с присланным, оно заменяет прежний черновик, человек пришёл
+     *   с новой вещью.
+     * - Шторка открыта: человек ушёл за ссылкой или фото и поделился ими, присланное дополняет
+     *   черновик (см. [NewWishDraft.withShared]).
+     *
+     * Ничего не прочиталось и текста нет: шторка не меняется, только снэкбар.
      */
     fun openShared(contextTagId: String?, share: IncomingShare) {
+        val intoOpen = _isOpen.value
         launchSafe {
-            val images = readImages(share.imageUris.take(MAX_DRAFT_IMAGES))
+            val free = if (intoOpen) MAX_DRAFT_IMAGES - _draft.value.images.size else MAX_DRAFT_IMAGES
+            val images = readImages(share.imageUris.take(free.coerceAtLeast(0)))
             val text = share.text
             if (text == null && images.isEmpty()) {
                 eventChannel.send(NewWishEvent.ImagesFailed)
                 return@launchSafe
             }
-            this@NewWishViewModel.contextTagId = contextTagId
-            _draft.value = NewWishDraft.fresh(contextTagId).copy(
-                title = text?.title.orEmpty(),
-                comment = text?.comment?.takeIf { it.isNotBlank() },
-                links = text?.links.orEmpty(),
-                images = images,
-                isShared = true,
-            )
-            _isOpen.value = true
+            if (intoOpen) {
+                _draft.update { it.withShared(text, images) }
+            } else {
+                this@NewWishViewModel.contextTagId = contextTagId
+                _draft.value = NewWishDraft.fresh(contextTagId).copy(
+                    title = text?.title.orEmpty(),
+                    comment = text?.comment?.takeIf { it.isNotBlank() },
+                    links = text?.links.orEmpty(),
+                    images = images,
+                    isShared = true,
+                )
+                _isOpen.value = true
+            }
             val sent = share.imageUris.size
             when {
                 sent == 0 -> Unit
@@ -202,13 +213,9 @@ class NewWishViewModel @Inject constructor(
     }
 
     private fun onCreate(keepOpen: Boolean) {
-        // Ссылка, оставленная в поле, тоже сохраняется. Не ссылка: ошибка, хотелка не создаётся
-        val draft = _draft.value.withLinkInputApplied()
-        when {
-            isCreating -> Unit
-            draft == null -> _draft.update { it.copy(isLinkInvalid = true) }
-            draft.canCreate -> create(draft, keepOpen)
-        }
+        // Текст, оставленный в поле ссылки, тоже сохраняется, даже если он не похож на ссылку
+        val draft = _draft.value.withLinkInputSaved()
+        if (!isCreating && draft.canCreate) create(draft, keepOpen)
     }
 
     private fun create(draft: NewWishDraft, keepOpen: Boolean) {

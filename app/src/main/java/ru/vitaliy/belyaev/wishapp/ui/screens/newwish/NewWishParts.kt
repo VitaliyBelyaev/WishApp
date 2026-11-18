@@ -23,6 +23,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -72,6 +73,7 @@ internal object NewWishTestTags {
     const val COMMENT_CHIP = "new_wish_comment_chip"
     const val LINK_CHIP = "new_wish_link_chip"
     const val LINK_FIELD = "new_wish_link_field"
+    const val LINK_CLEAR = "new_wish_link_clear"
     const val PASTE_LINK = "new_wish_paste_link"
     const val TAG_CHIP = "new_wish_tag_chip"
     const val CREATE = "new_wish_create"
@@ -199,7 +201,8 @@ internal fun LinkChip(link: String, onRemove: () -> Unit) {
 
 /**
  * Поле ссылки по `hk-link`: подложка, обводка в фокусе, ошибка видна сразу под полем.
- * «Вставить» есть, пока в буфере текст: сам текст читается только по нажатию.
+ * В пустом поле «Вставить», пока в буфере текст: сам текст читается только по нажатию.
+ * С текстом вместо неё крестик, он очищает поле. Не ссылка подсвечивается, но сохранить её можно.
  */
 @Composable
 internal fun LinkField(
@@ -271,8 +274,19 @@ internal fun LinkField(
                         .testTag(NewWishTestTags.LINK_FIELD),
                 )
             }
-            if (clipboard.hasText) {
-                TextButton(onClick = { onPaste(clipboard.readText()) }) {
+            when {
+                value.isNotEmpty() -> IconButton(
+                    onClick = { onValueChange("") },
+                    modifier = Modifier.testTag(NewWishTestTags.LINK_CLEAR),
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_ms_close),
+                        contentDescription = stringResource(R.string.cd_clear_link),
+                        tint = colors.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+                clipboard.hasText -> TextButton(onClick = { onPaste(clipboard.readText()) }) {
                     Text(text = stringResource(R.string.link_paste), style = MaterialTheme.typography.label)
                 }
             }

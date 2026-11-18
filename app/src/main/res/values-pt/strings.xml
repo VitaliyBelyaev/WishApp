@@ -220,6 +220,7 @@
     <string name="link_hint">Cole ou digite um link</string>
     <string name="link_paste">Colar</string>
     <string name="link_remove">Remover link</string>
+    <string name="cd_clear_link">Limpar o campo do link</string>
     <string name="photo_remove">Remover foto</string>
     <string name="photo_add_failed">Foto não adicionada: o arquivo não abre</string>
     <string name="snack_photos_added_partly">%1$d de %2$d fotos adicionadas</string>

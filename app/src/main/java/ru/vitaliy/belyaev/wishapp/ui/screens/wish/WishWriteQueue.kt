@@ -59,7 +59,7 @@ class WishWriteQueue @Inject constructor(
         }
     }
 
-    /** Текст в поле ссылки. Сохранится при уходе с экрана, если это ссылка. */
+    /** Текст в поле ссылки. Сохранится при уходе с экрана, ссылка это или нет. */
     fun setPendingLink(wishId: String, text: String) {
         if (text.isBlank()) pendingLinks.remove(wishId) else pendingLinks[wishId] = text
     }
@@ -92,12 +92,13 @@ class WishWriteQueue @Inject constructor(
     }
 
     /**
-     * Экран хотелки закрыт: ссылка из поля сохраняется, все записи доходят до базы.
+     * Экран хотелки закрыт: текст из поля ссылки сохраняется, все записи доходят до базы.
      * Возвращает хотелку, какой она стала, или `null`, если её нет.
      */
     suspend fun finish(wishId: String): WishEntity? {
+        // Текст из поля сохраняется, даже если не похож на ссылку: проверка только подсказывает
         pendingLinks.remove(wishId)
-            ?.let { LinkParser.parseLinkInput(it.trim()) }
+            ?.let { LinkParser.linksToSave(it) }
             ?.takeIf { it.isNotEmpty() }
             ?.let { addLinks(wishId, it) }
         tails.remove(wishId)?.join()

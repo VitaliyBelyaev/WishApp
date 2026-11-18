@@ -94,4 +94,30 @@ class LinkParserTest {
     fun parseLinkInputKeepsOtherScheme() {
         assertEquals(listOf("http://example.com"), LinkParser.parseLinkInput("http://example.com"))
     }
+
+    @Test
+    fun linksToSaveTakesLinksWhenFound() {
+        assertEquals(
+            listOf("https://ozon.ru/t/abc"),
+            LinkParser.linksToSave("Смотри: https://ozon.ru/t/abc"),
+        )
+        assertEquals(listOf("https://ozon.ru/t/abc"), LinkParser.linksToSave("ozon.ru/t/abc"))
+    }
+
+    @Test
+    fun linksToSaveKeepsPlainTextAsOneLine() {
+        assertEquals(listOf("сыр"), LinkParser.linksToSave("  сыр "))
+        assertEquals(listOf("сыр и хлеб"), LinkParser.linksToSave("сыр\n  и хлеб"))
+        assertEquals(listOf("a%7Cb"), LinkParser.linksToSave("a|b"))
+        assertEquals(emptyList(), LinkParser.linksToSave("   "))
+    }
+
+    @Test
+    fun parseLinkInputTakesBareDomainWithPathFromText() {
+        assertEquals(
+            listOf("https://ozon.ru/t/abc"),
+            LinkParser.parseLinkInput("Смотри (ozon.ru/t/abc), классно"),
+        )
+        assertEquals(emptyList(), LinkParser.parseLinkInput("открой file.txt потом"))
+    }
 }
