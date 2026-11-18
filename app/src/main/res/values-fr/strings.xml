@@ -242,6 +242,12 @@
     <string name="action_came_true">Réalisé</string>
     <string name="snack_came_true">Réalisé : « %1$s »</string>
     <string name="photo_add">Ajouter une photo</string>
+    <string name="photo_main">Photo principale</string>
+    <string name="photo_make_main">Définir comme principale</string>
+    <string name="photo_delete">Supprimer la photo</string>
+    <string name="photo_counter">%1$d sur %2$d</string>
+    <string name="snack_main_photo">C’est maintenant la photo principale</string>
+    <string name="snack_photo_deleted">Photo supprimée</string>
     <string name="link_open_failed">Impossible d’ouvrir : l’adresse est peut-être erronée</string>
     <string name="snack_empty_wish_deleted">Souhait vide supprimé</string>
     <string name="snack_wish_again">Envie à nouveau : « %1$s »</string>

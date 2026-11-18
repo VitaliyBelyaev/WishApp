@@ -19,6 +19,10 @@ interface ImagesRepository {
     @NativeCoroutines
     fun observeImageRefsByWishId(wishId: String): Flow<List<ImageRef>>
 
+    /** Делает фото главным: оно встаёт первым, остальные идут за ним в прежнем порядке. */
+    @NativeCoroutines
+    suspend fun setMainImage(wishId: String, imageId: String)
+
     @NativeCoroutines
     suspend fun deleteImageById(id: String)
 

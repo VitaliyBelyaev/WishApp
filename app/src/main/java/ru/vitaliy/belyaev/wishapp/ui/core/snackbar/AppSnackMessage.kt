@@ -11,7 +11,8 @@ import androidx.compose.material3.SnackbarDuration
  *
  * Прежний вид показывает только [text]: сообщения с действием отправляет только новый вид.
  *
- * [duration] по умолчанию: 10 секунд с действием, 4 без него.
+ * [duration] по умолчанию: 6 секунд с действием, 4 без него. [durationMillis] задаёт своё время,
+ * когда ни то ни другое не подходит, и важнее [duration].
  */
 class AppSnackMessage(
     val text: String,
@@ -19,4 +20,5 @@ class AppSnackMessage(
     val onAction: (() -> Unit)? = null,
     val onDismiss: (() -> Unit)? = null,
     val duration: SnackbarDuration? = null,
+    val durationMillis: Long? = null,
 )

@@ -10,6 +10,10 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.BuildConfig
@@ -46,6 +50,14 @@ class WishWriteQueue @Inject constructor(
     )
     private val tails = HashMap<String, Job>()
     private val pendingLinks = HashMap<String, String>()
+
+    private val _hiddenImages = MutableStateFlow<Set<String>>(emptySet())
+
+    /**
+     * Фото, удалённые с «Вернуть»: пока снэкбар на экране, их не видно, но в базе они есть.
+     * Удаление переживает просмотр: снэкбар остаётся и после его закрытия.
+     */
+    val hiddenImages: StateFlow<Set<String>> = _hiddenImages.asStateFlow()
 
     /**
      * Записи одной хотелки строго по очереди: репозиторий пишет на IO, где порядок не гарантирован,
@@ -88,6 +100,28 @@ class WishWriteQueue @Inject constructor(
             }
             if (images.isNotEmpty()) imagesRepository.insertImages(images)
             if (images.size < uris.size) onFailed()
+        }
+    }
+
+    /** Делает фото главным: оно встаёт первым. */
+    fun setMainImage(wishId: String, imageId: String) {
+        write(wishId) { imagesRepository.setMainImage(wishId, imageId) }
+    }
+
+    /** Прячет фото до решения в снэкбаре: [restoreImage] или [deleteHiddenImage]. */
+    fun hideImage(imageId: String) {
+        _hiddenImages.update { it + imageId }
+    }
+
+    fun restoreImage(imageId: String) {
+        _hiddenImages.update { it - imageId }
+    }
+
+    /** Снэкбар закрылся без «Вернуть»: фото удаляется, и только потом перестаёт числиться скрытым. */
+    fun deleteHiddenImage(wishId: String, imageId: String) {
+        write(wishId) {
+            imagesRepository.deleteImageById(imageId)
+            _hiddenImages.update { it - imageId }
         }
     }
 

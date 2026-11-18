@@ -241,6 +241,12 @@
     <string name="action_came_true">It came true!</string>
     <string name="snack_came_true">Came true: “%1$s”</string>
     <string name="photo_add">Add a photo</string>
+    <string name="photo_main">Main photo</string>
+    <string name="photo_make_main">Make main</string>
+    <string name="photo_delete">Delete photo</string>
+    <string name="photo_counter">%1$d of %2$d</string>
+    <string name="snack_main_photo">This is now the main photo</string>
+    <string name="snack_photo_deleted">Photo deleted</string>
     <string name="link_open_failed">Can’t open it: the address may be wrong</string>
     <string name="snack_empty_wish_deleted">Empty wish deleted</string>
     <string name="snack_wish_again">Want it again: “%1$s”</string>

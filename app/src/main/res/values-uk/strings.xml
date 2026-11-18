@@ -249,6 +249,12 @@
     <string name="action_came_true">Збулося</string>
     <string name="snack_came_true">Збулося: «%1$s»</string>
     <string name="photo_add">Додати фото</string>
+    <string name="photo_main">Головне фото</string>
+    <string name="photo_make_main">Зробити головним</string>
+    <string name="photo_delete">Видалити фото</string>
+    <string name="photo_counter">%1$d з %2$d</string>
+    <string name="snack_main_photo">Тепер це головне фото</string>
+    <string name="snack_photo_deleted">Фото видалено</string>
     <string name="link_open_failed">Не відкривається: можливо, в адресі помилка</string>
     <string name="snack_empty_wish_deleted">Порожню хотілку видалено</string>
     <string name="snack_wish_again">Знову хочу: «%1$s»</string>

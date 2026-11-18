@@ -248,6 +248,12 @@
     <string name="action_came_true">Сбылось</string>
     <string name="snack_came_true">Сбылось: «%1$s»</string>
     <string name="photo_add">Добавить фото</string>
+    <string name="photo_main">Главное фото</string>
+    <string name="photo_make_main">Сделать главным</string>
+    <string name="photo_delete">Удалить фото</string>
+    <string name="photo_counter">%1$d из %2$d</string>
+    <string name="snack_main_photo">Теперь это главное фото</string>
+    <string name="snack_photo_deleted">Фото удалено</string>
     <string name="link_open_failed">Не открывается: возможно, адрес с ошибкой</string>
     <string name="snack_empty_wish_deleted">Пустая хотелка удалена</string>
     <string name="snack_wish_again">Снова хочу: «%1$s»</string>

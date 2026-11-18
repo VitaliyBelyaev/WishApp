@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -53,6 +54,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
 import kotlin.math.abs
 import kotlin.math.floor
 import ru.vitaliy.belyaev.wishapp.R
@@ -62,6 +64,7 @@ import ru.vitaliy.belyaev.wishapp.ui.components.dock.floatingDarkOutline
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.linkHost
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.toPaperTone
 import ru.vitaliy.belyaev.wishapp.ui.screens.newwish.TagDot
+import ru.vitaliy.belyaev.wishapp.ui.screens.photos.heroCacheKey
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishlist.WishSheet
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishlist.sheetBottomPadding
 import ru.vitaliy.belyaev.wishapp.ui.theme.AppThemeExtras
@@ -99,6 +102,7 @@ internal object WishScreenTestTags {
     const val CAME_TRUE = "wish_came_true"
     const val WISH_AGAIN = "wish_again"
     const val ADD_TAG = "wish_add_tag"
+    const val PHOTO = "wish_photo"
 }
 
 /** Круглая кнопка `surface-card` с тенью, в тёмной теме с обводкой. */
@@ -161,16 +165,26 @@ internal fun WishPhotos(
     onPhotoClick: (Int) -> Unit,
     onAddPhoto: () -> Unit,
     fade: () -> Float,
+    hiddenImageId: () -> String?,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
     Box(modifier = modifier.clipToBounds()) {
         HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize(), key = { images[it].id }) { page ->
+            val image = images[page]
+            // Свой ключ кэша: переход в просмотр берёт эту же картинку сразу, без загрузки
+            val request = remember(image.id) {
+                ImageRequest.Builder(context).data(image).memoryCacheKey(heroCacheKey(image.id)).build()
+            }
             AsyncImage(
-                model = images[page],
+                model = request,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
+                    // Открытое в просмотре фото прячется: просмотр вырастает из его места и сжимается обратно
+                    .graphicsLayer { alpha = if (hiddenImageId() == image.id) 0f else 1f }
+                    .testTag(WishScreenTestTags.PHOTO)
                     .clickable { onPhotoClick(page) },
             )
         }

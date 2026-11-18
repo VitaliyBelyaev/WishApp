@@ -1,17 +1,17 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wish
 
-import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.Context
-import android.content.ContextWrapper
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
@@ -42,11 +43,15 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
@@ -54,15 +59,19 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toSize
 import androidx.core.view.WindowCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import kotlinx.coroutines.flow.filterNotNull
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.toPaperTone
+import ru.vitaliy.belyaev.wishapp.ui.core.findActivity
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.AppSnackMessage
+import ru.vitaliy.belyaev.wishapp.ui.screens.photos.PhotoHeroLink
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishlist.BulkAction
 import ru.vitaliy.belyaev.wishapp.ui.theme.AppThemeExtras
 import ru.vitaliy.belyaev.wishapp.ui.theme.PaperTone
@@ -103,6 +112,7 @@ fun WishScreen(
     wishId: String,
     actions: WishScreenActions,
     modifier: Modifier = Modifier,
+    photoHeroLink: PhotoHeroLink? = null,
     viewModel: WishViewModel = hiltViewModel<WishViewModel, WishViewModel.Factory>(key = wishId) { it.create(wishId) },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -139,6 +149,7 @@ fun WishScreen(
             onLeave = leave,
             onOpenPhoto = { currentActions.onOpenPhoto(wishId, it) },
             onShowMessage = { currentActions.onShowMessage(it) },
+            photoHeroLink = photoHeroLink,
             modifier = modifier,
         )
     }
@@ -160,6 +171,7 @@ private fun WishContent(
     onLeave: (BulkAction?) -> Unit,
     onOpenPhoto: (Int) -> Unit,
     onShowMessage: (AppSnackMessage) -> Unit,
+    photoHeroLink: PhotoHeroLink?,
     modifier: Modifier = Modifier,
 ) {
     val wish = state.wish
@@ -193,8 +205,24 @@ private fun WishContent(
         val heroPx = { with(density) { geometry.max.toPx() } - collapse.collapsedPx }
         val fade = { if (rangePx <= 0f) 1f else (1f - collapse.collapsedPx / (rangePx * FADE_PART)).coerceIn(0f, 1f) }
 
-        WishHero(wish = wish, heroPx = heroPx, fade = fade, onOpenPhoto = onOpenPhoto, onAddPhoto = pickPhotos)
-        if (hasPhotos) PhotoStatusBar()
+        // Пока открыт просмотр, тень и кнопки над фото спрятаны. Прячутся сразу: фото растёт поверх них,
+        // и гаснущая кнопка мелькала бы, когда фото отъезжает от края. Проявляются плавно, когда фото
+        // сжалось в хотелку, а не выскакивают поверх него
+        val viewerOver = photoHeroLink?.isViewerOver(wish.id) == true
+        val chrome = animateFloatAsState(
+            targetValue = if (viewerOver) 0f else 1f,
+            animationSpec = if (viewerOver) snap() else tween(CHROME_SHOW_MILLIS, easing = LinearEasing),
+            label = "photo_chrome",
+        )
+        WishHero(
+            wish = wish,
+            heroPx = heroPx,
+            fade = { fade() * chrome.value },
+            link = photoHeroLink,
+            onOpenPhoto = onOpenPhoto,
+            onAddPhoto = pickPhotos,
+        )
+        if (hasPhotos) PhotoStatusBar(modifier = Modifier.graphicsLayer { alpha = chrome.value })
         WishSheetBody(
             wish = wish,
             fields = fields,
@@ -211,6 +239,7 @@ private fun WishContent(
             onAddPhoto = pickPhotos,
             onShare = { context.startActivity(createSharePlainTextIntent(wish.shareText())) },
             onDelete = { onLeave(BulkAction.DELETE) },
+            modifier = Modifier.graphicsLayer { alpha = chrome.value },
         )
         BottomActions(
             wish = wish,
@@ -310,6 +339,7 @@ private fun WishHero(
     wish: WishEntity,
     heroPx: () -> Float,
     fade: () -> Float,
+    link: PhotoHeroLink?,
     onOpenPhoto: (Int) -> Unit,
     onAddPhoto: () -> Unit,
 ) {
@@ -326,14 +356,46 @@ private fun WishHero(
         Box(modifier = heroModifier)
     } else {
         val pagerState = rememberPagerState { wish.images.size }
+        val sheetCorner = with(LocalDensity.current) { SheetOverlap.toPx() }
+        SyncWithViewer(link, wish, pagerState)
         WishPhotos(
             images = wish.images,
             pagerState = pagerState,
             onPhotoClick = onOpenPhoto,
             onAddPhoto = onAddPhoto,
             fade = fade,
-            modifier = heroModifier,
+            hiddenImageId = { link?.hiddenImageOf(wish.id) },
+            modifier = heroModifier.onGloballyPositioned { coordinates ->
+                val bounds = Rect(coordinates.positionInRoot(), coordinates.size.toSize())
+                link?.onHeroPositioned(
+                    wish.id,
+                    bounds,
+                    sheetTop = bounds.bottom - sheetCorner,
+                    sheetCorner = sheetCorner,
+                )
+            },
         )
+    }
+}
+
+/**
+ * Пока открыт просмотр, фото хотелки листается за ним: вернулись — на экране то фото, которое
+ * смотрели последним, и просмотр сжимается прямо в него.
+ */
+@Composable
+private fun SyncWithViewer(link: PhotoHeroLink?, wish: WishEntity, pagerState: PagerState) {
+    if (link == null) return
+    val images by rememberUpdatedState(wish.images)
+    LaunchedEffect(link, wish.id, pagerState) {
+        snapshotFlow { link.viewedImageOf(wish.id) }
+            .filterNotNull()
+            .collect { id ->
+                val index = images.indexOfFirst { it.id == id }
+                if (index >= 0 && index != pagerState.currentPage) pagerState.scrollToPage(index)
+            }
+    }
+    DisposableEffect(link, wish.id) {
+        onDispose { link.onHeroGone(wish.id) }
     }
 }
 
@@ -353,7 +415,7 @@ private const val FADE_PART = 0.6f
  * при уходе, в том числе жестом «назад», — когда от экрана хотелки осталось 30 %.
  */
 @Composable
-private fun PhotoStatusBar() {
+private fun PhotoStatusBar(modifier: Modifier = Modifier) {
     val view = LocalView.current
     val controller = remember(view) {
         view.context.findActivity()?.window?.let { WindowCompat.getInsetsController(it, view) }
@@ -389,14 +451,11 @@ private fun PhotoStatusBar() {
         }
         Brush.verticalGradient(colors)
     }
-    Box(modifier = Modifier.fillMaxWidth().height(total).background(brush))
+    Box(modifier = modifier.fillMaxWidth().height(total).background(brush))
 }
 
-private tailrec fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
-}
+/** Тень и кнопки над фото проявляются после того, как фото встало на место. */
+private const val CHROME_SHOW_MILLIS = 140
 
 /** Насколько подложка заходит ниже статус-бара. */
 private val PhotoScrimTail = 24.dp

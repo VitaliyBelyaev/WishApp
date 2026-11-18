@@ -129,8 +129,9 @@ fun WishListScreen(
                     actionLabel = resources.getString(R.string.snack_undo),
                     onAction = event.onUndo,
                     onDismiss = event.onConfirm,
-                    // Удаление без «Вернуть» не исправить, «Сбылось» легко отменить с экрана хотелки
-                    duration = if (event.action == BulkAction.DELETE) SnackbarDuration.Long else SnackbarDuration.Short,
+                    // Удаление без «Вернуть» не исправить: оно висит 6 секунд, как любая отмена.
+                    // «Сбылось» легко отменить с экрана хотелки, ему хватит 4
+                    duration = if (event.action == BulkAction.DELETE) null else SnackbarDuration.Short,
                 )
             }
             currentActions.onShowMessage(message)

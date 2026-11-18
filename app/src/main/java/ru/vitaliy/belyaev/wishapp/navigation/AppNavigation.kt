@@ -23,6 +23,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.serialization.Serializable
@@ -33,7 +34,6 @@ import ru.vitaliy.belyaev.wishapp.navigation.old.BackupAndRestoreRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.EditTagRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.PrivacyPolicyRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.SettingsRoute
-import ru.vitaliy.belyaev.wishapp.navigation.old.WishImagesViewerRoute
 import ru.vitaliy.belyaev.wishapp.ui.IncomingShare
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.AppSnackMessage
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.aboutapp.AboutAppScreen
@@ -41,8 +41,10 @@ import ru.vitaliy.belyaev.wishapp.ui.old.screens.aboutapp.privacypolicy.PrivacyP
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.backup.BackupScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.edittags.EditTagsScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.settings.SettingsScreen
-import ru.vitaliy.belyaev.wishapp.ui.old.screens.wish_images.WishImagesViewerScreenRoute
 import ru.vitaliy.belyaev.wishapp.ui.old.theme.WishAppTheme as OldWishAppTheme
+import ru.vitaliy.belyaev.wishapp.ui.screens.photos.PhotoHeroLink
+import ru.vitaliy.belyaev.wishapp.ui.screens.photos.PhotoViewerActions
+import ru.vitaliy.belyaev.wishapp.ui.screens.photos.PhotoViewerScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishScreenActions
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishScreenResult
@@ -59,6 +61,10 @@ data object WishListRoute : NavKey
 /** Экран хотелки нового вида. Новая хотелка создаётся в шторке, сюда приходят только готовые. */
 @Serializable
 data class WishRoute(val wishId: String) : NavKey
+
+/** Просмотр фото хотелки на весь экран, открывается с того фото, на которое нажали. */
+@Serializable
+data class PhotoViewerRoute(val wishId: String, val index: Int) : NavKey
 
 private const val TRANSITION_MILLIS = 300
 
@@ -95,6 +101,8 @@ fun AppNavigation(
         }
         onDispose { }
     }
+    // Фото хотелки и просмотр знают друг о друге: фото вырастает из своего места и сжимается обратно
+    val photoHeroLink = remember { PhotoHeroLink() }
     val navigate: (NavKey) -> Unit = { backStack.add(it) }
     val goBack: () -> Unit = { backStack.removeLastOrNull() }
     // Системный «назад», в том числе предиктивный: экран хотелки не перехватывает его и закрывается
@@ -128,11 +136,24 @@ fun AppNavigation(
         entry<WishRoute> { route ->
             WishScreen(
                 wishId = route.wishId,
+                photoHeroLink = photoHeroLink,
                 actions = wishScreenActions(
                     navigate = navigate,
                     goBack = goBack,
                     onShowMessage = onShowMessage,
                     onResult = { result -> wishScreenResult = result },
+                ),
+            )
+        }
+        entry<PhotoViewerRoute>(metadata = OverlaySceneStrategy.overlay()) { route ->
+            PhotoViewerScreen(
+                wishId = route.wishId,
+                initialIndex = route.index,
+                heroLink = photoHeroLink,
+                actions = PhotoViewerActions(
+                    // Просмотр сам доигрывает выход и только потом закрывается: убираем только его
+                    onClose = { if (backStack.lastOrNull() == route) goBack() },
+                    onShowMessage = onShowMessage,
                 ),
             )
         }
@@ -157,15 +178,6 @@ fun AppNavigation(
         entry<EditTagRoute> {
             old { EditTagsScreen(onBackPressed = goBack) }
         }
-        entry<WishImagesViewerRoute> { route ->
-            old {
-                WishImagesViewerScreenRoute(
-                    wishId = route.wishId,
-                    initialWishImageIndex = route.wishImageIndex,
-                    onBackPressed = goBack,
-                )
-            }
-        }
     }
 
     val offsetSpec = tween<IntOffset>(TRANSITION_MILLIS, easing = FastOutSlowInEasing)
@@ -184,6 +196,7 @@ fun AppNavigation(
             rememberViewModelStoreNavEntryDecorator(),
         ),
         entryProvider = entryProvider,
+        sceneStrategies = remember { listOf(OverlaySceneStrategy<NavKey>(), SinglePaneSceneStrategy()) },
         transitionSpec = { push },
         popTransitionSpec = { pop },
         predictivePopTransitionSpec = { pop },
@@ -204,7 +217,7 @@ private fun wishScreenActions(
         onResult(result)
         goBack()
     },
-    onOpenPhoto = { wishId, index -> navigate(WishImagesViewerRoute(wishId = wishId, wishImageIndex = index)) },
+    onOpenPhoto = { wishId, index -> navigate(PhotoViewerRoute(wishId = wishId, index = index)) },
     onShowMessage = onShowMessage,
 )
 

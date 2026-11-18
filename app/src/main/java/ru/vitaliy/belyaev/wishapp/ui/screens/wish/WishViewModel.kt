@@ -71,8 +71,22 @@ class WishViewModel @AssistedInject constructor(
 
     init {
         launchSafe {
-            combine(wishesRepository.observeWishById(wishId), tagsRepository.observeAllTags()) { wish, tags ->
-                WishScreenState(wish, tags)
+            // Фото, удалённые из просмотра, не видны, пока у снэкбара можно нажать «Вернуть»
+            combine(
+                wishesRepository.observeWishById(wishId),
+                tagsRepository.observeAllTags(),
+                writeQueue.hiddenImages,
+            ) { wish, tags, hidden ->
+                val shown = if (hidden.isEmpty()) {
+                    wish
+                } else {
+                    wish.copy(
+                        images = wish.images.filterNot {
+                            it.id in hidden
+                        },
+                    )
+                }
+                WishScreenState(shown, tags)
             }.collect { loaded ->
                 if (_title.value == null) _title.value = loaded.wish.title
                 if (_comment.value == null) _comment.value = loaded.wish.comment

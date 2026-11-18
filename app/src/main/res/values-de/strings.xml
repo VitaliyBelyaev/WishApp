@@ -239,6 +239,12 @@
     <string name="action_came_true">Erfüllt</string>
     <string name="snack_came_true">Erfüllt: „%1$s“</string>
     <string name="photo_add">Foto hinzufügen</string>
+    <string name="photo_main">Hauptfoto</string>
+    <string name="photo_make_main">Als Hauptfoto</string>
+    <string name="photo_delete">Foto löschen</string>
+    <string name="photo_counter">%1$d von %2$d</string>
+    <string name="snack_main_photo">Das ist jetzt das Hauptfoto</string>
+    <string name="snack_photo_deleted">Foto gelöscht</string>
     <string name="link_open_failed">Lässt sich nicht öffnen: Die Adresse ist vielleicht falsch</string>
     <string name="snack_empty_wish_deleted">Leerer Wunsch gelöscht</string>
     <string name="snack_wish_again">Wieder gewünscht: „%1$s“</string>

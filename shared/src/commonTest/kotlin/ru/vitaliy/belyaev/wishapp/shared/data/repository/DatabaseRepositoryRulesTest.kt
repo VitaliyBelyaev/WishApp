@@ -103,6 +103,21 @@ class DatabaseRepositoryRulesTest {
     }
 
     @Test
+    fun setMainImage_movesPhotoFirst_othersKeepOrder_newOnesGoToEnd() = runTest {
+        val wish = insertWish()
+        val other = insertWish()
+        repository.insertImages(listOf(image("a", wish.id), image("b", wish.id), image("c", wish.id)))
+        repository.insertImage(image("x", other.id))
+
+        repository.setMainImage(wish.id, "c")
+        repository.insertImage(image("d", wish.id))
+        repository.setMainImage(wish.id, "x")
+
+        assertEquals(listOf("c", "a", "b", "d"), repository.getWishById(wish.id).images.map { it.id })
+        assertEquals(listOf("x"), repository.getWishById(other.id).images.map { it.id })
+    }
+
+    @Test
     fun shownTag_byDefaultFirstAdded_thenChosen_thenNextAfterRemoval() = runTest {
         val wish = insertWish()
         val kitchenId = repository.insertTag("Кухня")

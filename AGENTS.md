@@ -143,10 +143,10 @@ TEST_CLASS=ru.vitaliy.belyaev.wishapp.wishlist.WishListScreenTest scripts/run_sm
 ```
 
 Шторка новой хотелки проверяется отдельным классом `NewWishSheetTest`, экран хотелки
-нового вида — `WishScreenTest`, оба на той же основе `WishListUiTest`. Несколько классов через запятую:
+нового вида — `WishScreenTest`, просмотр фото — `PhotoViewerTest`, все на той же основе `WishListUiTest`. Несколько классов через запятую:
 
 ```bash
-TEST_CLASS=ru.vitaliy.belyaev.wishapp.wishlist.WishListScreenTest,ru.vitaliy.belyaev.wishapp.wishlist.NewWishSheetTest,ru.vitaliy.belyaev.wishapp.wishlist.WishScreenTest scripts/run_smoke_test.sh
+TEST_CLASS=ru.vitaliy.belyaev.wishapp.wishlist.WishListScreenTest,ru.vitaliy.belyaev.wishapp.wishlist.NewWishSheetTest,ru.vitaliy.belyaev.wishapp.wishlist.WishScreenTest,ru.vitaliy.belyaev.wishapp.wishlist.PhotoViewerTest scripts/run_smoke_test.sh
 ```
 
 Smoke-тест на сборке `autotest` (как release, с R8; эмулятор API 26+),
@@ -201,7 +201,7 @@ CI в репозитории **нет** — проверяй вручную.
   `detekt` и `composeRules` в `libs.versions.toml` поднимай вместе.
 - Тестов мало: несколько юнит-тестов, тесты миграций и правил базы в `shared`,
   `DatabaseRepositoryDeleteTest`, `SmokeTest`, `WishListScreenTest`, `NewWishSheetTest`,
-  `WishScreenTest`.
+  `WishScreenTest`, `PhotoViewerTest`.
 - Release на Android подписан тестовым keystore — это не production-подпись.
 - Легаси: `iosApp/WishApp/ui/MainScreen/` не входит в Xcode-таргет.
 - `WishDetailedViewModel` сразу создаёт пустое желание; при выходе пустая запись

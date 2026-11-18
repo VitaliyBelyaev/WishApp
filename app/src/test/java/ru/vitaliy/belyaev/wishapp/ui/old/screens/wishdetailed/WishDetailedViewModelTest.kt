@@ -470,6 +470,8 @@ class WishDetailedViewModelTest {
 
         override fun observeImageRefsByWishId(wishId: String): Flow<List<ImageRef>> = notUsed()
 
+        override suspend fun setMainImage(wishId: String, imageId: String) = notUsed()
+
         override suspend fun deleteImageById(id: String) = notUsed()
 
         override suspend fun deleteImagesByIds(ids: List<String>) = notUsed()

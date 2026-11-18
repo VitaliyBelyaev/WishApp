@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.withTimeoutOrNull
 import ru.vitaliy.belyaev.wishapp.ui.theme.AppThemeExtras
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppElevation
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppSpacing
@@ -37,12 +38,28 @@ fun CollectAppSnackMessages(messages: Flow<AppSnackMessage>, hostState: Snackbar
         messages.collectLatest { message ->
             var isResolved = false
             try {
-                val result = hostState.showSnackbar(
-                    message = message.text,
-                    actionLabel = message.actionLabel,
-                    duration = message.duration
-                        ?: if (message.actionLabel != null) SnackbarDuration.Long else SnackbarDuration.Short,
-                )
+                // Снэкбар с отменой по умолчанию висит 6 секунд: свои сроки Material — 4 и 10
+                val millis = message.durationMillis
+                    ?: if (message.duration == null && message.actionLabel != null) UNDO_SNACK_MILLIS else null
+                val duration = when {
+                    millis != null -> SnackbarDuration.Indefinite
+                    else -> message.duration ?: SnackbarDuration.Short
+                }
+                val show = suspend {
+                    hostState.showSnackbar(
+                        message = message.text,
+                        actionLabel = message.actionLabel,
+                        duration = duration,
+                    )
+                }
+                // Своё время: снэкбар без срока закрываем сами, это то же, что он ушёл сам
+                val result = if (millis !=
+                    null
+                ) {
+                    withTimeoutOrNull(millis) { show() } ?: SnackbarResult.Dismissed
+                } else {
+                    show()
+                }
                 isResolved = true
                 if (result == SnackbarResult.ActionPerformed) {
                     message.onAction?.invoke()
@@ -108,3 +125,6 @@ private fun AppSnackbar(data: SnackbarData) {
         )
     }
 }
+
+/** Сколько висит снэкбар с «Вернуть», если время не задано. */
+private const val UNDO_SNACK_MILLIS = 6_000L

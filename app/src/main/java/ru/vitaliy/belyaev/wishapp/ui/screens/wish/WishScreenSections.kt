@@ -221,12 +221,20 @@ internal fun TopButtons(
     onAddPhoto: () -> Unit,
     onShare: () -> Unit,
     onDelete: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val top = with(LocalDensity.current) { WindowInsets.safeDrawing.getTop(this).toDp() }
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(top = top + ButtonsTop, start = WishAppSpacing.s3, end = WishAppSpacing.s3),
+            // Запас снизу под тень кнопок: пока кнопки проявляются, слой рисуется в буфер своего
+            // размера, и тень за его краем обрезалась тёмной полосой
+            .padding(
+                top = top + ButtonsTop,
+                start = WishAppSpacing.s3,
+                end = WishAppSpacing.s3,
+                bottom = ButtonShadowRoom,
+            ),
     ) {
         FloatingCircleButton(
             icon = R.drawable.ic_ms_arrow_back,
@@ -240,6 +248,9 @@ internal fun TopButtons(
         MenuButton(onShare = onShare, onDelete = onDelete, modifier = Modifier.align(Alignment.CenterEnd))
     }
 }
+
+/** Тень кнопок уходит ниже них на смещение и размытие (`WishAppElevation.dock`). */
+private val ButtonShadowRoom = 28.dp
 
 /** «⋮»: «Поделиться этой хотелкой» и «Удалить». Удаление без диалога, с «Вернуть» на списке. */
 @Composable

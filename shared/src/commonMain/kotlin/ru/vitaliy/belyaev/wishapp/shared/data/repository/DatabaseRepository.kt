@@ -677,6 +677,17 @@ class DatabaseRepository(
     }
 
     @NativeCoroutines
+    override suspend fun setMainImage(wishId: String, imageId: String) {
+        imageQueries.transaction {
+            val ids = imageQueries.getRefsByWishId(wishId).executeAsList().map { it.id }
+            if (imageId !in ids) return@transaction
+            (listOf(imageId) + ids.filter { it != imageId }).forEachIndexed { index, id ->
+                imageQueries.updatePosition(index.toLong(), id)
+            }
+        }
+    }
+
+    @NativeCoroutines
     override suspend fun deleteImageById(id: String) {
         imageQueries.deleteById(id)
     }
