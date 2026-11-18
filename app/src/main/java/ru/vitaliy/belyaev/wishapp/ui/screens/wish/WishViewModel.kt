@@ -1,6 +1,7 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wish
 
 import android.content.ContentResolver
+import android.content.Intent
 import android.net.Uri
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -21,6 +22,7 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishTagRelationRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
+import ru.vitaliy.belyaev.wishapp.ui.screens.wishlist.WishListSharer
 
 /** Хотелка из базы и все ярлыки для выбора. `null`, пока не загрузилось. */
 data class WishScreenState(val wish: WishEntity, val allTags: List<TagEntity>)
@@ -28,6 +30,9 @@ data class WishScreenState(val wish: WishEntity, val allTags: List<TagEntity>)
 /** Разовые события экрана хотелки. */
 sealed interface WishScreenEvent {
     data object PhotoFailed : WishScreenEvent
+
+    /** Окно «Поделиться» собрано, его запускает экран. */
+    data class Share(val intent: Intent) : WishScreenEvent
 }
 
 /**
@@ -44,6 +49,7 @@ class WishViewModel @AssistedInject constructor(
     private val tagsRepository: TagsRepository,
     private val wishTagRelationRepository: WishTagRelationRepository,
     private val writeQueue: WishWriteQueue,
+    private val sharer: WishListSharer,
 ) : BaseViewModel(), WishEditor, WishTagsEditor {
 
     @AssistedFactory
@@ -93,6 +99,16 @@ class WishViewModel @AssistedInject constructor(
                 _state.value = loaded
             }
         }
+    }
+
+    /**
+     * «Поделиться» из «⋮»: с фото уходит картинка и текст подписью. Название и комментарий берутся
+     * из полей, а не из базы: последняя правка могла ещё не записаться.
+     */
+    fun onShareClicked() {
+        val wish = _state.value?.wish ?: return
+        val current = wish.copy(title = _title.value ?: wish.title, comment = _comment.value ?: wish.comment)
+        launchSafe { eventChannel.send(WishScreenEvent.Share(sharer.wishIntent(current))) }
     }
 
     /** Записи по очереди и вне ViewModel: экран закрывается, не дожидаясь их, см. [WishWriteQueue]. */

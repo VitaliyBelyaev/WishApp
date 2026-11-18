@@ -183,8 +183,16 @@
     </plurals>
     <string name="share_scope">%1$s: %2$s</string>
     <string name="share_as_text">Текстом</string>
+    <string name="share_as_image">Картинкою</string>
+    <string name="share_preparing_image">Готую картинку</string>
+    <string name="share_image_error_message">Не вдалося створити картинку</string>
+    <string name="share_image_more">і ще %d</string>
     <string name="share_as_pdf">PDF з фото</string>
     <string name="share_pick_part">Вибрати лише частину</string>
+    <string name="share_header_done">Ось що в мене збулося:</string>
+    <string name="share_header_wish">Ось що я хочу:</string>
+    <string name="share_pdf_kicker_list">Ось мій список</string>
+    <string name="share_footer">Зроблено в Хотелках</string>
     <!-- Нет в артефакте локализации, черновики части 2.2 -->
     <string name="search_elsewhere">У розділі «%1$s» немає, зате є в іншому</string>
     <string name="search_go_to">У «%1$s»</string>

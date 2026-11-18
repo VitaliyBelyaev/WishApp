@@ -378,12 +378,6 @@ internal fun WishEntity.label(resources: Resources): String = title.trim().ifEmp
     }
 }
 
-/** Текст для «Поделиться этой хотелкой»: название, комментарий и ссылки по строкам. */
-internal fun WishEntity.shareText(): String = (listOf(title, comment) + links)
-    .map { it.trim() }
-    .filter { it.isNotEmpty() }
-    .joinToString("\n")
-
 /**
  * Дата в самом конце: «Добавлена 3 сентября · изменена 15 октября». У сбывшейся вместо изменения
  * дата исполнения, у отмеченных до обновления её нет. Дни без «сегодня» и «вчера»: строк меньше.

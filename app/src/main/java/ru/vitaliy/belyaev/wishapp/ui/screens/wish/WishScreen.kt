@@ -76,7 +76,6 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.wishlist.BulkAction
 import ru.vitaliy.belyaev.wishapp.ui.theme.AppThemeExtras
 import ru.vitaliy.belyaev.wishapp.ui.theme.PaperTone
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppSpacing
-import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 
 /**
  * С чем экран хотелки вернулся на список: [action] `null` у простого «назад». Список дожидается
@@ -121,6 +120,7 @@ fun WishScreen(
     val linkInput by viewModel.linkInput.collectAsStateWithLifecycle()
     val isLinkInvalid by viewModel.isLinkInvalid.collectAsStateWithLifecycle()
     val resources = LocalResources.current
+    val context = LocalContext.current
     val currentActions by rememberUpdatedState(actions)
     // Уход не ждёт записей в базу: их дожидается список. Поэтому системный «назад» не перехвачен
     // и работает предиктивно, а на список возвращается так же, через AppNavigation
@@ -131,6 +131,7 @@ fun WishScreen(
             when (event) {
                 WishScreenEvent.PhotoFailed ->
                     currentActions.onShowMessage(AppSnackMessage(resources.getString(R.string.photo_add_failed)))
+                is WishScreenEvent.Share -> context.startActivity(event.intent)
             }
         }
     }
@@ -149,6 +150,7 @@ fun WishScreen(
             onLeave = leave,
             onOpenPhoto = { currentActions.onOpenPhoto(wishId, it) },
             onShowMessage = { currentActions.onShowMessage(it) },
+            onShare = viewModel::onShareClicked,
             photoHeroLink = photoHeroLink,
             modifier = modifier,
         )
@@ -171,6 +173,7 @@ private fun WishContent(
     onLeave: (BulkAction?) -> Unit,
     onOpenPhoto: (Int) -> Unit,
     onShowMessage: (AppSnackMessage) -> Unit,
+    onShare: () -> Unit,
     photoHeroLink: PhotoHeroLink?,
     modifier: Modifier = Modifier,
 ) {
@@ -237,7 +240,7 @@ private fun WishContent(
             hasPhotos = hasPhotos,
             onBack = { onLeave(null) },
             onAddPhoto = pickPhotos,
-            onShare = { context.startActivity(createSharePlainTextIntent(wish.shareText())) },
+            onShare = onShare,
             onDelete = { onLeave(BulkAction.DELETE) },
             modifier = Modifier.graphicsLayer { alpha = chrome.value },
         )

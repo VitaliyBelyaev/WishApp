@@ -37,14 +37,4 @@ fun WishEntity.toWishCardModel(filterTag: TagEntity? = null): WishCardModel {
 fun TagColor.toPaperTone(): PaperTone = PaperTone.valueOf(name)
 
 /** Домен ссылки без схемы, `www.`, порта и пути: `https://www.ozon.ru/t/abc` → `ozon.ru`. */
-internal fun linkHost(link: String): String {
-    return link.trim()
-        .substringAfter("://")
-        .substringBefore('/')
-        .substringBefore('?')
-        .substringBefore('#')
-        .substringAfterLast('@')
-        .substringBefore(':')
-        .removePrefix("www.")
-        .lowercase()
-}
+internal fun linkHost(link: String): String = ru.vitaliy.belyaev.wishapp.shared.domain.linkHost(link)

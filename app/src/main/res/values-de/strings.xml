@@ -173,8 +173,16 @@
     </plurals>
     <string name="share_scope">%1$s: %2$s</string>
     <string name="share_as_text">Als Text</string>
+    <string name="share_as_image">Als Bild</string>
+    <string name="share_preparing_image">Bild wird erstellt</string>
+    <string name="share_image_error_message">Bild konnte nicht erstellt werden</string>
+    <string name="share_image_more">und %d weitere</string>
     <string name="share_as_pdf">PDF mit Fotos</string>
     <string name="share_pick_part">Nur einige auswählen</string>
+    <string name="share_header_done">Das hat sich für mich erfüllt:</string>
+    <string name="share_header_wish">Das wünsche ich mir:</string>
+    <string name="share_pdf_kicker_list">Das ist meine Liste</string>
+    <string name="share_footer">Erstellt mit Wishapp</string>
     <!-- Нет в артефакте локализации, черновики части 2.2 -->
     <string name="search_elsewhere">Nicht in „%1$s“, aber woanders gefunden</string>
     <string name="search_go_to">In „%1$s“</string>

@@ -114,7 +114,7 @@ fun WishListScreen(
     newWishViewModel: NewWishViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val isSharingPdf by viewModel.isSharingPdf.collectAsStateWithLifecycle()
+    val preparingShare by viewModel.preparingShare.collectAsStateWithLifecycle()
     val dockSection by viewModel.dockSection.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val resources = LocalResources.current
@@ -123,7 +123,19 @@ fun WishListScreen(
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             val message = when (event) {
-                WishListEvent.SharePdfFailed -> AppSnackMessage(resources.getString(R.string.share_pdf_error_message))
+                is WishListEvent.Share -> {
+                    context.startActivity(event.intent)
+                    return@collect
+                }
+                is WishListEvent.ShareFailed -> AppSnackMessage(
+                    resources.getString(
+                        if (event.format == ShareFormat.IMAGE) {
+                            R.string.share_image_error_message
+                        } else {
+                            R.string.share_pdf_error_message
+                        },
+                    ),
+                )
                 is WishListEvent.Undoable -> AppSnackMessage(
                     text = event.text(resources),
                     actionLabel = resources.getString(R.string.snack_undo),
@@ -150,7 +162,7 @@ fun WishListScreen(
         gridStates = viewModel.sectionGridStates,
         state = state,
         dockSection = dockSection,
-        isSharingPdf = isSharingPdf,
+        preparingShare = preparingShare,
         actions = actions,
         onAddWish = newWishViewModel::open,
         incomingShare = incomingShare,
@@ -165,7 +177,7 @@ fun WishListScreen(
         onGoToOtherSection = viewModel::onGoToOtherSectionClicked,
         onLayoutToggled = viewModel::onLayoutToggled,
         onSortSelected = viewModel::onSortSelected,
-        onShare = { format -> viewModel.onShareClicked(context, format) },
+        onShare = viewModel::onShareClicked,
         selection = remember(viewModel) {
             object : SelectionCallbacks {
                 override fun onToggle(wishId: String) = viewModel.onWishToggled(wishId)
@@ -186,7 +198,7 @@ private fun WishListContent(
     gridStates: SectionGridStates,
     state: WishListUiState,
     dockSection: ListSection,
-    isSharingPdf: Boolean,
+    preparingShare: ShareFormat?,
     actions: WishListActions,
     onAddWish: (contextTagId: String?, title: String?) -> Unit,
     incomingShare: IncomingShare?,
@@ -464,10 +476,11 @@ private fun WishListContent(
 
         if (openSheet == OpenSheet.SHARE) {
             // Меню закрывается, когда PDF собран и отдан системе или не получился
-            var wasSharingPdf by remember { mutableStateOf(false) }
-            LaunchedEffect(isSharingPdf) {
-                if (wasSharingPdf && !isSharingPdf) openSheet = OpenSheet.NONE
-                wasSharingPdf = isSharingPdf
+            var wasPreparing by remember { mutableStateOf(false) }
+            LaunchedEffect(preparingShare) {
+                val isPreparing = preparingShare != null
+                if (wasPreparing && !isPreparing) openSheet = OpenSheet.NONE
+                wasPreparing = isPreparing
             }
         }
         // Меню остаётся в композиции и закрывается своей анимацией
@@ -476,12 +489,13 @@ private fun WishListContent(
             // Из панели выбора меню поднимается снизу, из шапки выпадает сверху
             anchor = if (state.isSelectionMode) ShareMenuAnchor.BOTTOM else ShareMenuAnchor.TOP,
             scope = shareScope,
-            isSharingPdf = isSharingPdf,
+            preparing = preparingShare,
             onShareText = {
                 openSheet = OpenSheet.NONE
                 onShare(ShareFormat.TEXT)
             },
             onSharePdf = { onShare(ShareFormat.PDF) },
+            onShareImage = { onShare(ShareFormat.IMAGE) },
             // Отметить часть есть смысл, когда хотелок хотя бы две. Выбор открывается со всеми
             // отмеченными: обычно лишнее снимают, а не набирают нужное с нуля
             onPickPart = if (!state.isSelectionMode && state.cards.size >= MIN_CARDS_TO_PICK_PART) {
@@ -492,7 +506,7 @@ private fun WishListContent(
             } else {
                 null
             },
-            onDismiss = { if (!isSharingPdf) openSheet = OpenSheet.NONE },
+            onDismiss = { if (preparingShare == null) openSheet = OpenSheet.NONE },
         )
     }
 

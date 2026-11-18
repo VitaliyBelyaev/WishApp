@@ -3,4 +3,7 @@
     <files-path
             name="wishlistpdf"
             path="wishlist_pdf/" />
+    <files-path
+            name="shareimage"
+            path="share_image/" />
 </paths>

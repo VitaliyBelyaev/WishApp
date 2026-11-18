@@ -376,6 +376,7 @@ internal class WishListScreenTest : WishListUiTest() {
         waitUntilExists(hasText(shareScope(string(R.string.nav_wishes), ACTIVE_COUNT)))
         rule.onNode(hasText(string(R.string.share_as_text))).assertIsDisplayed()
         rule.onNode(hasText(string(R.string.share_as_pdf))).assertIsDisplayed()
+        rule.onNode(hasText(string(R.string.share_as_image))).assertIsDisplayed()
         screenshot("share")
         device.pressBack()
         waitUntilGone(hasText(string(R.string.share_as_text)))

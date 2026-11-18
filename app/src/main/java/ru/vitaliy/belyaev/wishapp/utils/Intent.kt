@@ -25,6 +25,22 @@ fun createSharePlainTextIntent(text: String): Intent {
     return Intent.createChooser(sendIntent, null)
 }
 
+/** Картинка с текстом подписью: Telegram и WhatsApp отправляют их одним сообщением. */
+fun createShareImageWithTextIntent(imageFile: File, text: String, context: Context): Intent {
+    val imageUri = FileProvider.getUriForFile(
+        context,
+        "${BuildConfig.APPLICATION_ID}.fileprovider",
+        imageFile,
+    )
+    val sendIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "image/jpeg"
+        putExtra(Intent.EXTRA_STREAM, imageUri)
+        putExtra(Intent.EXTRA_TEXT, text)
+        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+    }
+    return Intent.createChooser(sendIntent, null)
+}
+
 fun createSharePdfDocumentIntent(
     pdfFile: File,
     context: Context,

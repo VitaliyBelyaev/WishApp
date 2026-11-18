@@ -89,9 +89,10 @@ internal fun ShareMenu(
     visible: Boolean,
     anchor: ShareMenuAnchor,
     scope: String,
-    isSharingPdf: Boolean,
+    preparing: ShareFormat?,
     onShareText: () -> Unit,
     onSharePdf: () -> Unit,
+    onShareImage: () -> Unit,
     onPickPart: (() -> Unit)?,
     onDismiss: () -> Unit,
 ) {
@@ -154,34 +155,42 @@ internal fun ShareMenu(
                     ShareMenuButton(
                         text = stringResource(R.string.share_pick_part),
                         icon = R.drawable.ic_ms_checklist,
-                        enabled = !isSharingPdf,
+                        enabled = preparing == null,
                         onClick = onPickPart,
                         modifier = pop(1),
                     )
                 }
-                val pdfModifier = pop(1 + shift)
-                if (isSharingPdf) {
-                    ShareMenuButton(
-                        text = stringResource(R.string.share_generating_pdf_button_text),
-                        icon = null,
-                        enabled = false,
-                        onClick = {},
-                        modifier = pdfModifier,
-                    )
-                } else {
-                    ShareMenuButton(
-                        text = stringResource(R.string.share_as_pdf),
-                        icon = R.drawable.ic_ms_picture_as_pdf,
-                        onClick = onSharePdf,
-                        modifier = pdfModifier,
-                    )
-                }
+                // Пока файл собирается, его кнопка пишет об этом, а остальные ждут
+                ShareMenuButton(
+                    text = stringResource(
+                        if (preparing == ShareFormat.IMAGE) R.string.share_preparing_image else R.string.share_as_image,
+                    ),
+                    icon = R.drawable.ic_ms_image.takeIf { preparing != ShareFormat.IMAGE },
+                    enabled = preparing == null,
+                    onClick = onShareImage,
+                    modifier = pop(1 + shift),
+                )
+                ShareMenuButton(
+                    text = stringResource(
+                        if (preparing ==
+                            ShareFormat.PDF
+                        ) {
+                            R.string.share_generating_pdf_button_text
+                        } else {
+                            R.string.share_as_pdf
+                        },
+                    ),
+                    icon = R.drawable.ic_ms_picture_as_pdf.takeIf { preparing != ShareFormat.PDF },
+                    enabled = preparing == null,
+                    onClick = onSharePdf,
+                    modifier = pop(2 + shift),
+                )
                 ShareMenuButton(
                     text = stringResource(R.string.share_as_text),
                     icon = R.drawable.ic_ms_notes,
-                    enabled = !isSharingPdf,
+                    enabled = preparing == null,
                     onClick = onShareText,
-                    modifier = pop(2 + shift),
+                    modifier = pop(3 + shift),
                 )
             }
         }
@@ -191,9 +200,9 @@ internal fun ShareMenu(
 /** Откуда открыли меню «Поделиться»: кнопка в шапке или в панели выбора внизу. */
 internal enum class ShareMenuAnchor { TOP, BOTTOM }
 
-/** Подпись, PDF и текст; с пунктом «Выбрать только часть» на один больше. */
-private const val ITEMS = 3
-private const val ITEMS_WITH_PICK = 4
+/** Подпись, картинка, PDF и текст; с пунктом «Выбрать только часть» на один больше. */
+private const val ITEMS = 4
+private const val ITEMS_WITH_PICK = 5
 
 /** Появление из правого угла, верхнего или нижнего, [order] — очередь от этого угла. */
 private fun AnimatedVisibilityScope.popFromCorner(order: Int, fromTop: Boolean): Modifier {

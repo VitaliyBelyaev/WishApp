@@ -1,9 +1,8 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishlist
 
-import android.content.Context
+import android.content.Intent
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.File
 import java.text.Collator
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
@@ -20,35 +19,31 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.withContext
-import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.model.DoneSortMode
 import ru.vitaliy.belyaev.wishapp.domain.model.ListLayout
-import ru.vitaliy.belyaev.wishapp.shared.domain.ShareWishListTextGenerator
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishSortMode
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.isEmpty
-import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.toWishCardModel
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishScreenResult
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishWriteQueue
-import ru.vitaliy.belyaev.wishapp.utils.ShareWishListPdfGenerator
 import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
-import ru.vitaliy.belyaev.wishapp.utils.createSharePdfDocumentIntent
-import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 import timber.log.Timber
 
 /** Формат шеринга из меню. */
-enum class ShareFormat { TEXT, PDF }
+enum class ShareFormat { TEXT, PDF, IMAGE }
 
 /** Разовые события для экрана. */
 sealed interface WishListEvent {
-    data object SharePdfFailed : WishListEvent
+    data class ShareFailed(val format: ShareFormat) : WishListEvent
+
+    /** Готовое окно «Поделиться». Запускает экран: ViewModel не держит `Context` активити. */
+    class Share(val intent: Intent) : WishListEvent
 
     /**
      * Снэкбар с «Вернуть». [onUndo] возвращает хотелки в раздел, [onConfirm] записывает действие
@@ -80,7 +75,7 @@ sealed interface WishListEvent {
 class WishListViewModel @Inject constructor(
     private val wishesRepository: WishesRepository,
     private val tagsRepository: TagsRepository,
-    private val imagesRepository: ImagesRepository,
+    private val sharer: WishListSharer,
     private val dataStoreRepository: DataStoreRepository,
     private val dispatcherProvider: DispatcherProvider,
     private val wishWriteQueue: WishWriteQueue,
@@ -95,8 +90,9 @@ class WishListViewModel @Inject constructor(
     private val _events = Channel<WishListEvent>(capacity = Channel.BUFFERED)
     val events: Flow<WishListEvent> = _events.receiveAsFlow()
 
-    private val _isSharingPdf = MutableStateFlow(false)
-    val isSharingPdf: StateFlow<Boolean> = _isSharingPdf.asStateFlow()
+    /** Какой файл для «Поделиться» сейчас собирается: PDF или картинка; `null` — ничего. */
+    private val _preparingShare = MutableStateFlow<ShareFormat?>(null)
+    val preparingShare: StateFlow<ShareFormat?> = _preparingShare.asStateFlow()
 
     private val sectionFlow = MutableStateFlow<ListSection>(ListSection.Wishes)
 
@@ -315,38 +311,34 @@ class WishListViewModel @Inject constructor(
         }
     }
 
-    fun onShareClicked(context: Context, format: ShareFormat) {
+    fun onShareClicked(format: ShareFormat) {
         // В режиме выбора отправляются выбранные, в порядке раздела
         val selectedIds = selectedIdsFlow.value
         val wishes = if (selectedIds.isEmpty()) sectionWishes else sectionWishes.filter { it.id in selectedIds }
-        val title = context.getString(R.string.wish_list_title)
+        val state = uiState.value
         when (format) {
             ShareFormat.TEXT -> launchSafe(dispatcherProvider.default()) {
-                val text = ShareWishListTextGenerator.generateFormattedWishListText(title = title, wishes = wishes)
-                withContext(dispatcherProvider.main()) { context.startActivity(createSharePlainTextIntent(text)) }
+                _events.send(WishListEvent.Share(sharer.textIntent(state.section, wishes)))
             }
-            ShareFormat.PDF -> launchSafe(dispatcherProvider.default()) {
-                _isSharingPdf.value = true
-                val pdfFile: File = try {
-                    ShareWishListPdfGenerator.generatePdfForWishList(
-                        titleResId = R.string.wish_list_title,
-                        wishes = wishes,
-                        imagesRepository = imagesRepository,
-                        context = context,
-                    )
+            ShareFormat.PDF, ShareFormat.IMAGE -> launchSafe(dispatcherProvider.default()) {
+                _preparingShare.value = format
+                val intent = try {
+                    if (format == ShareFormat.PDF) {
+                        sharer.pdfIntent(state.section, wishes)
+                    } else {
+                        sharer.imageIntent(state.section, wishes)
+                    }
                 } catch (error: CancellationException) {
                     throw error
                 } catch (error: Exception) {
                     Timber.e(error)
                     FirebaseCrashlytics.getInstance().recordException(error)
-                    _events.send(WishListEvent.SharePdfFailed)
+                    _events.send(WishListEvent.ShareFailed(format))
                     return@launchSafe
                 } finally {
-                    _isSharingPdf.value = false
+                    _preparingShare.value = null
                 }
-                withContext(dispatcherProvider.main()) {
-                    context.startActivity(createSharePdfDocumentIntent(pdfFile, context))
-                }
+                _events.send(WishListEvent.Share(intent))
             }
         }
     }
