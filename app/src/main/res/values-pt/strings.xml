@@ -223,4 +223,25 @@
     <string name="photo_remove">Remover foto</string>
     <string name="photo_add_failed">Foto não adicionada: o arquivo não abre</string>
     <string name="snack_photos_added_partly">%1$d de %2$d fotos adicionadas</string>
+    <!-- Экран хотелки нового вида: черновики переводов -->
+    <string name="cd_back">Voltar</string>
+    <string name="tag_shown">Exibida no cartão</string>
+    <string name="tag_show">Exibir no cartão</string>
+    <string name="tag_show_hint">O cartão ficará com esta cor</string>
+    <string name="tag_remove">Remover deste desejo</string>
+    <string name="snack_tag_removed">Etiqueta “%1$s” removida</string>
+    <string name="link_copy">Copiar</string>
+    <string name="link_edit">Editar</string>
+    <string name="snack_link_copied">Link copiado</string>
+    <string name="snack_link_removed">Link removido</string>
+    <string name="wish_share">Compartilhar este desejo</string>
+    <string name="date_added">Adicionado em %1$s</string>
+    <string name="date_changed">editado em %1$s</string>
+    <string name="date_came_true">realizado em %1$s</string>
+    <string name="action_came_true">Realizado</string>
+    <string name="snack_came_true">Realizado: “%1$s”</string>
+    <string name="photo_add">Adicionar foto</string>
+    <string name="link_open_failed">Não abre: o endereço pode estar errado</string>
+    <string name="snack_empty_wish_deleted">Desejo vazio excluído</string>
+    <string name="snack_wish_again">Quero de novo: “%1$s”</string>
 </resources>

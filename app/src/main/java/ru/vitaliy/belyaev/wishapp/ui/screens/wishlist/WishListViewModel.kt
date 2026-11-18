@@ -29,11 +29,14 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.ShareWishListTextGenerator
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishSortMode
+import ru.vitaliy.belyaev.wishapp.shared.domain.entity.isEmpty
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.ImagesRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.toWishCardModel
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishScreenResult
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishWriteQueue
 import ru.vitaliy.belyaev.wishapp.utils.ShareWishListPdfGenerator
 import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
 import ru.vitaliy.belyaev.wishapp.utils.createSharePdfDocumentIntent
@@ -50,12 +53,17 @@ sealed interface WishListEvent {
     /**
      * Снэкбар с «Вернуть». [onUndo] возвращает хотелки в раздел, [onConfirm] записывает действие
      * в базу, когда снэкбар закрылся сам или его сменило другое сообщение.
+     *
+     * [wish] есть у действия с экрана хотелки: снэкбар называет её. У пустой хотелки, удалённой
+     * при выходе, [isEmptyWish].
      */
     class Undoable(
         val action: BulkAction,
         val count: Int,
         val onUndo: () -> Unit,
         val onConfirm: () -> Unit,
+        val wish: WishEntity? = null,
+        val isEmptyWish: Boolean = false,
     ) : WishListEvent
 }
 
@@ -75,7 +83,11 @@ class WishListViewModel @Inject constructor(
     private val imagesRepository: ImagesRepository,
     private val dataStoreRepository: DataStoreRepository,
     private val dispatcherProvider: DispatcherProvider,
+    private val wishWriteQueue: WishWriteQueue,
 ) : BaseViewModel() {
+
+    /** Сетки разделов живут здесь, пока список в стеке: см. [SectionGridStates]. */
+    internal val sectionGridStates = SectionGridStates()
 
     private val _uiState = MutableStateFlow(WishListUiState())
     val uiState: StateFlow<WishListUiState> = _uiState.asStateFlow()
@@ -179,6 +191,29 @@ class WishListViewModel @Inject constructor(
         val ids = selectedIdsFlow.value
         if (ids.isEmpty()) return
         selectedIdsFlow.value = emptySet()
+        startUndoable(action, ids, wish = null, isEmptyWish = false)
+    }
+
+    /**
+     * Экран хотелки закрыт. Сначала правки с него доходят до базы, затем пустая хотелка удаляется,
+     * а «Удалить», «Сбылось» и «Снова хочу» идут так же, как массовое действие над одной карточкой:
+     * хотелка уходит из раздела сразу, база меняется после снэкбара.
+     */
+    fun onWishScreenResult(result: WishScreenResult) {
+        val ids = setOf(result.wishId)
+        // Хотелка с действием прячется сразу, ещё до записи: иначе мелькнёт на списке
+        if (result.action != null) hiddenIdsFlow.update { it + ids }
+        launchSafe {
+            val wish = wishWriteQueue.finish(result.wishId)
+            when {
+                wish == null -> hiddenIdsFlow.update { it - ids }
+                wish.isEmpty() -> startUndoable(BulkAction.DELETE, ids, wish = null, isEmptyWish = true)
+                result.action != null -> startUndoable(result.action, ids, wish = wish, isEmptyWish = false)
+            }
+        }
+    }
+
+    private fun startUndoable(action: BulkAction, ids: Set<String>, wish: WishEntity?, isEmptyWish: Boolean) {
         hiddenIdsFlow.update { it + ids }
         val pending = PendingBulk(action, ids)
         if (action != BulkAction.DELETE) pendingMoves += pending
@@ -189,6 +224,8 @@ class WishListViewModel @Inject constructor(
                     count = ids.size,
                     onUndo = { undoBulk(pending) },
                     onConfirm = { commitBulk(pending) },
+                    wish = wish,
+                    isEmptyWish = isEmptyWish,
                 ),
             )
         }

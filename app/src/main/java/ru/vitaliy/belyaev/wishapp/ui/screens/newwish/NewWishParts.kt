@@ -43,6 +43,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -106,7 +107,7 @@ internal fun DraftTextField(
             composition = new.composition
             if (new.text != value) onValueChange(new.text)
         },
-        textStyle = style.copy(color = MaterialTheme.colorScheme.onSurface),
+        textStyle = style.copy(color = style.color.takeOrElse { MaterialTheme.colorScheme.onSurface }),
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         maxLines = maxLines,
         keyboardOptions = KeyboardOptions(
@@ -208,6 +209,8 @@ internal fun LinkField(
     onDone: () -> Unit,
     onPaste: (String?) -> Unit,
     modifier: Modifier = Modifier,
+    autoFocus: Boolean = true,
+    onFocusLost: () -> Unit = {},
 ) {
     val colors = MaterialTheme.colorScheme
     val focus = remember { FocusRequester() }
@@ -215,7 +218,7 @@ internal fun LinkField(
     val clipboard = rememberClipboardState()
     LaunchedEffect(Unit) {
         withFrameNanos { }
-        if (value.isEmpty()) focus.requestFocus()
+        if (autoFocus && value.isEmpty()) focus.requestFocus()
     }
     val shape = RoundedCornerShape(16.dp)
     Column(modifier = modifier) {
@@ -261,7 +264,10 @@ internal fun LinkField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(focus)
-                        .onFocusChanged { isFocused = it.isFocused }
+                        .onFocusChanged {
+                            if (isFocused && !it.isFocused) onFocusLost()
+                            isFocused = it.isFocused
+                        }
                         .testTag(NewWishTestTags.LINK_FIELD),
                 )
             }

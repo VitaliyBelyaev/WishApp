@@ -224,4 +224,25 @@
     <string name="photo_remove">Quitar foto</string>
     <string name="photo_add_failed">No se añadió la foto: el archivo no se abre</string>
     <string name="snack_photos_added_partly">Se añadieron %1$d de %2$d fotos</string>
+    <!-- Экран хотелки нового вида: черновики переводов -->
+    <string name="cd_back">Atrás</string>
+    <string name="tag_shown">Se muestra en la tarjeta</string>
+    <string name="tag_show">Mostrar en la tarjeta</string>
+    <string name="tag_show_hint">La tarjeta tendrá este color</string>
+    <string name="tag_remove">Quitar de este deseo</string>
+    <string name="snack_tag_removed">Etiqueta «%1$s» quitada</string>
+    <string name="link_copy">Copiar</string>
+    <string name="link_edit">Editar</string>
+    <string name="snack_link_copied">Enlace copiado</string>
+    <string name="snack_link_removed">Enlace quitado</string>
+    <string name="wish_share">Compartir este deseo</string>
+    <string name="date_added">Añadido el %1$s</string>
+    <string name="date_changed">editado el %1$s</string>
+    <string name="date_came_true">cumplido el %1$s</string>
+    <string name="action_came_true">Cumplido</string>
+    <string name="snack_came_true">Cumplido: «%1$s»</string>
+    <string name="photo_add">Añadir foto</string>
+    <string name="link_open_failed">No se abre: puede que la dirección tenga un error</string>
+    <string name="snack_empty_wish_deleted">Deseo vacío eliminado</string>
+    <string name="snack_wish_again">Lo quiero otra vez: «%1$s»</string>
 </resources>

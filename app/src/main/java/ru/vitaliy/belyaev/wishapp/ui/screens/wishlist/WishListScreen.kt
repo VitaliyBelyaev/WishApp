@@ -1,5 +1,6 @@
 package ru.vitaliy.belyaev.wishapp.ui.screens.wishlist
 
+import android.content.res.Resources
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -73,6 +74,8 @@ import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.AppSnackMessage
 import ru.vitaliy.belyaev.wishapp.ui.screens.newwish.NewWishOrigin
 import ru.vitaliy.belyaev.wishapp.ui.screens.newwish.NewWishSheetHost
 import ru.vitaliy.belyaev.wishapp.ui.screens.newwish.NewWishViewModel
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishScreenResult
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish.label
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppSpacing
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
@@ -105,6 +108,8 @@ fun WishListScreen(
     actions: WishListActions,
     incomingShare: IncomingShare? = null,
     onIncomingShareHandled: () -> Unit = {},
+    wishScreenResult: WishScreenResult? = null,
+    onWishScreenResultHandled: () -> Unit = {},
     viewModel: WishListViewModel = hiltViewModel(),
     newWishViewModel: NewWishViewModel = hiltViewModel(),
 ) {
@@ -120,14 +125,7 @@ fun WishListScreen(
             val message = when (event) {
                 WishListEvent.SharePdfFailed -> AppSnackMessage(resources.getString(R.string.share_pdf_error_message))
                 is WishListEvent.Undoable -> AppSnackMessage(
-                    text = resources.getString(
-                        when (event.action) {
-                            BulkAction.DELETE -> R.string.snack_deleted_count
-                            BulkAction.CAME_TRUE -> R.string.snack_came_true_count
-                            BulkAction.WISH_AGAIN -> R.string.snack_wish_again_count
-                        },
-                        event.count,
-                    ),
+                    text = event.text(resources),
                     actionLabel = resources.getString(R.string.snack_undo),
                     onAction = event.onUndo,
                     onDismiss = event.onConfirm,
@@ -138,8 +136,17 @@ fun WishListScreen(
             currentActions.onShowMessage(message)
         }
     }
+    // Экран хотелки вернул действие: список прячет её и показывает снэкбар с «Вернуть»
+    val currentOnResultHandled by rememberUpdatedState(onWishScreenResultHandled)
+    LaunchedEffect(wishScreenResult) {
+        if (wishScreenResult != null) {
+            viewModel.onWishScreenResult(wishScreenResult)
+            currentOnResultHandled()
+        }
+    }
 
     WishListContent(
+        gridStates = viewModel.sectionGridStates,
         state = state,
         dockSection = dockSection,
         isSharingPdf = isSharingPdf,
@@ -175,6 +182,7 @@ fun WishListScreen(
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
 private fun WishListContent(
+    gridStates: SectionGridStates,
     state: WishListUiState,
     dockSection: ListSection,
     isSharingPdf: Boolean,
@@ -224,6 +232,7 @@ private fun WishListContent(
     // картинки, и список мигал. Фильтр оставляет ту же сетку, а с начала её открывает смена запроса
     val listKey = "${state.section}|${state.sort}"
     val gridState = rememberSectionGridState(
+        states = gridStates,
         section = state.section,
         sort = state.sort,
         isFiltered = !search?.query.isNullOrEmpty(),
@@ -790,3 +799,24 @@ private suspend fun LazyStaggeredGridState.scrollToTopSmoothly(topLayout: TopLay
 private const val JUMP_ANCHOR_SHARE = 0.7f
 private const val SCROLL_TO_TOP_MILLIS = 450
 private const val MIN_CARDS_TO_PICK_PART = 2
+
+/** Текст снэкбара с «Вернуть»: с экрана хотелки с её названием, из режима выбора с числом. */
+private fun WishListEvent.Undoable.text(resources: Resources): String = when {
+    isEmptyWish -> resources.getString(R.string.snack_empty_wish_deleted)
+    wish != null -> resources.getString(
+        when (action) {
+            BulkAction.DELETE -> R.string.snack_deleted
+            BulkAction.CAME_TRUE -> R.string.snack_came_true
+            BulkAction.WISH_AGAIN -> R.string.snack_wish_again
+        },
+        wish.label(resources),
+    )
+    else -> resources.getString(
+        when (action) {
+            BulkAction.DELETE -> R.string.snack_deleted_count
+            BulkAction.CAME_TRUE -> R.string.snack_came_true_count
+            BulkAction.WISH_AGAIN -> R.string.snack_wish_again_count
+        },
+        count,
+    )
+}

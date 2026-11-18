@@ -229,4 +229,25 @@
     <string name="photo_remove">Убрать фото</string>
     <string name="photo_add_failed">Не добавилось фото: файл не открывается</string>
     <string name="snack_photos_added_partly">Добавлено %1$d фото из %2$d</string>
+    <!-- Экран хотелки нового вида: черновики переводов -->
+    <string name="cd_back">Назад</string>
+    <string name="tag_shown">Показан на карточке</string>
+    <string name="tag_show">Показывать на карточке</string>
+    <string name="tag_show_hint">Карточка станет этого цвета</string>
+    <string name="tag_remove">Убрать с этой хотелки</string>
+    <string name="snack_tag_removed">Ярлык «%1$s» убран</string>
+    <string name="link_copy">Скопировать</string>
+    <string name="link_edit">Изменить</string>
+    <string name="snack_link_copied">Ссылка скопирована</string>
+    <string name="snack_link_removed">Ссылка удалена</string>
+    <string name="wish_share">Поделиться этой хотелкой</string>
+    <string name="date_added">Добавлена %1$s</string>
+    <string name="date_changed">изменена %1$s</string>
+    <string name="date_came_true">сбылась %1$s</string>
+    <string name="action_came_true">Сбылось</string>
+    <string name="snack_came_true">Сбылось: «%1$s»</string>
+    <string name="photo_add">Добавить фото</string>
+    <string name="link_open_failed">Не открывается: возможно, адрес с ошибкой</string>
+    <string name="snack_empty_wish_deleted">Пустая хотелка удалена</string>
+    <string name="snack_wish_again">Снова хочу: «%1$s»</string>
 </resources>

@@ -142,11 +142,11 @@ UI-тест экрана списка в новом виде (вкладки, ш
 TEST_CLASS=ru.vitaliy.belyaev.wishapp.wishlist.WishListScreenTest scripts/run_smoke_test.sh
 ```
 
-Шторка новой хотелки проверяется отдельным классом `NewWishSheetTest` на той же
-основе `WishListUiTest`. Несколько классов через запятую:
+Шторка новой хотелки проверяется отдельным классом `NewWishSheetTest`, экран хотелки
+нового вида — `WishScreenTest`, оба на той же основе `WishListUiTest`. Несколько классов через запятую:
 
 ```bash
-TEST_CLASS=ru.vitaliy.belyaev.wishapp.wishlist.WishListScreenTest,ru.vitaliy.belyaev.wishapp.wishlist.NewWishSheetTest scripts/run_smoke_test.sh
+TEST_CLASS=ru.vitaliy.belyaev.wishapp.wishlist.WishListScreenTest,ru.vitaliy.belyaev.wishapp.wishlist.NewWishSheetTest,ru.vitaliy.belyaev.wishapp.wishlist.WishScreenTest scripts/run_smoke_test.sh
 ```
 
 Smoke-тест на сборке `autotest` (как release, с R8; эмулятор API 26+),
@@ -200,10 +200,13 @@ CI в репозитории **нет** — проверяй вручную.
 - ktlint и detekt не проверяют `ui/old` и `navigation/old`; detekt 2.0 пока в альфе,
   `detekt` и `composeRules` в `libs.versions.toml` поднимай вместе.
 - Тестов мало: несколько юнит-тестов, тесты миграций и правил базы в `shared`,
-  `DatabaseRepositoryDeleteTest`, `SmokeTest`, `WishListScreenTest`, `NewWishSheetTest`.
+  `DatabaseRepositoryDeleteTest`, `SmokeTest`, `WishListScreenTest`, `NewWishSheetTest`,
+  `WishScreenTest`.
 - Release на Android подписан тестовым keystore — это не production-подпись.
 - Легаси: `iosApp/WishApp/ui/MainScreen/` не входит в Xcode-таргет.
 - `WishDetailedViewModel` сразу создаёт пустое желание; при выходе пустая запись
-  удаляется (`AppActivityViewModel.onWishScreenExit`).
+  удаляется (`AppActivityViewModel.onWishScreenExit`). Это прежний вид. В новом экран хотелки
+  «назад» не перехватывает (предиктивный жест): правки пишет `WishWriteQueue`, а список
+  дожидается их и удаляет пустую хотелку (`WishListViewModel.onWishScreenResult`).
 - Изменение публичного API `shared` может сломать Swift-код в `iosApp`, проверка
   из Gradle этого не поймает. Это принятый риск, пока iOS на паузе.

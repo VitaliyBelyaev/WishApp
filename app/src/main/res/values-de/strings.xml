@@ -220,4 +220,25 @@
     <string name="photo_remove">Foto entfernen</string>
     <string name="photo_add_failed">Foto nicht hinzugefügt: Die Datei lässt sich nicht öffnen</string>
     <string name="snack_photos_added_partly">%1$d von %2$d Fotos hinzugefügt</string>
+    <!-- Экран хотелки нового вида: черновики переводов -->
+    <string name="cd_back">Zurück</string>
+    <string name="tag_shown">Auf der Karte angezeigt</string>
+    <string name="tag_show">Auf der Karte anzeigen</string>
+    <string name="tag_show_hint">Die Karte erhält diese Farbe</string>
+    <string name="tag_remove">Von diesem Wunsch entfernen</string>
+    <string name="snack_tag_removed">Etikett „%1$s“ entfernt</string>
+    <string name="link_copy">Kopieren</string>
+    <string name="link_edit">Bearbeiten</string>
+    <string name="snack_link_copied">Link kopiert</string>
+    <string name="snack_link_removed">Link entfernt</string>
+    <string name="wish_share">Diesen Wunsch teilen</string>
+    <string name="date_added">Hinzugefügt am %1$s</string>
+    <string name="date_changed">geändert am %1$s</string>
+    <string name="date_came_true">erfüllt am %1$s</string>
+    <string name="action_came_true">Erfüllt</string>
+    <string name="snack_came_true">Erfüllt: „%1$s“</string>
+    <string name="photo_add">Foto hinzufügen</string>
+    <string name="link_open_failed">Lässt sich nicht öffnen: Die Adresse ist vielleicht falsch</string>
+    <string name="snack_empty_wish_deleted">Leerer Wunsch gelöscht</string>
+    <string name="snack_wish_again">Wieder gewünscht: „%1$s“</string>
 </resources>

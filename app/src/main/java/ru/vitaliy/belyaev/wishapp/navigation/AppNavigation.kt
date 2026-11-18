@@ -3,8 +3,6 @@ package ru.vitaliy.belyaev.wishapp.navigation
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
@@ -13,8 +11,13 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -30,9 +33,7 @@ import ru.vitaliy.belyaev.wishapp.navigation.old.BackupAndRestoreRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.EditTagRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.PrivacyPolicyRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.SettingsRoute
-import ru.vitaliy.belyaev.wishapp.navigation.old.WishDetailedRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.WishImagesViewerRoute
-import ru.vitaliy.belyaev.wishapp.navigation.old.WishTagsRoute
 import ru.vitaliy.belyaev.wishapp.ui.IncomingShare
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.AppSnackMessage
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.aboutapp.AboutAppScreen
@@ -41,9 +42,10 @@ import ru.vitaliy.belyaev.wishapp.ui.old.screens.backup.BackupScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.edittags.EditTagsScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.wish_images.WishImagesViewerScreenRoute
-import ru.vitaliy.belyaev.wishapp.ui.old.screens.wishdetailed.WishDetailedScreen
-import ru.vitaliy.belyaev.wishapp.ui.old.screens.wishtags.WishTagsScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.theme.WishAppTheme as OldWishAppTheme
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishScreen
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishScreenActions
+import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishScreenResult
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishlist.WishListActions
 import ru.vitaliy.belyaev.wishapp.ui.screens.wishlist.WishListScreen
 
@@ -54,10 +56,14 @@ import ru.vitaliy.belyaev.wishapp.ui.screens.wishlist.WishListScreen
 @Serializable
 data object WishListRoute : NavKey
 
+/** Экран хотелки нового вида. Новая хотелка создаётся в шторке, сюда приходят только готовые. */
+@Serializable
+data class WishRoute(val wishId: String) : NavKey
+
 private const val TRANSITION_MILLIS = 300
 
 /**
- * Список нового вида и экраны, которых в новом виде ещё нет. Они открываются в прежнем виде,
+ * Список и хотелка нового вида и экраны, которых в новом виде ещё нет. Они открываются в прежнем виде,
  * в своей теме, и уйдут по мере редизайна: ключи маршрутов общие со старой навигацией.
  */
 @OptIn(
@@ -78,14 +84,25 @@ fun AppNavigation(
     onIncomingShareHandled: () -> Unit = {},
 ) {
     val backStack = rememberNavBackStack(WishListRoute)
+    // С чем экран хотелки вернулся на список: список дожидается записей и показывает отменяемое действие
+    var wishScreenResult by remember { mutableStateOf<WishScreenResult?>(null) }
     // «Поделиться» из другого приложения: возвращаемся на список, шторку откроет он.
-    // Хотелка прежнего вида при уходе сохраняется сама
+    // Открытая хотелка закрывается так же, как по «назад»
     DisposableEffect(incomingShare) {
-        if (incomingShare != null) backStack.popToFirst()
+        if (incomingShare != null) {
+            backStack.filterIsInstance<WishRoute>().lastOrNull()?.let { wishScreenResult = WishScreenResult(it.wishId) }
+            backStack.popToFirst()
+        }
         onDispose { }
     }
     val navigate: (NavKey) -> Unit = { backStack.add(it) }
     val goBack: () -> Unit = { backStack.removeLastOrNull() }
+    // Системный «назад», в том числе предиктивный: экран хотелки не перехватывает его и закрывается
+    // сразу, а результат с простым «назад» отдаём списку здесь
+    val systemBack: () -> Unit = {
+        (backStack.lastOrNull() as? WishRoute)?.let { wishScreenResult = WishScreenResult(it.wishId) }
+        goBack()
+    }
 
     // Экран прежнего вида в своей теме
     val old: @Composable (@Composable () -> Unit) -> Unit = { content ->
@@ -96,7 +113,7 @@ fun AppNavigation(
         entry<WishListRoute> {
             WishListScreen(
                 actions = WishListActions(
-                    onWishClick = { navigate(WishDetailedRoute(wishId = it)) },
+                    onWishClick = { wishId -> navigate(WishRoute(wishId = wishId)) },
                     onSettings = { navigate(SettingsRoute) },
                     onManageTags = { navigate(EditTagRoute) },
                     onRestore = { navigate(BackupAndRestoreRoute) },
@@ -104,22 +121,20 @@ fun AppNavigation(
                 ),
                 incomingShare = incomingShare,
                 onIncomingShareHandled = onIncomingShareHandled,
+                wishScreenResult = wishScreenResult,
+                onWishScreenResultHandled = { wishScreenResult = null },
             )
         }
-        entry<WishDetailedRoute> { route ->
-            old {
-                WishDetailedScreen(
-                    wishId = route.wishId,
-                    tagId = route.tagId,
-                    sharedDraft = route.sharedDraftOrNull(),
-                    sharedImageUris = route.sharedImageUris,
-                    onBackPressed = goBack,
-                    onWishTagsClicked = { navigate(WishTagsRoute(it)) },
-                    onWishImageClicked = {
-                        navigate(WishImagesViewerRoute(wishId = it.wishId, wishImageIndex = it.wishImageIndex))
-                    },
-                )
-            }
+        entry<WishRoute> { route ->
+            WishScreen(
+                wishId = route.wishId,
+                actions = wishScreenActions(
+                    navigate = navigate,
+                    goBack = goBack,
+                    onShowMessage = onShowMessage,
+                    onResult = { result -> wishScreenResult = result },
+                ),
+            )
         }
         entry<SettingsRoute> {
             old {
@@ -139,9 +154,6 @@ fun AppNavigation(
         entry<PrivacyPolicyRoute> {
             old { PrivacyPolicyScreen(onBackPressed = goBack) }
         }
-        entry<WishTagsRoute> { route ->
-            old { WishTagsScreen(wishId = route.wishId, onBackPressed = goBack) }
-        }
         entry<EditTagRoute> {
             old { EditTagsScreen(onBackPressed = goBack) }
         }
@@ -156,33 +168,45 @@ fun AppNavigation(
         }
     }
 
-    val offsetSpec = tween<androidx.compose.ui.unit.IntOffset>(TRANSITION_MILLIS, easing = FastOutSlowInEasing)
-    val fadeSpec = tween<Float>(TRANSITION_MILLIS, easing = FastOutSlowInEasing)
-    val smallOffset: (Int) -> Int = { it / 5 }
+    val offsetSpec = tween<IntOffset>(TRANSITION_MILLIS, easing = FastOutSlowInEasing)
+    // Как в мессенджерах: новый экран целиком наезжает справа, прежний уходит влево на пятую часть.
+    // Без затухания: при жесте «назад» верхний экран просто едет за пальцем
+    val behind: (Int) -> Int = { -it / BEHIND_SHIFT_PART }
+    val push = slideInHorizontally(offsetSpec) { it } togetherWith slideOutHorizontally(offsetSpec, behind)
+    val pop = slideInHorizontally(offsetSpec, behind) togetherWith slideOutHorizontally(offsetSpec) { it }
 
     NavDisplay(
         backStack = backStack,
         modifier = modifier,
-        onBack = { goBack() },
+        onBack = systemBack,
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator(),
         ),
         entryProvider = entryProvider,
-        transitionSpec = {
-            (slideInHorizontally(offsetSpec) { smallOffset(it) } + fadeIn(fadeSpec)) togetherWith
-                (slideOutHorizontally(offsetSpec) { -smallOffset(it) } + fadeOut(fadeSpec))
-        },
-        popTransitionSpec = {
-            (slideInHorizontally(offsetSpec) { -smallOffset(it) } + fadeIn(fadeSpec)) togetherWith
-                (slideOutHorizontally(offsetSpec) { smallOffset(it) } + fadeOut(fadeSpec))
-        },
-        predictivePopTransitionSpec = {
-            (slideInHorizontally(offsetSpec) { -smallOffset(it) } + fadeIn(fadeSpec)) togetherWith
-                (slideOutHorizontally(offsetSpec) { smallOffset(it) } + fadeOut(fadeSpec))
-        },
+        transitionSpec = { push },
+        popTransitionSpec = { pop },
+        predictivePopTransitionSpec = { pop },
     )
 }
+
+/** Насколько прежний экран уходит влево: на пятую часть ширины. */
+private const val BEHIND_SHIFT_PART = 5
+
+/** Результат экрана хотелки уходит на список, туда же и возврат. */
+private fun wishScreenActions(
+    navigate: (NavKey) -> Unit,
+    goBack: () -> Unit,
+    onShowMessage: (AppSnackMessage) -> Unit,
+    onResult: (WishScreenResult) -> Unit,
+) = WishScreenActions(
+    onFinished = { result ->
+        onResult(result)
+        goBack()
+    },
+    onOpenPhoto = { wishId, index -> navigate(WishImagesViewerRoute(wishId = wishId, wishImageIndex = index)) },
+    onShowMessage = onShowMessage,
+)
 
 private fun MutableList<NavKey>.popToFirst() {
     while (size > 1) removeAt(lastIndex)

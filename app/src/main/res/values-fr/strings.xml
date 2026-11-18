@@ -223,4 +223,25 @@
     <string name="photo_remove">Retirer la photo</string>
     <string name="photo_add_failed">Photo non ajoutée : le fichier ne s’ouvre pas</string>
     <string name="snack_photos_added_partly">%1$d photos sur %2$d ajoutées</string>
+    <!-- Экран хотелки нового вида: черновики переводов -->
+    <string name="cd_back">Retour</string>
+    <string name="tag_shown">Affichée sur la carte</string>
+    <string name="tag_show">Afficher sur la carte</string>
+    <string name="tag_show_hint">La carte prendra cette couleur</string>
+    <string name="tag_remove">Retirer de ce souhait</string>
+    <string name="snack_tag_removed">Étiquette « %1$s » retirée</string>
+    <string name="link_copy">Copier</string>
+    <string name="link_edit">Modifier</string>
+    <string name="snack_link_copied">Lien copié</string>
+    <string name="snack_link_removed">Lien retiré</string>
+    <string name="wish_share">Partager ce souhait</string>
+    <string name="date_added">Ajouté le %1$s</string>
+    <string name="date_changed">modifié le %1$s</string>
+    <string name="date_came_true">réalisé le %1$s</string>
+    <string name="action_came_true">Réalisé</string>
+    <string name="snack_came_true">Réalisé : « %1$s »</string>
+    <string name="photo_add">Ajouter une photo</string>
+    <string name="link_open_failed">Impossible d’ouvrir : l’adresse est peut-être erronée</string>
+    <string name="snack_empty_wish_deleted">Souhait vide supprimé</string>
+    <string name="snack_wish_again">Envie à nouveau : « %1$s »</string>
 </resources>

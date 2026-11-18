@@ -222,4 +222,25 @@
     <string name="photo_remove">Remove photo</string>
     <string name="photo_add_failed">Photo not added: the file won’t open</string>
     <string name="snack_photos_added_partly">Added %1$d of %2$d photos</string>
+    <!-- Экран хотелки нового вида: черновики переводов -->
+    <string name="cd_back">Back</string>
+    <string name="tag_shown">Shown on card</string>
+    <string name="tag_show">Show on card</string>
+    <string name="tag_show_hint">The card takes this color</string>
+    <string name="tag_remove">Remove from this wish</string>
+    <string name="snack_tag_removed">Label “%1$s” removed</string>
+    <string name="link_copy">Copy</string>
+    <string name="link_edit">Edit</string>
+    <string name="snack_link_copied">Link copied</string>
+    <string name="snack_link_removed">Link removed</string>
+    <string name="wish_share">Share this wish</string>
+    <string name="date_added">Added %1$s</string>
+    <string name="date_changed">edited %1$s</string>
+    <string name="date_came_true">came true %1$s</string>
+    <string name="action_came_true">It came true!</string>
+    <string name="snack_came_true">Came true: “%1$s”</string>
+    <string name="photo_add">Add a photo</string>
+    <string name="link_open_failed">Can’t open it: the address may be wrong</string>
+    <string name="snack_empty_wish_deleted">Empty wish deleted</string>
+    <string name="snack_wish_again">Want it again: “%1$s”</string>
 </resources>
