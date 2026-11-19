@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Заставка нового вида пока только в debug: стартовое окно одно на оба вида, и до выпуска нового
+  вида release показывает прежнюю заставку. При выпуске перенести в main (часть 2.12).
+-->
+<resources>
+    <color name="splash_new_bg">#AE4719</color>
+
+    <style name="WishAppSplash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_new_bg</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_static</item>
+        <item name="postSplashScreenTheme">@style/Theme.WishApp</item>
+    </style>
+</resources>

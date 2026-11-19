@@ -18,12 +18,10 @@ import kotlinx.coroutines.withContext
 import ru.vitaliy.belyaev.wishapp.shared.data.coroutines.DispatcherProvider
 import ru.vitaliy.belyaev.wishapp.shared.data.database.GetWishTags
 import ru.vitaliy.belyaev.wishapp.shared.data.database.ImageQueries
-import ru.vitaliy.belyaev.wishapp.shared.data.database.Tag
 import ru.vitaliy.belyaev.wishapp.shared.data.database.TagQueries
 import ru.vitaliy.belyaev.wishapp.shared.data.database.Wish
 import ru.vitaliy.belyaev.wishapp.shared.data.database.WishAppDb
 import ru.vitaliy.belyaev.wishapp.shared.data.database.WishQueries
-import ru.vitaliy.belyaev.wishapp.shared.data.database.WishTagRelation
 import ru.vitaliy.belyaev.wishapp.shared.data.database.WishTagRelationQueries
 import ru.vitaliy.belyaev.wishapp.shared.data.mapper.ImageMapper
 import ru.vitaliy.belyaev.wishapp.shared.data.mapper.TagMapper
@@ -334,14 +332,8 @@ class DatabaseRepository(
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
-        // We need this for reactive changes of tags count in wish
-        val wishTagRelationsFlow: Flow<List<WishTagRelation>> = wishTagRelationQueries
-            .getAllRelations()
-            .asFlow()
-            .mapToList(dispatcherProvider.io())
-
-        // We need this for reactive changes of tags content in wish
-        val tagsFlow: Flow<List<TagEntity>> = observeAllTags()
+        // Перечитывается при изменении ярлыков и связей: и состав, и названия ярлыков в карточках
+        val wishTagsFlow: Flow<List<Pair<String, GetWishTags>>> = observeAllWishTags()
 
         // We need this for reactive changes of images content in wish
         val imagesFlow: Flow<List<ImageRef>> = imageQueries
@@ -349,38 +341,45 @@ class DatabaseRepository(
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
-        return combine(wishesFlow, wishTagRelationsFlow, tagsFlow, imagesFlow) { wishes, _, _, allImages ->
-            val imagesByWishId = allImages.groupBy { it.wishId }
-            val wishEntities = wishes.map {
-                val tags: List<GetWishTags> = wishTagRelationQueries
-                    .getWishTags(it.wishId)
-                    .executeAsList()
-
-                WishMapper.mapToDomain(it, tags, imagesByWishId[it.wishId].orEmpty())
-            }
+        return combine(wishesFlow, wishTagsFlow, imagesFlow) { wishes, wishTags, allImages ->
+            val wishEntities = mapWishes(wishes, wishTags, allImages)
             sortWishesByTitle(wishEntities, sortMode)
-            // Запросы тегов выше синхронные, а combine работает в контексте подписчика
         }.flowOn(dispatcherProvider.io())
+    }
+
+    /**
+     * Ярлыки всех хотелок одним запросом. Раньше на каждую хотелку шёл свой `getWishTags`, и на
+     * двухстах хотелках каждое изменение списка стоило двухсот запросов.
+     */
+    private fun allWishTagsQuery(): Query<Pair<String, GetWishTags>> =
+        wishTagRelationQueries.getAllWishTags { wishId, tagId, title, color, isShown, relationOrder ->
+            wishId to GetWishTags(tagId, title, color, isShown, relationOrder)
+        }
+
+    private fun observeAllWishTags(): Flow<List<Pair<String, GetWishTags>>> =
+        allWishTagsQuery().asFlow().mapToList(dispatcherProvider.io())
+
+    private fun mapWishes(
+        wishes: List<Wish>,
+        wishTags: List<Pair<String, GetWishTags>>,
+        images: List<ImageRef>,
+    ): List<WishEntity> {
+        // groupBy сохраняет порядок строк, поэтому ярлыки хотелки остаются по названию
+        val tagsByWishId = wishTags.groupBy({ it.first }, { it.second })
+        val imagesByWishId = images.groupBy { it.wishId }
+        return wishes.map {
+            WishMapper.mapToDomain(it, tagsByWishId[it.wishId].orEmpty(), imagesByWishId[it.wishId].orEmpty())
+        }
     }
 
     @NativeCoroutines
     override suspend fun getAllWishes(isCompleted: Boolean): List<WishEntity> {
         return withContext(dispatcherProvider.io()) {
-            val imagesByWishId = imageQueries
-                .getAllRefs(ImageMapper::mapToRef)
-                .executeAsList()
-                .groupBy { it.wishId }
-
-            wishQueries
-                .getAll(isCompleted)
-                .executeAsList()
-                .map {
-                    val tags: List<GetWishTags> = wishTagRelationQueries
-                        .getWishTags(it.wishId)
-                        .executeAsList()
-
-                    WishMapper.mapToDomain(it, tags, imagesByWishId[it.wishId].orEmpty())
-                }
+            mapWishes(
+                wishes = wishQueries.getAll(isCompleted).executeAsList(),
+                wishTags = allWishTagsQuery().executeAsList(),
+                images = imageQueries.getAllRefs(ImageMapper::mapToRef).executeAsList(),
+            )
         }
     }
 
@@ -422,8 +421,8 @@ class DatabaseRepository(
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
-        // We need this for reactive changes of tag content
-        val tagFlow: Flow<Tag> = tagQueries.getById(tagId).asFlow().mapToOne(dispatcherProvider.io())
+        // Перечитывается и при переименовании ярлыка, и при изменении других ярлыков хотелок
+        val wishTagsFlow: Flow<List<Pair<String, GetWishTags>>> = observeAllWishTags()
 
         // We need this for reactive changes of images content in wish
         val imagesFlow: Flow<List<ImageRef>> = imageQueries
@@ -431,17 +430,9 @@ class DatabaseRepository(
             .asFlow()
             .mapToList(dispatcherProvider.io())
 
-        return combine(wishesByTagFlow, tagFlow, imagesFlow) { wishes, _, allImages ->
-            val imagesByWishId = allImages.groupBy { it.wishId }
-            val wishEntities = wishes.map {
-                val tags: List<GetWishTags> = wishTagRelationQueries
-                    .getWishTags(it.wishId)
-                    .executeAsList()
-
-                WishMapper.mapToDomain(it, tags, imagesByWishId[it.wishId].orEmpty())
-            }
+        return combine(wishesByTagFlow, wishTagsFlow, imagesFlow) { wishes, wishTags, allImages ->
+            val wishEntities = mapWishes(wishes, wishTags, allImages)
             sortWishesByTitle(wishEntities, sortMode)
-            // Запросы тегов выше синхронные, а combine работает в контексте подписчика
         }.flowOn(dispatcherProvider.io())
     }
 

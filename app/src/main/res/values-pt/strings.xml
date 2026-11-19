@@ -259,4 +259,25 @@
     <string name="link_open_failed">Não abre: o endereço pode estar errado</string>
     <string name="snack_empty_wish_deleted">Desejo vazio excluído</string>
     <string name="snack_wish_again">Quero de novo: “%1$s”</string>
+
+    <!-- Настройки нового вида, черновик перевода -->
+    <string name="settings_appearance">Aparência</string>
+    <string name="settings_data">Dados</string>
+    <string name="tags_manage_title">Gerenciar etiquetas</string>
+    <string name="settings_tags_sub">Nomes, cores, exclusão</string>
+    <string name="theme_auto">Auto</string>
+    <string name="color_title">Cor</string>
+    <string name="color_persimmon">Caqui</string>
+    <string name="color_persimmon_sub">Exclusivo</string>
+    <string name="color_wallpaper">Como o papel de parede</string>
+    <string name="settings_show_tips">Mostrar dicas</string>
+    <string name="settings_rate">Avaliar</string>
+    <string name="settings_share">Compartilhar com amigos</string>
+    <string name="look_title">Visual do app</string>
+    <string name="look_new">Novo</string>
+    <string name="look_new_sub">Mais fotos, menos botões</string>
+    <string name="look_classic">Clássico</string>
+    <string name="look_classic_sub">Como antes</string>
+    <string name="look_hint">Desejos e etiquetas continuam os mesmos, troque quando quiser</string>
+    <string name="backup_title">Backup</string>
 </resources>

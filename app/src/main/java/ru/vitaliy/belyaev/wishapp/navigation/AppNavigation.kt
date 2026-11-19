@@ -40,11 +40,12 @@ import ru.vitaliy.belyaev.wishapp.ui.old.screens.aboutapp.AboutAppScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.aboutapp.privacypolicy.PrivacyPolicyScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.backup.BackupScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.edittags.EditTagsScreen
-import ru.vitaliy.belyaev.wishapp.ui.old.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.theme.WishAppTheme as OldWishAppTheme
 import ru.vitaliy.belyaev.wishapp.ui.screens.photos.PhotoHeroLink
 import ru.vitaliy.belyaev.wishapp.ui.screens.photos.PhotoViewerActions
 import ru.vitaliy.belyaev.wishapp.ui.screens.photos.PhotoViewerScreen
+import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsActions
+import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishScreenActions
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishScreenResult
@@ -158,13 +159,7 @@ fun AppNavigation(
             )
         }
         entry<SettingsRoute> {
-            old {
-                SettingsScreen(
-                    onBackPressed = goBack,
-                    onAboutAppClicked = { navigate(AboutAppRoute) },
-                    onBackupAndRestoreClicked = { navigate(BackupAndRestoreRoute) },
-                )
-            }
+            SettingsScreen(actions = settingsActions(navigate = navigate, goBack = goBack))
         }
         entry<BackupAndRestoreRoute> {
             old { BackupScreen(onBackPressed = goBack, analyticsRepository = analyticsRepository) }
@@ -224,3 +219,10 @@ private fun wishScreenActions(
 private fun MutableList<NavKey>.popToFirst() {
     while (size > 1) removeAt(lastIndex)
 }
+
+private fun settingsActions(navigate: (NavKey) -> Unit, goBack: () -> Unit) = SettingsActions(
+    onBack = goBack,
+    onBackup = { navigate(BackupAndRestoreRoute) },
+    onManageTags = { navigate(EditTagRoute) },
+    onAbout = { navigate(AboutAppRoute) },
+)

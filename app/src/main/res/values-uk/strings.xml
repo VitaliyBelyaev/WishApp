@@ -266,4 +266,25 @@
     <string name="link_open_failed">Не відкривається: можливо, в адресі помилка</string>
     <string name="snack_empty_wish_deleted">Порожню хотілку видалено</string>
     <string name="snack_wish_again">Знову хочу: «%1$s»</string>
+
+    <!-- Настройки нового вида, черновик перевода -->
+    <string name="settings_appearance">Оформлення</string>
+    <string name="settings_data">Дані</string>
+    <string name="tags_manage_title">Керування ярликами</string>
+    <string name="settings_tags_sub">Назви, кольори, видалення</string>
+    <string name="theme_auto">Авто</string>
+    <string name="color_title">Колір</string>
+    <string name="color_persimmon">Хурма</string>
+    <string name="color_persimmon_sub">Фірмовий</string>
+    <string name="color_wallpaper">Як шпалери</string>
+    <string name="settings_show_tips">Показати підказки</string>
+    <string name="settings_rate">Оцінити</string>
+    <string name="settings_share">Поділитися з друзями</string>
+    <string name="look_title">Вигляд застосунку</string>
+    <string name="look_new">Новий</string>
+    <string name="look_new_sub">Більше фото, менше кнопок</string>
+    <string name="look_classic">Класичний</string>
+    <string name="look_classic_sub">Як було раніше</string>
+    <string name="look_hint">Хотелки й ярлики ті самі, перемикайте, коли зручно</string>
+    <string name="backup_title">Резервна копія</string>
 </resources>

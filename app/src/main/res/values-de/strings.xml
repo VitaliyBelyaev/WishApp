@@ -256,4 +256,25 @@
     <string name="link_open_failed">Lässt sich nicht öffnen: Die Adresse ist vielleicht falsch</string>
     <string name="snack_empty_wish_deleted">Leerer Wunsch gelöscht</string>
     <string name="snack_wish_again">Wieder gewünscht: „%1$s“</string>
+
+    <!-- Настройки нового вида, черновик перевода -->
+    <string name="settings_appearance">Darstellung</string>
+    <string name="settings_data">Daten</string>
+    <string name="tags_manage_title">Etiketten verwalten</string>
+    <string name="settings_tags_sub">Namen, Farben, Löschen</string>
+    <string name="theme_auto">Auto</string>
+    <string name="color_title">Farbe</string>
+    <string name="color_persimmon">Kaki</string>
+    <string name="color_persimmon_sub">Markenfarbe</string>
+    <string name="color_wallpaper">Wie Hintergrund</string>
+    <string name="settings_show_tips">Tipps anzeigen</string>
+    <string name="settings_rate">Bewerten</string>
+    <string name="settings_share">Mit Freunden teilen</string>
+    <string name="look_title">App-Ansicht</string>
+    <string name="look_new">Neu</string>
+    <string name="look_new_sub">Mehr Fotos, weniger Tasten</string>
+    <string name="look_classic">Klassisch</string>
+    <string name="look_classic_sub">Wie bisher</string>
+    <string name="look_hint">Wünsche und Etiketten bleiben gleich, wechseln Sie jederzeit</string>
+    <string name="backup_title">Sicherung</string>
 </resources>

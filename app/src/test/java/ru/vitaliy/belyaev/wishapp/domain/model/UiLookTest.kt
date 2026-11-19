@@ -24,6 +24,40 @@ class UiLookTest {
     }
 
     @Test
+    fun lookChoiceInSettings() {
+        // Релиз: выбор только при choice и только когда новый вид выпущен
+        assertEquals(
+            true,
+            isUiLookChoiceAvailable(UiLookMode.CHOICE, allowChoiceInOldOnly = false, isNewLookReleased = true),
+        )
+        assertEquals(
+            false,
+            isUiLookChoiceAvailable(UiLookMode.NEW_ONLY, allowChoiceInOldOnly = false, isNewLookReleased = true),
+        )
+        assertEquals(
+            false,
+            isUiLookChoiceAvailable(UiLookMode.OLD_ONLY, allowChoiceInOldOnly = false, isNewLookReleased = true),
+        )
+        assertEquals(
+            false,
+            isUiLookChoiceAvailable(UiLookMode.CHOICE, allowChoiceInOldOnly = false, isNewLookReleased = false),
+        )
+        // Отладка: пока вид не выпущен или флаг old_only, вернуться в прежний можно всегда
+        assertEquals(
+            true,
+            isUiLookChoiceAvailable(UiLookMode.OLD_ONLY, allowChoiceInOldOnly = true, isNewLookReleased = true),
+        )
+        assertEquals(
+            true,
+            isUiLookChoiceAvailable(UiLookMode.NEW_ONLY, allowChoiceInOldOnly = true, isNewLookReleased = false),
+        )
+        assertEquals(
+            false,
+            isUiLookChoiceAvailable(UiLookMode.NEW_ONLY, allowChoiceInOldOnly = true, isNewLookReleased = true),
+        )
+    }
+
+    @Test
     fun releaseBeforeNewLookIsReadyAlwaysOld() {
         UiLookMode.entries.forEach { mode ->
             listOf(null, UiLook.OLD, UiLook.NEW).forEach { choice ->

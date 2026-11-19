@@ -32,6 +32,7 @@ import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.InAppUpda
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishCreatedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishDetailedChangeWishCompletenessClickedEvent
 import ru.vitaliy.belyaev.wishapp.domain.model.analytics.action_events.WishImagesViewerDeleteImageConfirmedEvent
+import ru.vitaliy.belyaev.wishapp.domain.model.isUiLookChoiceAvailable
 import ru.vitaliy.belyaev.wishapp.domain.model.resolveUiLook
 import ru.vitaliy.belyaev.wishapp.domain.model.storedValue
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
@@ -73,6 +74,11 @@ class AppActivityViewModel @Inject constructor(
 
     /** Вид приложения, `null` пока не прочитан выбор пользователя: на это время держим сплэш. */
     val uiLook: StateFlow<UiLook?> = _uiLook
+
+    private val _isUiLookChoiceAvailable = MutableStateFlow(false)
+
+    /** Есть ли в настройках нового вида выбор вида: см. [isUiLookChoiceAvailable]. */
+    val isUiLookChoiceAvailable: StateFlow<Boolean> = _isUiLookChoiceAvailable
 
     private val _useWallpaperColors: MutableStateFlow<Boolean?> = MutableStateFlow(null)
 
@@ -117,6 +123,11 @@ class AppActivityViewModel @Inject constructor(
                     remoteConfigRepository.fetchForNextLaunch()
                     activated
                 }
+                _isUiLookChoiceAvailable.value = isUiLookChoiceAvailable(
+                    mode = uiLookMode,
+                    allowChoiceInOldOnly = BuildConfig.DEBUG,
+                    isNewLookReleased = IS_NEW_LOOK_RELEASED,
+                )
                 // Выбор пользователя меняет вид сразу: это его действие, а не флаг
                 dataStoreRepository.uiLookChoiceFlow
                     .map { choice ->
@@ -309,14 +320,6 @@ class AppActivityViewModel @Inject constructor(
 
     fun onUiLookChosen(uiLook: UiLook) {
         launchSafe { dataStoreRepository.updateUiLookChoice(uiLook) }
-    }
-
-    fun onThemeChosen(theme: Theme) {
-        launchSafe { dataStoreRepository.updateSelectedTheme(theme) }
-    }
-
-    fun onUseWallpaperColorsChanged(newValue: Boolean) {
-        launchSafe { dataStoreRepository.updateUseWallpaperColors(newValue) }
     }
 
     private companion object {

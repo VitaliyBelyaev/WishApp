@@ -64,3 +64,5 @@ Compose:
     allowedCompositionLocals:
       - LocalExtraColors
       - LocalIsDarkTheme
+      # Смена темы кругом от кнопки (components/reveal)
+      - LocalThemeReveal

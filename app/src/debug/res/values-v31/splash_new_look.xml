@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+: значок рисуется анимацией, см. splash_icon_animated -->
+<resources>
+    <style name="WishAppSplash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_new_bg</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_animated</item>
+        <item name="windowSplashScreenAnimationDuration">940</item>
+        <item name="postSplashScreenTheme">@style/Theme.WishApp</item>
+    </style>
+</resources>

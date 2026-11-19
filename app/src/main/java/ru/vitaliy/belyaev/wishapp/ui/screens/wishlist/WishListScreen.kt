@@ -2,6 +2,7 @@ package ru.vitaliy.belyaev.wishapp.ui.screens.wishlist
 
 import android.content.res.Resources
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.ReportDrawnWhen
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -64,6 +65,7 @@ import ru.vitaliy.belyaev.wishapp.ui.components.dock.DockTab
 import ru.vitaliy.belyaev.wishapp.ui.components.dock.FloatingDock
 import ru.vitaliy.belyaev.wishapp.ui.components.dock.FloatingDockFade
 import ru.vitaliy.belyaev.wishapp.ui.components.dock.FloatingDockHeight
+import ru.vitaliy.belyaev.wishapp.ui.components.header.headerHeight
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.WishCardModel
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.WishItemDrag
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.WishSelection
@@ -114,6 +116,8 @@ fun WishListScreen(
     newWishViewModel: NewWishViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    // Хотелки загружены: заставка на холодном старте ждёт этого, см. AppActivity
+    ReportDrawnWhen { !state.isLoading }
     val preparingShare by viewModel.preparingShare.collectAsStateWithLifecycle()
     val dockSection by viewModel.dockSection.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -349,6 +353,7 @@ private fun WishListContent(
                 )
             }
         }
+        ListSkeleton(isVisible = state.isLoading, contentPadding = contentPadding)
 
         if (state.isSelectionMode) {
             SelectionHeader(

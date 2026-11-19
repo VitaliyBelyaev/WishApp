@@ -258,4 +258,26 @@
     <string name="link_open_failed">Can’t open it: the address may be wrong</string>
     <string name="snack_empty_wish_deleted">Empty wish deleted</string>
     <string name="snack_wish_again">Want it again: “%1$s”</string>
+
+    <!-- Настройки нового вида, черновик перевода -->
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_data">Data</string>
+    <string name="tags_manage_title">Manage labels</string>
+    <string name="settings_tags_sub">Names, colors, deleting</string>
+    <string name="theme_auto">Auto</string>
+    <string name="color_title">Color</string>
+    <string name="color_persimmon">Persimmon</string>
+    <string name="color_persimmon_sub">Signature</string>
+    <string name="color_wallpaper">Like wallpaper</string>
+    <string name="settings_show_tips">Show tips</string>
+    <string name="settings_rate">Rate</string>
+    <string name="settings_share">Share with friends</string>
+    <string name="look_title">App look</string>
+    <string name="look_new">New</string>
+    <string name="look_new_sub">More photos, fewer buttons</string>
+    <string name="look_classic">Classic</string>
+    <string name="look_classic_sub">The way it was</string>
+    <string name="look_hint">Your wishes and labels stay the same, switch whenever you like</string>
+    <string name="backup_title">Backup</string>
+    <string name="color_wallpaper_sub" translatable="false">Material You</string>
 </resources>

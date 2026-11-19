@@ -39,11 +39,14 @@ fun isWallpaperColorsAvailable(): Boolean = Build.VERSION.SDK_INT >= Build.VERSI
  *
  * По умолчанию цвета «Хурма» из токенов на всех версиях Android. С [useWallpaperColors] на Android 12+
  * интерфейс берёт цвета из обоев, а тона карточек `paper-*` подстраиваются под `primary` обоев.
+ *
+ * @param holdSystemBars не менять пока значки системных панелей под новую тему.
  */
 @Composable
 fun AppTheme(
     selectedTheme: Theme,
     useWallpaperColors: Boolean,
+    holdSystemBars: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val darkTheme = when (selectedTheme) {
@@ -75,9 +78,11 @@ fun AppTheme(
     }
 
     // Иконки системных панелей под тему приложения, а не системы: тема выбирается в настройках.
-    // Навигационная панель прозрачная, контент нового вида рисуется под ней
+    // Навигационная панель прозрачная, контент нового вида рисуется под ней.
+    // [holdSystemBars]: пока круг смены темы не дошёл до верха, значки остаются под старую тему
     val activity = LocalActivity.current as? ComponentActivity
-    LaunchedEffect(activity, darkTheme) {
+    LaunchedEffect(activity, darkTheme, holdSystemBars) {
+        if (holdSystemBars) return@LaunchedEffect
         val style = if (darkTheme) {
             SystemBarStyle.dark(AndroidColor.TRANSPARENT)
         } else {

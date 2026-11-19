@@ -64,6 +64,14 @@ JOIN WishTagRelation relation
 ON tag.tagId = relation.tagId AND relation.wishId = ?
 ORDER BY tag.title ASC;
 
+-- Ярлыки всех хотелок одним запросом для списков: порядок внутри хотелки тот же, что у getWishTags.
+getAllWishTags:
+SELECT relation.wishId, tag.tagId, tag.title, tag.color, relation.isShown, relation.rowid AS relationOrder
+FROM Tag tag
+JOIN WishTagRelation relation
+ON tag.tagId = relation.tagId
+ORDER BY tag.title ASC;
+
 delete:
 DELETE FROM WishTagRelation
 WHERE wishId = ?

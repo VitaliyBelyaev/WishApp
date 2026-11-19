@@ -259,4 +259,25 @@
     <string name="link_open_failed">Impossible d’ouvrir : l’adresse est peut-être erronée</string>
     <string name="snack_empty_wish_deleted">Souhait vide supprimé</string>
     <string name="snack_wish_again">Envie à nouveau : « %1$s »</string>
+
+    <!-- Настройки нового вида, черновик перевода -->
+    <string name="settings_appearance">Apparence</string>
+    <string name="settings_data">Données</string>
+    <string name="tags_manage_title">Gérer les étiquettes</string>
+    <string name="settings_tags_sub">Noms, couleurs, suppression</string>
+    <string name="theme_auto">Auto</string>
+    <string name="color_title">Couleur</string>
+    <string name="color_persimmon">Kaki</string>
+    <string name="color_persimmon_sub">Signature</string>
+    <string name="color_wallpaper">Comme le fond d’écran</string>
+    <string name="settings_show_tips">Afficher les conseils</string>
+    <string name="settings_rate">Évaluer</string>
+    <string name="settings_share">Partager avec des amis</string>
+    <string name="look_title">Aspect de l’appli</string>
+    <string name="look_new">Nouveau</string>
+    <string name="look_new_sub">Plus de photos, moins de boutons</string>
+    <string name="look_classic">Classique</string>
+    <string name="look_classic_sub">Comme avant</string>
+    <string name="look_hint">Souhaits et étiquettes restent les mêmes, changez quand vous voulez</string>
+    <string name="backup_title">Sauvegarde</string>
 </resources>

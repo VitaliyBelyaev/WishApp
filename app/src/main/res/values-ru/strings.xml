@@ -265,4 +265,25 @@
     <string name="link_open_failed">Не открывается: возможно, адрес с ошибкой</string>
     <string name="snack_empty_wish_deleted">Пустая хотелка удалена</string>
     <string name="snack_wish_again">Снова хочу: «%1$s»</string>
+
+    <!-- Настройки нового вида, черновик перевода -->
+    <string name="settings_appearance">Оформление</string>
+    <string name="settings_data">Данные</string>
+    <string name="tags_manage_title">Управление ярлыками</string>
+    <string name="settings_tags_sub">Названия, цвета, удаление</string>
+    <string name="theme_auto">Авто</string>
+    <string name="color_title">Цвет</string>
+    <string name="color_persimmon">Хурма</string>
+    <string name="color_persimmon_sub">Фирменный</string>
+    <string name="color_wallpaper">Как обои</string>
+    <string name="settings_show_tips">Показать подсказки</string>
+    <string name="settings_rate">Оценить</string>
+    <string name="settings_share">Поделиться с друзьями</string>
+    <string name="look_title">Вид приложения</string>
+    <string name="look_new">Новый</string>
+    <string name="look_new_sub">Больше фото, меньше кнопок</string>
+    <string name="look_classic">Классический</string>
+    <string name="look_classic_sub">Как было раньше</string>
+    <string name="look_hint">Хотелки и ярлыки одни и те же, переключайте когда удобно</string>
+    <string name="backup_title">Резервная копия</string>
 </resources>

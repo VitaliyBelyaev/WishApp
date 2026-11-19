@@ -200,6 +200,41 @@ class DatabaseRepositoryRulesTest {
         assertTrue(wish.tags.isEmpty())
     }
 
+    @Test
+    fun lists_haveSameTagsAsSingleWish() = runTest {
+        val first = insertWish()
+        val second = insertWish()
+        insertWish()
+        val homeId = repository.insertTag("Дом")
+        val gardenId = repository.insertTag("Сад")
+        val kitchenId = repository.insertTag("Кухня")
+        repository.insertWishTagRelation(first.id, gardenId)
+        repository.insertWishTagRelation(first.id, homeId)
+        repository.insertWishTagRelation(first.id, kitchenId)
+        repository.insertWishTagRelation(second.id, homeId)
+        repository.setShownTag(first.id, kitchenId)
+        repository.updateTagTitle("Двор", gardenId)
+
+        val expected = listOf(first, second).associate { wish ->
+            repository.getWishById(wish.id).let { it.id to (it.tags.map { tag -> tag.title } to it.shownTagId) }
+        }
+        assertEquals(listOf("Двор", "Дом", "Кухня") to kitchenId, expected[first.id])
+
+        val lists = listOf(
+            repository.observeAllWishes(isCompleted = false).first(),
+            repository.getAllWishes(isCompleted = false),
+            repository.observeWishesByTag(homeId).first(),
+        )
+        lists.forEach { wishes ->
+            wishes.filter { it.id in expected }.forEach {
+                assertEquals(expected[it.id], it.tags.map { tag -> tag.title } to it.shownTagId)
+            }
+        }
+        assertEquals(3, lists[0].size)
+        assertTrue(lists[0].single { it.id !in expected }.tags.isEmpty())
+        assertEquals(setOf(first.id, second.id), lists[2].map { it.id }.toSet())
+    }
+
     private suspend fun insertCompletedWish(title: String, completedAt: Long?, updatedAt: Long) {
         val wish = createEmptyWish().copy(
             title = title,

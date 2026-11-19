@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.ui.components.dock.FloatingDockHeight
 import ru.vitaliy.belyaev.wishapp.ui.components.dock.floatingDarkOutline
+import ru.vitaliy.belyaev.wishapp.ui.components.header.headerHeight
 import ru.vitaliy.belyaev.wishapp.ui.theme.AppThemeExtras
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppElevation
 import ru.vitaliy.belyaev.wishapp.ui.theme.WishAppSpacing

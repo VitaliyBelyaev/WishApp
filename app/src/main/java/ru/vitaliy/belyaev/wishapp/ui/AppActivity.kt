@@ -1,7 +1,11 @@
 package ru.vitaliy.belyaev.wishapp.ui
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
+import android.view.animation.LinearInterpolator
+import android.view.animation.PathInterpolator
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -15,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.play.core.review.ReviewManagerFactory
@@ -61,10 +66,20 @@ internal class AppActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-        // Вид выбирается до первого кадра: иначе мелькнул бы не тот
+        // Вид выбирается до первого кадра: иначе мелькнул бы не тот. Ниже Android 12 значок
+        // заставки неподвижен, и новый вид чуть ждёт хотелок (`ReportDrawnWhen` в списке), но не
+        // дольше FIRST_CONTENT_WAIT_MS. С Android 12 хотелки грузятся, пока рисуется значок, и
+        // заставка их не ждёт. Не успели — список покажет заготовки карточек
+        val splashShownAt = SystemClock.uptimeMillis()
         splashScreen.setKeepOnScreenCondition {
-            viewModel.uiLook.value == null || viewModel.useWallpaperColors.value == null
+            val uiLook = viewModel.uiLook.value
+            val waitsForList = uiLook == UiLook.NEW &&
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.S &&
+                !fullyDrawnReporter.isFullyDrawnReported &&
+                SystemClock.uptimeMillis() - splashShownAt < FIRST_CONTENT_WAIT_MS
+            uiLook == null || viewModel.useWallpaperColors.value == null || waitsForList
         }
+        splashScreen.setOnExitAnimationListener(::playSplashExit)
         enableEdgeToEdge()
 
         if (savedInstanceState == null) {
@@ -164,4 +179,52 @@ internal class AppActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         intent.toIncomingShare(packageName)?.let(viewModel::onIncomingShare)
     }
+
+    /**
+     * Выход заставки, как в прототипе: значок дорисовывается до конца, стоит SPLASH_SETTLE_MS,
+     * потом уменьшается и гаснет вместе с фоном. Гасить значок отдельно нужно: на Android 12+ он
+     * рисуется своим слоем, и прозрачность заставки на него не действует. Заставка
+     * растворяется в экран за 200 мс. Хотелки за это время грузятся под ней; не успели — список
+     * покажет заготовки карточек. Ниже Android 12 значок не анимируется, и ждать нечего. При
+     * выключенных в системе анимациях задержка и выход сжимаются в ноль сами.
+     */
+    private fun playSplashExit(provider: SplashScreenViewProvider) {
+        // Начало анимации значка система отдаёт по настенным часам, не по uptimeMillis
+        val iconLeftMs = provider.iconAnimationStartMillis + provider.iconAnimationDurationMillis -
+            System.currentTimeMillis()
+        // Короткая пауза, когда значок уже встал, как в прототипе
+        val delayMs = iconLeftMs.coerceIn(0L, SPLASH_ICON_MAX_WAIT_MS) + SPLASH_SETTLE_MS
+        provider.iconView.animate()
+            .setStartDelay(delayMs)
+            .setDuration(SPLASH_EXIT_MS)
+            .setInterpolator(splashExitEasing())
+            .scaleX(SPLASH_EXIT_ICON_SCALE)
+            .scaleY(SPLASH_EXIT_ICON_SCALE)
+            .alpha(0f)
+            .start()
+        provider.view.animate()
+            .setStartDelay(delayMs)
+            .setDuration(SPLASH_EXIT_MS)
+            .setInterpolator(LinearInterpolator())
+            .alpha(0f)
+            .withEndAction(provider::remove)
+            .start()
+    }
 }
+
+/**
+ * Сколько неподвижная заставка (ниже Android 12) ждёт хотелок на холодном старте нового вида:
+ * заметно дольше нужного она висеть не должна.
+ */
+private const val FIRST_CONTENT_WAIT_MS = 300L
+
+private const val SPLASH_EXIT_MS = 200L
+private const val SPLASH_SETTLE_MS = 50L
+
+/** Ускорение на выходе, `cubic-bezier(.3, 0, .8, .15)` из прототипа. */
+@Suppress("MagicNumber") // Точки кривой Безье, именовать их нечего
+private fun splashExitEasing() = PathInterpolator(0.3f, 0f, 0.8f, 0.15f)
+private const val SPLASH_EXIT_ICON_SCALE = 0.86f
+
+/** Значок заставки рисуется около 940 мс; больше секунды не ждём, даже если система сказала иначе. */
+private const val SPLASH_ICON_MAX_WAIT_MS = 1_000L

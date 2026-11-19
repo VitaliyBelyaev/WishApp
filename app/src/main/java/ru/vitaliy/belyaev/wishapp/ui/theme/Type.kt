@@ -85,3 +85,9 @@ val Typography.body: TextStyle get() = bodyLarge
 val Typography.bodyS: TextStyle get() = bodyMedium
 val Typography.label: TextStyle get() = labelLarge
 val Typography.labelS: TextStyle get() = labelMedium
+
+/**
+ * Заголовок вложенных экранов (настройки, резервная копия, ярлыки): 22 sp, как у верхней панели
+ * Material 3, Onest полужирный. Крупный Unbounded [displayL] только у разделов списка.
+ */
+val Typography.pageTitle: TextStyle get() = titleLarge.copy(fontSize = 22.sp, lineHeight = 28.sp)

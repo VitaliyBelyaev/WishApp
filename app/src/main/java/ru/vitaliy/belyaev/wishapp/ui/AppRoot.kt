@@ -12,6 +12,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -25,6 +27,9 @@ import ru.vitaliy.belyaev.wishapp.navigation.AppNavigation
 import ru.vitaliy.belyaev.wishapp.navigation.old.Navigation
 import ru.vitaliy.belyaev.wishapp.navigation.old.Navigator
 import ru.vitaliy.belyaev.wishapp.ui.components.dock.FloatingDockHeight
+import ru.vitaliy.belyaev.wishapp.ui.components.reveal.LocalThemeReveal
+import ru.vitaliy.belyaev.wishapp.ui.components.reveal.rememberThemeRevealState
+import ru.vitaliy.belyaev.wishapp.ui.components.reveal.themeReveal
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.AppSnackbarHost
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.CollectAppSnackMessages
 import ru.vitaliy.belyaev.wishapp.ui.old.theme.WishAppTheme as OldWishAppTheme
@@ -61,30 +66,46 @@ internal fun NewLookRoot(
     analyticsRepository: AnalyticsRepository,
     appViewModel: AppActivityViewModel,
 ) {
-    AppTheme(selectedTheme = selectedTheme, useWallpaperColors = useWallpaperColors) {
+    val reveal = rememberThemeRevealState()
+    AppTheme(
+        selectedTheme = selectedTheme,
+        useWallpaperColors = useWallpaperColors,
+        holdSystemBars = reveal.isCoveringTop,
+    ) {
         val incomingShare by appViewModel.incomingShare.collectAsStateWithLifecycle()
         val snackbarHostState = remember { SnackbarHostState() }
         CollectAppSnackMessages(messages = appViewModel.showSnackOnMainFlow, hostState = snackbarHostState)
 
-        // Surface задаёт фон и цвет текста по умолчанию для всех экранов нового вида
-        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                AppNavigation(
-                    selectedTheme = selectedTheme,
-                    analyticsRepository = analyticsRepository,
-                    onShowMessage = appViewModel::showSnack,
-                    modifier = Modifier.fillMaxSize(),
-                    incomingShare = incomingShare,
-                    onIncomingShareHandled = { appViewModel.consumeIncomingShare() },
-                )
-                // Над плавающей панелью списка. На экранах без панели снэкбар тоже стоит на этой высоте
-                AppSnackbarHost(
-                    hostState = snackbarHostState,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .windowInsetsPadding(WindowInsets.navigationBars)
-                        .padding(bottom = FloatingDockHeight + WishAppSpacing.s3 * 2),
-                )
+        val appearance = MaterialTheme.colorScheme.surface to MaterialTheme.colorScheme.primary
+        SideEffect { reveal.appearance = appearance }
+
+        // Surface задаёт фон и цвет текста по умолчанию для всех экранов нового вида.
+        // Через themeReveal смена темы в настройках расходится кругом от кнопки
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .themeReveal(reveal),
+            color = MaterialTheme.colorScheme.surface,
+        ) {
+            CompositionLocalProvider(LocalThemeReveal provides reveal) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    AppNavigation(
+                        selectedTheme = selectedTheme,
+                        analyticsRepository = analyticsRepository,
+                        onShowMessage = appViewModel::showSnack,
+                        modifier = Modifier.fillMaxSize(),
+                        incomingShare = incomingShare,
+                        onIncomingShareHandled = { appViewModel.consumeIncomingShare() },
+                    )
+                    // Над плавающей панелью списка. На экранах без панели снэкбар тоже стоит на этой высоте
+                    AppSnackbarHost(
+                        hostState = snackbarHostState,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .windowInsetsPadding(WindowInsets.navigationBars)
+                            .padding(bottom = FloatingDockHeight + WishAppSpacing.s3 * 2),
+                    )
+                }
             }
         }
     }

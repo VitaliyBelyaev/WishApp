@@ -67,3 +67,13 @@ fun resolveUiLook(
         UiLookMode.NEW_ONLY -> UiLook.NEW
     }
 }
+
+/**
+ * Показывать ли выбор вида в настройках нового вида. Правила те же, что в [resolveUiLook]:
+ * выбор есть при [UiLookMode.CHOICE] после выпуска нового вида, а в отладочной сборке всегда,
+ * иначе из нового вида не вернуться в прежний. При [UiLookMode.NEW_ONLY] выбора нет.
+ */
+fun isUiLookChoiceAvailable(mode: UiLookMode, allowChoiceInOldOnly: Boolean, isNewLookReleased: Boolean): Boolean {
+    if (allowChoiceInOldOnly && (mode == UiLookMode.OLD_ONLY || !isNewLookReleased)) return true
+    return isNewLookReleased && mode == UiLookMode.CHOICE
+}
