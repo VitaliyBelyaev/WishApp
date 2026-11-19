@@ -280,4 +280,12 @@
     <string name="look_classic_sub">Como antes</string>
     <string name="look_hint">Desejos e etiquetas continuam os mesmos, troque quando quiser</string>
     <string name="backup_title">Backup</string>
+    <string name="tags_manage_hint">Toque no nome para renomear e no círculo para mudar a cor. Os desejos permanecem quando uma etiqueta é excluída.</string>
+    <string name="tags_manage_empty">Ainda não há etiquetas. Digite um nome na busca para criar a primeira.</string>
+    <string name="tag_new_name">Novo nome</string>
+    <string name="tag_exists">Essa etiqueta já existe</string>
+    <string name="snack_tag_deleted">Etiqueta “%1$s” excluída</string>
+    <string name="cd_tag_color">Cor da etiqueta %1$s</string>
+    <string name="cd_delete_tag">Excluir a etiqueta %1$s</string>
+    <string name="a11y_color_position">Cor %1$d de %2$d</string>
 </resources>

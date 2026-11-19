@@ -26,10 +26,10 @@ import ru.vitaliy.belyaev.wishapp.shared.domain.entity.TagEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishEntity
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.WishSortMode
 import ru.vitaliy.belyaev.wishapp.shared.domain.entity.isEmpty
-import ru.vitaliy.belyaev.wishapp.shared.domain.repository.TagsRepository
 import ru.vitaliy.belyaev.wishapp.shared.domain.repository.WishesRepository
 import ru.vitaliy.belyaev.wishapp.ui.components.wish.toWishCardModel
 import ru.vitaliy.belyaev.wishapp.ui.core.viewmodel.BaseViewModel
+import ru.vitaliy.belyaev.wishapp.ui.screens.tags.TagDeleteQueue
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishScreenResult
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishWriteQueue
 import ru.vitaliy.belyaev.wishapp.utils.coroutines.DispatcherProvider
@@ -74,7 +74,7 @@ sealed interface WishListEvent {
 @HiltViewModel
 class WishListViewModel @Inject constructor(
     private val wishesRepository: WishesRepository,
-    private val tagsRepository: TagsRepository,
+    private val tagDeleteQueue: TagDeleteQueue,
     private val sharer: WishListSharer,
     private val dataStoreRepository: DataStoreRepository,
     private val dispatcherProvider: DispatcherProvider,
@@ -344,7 +344,8 @@ class WishListViewModel @Inject constructor(
     }
 
     private suspend fun observeList() {
-        val tagsFlow = tagsRepository.observeAllTagsWithWishesCount().map { tags ->
+        // Ярлык, удалённый с «Вернуть», пропадает из шторки сразу, хотя из базы уходит после снэкбара
+        val tagsFlow = tagDeleteQueue.observeVisibleTags().map { tags ->
             val collator = Collator.getInstance()
             tags.map { TagSheetItem(it.tag, it.wishesCount) }.sortedWith(compareBy(collator) { it.tag.title })
         }

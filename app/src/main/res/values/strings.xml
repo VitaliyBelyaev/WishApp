@@ -280,4 +280,12 @@
     <string name="look_hint">Your wishes and labels stay the same, switch whenever you like</string>
     <string name="backup_title">Backup</string>
     <string name="color_wallpaper_sub" translatable="false">Material You</string>
+    <string name="tags_manage_hint">Tap a name to rename it, tap the circle to change the color. Wishes stay when a label is deleted.</string>
+    <string name="tags_manage_empty">No labels yet. Type a name in the search to create the first one.</string>
+    <string name="tag_new_name">New name</string>
+    <string name="tag_exists">This label already exists</string>
+    <string name="snack_tag_deleted">Label “%1$s” deleted</string>
+    <string name="cd_tag_color">Color of label %1$s</string>
+    <string name="cd_delete_tag">Delete label %1$s</string>
+    <string name="a11y_color_position">Color %1$d of %2$d</string>
 </resources>

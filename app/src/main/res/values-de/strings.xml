@@ -277,4 +277,12 @@
     <string name="look_classic_sub">Wie bisher</string>
     <string name="look_hint">Wünsche und Etiketten bleiben gleich, wechseln Sie jederzeit</string>
     <string name="backup_title">Sicherung</string>
+    <string name="tags_manage_hint">Tippen Sie auf den Namen zum Umbenennen und auf den Kreis, um die Farbe zu ändern. Wünsche bleiben erhalten, wenn ein Etikett gelöscht wird.</string>
+    <string name="tags_manage_empty">Noch keine Etiketten. Geben Sie einen Namen in die Suche ein, um das erste zu erstellen.</string>
+    <string name="tag_new_name">Neuer Name</string>
+    <string name="tag_exists">Dieses Etikett gibt es schon</string>
+    <string name="snack_tag_deleted">Etikett „%1$s“ gelöscht</string>
+    <string name="cd_tag_color">Farbe von Etikett %1$s</string>
+    <string name="cd_delete_tag">Etikett %1$s löschen</string>
+    <string name="a11y_color_position">Farbe %1$d von %2$d</string>
 </resources>

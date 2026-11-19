@@ -286,4 +286,12 @@
     <string name="look_classic_sub">Как было раньше</string>
     <string name="look_hint">Хотелки и ярлыки одни и те же, переключайте когда удобно</string>
     <string name="backup_title">Резервная копия</string>
+    <string name="tags_manage_hint">Нажмите на название, чтобы переименовать, на кружок — чтобы сменить цвет. Сами хотелки при удалении ярлыка остаются.</string>
+    <string name="tags_manage_empty">Ярлыков пока нет. Напишите название в поиске, чтобы создать первый.</string>
+    <string name="tag_new_name">Новое название</string>
+    <string name="tag_exists">Такой ярлык уже есть</string>
+    <string name="snack_tag_deleted">Ярлык «%1$s» удалён</string>
+    <string name="cd_tag_color">Цвет ярлыка %1$s</string>
+    <string name="cd_delete_tag">Удалить ярлык %1$s</string>
+    <string name="a11y_color_position">Цвет %1$d из %2$d</string>
 </resources>

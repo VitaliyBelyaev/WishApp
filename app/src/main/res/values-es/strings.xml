@@ -281,4 +281,12 @@
     <string name="look_classic_sub">Como antes</string>
     <string name="look_hint">Tus deseos y etiquetas no cambian, cambia cuando quieras</string>
     <string name="backup_title">Copia de seguridad</string>
+    <string name="tags_manage_hint">Toca el nombre para cambiarlo y el círculo para cambiar el color. Los deseos se conservan al eliminar una etiqueta.</string>
+    <string name="tags_manage_empty">Aún no hay etiquetas. Escribe un nombre en la búsqueda para crear la primera.</string>
+    <string name="tag_new_name">Nuevo nombre</string>
+    <string name="tag_exists">Esa etiqueta ya existe</string>
+    <string name="snack_tag_deleted">Etiqueta «%1$s» eliminada</string>
+    <string name="cd_tag_color">Color de la etiqueta %1$s</string>
+    <string name="cd_delete_tag">Eliminar la etiqueta %1$s</string>
+    <string name="a11y_color_position">Color %1$d de %2$d</string>
 </resources>

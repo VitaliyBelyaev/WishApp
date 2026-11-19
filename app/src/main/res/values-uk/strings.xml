@@ -287,4 +287,12 @@
     <string name="look_classic_sub">Як було раніше</string>
     <string name="look_hint">Хотелки й ярлики ті самі, перемикайте, коли зручно</string>
     <string name="backup_title">Резервна копія</string>
+    <string name="tags_manage_hint">Натисніть на назву, щоб перейменувати, на кружок — щоб змінити колір. Самі хотелки після видалення ярлика залишаються.</string>
+    <string name="tags_manage_empty">Ярликів поки немає. Напишіть назву в пошуку, щоб створити перший.</string>
+    <string name="tag_new_name">Нова назва</string>
+    <string name="tag_exists">Такий ярлик уже є</string>
+    <string name="snack_tag_deleted">Ярлик «%1$s» видалено</string>
+    <string name="cd_tag_color">Колір ярлика %1$s</string>
+    <string name="cd_delete_tag">Видалити ярлик %1$s</string>
+    <string name="a11y_color_position">Колір %1$d з %2$d</string>
 </resources>

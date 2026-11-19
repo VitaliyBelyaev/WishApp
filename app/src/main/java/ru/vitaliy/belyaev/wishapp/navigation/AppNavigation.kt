@@ -11,6 +11,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,7 +32,6 @@ import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.navigation.old.AboutAppRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.BackupAndRestoreRoute
-import ru.vitaliy.belyaev.wishapp.navigation.old.EditTagRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.PrivacyPolicyRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.SettingsRoute
 import ru.vitaliy.belyaev.wishapp.ui.IncomingShare
@@ -39,13 +39,14 @@ import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.AppSnackMessage
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.aboutapp.AboutAppScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.aboutapp.privacypolicy.PrivacyPolicyScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.backup.BackupScreen
-import ru.vitaliy.belyaev.wishapp.ui.old.screens.edittags.EditTagsScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.theme.WishAppTheme as OldWishAppTheme
 import ru.vitaliy.belyaev.wishapp.ui.screens.photos.PhotoHeroLink
 import ru.vitaliy.belyaev.wishapp.ui.screens.photos.PhotoViewerActions
 import ru.vitaliy.belyaev.wishapp.ui.screens.photos.PhotoViewerScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsActions
 import ru.vitaliy.belyaev.wishapp.ui.screens.settings.SettingsScreen
+import ru.vitaliy.belyaev.wishapp.ui.screens.tags.TagsManageActions
+import ru.vitaliy.belyaev.wishapp.ui.screens.tags.TagsManageScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishScreenActions
 import ru.vitaliy.belyaev.wishapp.ui.screens.wish.WishScreenResult
@@ -62,6 +63,10 @@ data object WishListRoute : NavKey
 /** Экран хотелки нового вида. Новая хотелка создаётся в шторке, сюда приходят только готовые. */
 @Serializable
 data class WishRoute(val wishId: String) : NavKey
+
+/** Управление ярлыками нового вида: из настроек и из шторки ярлыков. */
+@Serializable
+data object TagsManageRoute : NavKey
 
 /** Просмотр фото хотелки на весь экран, открывается с того фото, на которое нажали. */
 @Serializable
@@ -89,8 +94,13 @@ fun AppNavigation(
     modifier: Modifier = Modifier,
     incomingShare: IncomingShare? = null,
     onIncomingShareHandled: () -> Unit = {},
+    onSnackbarLiftChange: (Boolean) -> Unit = {},
 ) {
     val backStack = rememberNavBackStack(WishListRoute)
+    // Снэкбар поднят над нижней панелью списка, хотелки и просмотра фото, на остальных экранах её нет
+    val top = backStack.lastOrNull()
+    val isSnackbarLifted = top is WishListRoute || top is WishRoute || top is PhotoViewerRoute
+    SideEffect { onSnackbarLiftChange(isSnackbarLifted) }
     // С чем экран хотелки вернулся на список: список дожидается записей и показывает отменяемое действие
     var wishScreenResult by remember { mutableStateOf<WishScreenResult?>(null) }
     // «Поделиться» из другого приложения: возвращаемся на список, шторку откроет он.
@@ -124,7 +134,7 @@ fun AppNavigation(
                 actions = WishListActions(
                     onWishClick = { wishId -> navigate(WishRoute(wishId = wishId)) },
                     onSettings = { navigate(SettingsRoute) },
-                    onManageTags = { navigate(EditTagRoute) },
+                    onManageTags = { navigate(TagsManageRoute) },
                     onRestore = { navigate(BackupAndRestoreRoute) },
                     onShowMessage = onShowMessage,
                 ),
@@ -161,6 +171,9 @@ fun AppNavigation(
         entry<SettingsRoute> {
             SettingsScreen(actions = settingsActions(navigate = navigate, goBack = goBack))
         }
+        entry<TagsManageRoute> {
+            TagsManageScreen(actions = TagsManageActions(onBack = goBack, onShowMessage = onShowMessage))
+        }
         entry<BackupAndRestoreRoute> {
             old { BackupScreen(onBackPressed = goBack, analyticsRepository = analyticsRepository) }
         }
@@ -169,9 +182,6 @@ fun AppNavigation(
         }
         entry<PrivacyPolicyRoute> {
             old { PrivacyPolicyScreen(onBackPressed = goBack) }
-        }
-        entry<EditTagRoute> {
-            old { EditTagsScreen(onBackPressed = goBack) }
         }
     }
 
@@ -223,6 +233,6 @@ private fun MutableList<NavKey>.popToFirst() {
 private fun settingsActions(navigate: (NavKey) -> Unit, goBack: () -> Unit) = SettingsActions(
     onBack = goBack,
     onBackup = { navigate(BackupAndRestoreRoute) },
-    onManageTags = { navigate(EditTagRoute) },
+    onManageTags = { navigate(TagsManageRoute) },
     onAbout = { navigate(AboutAppRoute) },
 )
