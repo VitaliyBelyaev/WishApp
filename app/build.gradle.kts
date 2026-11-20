@@ -214,6 +214,8 @@ dependencies {
 
     // Work with images
     implementation(libs.coilKt.coilCompose)
+    // Фото аккаунта Google на экране копии: Coil 3 без этого модуля не грузит по сети
+    implementation(libs.coilKt.coilNetworkOkhttp)
     implementation(libs.saket.telephoto.zoomableImageCoil)
     implementation(libs.reorderable)
 

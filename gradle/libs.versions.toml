@@ -100,6 +100,7 @@ google-api-services-drive = { module = "com.google.apis:google-api-services-driv
 
 android-tools-desugar = { module = "com.android.tools:desugar_jdk_libs", version = "2.1.5" }
 coilKt-coilCompose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coilKt-coilNetworkOkhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 amplitude = { module = "com.amplitude:analytics-android", version = "1.37.0" }
 kmmUuid = { module = "com.benasher44:uuid", version = "0.8.4" }
 napier = { module = "io.github.aakira:napier", version = "2.7.1" }

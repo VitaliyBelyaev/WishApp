@@ -1,14 +1,16 @@
 package ru.vitaliy.belyaev.wishapp.ui.core.snackbar
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -16,6 +18,7 @@ import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -96,19 +99,46 @@ fun AppSnackbarHost(hostState: SnackbarHostState, modifier: Modifier = Modifier)
     }
 }
 
+/**
+ * Свой снэкбар вместо `Snackbar` из Material: тот ставит текст по базовой линии, и у текста
+ * в три строки сверху отступ выходил больше, чем снизу. Здесь отступы равные при любом числе строк.
+ */
 @Composable
 private fun AppSnackbar(data: SnackbarData) {
     val shape = MaterialTheme.shapes.medium
-    Snackbar(
+    val actionLabel = data.visuals.actionLabel
+    Surface(
         modifier = Modifier
             .padding(horizontal = WishAppSpacing.s3)
             .widthIn(max = 560.dp)
             .tokenShadow(shape, WishAppElevation.dock(AppThemeExtras.isDark)),
         shape = shape,
-        containerColor = MaterialTheme.colorScheme.inverseSurface,
+        color = MaterialTheme.colorScheme.inverseSurface,
         contentColor = MaterialTheme.colorScheme.inverseOnSurface,
-        action = data.visuals.actionLabel?.let { actionLabel ->
-            {
+    ) {
+        Row(
+            modifier = Modifier
+                .heightIn(min = SnackMinHeight)
+                .padding(
+                    start = WishAppSpacing.s4,
+                    end = if (actionLabel !=
+                        null
+                    ) {
+                        WishAppSpacing.s2
+                    } else {
+                        WishAppSpacing.s4
+                    },
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = data.visuals.message,
+                style = MaterialTheme.typography.label.copy(fontWeight = FontWeight.Medium),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = SnackTextVerticalPadding),
+            )
+            if (actionLabel != null) {
                 TextButton(onClick = { data.performAction() }) {
                     Text(
                         text = actionLabel,
@@ -117,14 +147,12 @@ private fun AppSnackbar(data: SnackbarData) {
                     )
                 }
             }
-        },
-    ) {
-        Text(
-            text = data.visuals.message,
-            style = MaterialTheme.typography.label.copy(fontWeight = FontWeight.Medium),
-        )
+        }
     }
 }
+
+private val SnackMinHeight = 48.dp
+private val SnackTextVerticalPadding = 14.dp
 
 /** Сколько висит снэкбар с «Вернуть», если время не задано. */
 private const val UNDO_SNACK_MILLIS = 6_000L

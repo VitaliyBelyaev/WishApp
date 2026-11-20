@@ -68,7 +68,6 @@ internal fun OldLookRoot(
 internal fun NewLookRoot(
     selectedTheme: Theme,
     useWallpaperColors: Boolean,
-    analyticsRepository: AnalyticsRepository,
     appViewModel: AppActivityViewModel,
 ) {
     val reveal = rememberThemeRevealState()
@@ -98,7 +97,6 @@ internal fun NewLookRoot(
                 Box(modifier = Modifier.fillMaxSize()) {
                     AppNavigation(
                         selectedTheme = selectedTheme,
-                        analyticsRepository = analyticsRepository,
                         onShowMessage = appViewModel::showSnack,
                         modifier = Modifier.fillMaxSize(),
                         incomingShare = incomingShare,

@@ -60,6 +60,7 @@ import org.junit.rules.TestRule
 import org.junit.runners.model.Statement
 import ru.vitaliy.belyaev.wishapp.R
 import ru.vitaliy.belyaev.wishapp.data.repository.analytics.AmplitudeWrapper
+import ru.vitaliy.belyaev.wishapp.data.repository.backup.SqliteBackupFileVerifier
 import ru.vitaliy.belyaev.wishapp.data.repository.datastore.DataStoreRepository
 import ru.vitaliy.belyaev.wishapp.domain.CurrentBackupInfoHolder
 import ru.vitaliy.belyaev.wishapp.domain.model.BackupInfo
@@ -421,7 +422,12 @@ internal class ScreenshotsTest {
     fun snackbarBackupRestored() {
         showBackupScreen(
             checkBackup = { fakeBackupInfo },
-            downloadBackup = {},
+            // Проверку копии проходит только настоящая база: отдаём файл базы самого приложения
+            downloadBackup = { output ->
+                rule.activity.getDatabasePath(rule.activity.wishAppSdk.databaseName).inputStream().use {
+                    it.copyTo(output)
+                }
+            },
             contextWrapper = ::RestoreWithoutRestartContext,
         )
         confirmBackupRestore()
@@ -596,7 +602,7 @@ internal class ScreenshotsTest {
         checkBackup: suspend () -> BackupInfo,
         wasBackupCreated: Boolean = false,
         uploadBackup: suspend () -> BackupInfo.Value = { awaitCancellation() },
-        downloadBackup: suspend () -> Unit = { awaitCancellation() },
+        downloadBackup: suspend (OutputStream) -> Unit = { awaitCancellation() },
         contextWrapper: (Context) -> Context = { it },
     ): BackupViewModel {
         val activity = rule.activity
@@ -611,8 +617,16 @@ internal class ScreenshotsTest {
         val viewModel = rule.runOnUiThread {
             val currentBackupInfoHolder = CurrentBackupInfoHolder()
             val viewModel = BackupViewModel(
-                createBackupUseCase = CreateBackupUseCase(backupRepository, dataStoreRepository),
-                restoreBackupUseCase = RestoreBackupUseCase(backupRepository, dataStoreRepository),
+                createBackupUseCase = CreateBackupUseCase(
+                    backupRepository,
+                    dataStoreRepository,
+                    currentBackupInfoHolder,
+                ),
+                restoreBackupUseCase = RestoreBackupUseCase(
+                    backupRepository,
+                    dataStoreRepository,
+                    SqliteBackupFileVerifier(),
+                ),
                 isUserSignedInToBackupServiceUseCase = IsUserSignedInToBackupServiceUseCase(FakeBackupAuthRepository),
                 getExistingBackupInfoUseCase = GetExistingBackupInfoUseCase(backupRepository, currentBackupInfoHolder),
                 currentBackupInfoHolder = currentBackupInfoHolder,
@@ -668,7 +682,7 @@ internal class ScreenshotsTest {
     private class FakeBackupRepository(
         private val checkBackup: suspend () -> BackupInfo,
         private val uploadBackup: suspend () -> BackupInfo.Value,
-        private val downloadBackup: suspend () -> Unit,
+        private val downloadBackup: suspend (OutputStream) -> Unit,
     ) : BackupRepository {
 
         override suspend fun checkExistingBackup(): BackupInfo = checkBackup()
@@ -687,13 +701,19 @@ internal class ScreenshotsTest {
             progressListener: BackupLoadProgressListener,
         ) {
             progressListener.onProgressChanged(FAKE_PROGRESS, FAKE_LOADED_BYTES)
-            downloadBackup()
+            downloadBackup(outputStream)
         }
     }
 
     private object FakeBackupAuthRepository : BackupAuthRepository {
 
         override fun isSignedIn(): Boolean = true
+
+        override fun signedInEmail(): String = "anna@example.com"
+
+        override fun signedInPhotoUrl(): String? = null
+
+        override fun signedInName(): String? = null
 
         override suspend fun signInSilently() = Unit
 

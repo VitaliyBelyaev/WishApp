@@ -19,6 +19,18 @@ internal class GoogleBackupAuthRepository(
         return GoogleSignIn.getLastSignedInAccount(context) != null
     }
 
+    override fun signedInEmail(): String? {
+        return GoogleSignIn.getLastSignedInAccount(context)?.email
+    }
+
+    override fun signedInPhotoUrl(): String? {
+        return GoogleSignIn.getLastSignedInAccount(context)?.photoUrl?.toString()
+    }
+
+    override fun signedInName(): String? {
+        return GoogleSignIn.getLastSignedInAccount(context)?.displayName?.takeIf { it.isNotBlank() }
+    }
+
     override suspend fun signInSilently() {
         getGoogleSignInClient(context).silentSignIn().await()
     }
@@ -42,12 +54,15 @@ internal class GoogleBackupAuthRepository(
     }
 
     override fun getSignInIntent(): Intent {
-        return getGoogleSignInClient(context).signInIntent
+        // Профиль (фото) просим только при входе вручную: тихий вход с новой областью не прошёл бы
+        // у тех, кто вошёл раньше, и их выкинуло бы из аккаунта
+        return getGoogleSignInClient(context, withProfile = true).signInIntent
     }
 
-    private fun getGoogleSignInClient(context: Context): GoogleSignInClient {
+    private fun getGoogleSignInClient(context: Context, withProfile: Boolean = false): GoogleSignInClient {
         val signInOptions = GoogleSignInOptions.Builder()
             .requestEmail()
+            .apply { if (withProfile) requestProfile() }
             .requestScopes(Scope(DriveScopes.DRIVE_APPDATA))
             .build()
 

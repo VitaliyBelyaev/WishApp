@@ -40,6 +40,7 @@ import ru.vitaliy.belyaev.wishapp.ui.theme.pageTitle
  * Экран под шапкой прокручивается целиком и начинается ниже неё: отступ сверху [headerHeight].
  *
  * @param progress от 0 (начало экрана) до 1 (прокручено на [PageHeaderCollapse] и больше).
+ * @param action кнопка справа, например «i» у резервной копии. Капсула под ней проявляется вместе с «назад».
  */
 @Composable
 fun PageHeader(
@@ -47,6 +48,7 @@ fun PageHeader(
     progress: () -> Float,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    action: (@Composable () -> Unit)? = null,
 ) {
     Box(modifier = modifier.fillMaxWidth()) {
         HeaderScrim(progress)
@@ -83,6 +85,12 @@ fun PageHeader(
                         translationY = -shift * p
                     },
             )
+            if (action != null) {
+                Box {
+                    CapsuleBackdrop(progress)
+                    action()
+                }
+            }
         }
     }
 }

@@ -8,7 +8,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.vitaliy.belyaev.wishapp.data.repository.backup.GoogleBackupAuthRepository
 import ru.vitaliy.belyaev.wishapp.data.repository.backup.GoogleDriveBackupRepository
+import ru.vitaliy.belyaev.wishapp.data.repository.backup.SqliteBackupFileVerifier
 import ru.vitaliy.belyaev.wishapp.domain.repository.BackupAuthRepository
+import ru.vitaliy.belyaev.wishapp.domain.repository.BackupFileVerifier
 import ru.vitaliy.belyaev.wishapp.domain.repository.BackupRepository
 
 @InstallIn(SingletonComponent::class)
@@ -24,4 +26,7 @@ internal object BackupRepositoryProvideModule {
     fun provideBackupAuthRepository(@ApplicationContext context: Context): BackupAuthRepository {
         return GoogleBackupAuthRepository(context)
     }
+
+    @Provides
+    fun provideBackupFileVerifier(): BackupFileVerifier = SqliteBackupFileVerifier()
 }

@@ -131,7 +131,7 @@ internal class BackupViewModel @Inject constructor(
             }.onSuccess {
                 _loadingState.value = LoadingState.None
                 _viewState.value = BackupViewState.DrivePermissionRationale
-                currentBackupInfoHolder.updateBackupInfo(BackupInfo.None())
+                currentBackupInfoHolder.clear()
             }.onFailure {
                 val error = IllegalStateException("Error while signing out from backup service", it)
                 Timber.e(error)
@@ -150,7 +150,7 @@ internal class BackupViewModel @Inject constructor(
             }.onSuccess {
                 _loadingState.value = LoadingState.None
                 _viewState.value = BackupViewState.DrivePermissionRationale
-                currentBackupInfoHolder.updateBackupInfo(BackupInfo.None())
+                currentBackupInfoHolder.clear()
             }.onFailure {
                 val error = IllegalStateException("Error while revoke access", it)
                 Timber.e(error)

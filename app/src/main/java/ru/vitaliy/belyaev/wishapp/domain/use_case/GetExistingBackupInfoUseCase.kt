@@ -11,10 +11,11 @@ internal class GetExistingBackupInfoUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke(forceRemote: Boolean): BackupInfo {
-        val localBackupInfo = currentBackupInfoHolder.backupInfo.value
-        return when {
-            !forceRemote && localBackupInfo is BackupInfo.Value -> localBackupInfo
-            else -> getFromRemoteAndUpdateHolder()
+        // Уже проверяли в этом запуске: и копию, и «копии нет» берём без запроса
+        return if (!forceRemote && currentBackupInfoHolder.isKnown) {
+            currentBackupInfoHolder.backupInfo.value
+        } else {
+            getFromRemoteAndUpdateHolder()
         }
     }
 

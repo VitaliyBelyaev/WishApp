@@ -29,7 +29,6 @@ import androidx.navigation3.ui.NavDisplay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.serialization.Serializable
 import ru.vitaliy.belyaev.wishapp.domain.model.Theme
-import ru.vitaliy.belyaev.wishapp.domain.repository.AnalyticsRepository
 import ru.vitaliy.belyaev.wishapp.navigation.old.AboutAppRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.BackupAndRestoreRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.PrivacyPolicyRoute
@@ -38,8 +37,9 @@ import ru.vitaliy.belyaev.wishapp.ui.IncomingShare
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.AppSnackMessage
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.aboutapp.AboutAppScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.screens.aboutapp.privacypolicy.PrivacyPolicyScreen
-import ru.vitaliy.belyaev.wishapp.ui.old.screens.backup.BackupScreen
 import ru.vitaliy.belyaev.wishapp.ui.old.theme.WishAppTheme as OldWishAppTheme
+import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupActions
+import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.photos.PhotoHeroLink
 import ru.vitaliy.belyaev.wishapp.ui.screens.photos.PhotoViewerActions
 import ru.vitaliy.belyaev.wishapp.ui.screens.photos.PhotoViewerScreen
@@ -89,7 +89,6 @@ private const val TRANSITION_MILLIS = 300
 @Composable
 fun AppNavigation(
     selectedTheme: Theme,
-    analyticsRepository: AnalyticsRepository,
     onShowMessage: (AppSnackMessage) -> Unit,
     modifier: Modifier = Modifier,
     incomingShare: IncomingShare? = null,
@@ -175,7 +174,7 @@ fun AppNavigation(
             TagsManageScreen(actions = TagsManageActions(onBack = goBack, onShowMessage = onShowMessage))
         }
         entry<BackupAndRestoreRoute> {
-            old { BackupScreen(onBackPressed = goBack, analyticsRepository = analyticsRepository) }
+            BackupScreen(actions = BackupActions(onBack = goBack, onShowMessage = onShowMessage))
         }
         entry<AboutAppRoute> {
             old { AboutAppScreen(onBackPressed = goBack, onPrivacyPolicyClicked = { navigate(PrivacyPolicyRoute) }) }
