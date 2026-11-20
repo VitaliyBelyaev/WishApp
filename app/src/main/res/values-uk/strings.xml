@@ -346,4 +346,11 @@
     <string name="err_google_sign_in">Не вдалося ввійти в обліковий запис Google</string>
     <string name="err_drive_revoked">Потрібен доступ до Google Drive: його відкликано</string>
     <string name="retry">Повторити</string>
+    <string name="settings_open_source">Відкритий код</string>
+    <string name="about_open_source_text">Це open-source застосунок, код можна переглянути на GitHub</string>
+    <string name="settings_contact">Зв’язок</string>
+    <string name="settings_contact_sub">Відкриється пошта</string>
+    <string name="settings_docs">Документи</string>
+    <string name="policy_failed_title">Політика не відкрилася</string>
+    <string name="policy_failed_text">Немає інтернету. Перевірте з’єднання й повторіть</string>
 </resources>

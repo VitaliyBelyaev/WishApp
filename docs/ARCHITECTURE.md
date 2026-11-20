@@ -275,7 +275,7 @@ iosApp/WishApp/
 | Wish Images Viewer | `ui/old/screens/wish_images/WishImagesViewerScreen.kt`, `WishImagesViewerRoute.kt` | `WishImagesViewerViewModel` | Полноэкранный просмотр изображений с zoom и удалением |
 | Settings | `ui/old/screens/settings/SettingsScreen.kt` + `components/` | `SettingsViewModel` | Тема, Backup, Rate app, Share app, About |
 | Backup & Restore | `ui/old/screens/backup/BackupScreen.kt` + `components/` | `BackupViewModel` | Google Sign-In, проверка бэкапа, создание, восстановление, управление аккаунтом |
-| About App | `ui/old/screens/aboutapp/AboutAppScreen.kt` | `AboutAppViewModel` | Версия, feedback по email, OSS-лицензии, privacy policy |
+| About App | `ui/old/screens/aboutapp/AboutAppScreen.kt` | `AboutAppViewModel` | Версия, feedback по email, OSS-лицензии, privacy policy. Новый вид — `ui/screens/about` |
 | Privacy Policy | `ui/old/screens/aboutapp/privacypolicy/PrivacyPolicyScreen.kt` | `PrivacyPolicyViewModel` | WebView с политикой конфиденциальности |
 
 Особенности Wish List:
@@ -645,8 +645,18 @@ iOS `Wish List Screen - Show` с другим набором параметро�
   картинку, тема меняется сразу, а снимок старой поверх открывается растущим кругом. Если вид
   не меняется (например, «Авто» вместо «Тёмной» при тёмной системе), анимации нет. Значки
   статус-бара переключаются, когда круг доходит до верха (`AppTheme(holdSystemBars)`). «Классический»
-  меняет вид всего приложения через `AppActivityViewModel.onUiLookChosen`. «О приложении» пока
-  открывается прежним экраном.
+  меняет вид всего приложения через `AppActivityViewModel.onUiLookChosen`.
+- «О приложении», политика и лицензии нового вида — `ui/screens/about`, часть 2.10. «О приложении»
+  (`AboutAppRoute`): значок из слоёв адаптивного значка (фон и знак, видна середина 72 из 108 dp),
+  название, версия, карточка «Открытый код» на `paper-mint`, «Написать разработчикам», «Лицензии»
+  и «Политика». Политика (`PrivacyPolicyRoute`) — страница сайта в WebView под `PageHeader`; ошибка
+  главной страницы (нет сети, ответ от 400) показывает «Политика не открылась» с «Повторить», и до
+  «Повторить» WebView-страницу ошибки не показываем. Лицензии (`LicensesRoute`, `LicenseRoute(name)`) —
+  свой список вместо `OssLicensesMenuActivity`: `OpenSourceLicenses` читает `third_party_license_metadata`
+  и `third_party_licenses` от `oss-licenses-plugin` (смещения в байтах), повторы по названию убирает,
+  кэширует на процесс; ссылки в тексте открываются в браузере. Лицензии шрифтов туда дописывает сборка.
+  Прежний вид по-прежнему открывает `OssLicensesMenuActivity`. После 2.10 у навигации нового вида
+  экранов прежнего вида не осталось.
 - Резервная копия нового вида — `ui/screens/backup` (`BackupAndRestoreRoute`), часть 2.9, вход из
   настроек и из пустого списка. Сверху карточка статуса (не вошли, проверяем, не удалось проверить,
   копии нет, есть копия и здесь её не восстанавливали, всё в сохранности, сохраняем), ниже

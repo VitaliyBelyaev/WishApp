@@ -339,4 +339,11 @@
     <string name="err_google_sign_in">Couldn’t sign in to your Google account</string>
     <string name="err_drive_revoked">Google Drive access is needed: it was revoked</string>
     <string name="retry">Retry</string>
+    <string name="settings_open_source">Open source</string>
+    <string name="about_open_source_text">This is an open-source app, its code is on GitHub</string>
+    <string name="settings_contact">Contact</string>
+    <string name="settings_contact_sub">Opens your email app</string>
+    <string name="settings_docs">Documents</string>
+    <string name="policy_failed_title">The policy didn’t open</string>
+    <string name="policy_failed_text">No internet. Check your connection and retry</string>
 </resources>

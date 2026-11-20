@@ -28,16 +28,17 @@ import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.serialization.Serializable
-import ru.vitaliy.belyaev.wishapp.domain.model.Theme
 import ru.vitaliy.belyaev.wishapp.navigation.old.AboutAppRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.BackupAndRestoreRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.PrivacyPolicyRoute
 import ru.vitaliy.belyaev.wishapp.navigation.old.SettingsRoute
 import ru.vitaliy.belyaev.wishapp.ui.IncomingShare
 import ru.vitaliy.belyaev.wishapp.ui.core.snackbar.AppSnackMessage
-import ru.vitaliy.belyaev.wishapp.ui.old.screens.aboutapp.AboutAppScreen
-import ru.vitaliy.belyaev.wishapp.ui.old.screens.aboutapp.privacypolicy.PrivacyPolicyScreen
-import ru.vitaliy.belyaev.wishapp.ui.old.theme.WishAppTheme as OldWishAppTheme
+import ru.vitaliy.belyaev.wishapp.ui.screens.about.AboutActions
+import ru.vitaliy.belyaev.wishapp.ui.screens.about.AboutScreen
+import ru.vitaliy.belyaev.wishapp.ui.screens.about.LicenseScreen
+import ru.vitaliy.belyaev.wishapp.ui.screens.about.LicensesScreen
+import ru.vitaliy.belyaev.wishapp.ui.screens.about.PolicyScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupActions
 import ru.vitaliy.belyaev.wishapp.ui.screens.backup.BackupScreen
 import ru.vitaliy.belyaev.wishapp.ui.screens.photos.PhotoHeroLink
@@ -68,6 +69,14 @@ data class WishRoute(val wishId: String) : NavKey
 @Serializable
 data object TagsManageRoute : NavKey
 
+/** Лицензии открытого ПО нового вида, из «О приложении». */
+@Serializable
+data object LicensesRoute : NavKey
+
+/** Текст лицензии одной библиотеки: название из файлов плагина лицензий. */
+@Serializable
+data class LicenseRoute(val name: String) : NavKey
+
 /** Просмотр фото хотелки на весь экран, открывается с того фото, на которое нажали. */
 @Serializable
 data class PhotoViewerRoute(val wishId: String, val index: Int) : NavKey
@@ -75,8 +84,8 @@ data class PhotoViewerRoute(val wishId: String, val index: Int) : NavKey
 private const val TRANSITION_MILLIS = 300
 
 /**
- * Список и хотелка нового вида и экраны, которых в новом виде ещё нет. Они открываются в прежнем виде,
- * в своей теме, и уйдут по мере редизайна: ключи маршрутов общие со старой навигацией.
+ * Экраны нового вида. Ключи настроек, резервной копии, «О приложении» и политики общие со старой
+ * навигацией.
  */
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -88,7 +97,6 @@ private const val TRANSITION_MILLIS = 300
 )
 @Composable
 fun AppNavigation(
-    selectedTheme: Theme,
     onShowMessage: (AppSnackMessage) -> Unit,
     modifier: Modifier = Modifier,
     incomingShare: IncomingShare? = null,
@@ -120,11 +128,6 @@ fun AppNavigation(
     val systemBack: () -> Unit = {
         (backStack.lastOrNull() as? WishRoute)?.let { wishScreenResult = WishScreenResult(it.wishId) }
         goBack()
-    }
-
-    // Экран прежнего вида в своей теме
-    val old: @Composable (@Composable () -> Unit) -> Unit = { content ->
-        OldWishAppTheme(selectedTheme = selectedTheme, content = content)
     }
 
     val entryProvider = entryProvider {
@@ -177,11 +180,15 @@ fun AppNavigation(
             BackupScreen(actions = BackupActions(onBack = goBack, onShowMessage = onShowMessage))
         }
         entry<AboutAppRoute> {
-            old { AboutAppScreen(onBackPressed = goBack, onPrivacyPolicyClicked = { navigate(PrivacyPolicyRoute) }) }
+            AboutScreen(actions = aboutActions(navigate, goBack, onShowMessage))
         }
         entry<PrivacyPolicyRoute> {
-            old { PrivacyPolicyScreen(onBackPressed = goBack) }
+            PolicyScreen(onBack = goBack)
         }
+        entry<LicensesRoute> {
+            LicensesScreen(onBack = goBack, onOpen = { name -> navigate(LicenseRoute(name)) })
+        }
+        entry<LicenseRoute> { LicenseScreen(name = it.name, onBack = goBack) }
     }
 
     val offsetSpec = tween<IntOffset>(TRANSITION_MILLIS, easing = FastOutSlowInEasing)
@@ -228,6 +235,17 @@ private fun wishScreenActions(
 private fun MutableList<NavKey>.popToFirst() {
     while (size > 1) removeAt(lastIndex)
 }
+
+private fun aboutActions(
+    navigate: (NavKey) -> Unit,
+    goBack: () -> Unit,
+    onShowMessage: (AppSnackMessage) -> Unit,
+) = AboutActions(
+    onBack = goBack,
+    onLicenses = { navigate(LicensesRoute) },
+    onPolicy = { navigate(PrivacyPolicyRoute) },
+    onShowMessage = onShowMessage,
+)
 
 private fun settingsActions(navigate: (NavKey) -> Unit, goBack: () -> Unit) = SettingsActions(
     onBack = goBack,

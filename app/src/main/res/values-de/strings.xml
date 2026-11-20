@@ -336,4 +336,11 @@
     <string name="err_google_sign_in">Anmeldung beim Google-Konto fehlgeschlagen</string>
     <string name="err_drive_revoked">Zugriff auf Google Drive nötig: Er wurde entzogen</string>
     <string name="retry">Wiederholen</string>
+    <string name="settings_open_source">Open Source</string>
+    <string name="about_open_source_text">Diese App ist Open Source, der Code liegt auf GitHub</string>
+    <string name="settings_contact">Kontakt</string>
+    <string name="settings_contact_sub">Öffnet Ihre E-Mail-App</string>
+    <string name="settings_docs">Dokumente</string>
+    <string name="policy_failed_title">Datenschutzerklärung nicht geöffnet</string>
+    <string name="policy_failed_text">Kein Internet. Prüfen Sie die Verbindung und wiederholen Sie</string>
 </resources>

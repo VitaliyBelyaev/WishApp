@@ -47,7 +47,7 @@ import ru.vitaliy.belyaev.wishapp.utils.createSharePlainTextIntent
 import ru.vitaliy.belyaev.wishapp.utils.openGooglePlay
 import ru.vitaliy.belyaev.wishapp.utils.trackScreenShow
 
-/** Куда ведут строки настроек. «О приложении» пока открывается прежним экраном. */
+/** Куда ведут строки настроек. */
 class SettingsActions(
     val onBack: () -> Unit,
     val onBackup: () -> Unit,

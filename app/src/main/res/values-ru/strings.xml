@@ -345,4 +345,11 @@
     <string name="err_google_sign_in">Не получилось войти в Google-аккаунт</string>
     <string name="err_drive_revoked">Нужен доступ к Google Drive: он был отозван</string>
     <string name="retry">Повторить</string>
+    <string name="settings_open_source">Открытый код</string>
+    <string name="about_open_source_text">Это open-source приложение, код можно посмотреть на GitHub</string>
+    <string name="settings_contact">Связь</string>
+    <string name="settings_contact_sub">Откроется почта</string>
+    <string name="settings_docs">Документы</string>
+    <string name="policy_failed_title">Политика не открылась</string>
+    <string name="policy_failed_text">Нет интернета. Проверьте соединение и повторите</string>
 </resources>

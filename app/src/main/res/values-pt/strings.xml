@@ -339,4 +339,11 @@
     <string name="err_google_sign_in">Não foi possível entrar na conta do Google</string>
     <string name="err_drive_revoked">É necessário acesso ao Google Drive: ele foi revogado</string>
     <string name="retry">Tentar de novo</string>
+    <string name="settings_open_source">Código aberto</string>
+    <string name="about_open_source_text">Este aplicativo é de código aberto, o código está no GitHub</string>
+    <string name="settings_contact">Contato</string>
+    <string name="settings_contact_sub">Abre o e-mail</string>
+    <string name="settings_docs">Documentos</string>
+    <string name="policy_failed_title">A política não abriu</string>
+    <string name="policy_failed_text">Sem internet. Verifique a conexão e tente de novo</string>
 </resources>

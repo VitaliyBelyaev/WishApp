@@ -340,4 +340,11 @@
     <string name="err_google_sign_in">No se pudo iniciar sesión en la cuenta de Google</string>
     <string name="err_drive_revoked">Se necesita acceso a Google Drive: se revocó</string>
     <string name="retry">Reintentar</string>
+    <string name="settings_open_source">Código abierto</string>
+    <string name="about_open_source_text">Esta aplicación es de código abierto, el código está en GitHub</string>
+    <string name="settings_contact">Contacto</string>
+    <string name="settings_contact_sub">Se abrirá el correo</string>
+    <string name="settings_docs">Documentos</string>
+    <string name="policy_failed_title">La política no se abrió</string>
+    <string name="policy_failed_text">Sin internet. Revisa la conexión y reinténtalo</string>
 </resources>

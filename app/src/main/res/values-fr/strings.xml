@@ -339,4 +339,11 @@
     <string name="err_google_sign_in">Connexion au compte Google impossible</string>
     <string name="err_drive_revoked">L’accès à Google Drive est nécessaire : il a été révoqué</string>
     <string name="retry">Réessayer</string>
+    <string name="settings_open_source">Code source ouvert</string>
+    <string name="about_open_source_text">Cette application est open source, son code est sur GitHub</string>
+    <string name="settings_contact">Contact</string>
+    <string name="settings_contact_sub">Ouvre votre messagerie</string>
+    <string name="settings_docs">Documents</string>
+    <string name="policy_failed_title">La politique ne s’est pas ouverte</string>
+    <string name="policy_failed_text">Pas d’Internet. Vérifiez la connexion et réessayez</string>
 </resources>

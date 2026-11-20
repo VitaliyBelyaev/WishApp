@@ -96,7 +96,6 @@ internal fun NewLookRoot(
             CompositionLocalProvider(LocalThemeReveal provides reveal) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     AppNavigation(
-                        selectedTheme = selectedTheme,
                         onShowMessage = appViewModel::showSnack,
                         modifier = Modifier.fillMaxSize(),
                         incomingShare = incomingShare,
